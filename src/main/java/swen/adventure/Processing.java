@@ -13,6 +13,15 @@ public class Processing extends PApplet {
     @Override
     public void draw() {
         super.draw();
+
+
+        background(0);
+
+        lights();
+
+        translate(300, 300, -100);
+        color(80);
+        sphere(80);
     }
 
     public void settings() {
