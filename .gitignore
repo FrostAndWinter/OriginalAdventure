@@ -1,0 +1,13 @@
+# Mac OSX
+.DS_Store
+
+# Gradle
+.gradle
+build/
+
+# IntellJ
+.idea/
+*.iml
+
+# Eclipse
+.project
