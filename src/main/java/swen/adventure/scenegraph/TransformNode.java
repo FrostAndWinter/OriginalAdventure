@@ -1,4 +1,4 @@
-package swen.adventure.rendering.scenegraph;
+package swen.adventure.scenegraph;
 
 import com.jogamp.opengl.math.Matrix4;
 import com.jogamp.opengl.math.Quaternion;

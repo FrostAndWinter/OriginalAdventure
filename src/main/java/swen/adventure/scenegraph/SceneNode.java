@@ -1,9 +1,6 @@
-package swen.adventure.rendering.scenegraph;
+package swen.adventure.scenegraph;
 
 import com.jogamp.opengl.math.Matrix4;
-import javafx.scene.Scene;
-
-import javax.swing.text.html.Option;
 import java.util.*;
 
 /**

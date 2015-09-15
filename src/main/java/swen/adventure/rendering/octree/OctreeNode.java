@@ -36,7 +36,7 @@ class OctreeNode<T> {
 
     }
 
-    public void addValue(T object, Region boundingBox) {
+    public void addValue(T object, BoundingBox boundingBox) {
 
         if (boundingBox.containsPoint(this.point)) { //then this point is contained within this object's bounding box
             _values.add(object);
@@ -51,7 +51,7 @@ class OctreeNode<T> {
         }
     }
 
-    private void addValuesInRegionToList(Region region, List<Set<T>> list) {
+    private void addValuesInRegionToList(BoundingBox region, List<Set<T>> list) {
 
         //check each point of the bounding box and find the region that point is in
         //then call add on that part.
@@ -79,7 +79,7 @@ class OctreeNode<T> {
      * May also return objects that are outside of the region: these may need to be discarded by whatever processes the objects.
      * The list of sets is a performance consideration (i.e. we're only generating a small list instead of a massive set or adding a large number of elements.
      */
-    public List<Set<T>> valuesInRegion(Region region) {
+    public List<Set<T>> valuesInRegion(BoundingBox region) {
         List<Set<T>> list = new ArrayList<Set<T>>();
         this.addValuesInRegionToList(region, list);
         return list;

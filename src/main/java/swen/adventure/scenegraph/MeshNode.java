@@ -1,4 +1,4 @@
-package swen.adventure.rendering.scenegraph;
+package swen.adventure.scenegraph;
 
 import processing.core.PShape;
 
