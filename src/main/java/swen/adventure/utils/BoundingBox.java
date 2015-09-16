@@ -1,11 +1,12 @@
-package swen.adventure.rendering.octree;
+package swen.adventure.utils;
 
 import swen.adventure.rendering.maths.Vector3;
+import swen.adventure.rendering.octree.Direction;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 15/09/15.
  */
-class BoundingBox {
+public class BoundingBox {
     public final float minX, minY, minZ, maxX, maxY, maxZ;
 
     public BoundingBox(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {

@@ -1,7 +1,7 @@
-import swen.adventure.Actor;
-
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 15/09/15.
@@ -12,47 +12,93 @@ import java.util.List;
  ​
  On any object, you can add an event property. For instance, a door might have the property
 
- public final Event eventDoorOpened;
+ public final Event<Door> eventDoorOpened = new Event<Door>(this);
  ​
  Then, any other object that cares about the door opening can subscribe to that event. If, say, an alarm should go off when a particular door is opened, you'd write something like this
  ​
  Door door = (Door)sceneGraph.objectWithId("DoorToOutside");
- door.eventDoorOpened.addAction( (door, actor, otherData) -> {
- this.triggerAlarm();
+ door.eventDoorOpened.addAction(alarm, (door, triggeringObject, alarm, otherData) -> {
+     alarm.startRinging()
  });
 
  in the alarm class (or somewhere more appropriate).
  ​
  Then, whenever the door is opened, the alarm will be triggered. This results in code that is fairly decoupled – these interactions could be specified in the level format for known types – and easy to write.
+ You can also build event chains. For example. The alarm.startRinging() call may result in an eventAlarmStartedRinging event being triggered – other objects could listen to that without having to care about
+ what caused the alarm to start ringing.
 
- * @param <T> the type of object this Event is paired to.
+ * @param <E> the type of object this Event is paired to.
  */
-public class Event<T> {
-    public interface Action<T> {
-        void execute(T object, Actor actor, List<String> data);
+public class Event<E> {
+    public interface Action<E, T, L> {
+        void execute(E eventObject, T triggeringObject, L listener, Map<String, Object> data);
     }
 
-    private List<Action<T>> _actions = new ArrayList<>();
+    private class ActionData<L> {
+        public final L listener;
+        public final Action<E, ?, L> action;
+        public final String actionName;
 
-    public Event() { }
+        public ActionData(String actionName, L listener, Action<E, ?, L> action) {
+            this.actionName = actionName;
+            this.listener = listener;
+            this.action = action;
+        }
 
-    public void addAction(Action<T> action) {
-        _actions.add(action);
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            final ActionData<?> that = (ActionData<?>) o;
+
+            return listener == that.listener && action == that.action;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = listener.hashCode();
+            result = 31 * result + action.hashCode();
+            return result;
+        }
     }
 
-    public void removeAction(Action<T> action) {
-        _actions.remove(action);
+    /**
+     * Special event that can be observed to see when any action is executed. Useful for networking code that needs to pass off any actions to the network.
+     */
+    public static final Event<Class<Event>> eventActionExecuted = new Event<>("ActionExecuted", Event.class);
+    public static final String ActionDataKey = "Action";
+
+    private List<ActionData<?>> _actions = new ArrayList<>();
+    private final E _eventObject;
+    public final String name;
+
+    public Event(String name, E eventObject) {
+        this.name = name;
+        _eventObject = eventObject;
+    }
+
+    public <L> void addAction(String actionName, L listener, Action<E, ?, L> action) {
+        _actions.add(new ActionData<>(actionName, listener, action));
+    }
+
+    public <L> void removeAction(String actionName, L listener, Action<E, ?, L> action) {
+        _actions.remove(new ActionData<>(actionName, listener, action));
     }
 
     /**
      *
-     * @param object The object that the event was triggered on/applies to.
-     * @param actor The actor who produced the event signal
-     * @param data A list of extraneous data that can be passed as an argument.
+     * @param triggeringObject The object that produced the event signal
+     * @param data A dictionary of extraneous data that can be passed as an argument.
      */
-    public void trigger(T object, Actor actor, List<String> data) {
-        for (Action<T> action : _actions) {
-            action.execute(object, actor, data);
+    public <B> void trigger(final B triggeringObject, final Map<String, Object> data) {
+        for (ActionData actionData : _actions) {
+            actionData.action.execute(_eventObject, triggeringObject, actionData.listener, data);
+
+            if (triggeringObject != this) {
+                Event.eventActionExecuted.trigger(this, Collections.singletonMap(ActionDataKey, actionData));
+            }
         }
     }
 }

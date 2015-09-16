@@ -1,5 +1,6 @@
 package swen.adventure.scenegraph;
 
+import swen.adventure.utils.BoundingBox;
 import java.util.Optional;
 
 /**
@@ -7,7 +8,9 @@ import java.util.Optional;
  */
 public class GameObject extends SceneNode {
 
-    public GameObject(final Optional<String> id, final SceneNode parent) {
-        super(id, parent);
+    private BoundingBox _boundingBox;
+
+    public GameObject(String id, final SceneNode parent) {
+        super(id, parent, true);
     }
 }

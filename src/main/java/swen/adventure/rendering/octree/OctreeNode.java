@@ -1,6 +1,7 @@
 package swen.adventure.rendering.octree;
 
 import swen.adventure.rendering.maths.Vector3;
+import swen.adventure.utils.BoundingBox;
 
 import java.util.ArrayList;
 import java.util.HashSet;
