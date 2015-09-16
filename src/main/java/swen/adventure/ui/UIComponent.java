@@ -6,10 +6,10 @@ import processing.core.PGraphics;
 /**
  * Created by danielbraithwt on 9/15/15.
  */
-public abstract class Componenet {
+public abstract class UIComponent {
     protected PApplet applet;
 
-    public Componenet(PApplet a) {
+    public UIComponent(PApplet a) {
         applet = a;
     }
 

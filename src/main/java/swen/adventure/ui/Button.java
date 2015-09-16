@@ -7,7 +7,7 @@ import processing.core.PGraphics;
 /**
  * Created by danielbraithwt on 9/15/15.
  */
-public class Button extends Componenet {
+public class Button extends UIComponent {
     protected String text;
     protected int x;
     protected int y;
@@ -48,7 +48,6 @@ public class Button extends Componenet {
 
     @Override
     public void draw(PGraphics g) {
-        g.beginDraw();
 
         int stringWidth = (int) g.textWidth(text);
         int stringHeight = (int) (g.textAscent() + g.textDescent());
@@ -68,7 +67,5 @@ public class Button extends Componenet {
         g.textFont(font);
 
         g.text(text.toCharArray(), 0, text.length(), x + 5, y + stringHeight);
-
-        g.endDraw();
     }
 }
