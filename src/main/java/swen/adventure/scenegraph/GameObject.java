@@ -17,6 +17,10 @@ public class GameObject extends SceneNode {
         super(id, parent, true);
     }
 
+    public BoundingBox boundingBox() {
+        return _boundingBox;
+    }
+
     /**
      * Given an event name in UpperCamelCase, finds and returns the event instance associated with that name on this object.
      * The field is expected to be named in the form event{eventName}.
@@ -26,7 +30,7 @@ public class GameObject extends SceneNode {
      */
     public Event<? extends GameObject> eventWithName(String eventName) {
         try {
-            Field field = this.getClass().getDeclaredField("event" + eventName);
+            Field field = this.getClass().getField("event" + eventName);
             return (Event<? extends GameObject>) field.get(this);
         } catch (IllegalAccessException e) {
             System.err.println("Error accessing event with name " + eventName + ": " + e);

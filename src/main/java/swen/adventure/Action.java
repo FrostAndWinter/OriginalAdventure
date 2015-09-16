@@ -32,7 +32,7 @@ public interface Action<E, T, L> {
         }
 
         try {
-            Field field = listeningObject.getClass().getDeclaredField(name);
+            Field field = listeningObject.getClass().getField(name);
             Action<?, ?, L> action = (Action<?, ?, L>) field.get(listeningObject);
             return action;
         } catch (IllegalAccessException e) {
