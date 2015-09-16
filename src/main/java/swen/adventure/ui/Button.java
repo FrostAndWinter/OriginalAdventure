@@ -4,10 +4,15 @@ import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PGraphics;
 
+import processing.event.MouseEvent;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by danielbraithwt on 9/15/15.
  */
-public class Button extends Componenet {
+public class Button extends Component implements Clickable {
     protected String text;
     protected int x;
     protected int y;
@@ -15,6 +20,8 @@ public class Button extends Componenet {
     protected int width;
 
     private boolean dynamicSize;
+
+    private List<OnClickListener> listeners;
 
     private PFont font;
 
@@ -26,6 +33,8 @@ public class Button extends Componenet {
         this.y = y;
 
         dynamicSize = true;
+
+        listeners = new ArrayList<>();
 
         // Create the font
         font = applet.createFont("Arial", 16);
@@ -48,8 +57,6 @@ public class Button extends Componenet {
 
     @Override
     public void draw(PGraphics g) {
-        g.beginDraw();
-
         int stringWidth = (int) g.textWidth(text);
         int stringHeight = (int) (g.textAscent() + g.textDescent());
 
@@ -68,7 +75,27 @@ public class Button extends Componenet {
         g.textFont(font);
 
         g.text(text.toCharArray(), 0, text.length(), x + 5, y + stringHeight);
-
-        g.endDraw();
     }
+
+    public synchronized void addClickListener(OnClickListener c) {
+        listeners.add(c);
+    }
+
+    public synchronized void removeClickListener(OnClickListener c) {
+        listeners.add(c);
+    }
+
+    public void clicked(MouseEvent e) {
+        ClickEvent event = new ClickEvent(this);
+
+        for (OnClickListener l : listeners) {
+            l.onClick(event);
+        }
+    }
+
+    @Override
+    public boolean withinBounds(int x, int y) {
+        return (x > this.x && y > this.y) && (x < this.x + this.width && y < this.y + this.height);
+    }
+
 }
