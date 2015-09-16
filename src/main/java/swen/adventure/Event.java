@@ -1,3 +1,5 @@
+package swen.adventure;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -8,11 +10,11 @@ import java.util.Map;
  */
 
 /**
- * This Event class is based on the command pattern, and the way it works is basically as follows:
+ * This swen.adventure.Event class is based on the command pattern, and the way it works is basically as follows:
  ​
  On any object, you can add an event property. For instance, a door might have the property
 
- public final Event<Door> eventDoorOpened = new Event<Door>(this);
+ public final swen.adventure.Event<Door> eventDoorOpened = new swen.adventure.Event<Door>(this);
  ​
  Then, any other object that cares about the door opening can subscribe to that event. If, say, an alarm should go off when a particular door is opened, you'd write something like this
  ​
@@ -27,7 +29,7 @@ import java.util.Map;
  You can also build event chains. For example. The alarm.startRinging() call may result in an eventAlarmStartedRinging event being triggered – other objects could listen to that without having to care about
  what caused the alarm to start ringing.
 
- * @param <E> the type of object this Event is paired to.
+ * @param <E> the type of object this swen.adventure.Event is paired to.
  */
 public class Event<E> {
     public interface Action<E, T, L> {
@@ -37,10 +39,8 @@ public class Event<E> {
     private class ActionData<L> {
         public final L listener;
         public final Action<E, ?, L> action;
-        public final String actionName;
 
-        public ActionData(String actionName, L listener, Action<E, ?, L> action) {
-            this.actionName = actionName;
+        public ActionData(L listener, Action<E, ?, L> action) {
             this.listener = listener;
             this.action = action;
         }
@@ -67,8 +67,7 @@ public class Event<E> {
     /**
      * Special event that can be observed to see when any action is executed. Useful for networking code that needs to pass off any actions to the network.
      */
-    public static final Event<Class<Event>> eventActionExecuted = new Event<>("ActionExecuted", Event.class);
-    public static final String ActionDataKey = "Action";
+    public static final Event<Class<Event>> eventEventTriggered = new Event<>("EventTriggered", Event.class);
 
     private List<ActionData<?>> _actions = new ArrayList<>();
     private final E _eventObject;
@@ -79,12 +78,12 @@ public class Event<E> {
         _eventObject = eventObject;
     }
 
-    public <L> void addAction(String actionName, L listener, Action<E, ?, L> action) {
-        _actions.add(new ActionData<>(actionName, listener, action));
+    public <L> void addAction(L listener, Action<E, ?, L> action) {
+        _actions.add(new ActionData<>(listener, action));
     }
 
-    public <L> void removeAction(String actionName, L listener, Action<E, ?, L> action) {
-        _actions.remove(new ActionData<>(actionName, listener, action));
+    public <L> void removeAction(L listener, Action<E, ?, L> action) {
+        _actions.remove(new ActionData<>(listener, action));
     }
 
     /**
@@ -97,7 +96,7 @@ public class Event<E> {
             actionData.action.execute(_eventObject, triggeringObject, actionData.listener, data);
 
             if (triggeringObject != this) {
-                Event.eventActionExecuted.trigger(this, Collections.singletonMap(ActionDataKey, actionData));
+                Event.eventEventTriggered.trigger(this, Collections.emptyMap());
             }
         }
     }
