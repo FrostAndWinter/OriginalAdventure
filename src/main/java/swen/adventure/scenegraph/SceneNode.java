@@ -1,12 +1,13 @@
 package swen.adventure.scenegraph;
 
-import com.jogamp.opengl.math.Matrix4;
+import swen.adventure.rendering.maths.Matrix4;
+
 import java.util.*;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 15/09/15.
  */
-abstract class SceneNode {
+public abstract class SceneNode {
 
     public interface NodeTraversalFunction {
         void visit(SceneNode node);

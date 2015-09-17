@@ -1,7 +1,7 @@
 package swen.adventure.scenegraph;
 
-import com.jogamp.opengl.math.Matrix4;
-import com.jogamp.opengl.math.Quaternion;
+import swen.adventure.rendering.maths.Matrix4;
+import swen.adventure.rendering.maths.Quaternion;
 import swen.adventure.rendering.maths.Vector3;
 
 /**
@@ -15,6 +15,13 @@ public class TransformNode extends SceneNode {
     private boolean _needsRecalculateTransform = true;
 
     private Matrix4 _worldSpaceTransform; //formed by translating, scaling, then rotating.
+
+    public TransformNode(final String id, Vector3 translation, Quaternion rotation, Vector3 scale) {
+        super(id);
+        _translation = translation;
+        _rotation = rotation;
+        _scale = scale;
+    }
 
     public TransformNode(final String id, final SceneNode parent, boolean isDynamic, Vector3 translation, Quaternion rotation, Vector3 scale) {
         super(id, parent, isDynamic);
@@ -34,9 +41,9 @@ public class TransformNode extends SceneNode {
 
     private Matrix4 calculateTransform() {
         Matrix4 transform = this.parent().isPresent() ? this.parent().get().worldSpaceTransform() : new Matrix4();
-        transform.scale(_scale.x, _scale.y, _scale.z);
-        transform.rotate(_rotation);
-        transform.translate(_translation.x, _translation.y, _translation.z);
+        transform = transform.scale(_scale.x, _scale.y, _scale.z);
+        transform = transform.rotate(_rotation);
+        transform = transform.translate(_translation.x, _translation.y, _translation.z);
         return transform;
     }
 
@@ -62,7 +69,7 @@ public class TransformNode extends SceneNode {
 
     public void rotateBy(Quaternion rotation) {
         this.checkForModificationOfStaticNode();
-        _rotation = _rotation.mult(rotation);
+        _rotation = _rotation.multiply(rotation);
     }
 
     public void rotateX(float xRotationRadians) {

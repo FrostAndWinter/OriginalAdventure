@@ -15,4 +15,8 @@ public class MeshNode extends SceneNode {
         super(id, parent, false);
         _mesh = mesh;
     }
+
+    public PShape mesh() {
+        return _mesh;
+    }
 }

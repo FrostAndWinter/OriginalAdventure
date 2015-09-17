@@ -6,7 +6,8 @@ package swen.adventure.rendering.maths;
  */
 public class Vector3 {
     public final float[] v;
-    public final float x, y, z; //I'd rather duplicate the data rather than use a getter since it's guaranteed not to change.
+    public final float x, y, z; //I'd rather duplicate the data than use a getter since it's guaranteed not to change.
+
 
     public Vector3(float x, float y, float z) {
         this(new float[]{ x, y, z });
@@ -20,8 +21,8 @@ public class Vector3 {
         this.z = values[2];
     }
 
-    public Vector3 negate(Vector3 vector) {
-        return new Vector3(-vector.v[0], -vector.v[1], -vector.v[2] );
+    public Vector3 negate() {
+        return new Vector3(-this.v[0], -this.v[1], -this.v[2] );
     }
 
     public Vector3 add(Vector3 vectorRight) {
