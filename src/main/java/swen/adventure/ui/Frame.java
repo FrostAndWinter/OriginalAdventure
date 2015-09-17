@@ -9,9 +9,9 @@ import java.util.List;
 /**
  * Created by danielbraithwt on 9/17/15.
  */
-public class Frame extends Component {
+public class Frame extends UIComponent {
 
-    private List<Component> children;
+    private List<UIComponent> children;
 
     public Frame(PApplet p) {
         super(p);
@@ -21,16 +21,16 @@ public class Frame extends Component {
 
     @Override
     public void draw(PGraphics g) {
-        for (Component c : children) {
+        for (UIComponent c : children) {
             c.draw(g);
         }
     }
 
-    public void addChild(Component c) {
+    public void addChild(UIComponent c) {
         children.add(c);
     }
 
-    public void removeChild(Component c) {
+    public void removeChild(UIComponent c) {
         children.remove(c);
     }
 
@@ -41,7 +41,7 @@ public class Frame extends Component {
 
     @Override
     protected void componentClicked(MouseEvent e) {
-        for (Component c : children) {
+        for (UIComponent c : children) {
             c.mouseClicked(e);
         }
     }
