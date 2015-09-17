@@ -11,6 +11,7 @@ public class UI extends PApplet {
 
     private Frame f;
     private Button b;
+    private Dialog p;
 
     @Override
     public void setup() {
@@ -18,11 +19,13 @@ public class UI extends PApplet {
 
         f = new Frame(this);
         b = new Button(this, "TEST", 50, 50);
+        p = new Dialog(this, Dialog.CONFIRM_DIALOG);
+        //f.addChild(p);
 
         b.addClickListener(new OnClickListener() {
             @Override
             public void onClick(ClickEvent e) {
-                System.out.println("Clicked");
+                p.setVisible(true);
             }
         });
 
@@ -37,6 +40,8 @@ public class UI extends PApplet {
 
         PGraphics g = getGraphics();
         f.draw(g);
+
+        p.draw(g);
     }
 
     @Override
@@ -44,6 +49,7 @@ public class UI extends PApplet {
         super.mouseClicked(event);
 
         f.mouseClicked(event);
+        p.mouseClicked(event);
     }
 
     public void settings() {
