@@ -474,9 +474,9 @@ public class Matrix4 {
     }
 
     /**
-     *
+     * Returns the PMatrix representation of this matrix
      * Note: PMatrix is row-major, whereas this is column major. Therefore, we want to pass the transpose.
-     * @return
+     * @return a PMatrix3D version of this matrix.
      */
     public PMatrix3D toPMatrix() {
         return new PMatrix3D(

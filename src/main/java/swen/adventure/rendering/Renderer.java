@@ -21,14 +21,11 @@ public class Renderer {
 
     public Matrix4 perspectiveMatrix() {
         float cameraFOV = (float)Math.PI/3.f;
-        float cameraX = _graphicsContext.width / 2.0f;
-        float cameraY = _graphicsContext.height / 2.0f;
-        float cameraZ = cameraY / ((float) Math.tan(cameraFOV / 2.0f));
         float cameraNear = 1.f;
-        float cameraFar = 600.f;
+        float cameraFar = 10000.f;
         float cameraAspect = (float) _graphicsContext.width / (float) _graphicsContext.height;
 
-        Matrix4 perspectiveMatrix = Matrix4.makePerspective((float)Math.PI/9, cameraAspect, cameraNear, cameraFar);
+        Matrix4 perspectiveMatrix = Matrix4.makePerspective((float)Math.PI/3, cameraAspect, cameraNear, cameraFar);
 
         return perspectiveMatrix;
     }
@@ -38,14 +35,17 @@ public class Renderer {
         _graphicsContext.beginDraw();
         _graphicsContext.clear();
 
-        _graphicsContext.camera = new PMatrix3D();
-        _graphicsContext.cameraInv = new PMatrix3D();
+        _graphicsContext.directionalLight(150f, 60f, 83f, -0.6f, 0.3f, 0.f);
+        _graphicsContext.ambientLight(100.f, 110.f, 120.f);
+
+//        _graphicsContext.camera = new PMatrix3D();
+//        _graphicsContext.cameraInv = new PMatrix3D();
 
         Matrix4 projectionMatrix = this.perspectiveMatrix();
         _graphicsContext.projection = projectionMatrix.toPMatrix();
 
-        Matrix4 worldToCameraMatrix = Matrix4.makeTranslation(0, 0, 0.f);
-        Matrix4 cameraToWorldMatrix = Matrix4.makeTranslation(0, 0, 0.f);
+        Matrix4 worldToCameraMatrix = Matrix4.makeTranslation(0, -30.f, 0.f);
+        Matrix4 cameraToWorldMatrix = Matrix4.makeTranslation(0, 30.f, 0.f);
 
         sceneGraph.traverse((node) -> {
             if (node instanceof MeshNode) {
@@ -55,22 +55,10 @@ public class Renderer {
                 _graphicsContext.modelviewInv = node.worldToModelSpaceTransform().multiply(cameraToWorldMatrix).toPMatrix();
                 _graphicsContext.projmodelview.set(_graphicsContext.projection);
                 _graphicsContext.projmodelview.apply(_graphicsContext.modelview);
+
                 _graphicsContext.shape(shape);
             }
         });
-
-        System.out.println("Camera matrix is:");
-        _graphicsContext.camera.print();
-        System.out.println("Camera inv matrix is:");
-        _graphicsContext.cameraInv.print();
-        System.out.println("Modelview matrix is:");
-        _graphicsContext.modelview.print();
-        System.out.println("Modelview inv matrix is:");
-        _graphicsContext.modelviewInv.print();
-        System.out.println("Projection matrix is:");
-        _graphicsContext.projection.print();
-        System.out.println("Projmodelview matrix is:");
-        _graphicsContext.projmodelview.print();
 
         _graphicsContext.endDraw();
 

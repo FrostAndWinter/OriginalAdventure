@@ -87,46 +87,50 @@ public class TransformNode extends SceneNode {
         }
     }
 
-    public void translateBy(Vector3 translation) {
+    public void setTranslation(Vector3 translation) {
         this.checkForModificationOfStaticNode();
-        _translation = _translation.add(translation);
+        _translation = translation;
+        this.setNeedsRecalculateTransform();
+    }
+
+    public void translateBy(Vector3 translation) {
+        this.setTranslation(_translation.add(translation));
+    }
+
+    public void setRotation(Quaternion rotation) {
+        this.checkForModificationOfStaticNode();
+        _rotation = rotation;
         this.setNeedsRecalculateTransform();
     }
 
     public void rotateBy(Quaternion rotation) {
-        this.checkForModificationOfStaticNode();
-        _rotation = _rotation.multiply(rotation);
-        this.setNeedsRecalculateTransform();
+        this.setRotation(_rotation.multiply(rotation));
     }
 
     public void rotateX(float xRotationRadians) {
-        this.checkForModificationOfStaticNode();
-        _rotation = _rotation.rotateByAngleX(xRotationRadians);
-        this.setNeedsRecalculateTransform();
+        this.setRotation(_rotation.rotateByAngleX(xRotationRadians));
     }
 
     public void rotateY(float yRotationRadians) {
-        this.checkForModificationOfStaticNode();
-        _rotation = _rotation.rotateByAngleY(yRotationRadians);
-        this.setNeedsRecalculateTransform();
+        this.setRotation(_rotation.rotateByAngleY(yRotationRadians));
     }
 
     public void rotateZ(float zRotationRadians) {
+        this.setRotation(_rotation.rotateByAngleZ(zRotationRadians));
+    }
+
+    public void setScale(Vector3 scale) {
         this.checkForModificationOfStaticNode();
-        _rotation = _rotation.rotateByAngleZ(zRotationRadians);
+        _scale = scale;
         this.setNeedsRecalculateTransform();
     }
 
     public void scaleBy(Vector3 scale) {
-        this.checkForModificationOfStaticNode();
-        _scale = _scale.multiply(scale);
-        this.setNeedsRecalculateTransform();
+        this.setScale(_scale.multiply(scale));
     }
 
     public void scaleBy(float scale) {
-        this.checkForModificationOfStaticNode();
-        _scale = _scale.multiplyScalar(scale);
-        this.setNeedsRecalculateTransform();
+        this.setScale(_scale.multiplyScalar(scale));
     }
 
 }
