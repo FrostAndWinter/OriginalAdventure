@@ -20,8 +20,6 @@ public class Dialog extends UIComponent {
     private int width;
     private int height;
 
-    private boolean visible;
-
     public Dialog(PApplet a, int type) {
         super(a);
 
@@ -47,16 +45,8 @@ public class Dialog extends UIComponent {
         }
     }
 
-    public void setVisible(boolean b) {
-        visible = b;
-    }
-
     @Override
-    public void draw(PGraphics g) {
-        if (!visible) {
-            return;
-        }
-
+    public void drawComponent(PGraphics g) {
         g.color(100, 100, 100);
         g.fill(100, 100, 100);
         g.rect(x, y, width, height);
@@ -73,10 +63,6 @@ public class Dialog extends UIComponent {
 
     @Override
     protected void componentClicked(MouseEvent e) {
-        if (!visible) {
-            return;
-        }
-
         for (UIComponent c : children) {
             c.mouseClicked(e);
         }

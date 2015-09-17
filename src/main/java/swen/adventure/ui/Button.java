@@ -56,7 +56,7 @@ public class Button extends UIComponent implements Clickable {
     }
 
     @Override
-    public void draw(PGraphics g) {
+    public void drawComponent(PGraphics g) {
         int stringWidth = (int) g.textWidth(text);
         int stringHeight = (int) (g.textAscent() + g.textDescent());
 

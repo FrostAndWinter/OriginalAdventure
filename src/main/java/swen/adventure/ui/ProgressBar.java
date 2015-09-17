@@ -40,7 +40,7 @@ public class ProgressBar extends UIComponent {
     }
 
     @Override
-    public void draw(PGraphics g) {
+    public void drawComponent(PGraphics g) {
         // Draw the grey bar
         g.fill(150, 130, 180);
         g.rect(x, y, width, height);
