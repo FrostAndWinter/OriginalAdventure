@@ -256,7 +256,7 @@ public class Matrix3 {
         
     }
 
-    public Matrix3 scaleWithVector3(Vector3 scaleVector)
+    public Matrix3 scale(Vector3 scaleVector)
     {
         return new Matrix3(this.m[0] * scaleVector.v[0], this.m[1] * scaleVector.v[0], this.m[2] * scaleVector.v[0],
                 this.m[3] * scaleVector.v[1], this.m[4] * scaleVector.v[1], this.m[5] * scaleVector.v[1],
@@ -264,7 +264,7 @@ public class Matrix3 {
         
     }
 
-    public Matrix3 scaleWithVector4(Vector4 scaleVector)
+    public Matrix3 scale(Vector4 scaleVector)
     {
         return new Matrix3(this.m[0] * scaleVector.v[0], this.m[1] * scaleVector.v[0], this.m[2] * scaleVector.v[0],
                 this.m[3] * scaleVector.v[1], this.m[4] * scaleVector.v[1], this.m[5] * scaleVector.v[1],
@@ -278,13 +278,13 @@ public class Matrix3 {
         return this.multiply(rm);
     }
 
-    public Matrix3 rotateWithVector3(float radians, Vector3 axisVector)
+    public Matrix3 rotate(float radians, Vector3 axisVector)
     {
         Matrix3 rm = Matrix3.makeRotation(radians, axisVector.v[0], axisVector.v[1], axisVector.v[2]);
         return this.multiply(rm);
     }
 
-    public Matrix3 rotateWithVector4(float radians, Vector4 axisVector)
+    public Matrix3 rotate(float radians, Vector4 axisVector)
     {
         Matrix3 rm = Matrix3.makeRotation(radians, axisVector.v[0], axisVector.v[1], axisVector.v[2]);
         return this.multiply(rm);

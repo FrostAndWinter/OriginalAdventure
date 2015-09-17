@@ -94,10 +94,9 @@ public class Event<E> {
     public <B> void trigger(final B triggeringObject, final Map<String, Object> data) {
         for (ActionData actionData : _actions) {
             actionData.action.execute(_eventObject, triggeringObject, actionData.listener, data);
-
-            if (triggeringObject != this) {
-                Event.eventEventTriggered.trigger(this, Collections.emptyMap());
-            }
+        }
+        if (triggeringObject != this) {
+            Event.eventEventTriggered.trigger(this, Collections.emptyMap());
         }
     }
 }

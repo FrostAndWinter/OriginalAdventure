@@ -48,18 +48,18 @@ public class TransformNode extends SceneNode {
     private Matrix4 calculateModelToWorldTransform() {
         Matrix4 transform = this.parent().isPresent() ? this.parent().get().modelToWorldSpaceTransform() : new Matrix4();
 
-        transform = transform.translateWithVector3(_translation);
+        transform = transform.translate(_translation);
         transform = transform.rotate(_rotation);
-        transform = transform.scaleWithVector3(_scale);
+        transform = transform.scale(_scale);
 
         return transform;
     }
 
     private Matrix4 calculateWorldToModelTransform() {
         Matrix4 transform = this.parent().isPresent() ? this.parent().get().worldToModelSpaceTransform() : new Matrix4();
-        transform = transform.scaleWithVector3(new Vector3(1.f, 1.f, 1.f).divide(_scale));
+        transform = transform.scale(new Vector3(1.f, 1.f, 1.f).divide(_scale));
         transform = transform.rotate(_rotation.conjugate());
-        transform = transform.translateWithVector3(_translation.negate());
+        transform = transform.translate(_translation.negate());
         return transform;
     }
 

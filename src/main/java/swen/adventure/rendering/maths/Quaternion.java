@@ -40,7 +40,7 @@ public class Quaternion {
         return Quaternion.makeWithAngleAndAxis(radians, axisVector.v[0], axisVector.v[1], axisVector.v[2]);
     }
 
-    public Quaternion QuaternionAdd(Quaternion quaternionRight)
+    public Quaternion add(Quaternion quaternionRight)
     {
         return new Quaternion(this.q[0] + quaternionRight.q[0],
                 this.q[1] + quaternionRight.q[1],
@@ -115,7 +115,7 @@ public class Quaternion {
         return new Vector3(rotatedQuaternion.q[0], rotatedQuaternion.q[1], rotatedQuaternion.q[2]);
     }
 
-    public Vector4 rotateVector4(Quaternion quaternion, Vector4 vector)
+    public Vector4 rotateVector4(Vector4 vector)
     {
         Quaternion rotatedQuaternion = new Quaternion(vector.v[0], vector.v[1], vector.v[2], 0.0f);
         rotatedQuaternion = this.multiply(rotatedQuaternion).multiply(this.invert());

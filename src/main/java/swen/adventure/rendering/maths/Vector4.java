@@ -210,12 +210,12 @@ public class Vector4 {
         return vectorEnd.subtract(this).length();
     }
 
-    public Vector4 lerp(Vector4 vectorStart, Vector4 vectorEnd, float t)
+    public Vector4 lerp(Vector4 vectorEnd, float t)
     {
-        return new Vector4(vectorStart.v[0] + ((vectorEnd.v[0] - vectorStart.v[0]) * t),
-                vectorStart.v[1] + ((vectorEnd.v[1] - vectorStart.v[1]) * t),
-                vectorStart.v[2] + ((vectorEnd.v[2] - vectorStart.v[2]) * t),
-                vectorStart.v[3] + ((vectorEnd.v[3] - vectorStart.v[3]) * t));
+        return new Vector4(this.v[0] + ((vectorEnd.v[0] - this.v[0]) * t),
+                this.v[1] + ((vectorEnd.v[1] - this.v[1]) * t),
+                this.v[2] + ((vectorEnd.v[2] - this.v[2]) * t),
+                this.v[3] + ((vectorEnd.v[3] - this.v[3]) * t));
     }
 
     public Vector4 crossProduct(Vector4 vectorRight) {
