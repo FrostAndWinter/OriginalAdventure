@@ -12,9 +12,11 @@ public class TransformNode extends SceneNode {
     private Quaternion _rotation;
     private Vector3 _scale;
 
-    private boolean _needsRecalculateTransform = true;
+    private boolean _needsRecalculateModelWorldTransform = true;
+    private boolean _needsRecalculateTransformWorldModelTransform = true;
 
-    private Matrix4 _worldSpaceTransform; //formed by translating, scaling, then rotating.
+    private Matrix4 _modelToWorldTransform; //formed by translating, scaling, then rotating.
+    private Matrix4 _worldToModelTransform;
 
     public TransformNode(final String id, Vector3 translation, Quaternion rotation, Vector3 scale) {
         super(id);
@@ -31,29 +33,50 @@ public class TransformNode extends SceneNode {
     }
 
     private void setNeedsRecalculateTransform() {
-        _needsRecalculateTransform = true;
+        _needsRecalculateModelWorldTransform = true;
+        _needsRecalculateTransformWorldModelTransform = true;
         this.traverse((node) -> {
             if (node instanceof TransformNode) {
-                ((TransformNode)node)._needsRecalculateTransform = true;
+                ((TransformNode)node)._needsRecalculateTransformWorldModelTransform = true;
+                ((TransformNode)node)._needsRecalculateModelWorldTransform = true;
+            } else if (node instanceof GameObject) {
+                ((GameObject)node).transformDidChange();
             }
         });
     }
 
-    private Matrix4 calculateTransform() {
-        Matrix4 transform = this.parent().isPresent() ? this.parent().get().worldSpaceTransform() : new Matrix4();
-        transform = transform.scale(_scale.x, _scale.y, _scale.z);
+    private Matrix4 calculateModelToWorldTransform() {
+        Matrix4 transform = this.parent().isPresent() ? this.parent().get().modelToWorldSpaceTransform() : new Matrix4();
+        transform = transform.scaleWithVector3(_scale);
         transform = transform.rotate(_rotation);
-        transform = transform.translate(_translation.x, _translation.y, _translation.z);
+        transform = transform.translateWithVector3(_translation);
+        return transform;
+    }
+
+    private Matrix4 calculateWorldToModelTransform() {
+        Matrix4 transform = this.parent().isPresent() ? this.parent().get().worldToModelSpaceTransform() : new Matrix4();
+        transform = transform.scaleWithVector3(new Vector3(1.f, 1.f, 1.f).divide(_scale));
+        transform = transform.rotate(_rotation);
+        transform = transform.translateWithVector3(_translation.negate());
         return transform;
     }
 
     @Override
-    public Matrix4 worldSpaceTransform() {
-        if (_needsRecalculateTransform) {
-            _worldSpaceTransform = this.calculateTransform();
-            _needsRecalculateTransform = false;
+    public Matrix4 modelToWorldSpaceTransform() {
+        if (_needsRecalculateModelWorldTransform) {
+            _modelToWorldTransform = this.calculateModelToWorldTransform();
+            _needsRecalculateModelWorldTransform = false;
         }
-        return _worldSpaceTransform;
+        return _modelToWorldTransform;
+    }
+
+    @Override
+    public Matrix4 worldToModelSpaceTransform() {
+        if (_needsRecalculateTransformWorldModelTransform) {
+            _modelToWorldTransform = this.calculateModelToWorldTransform();
+            _needsRecalculateTransformWorldModelTransform = false;
+        }
+        return _modelToWorldTransform;
     }
 
     private void checkForModificationOfStaticNode() {
@@ -65,36 +88,43 @@ public class TransformNode extends SceneNode {
     public void translateBy(Vector3 translation) {
         this.checkForModificationOfStaticNode();
         _translation = _translation.add(translation);
+        this.setNeedsRecalculateTransform();
     }
 
     public void rotateBy(Quaternion rotation) {
         this.checkForModificationOfStaticNode();
         _rotation = _rotation.multiply(rotation);
+        this.setNeedsRecalculateTransform();
     }
 
     public void rotateX(float xRotationRadians) {
         this.checkForModificationOfStaticNode();
         _rotation = _rotation.rotateByAngleX(xRotationRadians);
+        this.setNeedsRecalculateTransform();
     }
 
     public void rotateY(float yRotationRadians) {
         this.checkForModificationOfStaticNode();
         _rotation = _rotation.rotateByAngleY(yRotationRadians);
+        this.setNeedsRecalculateTransform();
     }
 
     public void rotateZ(float zRotationRadians) {
         this.checkForModificationOfStaticNode();
         _rotation = _rotation.rotateByAngleZ(zRotationRadians);
+        this.setNeedsRecalculateTransform();
     }
 
     public void scaleBy(Vector3 scale) {
         this.checkForModificationOfStaticNode();
         _scale = _scale.multiply(scale);
+        this.setNeedsRecalculateTransform();
     }
 
     public void scaleBy(float scale) {
         this.checkForModificationOfStaticNode();
         _scale = _scale.multiplyScalar(scale);
+        this.setNeedsRecalculateTransform();
     }
 
 }

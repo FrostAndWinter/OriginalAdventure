@@ -1,5 +1,6 @@
 package swen.adventure.utils;
 
+import swen.adventure.rendering.maths.Matrix4;
 import swen.adventure.rendering.maths.Vector3;
 import swen.adventure.rendering.octree.Direction;
 
@@ -86,5 +87,10 @@ public class BoundingBox {
                 this.minPoint.y > otherBox.maxPoint.y ||
                 this.maxPoint.z > otherBox.minPoint.z ||
                 this.minPoint.z > otherBox.maxPoint.z);
+    }
+    
+
+    public BoundingBox transformByMatrix(Matrix4 matrix) {
+        return new BoundingBox(matrix.multiply(this.minPoint), matrix.multiply(this.maxPoint));
     }
 }

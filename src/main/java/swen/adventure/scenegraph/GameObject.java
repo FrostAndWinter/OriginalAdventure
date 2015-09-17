@@ -11,14 +11,23 @@ import java.util.Optional;
  */
 public class GameObject extends SceneNode {
 
+    private boolean _needsRecalculateBoundingBox = false;
     private BoundingBox _boundingBox;
+    private BoundingBox _transformedBoundingBox;
 
     public GameObject(String id, final SceneNode parent) {
         super(id, parent, true);
     }
 
     public BoundingBox boundingBox() {
-        return _boundingBox;
+        if (_needsRecalculateBoundingBox) {
+            _transformedBoundingBox = _boundingBox.transformByMatrix(this.modelToWorldSpaceTransform());
+        }
+        return _transformedBoundingBox;
+    }
+
+    public void transformDidChange() {
+        _needsRecalculateBoundingBox = true;
     }
 
     /**

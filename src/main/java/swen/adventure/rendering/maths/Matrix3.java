@@ -308,17 +308,17 @@ public class Matrix3 {
         return this.multiply(rm);
     }
 
-    public Vector3 multiplyVector3(Vector3 vectorRight)
+    public Vector3 multiply(Vector3 vectorRight)
     {
         return new Vector3(this.m[0] * vectorRight.v[0] + this.m[3] * vectorRight.v[1] + this.m[6] * vectorRight.v[2],
                 this.m[1] * vectorRight.v[0] + this.m[4] * vectorRight.v[1] + this.m[7] * vectorRight.v[2],
                 this.m[2] * vectorRight.v[0] + this.m[5] * vectorRight.v[1] + this.m[8] * vectorRight.v[2]);
     }
 
-    public void multiplyVector3Array(Vector3[] vectors)
+    public void multiplyArray(Vector3[] vectors)
     {
         for (int i=0; i < vectors.length; i++)
-            vectors[i] = this.multiplyVector3(vectors[i]);
+            vectors[i] = this.multiply(vectors[i]);
     }
 
 }

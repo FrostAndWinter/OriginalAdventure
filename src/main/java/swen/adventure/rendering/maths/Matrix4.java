@@ -99,7 +99,7 @@ public class Matrix4 {
                 1.0f };
     }
 
-    public Matrix4 makeTranslation(float tx, float ty, float tz) {
+    public static Matrix4 makeTranslation(float tx, float ty, float tz) {
         Matrix4 m = new Matrix4();
         m.m[12] = tx;
         m.m[13] = ty;
@@ -107,7 +107,7 @@ public class Matrix4 {
         return m;
     }
 
-    public Matrix4 makeScale(float sx, float sy, float sz) {
+    public static Matrix4 makeScale(float sx, float sy, float sz) {
         Matrix4 m = new Matrix4();
         m.m[0] = sx;
         m.m[5] = sy;
@@ -172,7 +172,8 @@ public class Matrix4 {
     public static Matrix4 makePerspective(float fovyRadians, float aspect, float nearZ, float farZ) {
         float cotan = 1.0f / (float)Math.tan(fovyRadians / 2.0f);
 
-        return new Matrix4( cotan / aspect, 0.0f, 0.0f, 0.0f,
+        return new Matrix4(
+                cotan / aspect, 0.0f, 0.0f, 0.0f,
                 0.0f, cotan, 0.0f, 0.0f,
                 0.0f, 0.0f, (farZ + nearZ) / (nearZ - farZ), -1.0f,
                 0.0f, 0.0f, (2.0f * farZ * nearZ) / (nearZ - farZ), 0.0f );
@@ -429,12 +430,12 @@ public class Matrix4 {
         return this.multiply(rm);
     }
 
-    public Vector3 multiplyVector3(Vector3 vectorRight) {
+    public Vector3 multiply(Vector3 vectorRight) {
         Vector4 v4 = this.multiplyVector4(new Vector4(vectorRight.v[0], vectorRight.v[1], vectorRight.v[2], 0.0f));
         return new Vector3(v4.v[0], v4.v[1], v4.v[2]);
     }
 
-    public Vector3 multiplyVector3WithTranslation(Vector3 vectorRight) {
+    public Vector3 multiplyWithTranslation(Vector3 vectorRight) {
         Vector4 v4 = this.multiplyVector4(new Vector4(vectorRight.v[0], vectorRight.v[1], vectorRight.v[2], 1.0f));
         return new Vector3(v4.v[0], v4.v[1], v4.v[2]);
     }
@@ -444,14 +445,14 @@ public class Matrix4 {
         return new Vector3(v4.v[0], v4.v[1], v4.v[2]).multiplyScalar(1.0f / v4.v[3]);
     }
 
-    public void multiplyVector3Array(Vector3[] vectors) {
+    public void multiplyArray(Vector3[] vectors) {
         for (int i = 0; i < vectors.length; i++)
-            vectors[i] = this.multiplyVector3(vectors[i]);
+            vectors[i] = this.multiply(vectors[i]);
     }
 
-    public void multiplyVector3ArrayWithTranslation(Vector3[] vectors) {
+    public void multiplyArrayWithTranslation(Vector3[] vectors) {
         for (int i=0; i < vectors.length; i++)
-            vectors[i] = this.multiplyVector3WithTranslation(vectors[i]);
+            vectors[i] = this.multiplyWithTranslation(vectors[i]);
     }
 
     public void multiplyAndProjectVector3Array(Vector3[] vectors) {
@@ -472,8 +473,17 @@ public class Matrix4 {
             vectors[i] = this.multiplyVector4(vectors[i]);
     }
 
+    /**
+     *
+     * Note: PMatrix is row-major, whereas this is column major. Therefore, we want to pass the transpose.
+     * @return
+     */
     public PMatrix3D toPMatrix() {
-        return new PMatrix3D(this.m[0], this.m[1], this.m[2], this.m[3], this.m[4], this.m[5], this.m[6], this.m[7], this.m[8], this.m[9], this.m[10], this.m[11], this.m[12], this.m[13], this.m[14], this.m[15]);
+        return new PMatrix3D(
+                this.m[0], this.m[4], this.m[8], this.m[12],
+                this.m[1], this.m[5], this.m[9], this.m[13],
+                this.m[2], this.m[6], this.m[10], this.m[14],
+                this.m[3], this.m[7], this.m[11], this.m[15]);
     }
 
 }
