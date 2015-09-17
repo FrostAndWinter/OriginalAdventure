@@ -47,16 +47,18 @@ public class TransformNode extends SceneNode {
 
     private Matrix4 calculateModelToWorldTransform() {
         Matrix4 transform = this.parent().isPresent() ? this.parent().get().modelToWorldSpaceTransform() : new Matrix4();
-        transform = transform.scaleWithVector3(_scale);
-        transform = transform.rotate(_rotation);
+
         transform = transform.translateWithVector3(_translation);
+        transform = transform.rotate(_rotation);
+        transform = transform.scaleWithVector3(_scale);
+
         return transform;
     }
 
     private Matrix4 calculateWorldToModelTransform() {
         Matrix4 transform = this.parent().isPresent() ? this.parent().get().worldToModelSpaceTransform() : new Matrix4();
         transform = transform.scaleWithVector3(new Vector3(1.f, 1.f, 1.f).divide(_scale));
-        transform = transform.rotate(_rotation);
+        transform = transform.rotate(_rotation.conjugate());
         transform = transform.translateWithVector3(_translation.negate());
         return transform;
     }
@@ -73,10 +75,10 @@ public class TransformNode extends SceneNode {
     @Override
     public Matrix4 worldToModelSpaceTransform() {
         if (_needsRecalculateTransformWorldModelTransform) {
-            _modelToWorldTransform = this.calculateModelToWorldTransform();
+            _worldToModelTransform = this.calculateWorldToModelTransform();
             _needsRecalculateTransformWorldModelTransform = false;
         }
-        return _modelToWorldTransform;
+        return _worldToModelTransform;
     }
 
     private void checkForModificationOfStaticNode() {

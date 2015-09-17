@@ -24,9 +24,11 @@ public class AdventureGame extends PApplet {
         super.setup();
         _renderer = new Renderer((PGraphics3D)this.getGraphics());
 
-        _sceneGraph = new TransformNode("root", new Vector3(500.f, 100.f, -50.f), Quaternion.makeWithAngleAndAxis((float)Math.PI/3, 0.8f, 0.6f, 0.3f), new Vector3(1.f, 1.f, 1.f));
+        _sceneGraph = new TransformNode("root", new Vector3(0.f, 0.f, -100.f), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
+        new MeshNode("box2", _sceneGraph, createShape(BOX, 1.f));
 
-        new MeshNode("box", _sceneGraph, createShape(BOX, 100.f));
+        TransformNode transform = new TransformNode("transform", _sceneGraph, false, new Vector3(10.f, 10.f, 0.f), Quaternion.makeWithAngleAndAxis(1.f, 1.f, 0.3f, -0.4f), new Vector3(0.6f, 1.f, 1.f));
+        new MeshNode("box", transform, createShape(BOX, 1.f));
 
         noLoop();
 
