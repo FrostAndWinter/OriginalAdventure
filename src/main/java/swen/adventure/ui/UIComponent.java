@@ -28,13 +28,13 @@ public abstract class UIComponent {
 
     public abstract boolean withinBounds(int x, int y);
 
-    public void mouseClicked(MouseEvent e) {
+    public void mouseClicked(int x, int y) {
         if (!visible) {
             return;
         }
 
-        if (this.withinBounds(e.getX(), e.getY())) {
-            componentClicked(e);
+        if (this.withinBounds(x, y)) {
+            componentClicked(x, y);
         }
     }
 
@@ -46,5 +46,5 @@ public abstract class UIComponent {
         return visible;
     }
 
-    protected abstract void componentClicked(MouseEvent e);
+    protected abstract void componentClicked(int x, int y);
 }

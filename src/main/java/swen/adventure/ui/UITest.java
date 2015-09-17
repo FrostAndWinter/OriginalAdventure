@@ -21,15 +21,16 @@ public class UITest extends PApplet {
 
         f = new Frame(this);
         b = new Button(this, "TEST", 50, 50);
-        p = new Dialog(this, Dialog.CONFIRM_DIALOG);
+        p = new Dialog(this, Dialog.CONFIRM_DIALOG, 50, 50);
 
-        pg = new ProgressBar(this, 100);
+        pg = new ProgressBar(this, 100, 0, 0);
         f.addChild(pg);
 
         b.addClickListener(new OnClickListener() {
             @Override
             public void onClick(ClickEvent e) {
                 p.setVisible(true);
+
             }
         });
 
@@ -62,8 +63,8 @@ public class UITest extends PApplet {
     public void mouseClicked(MouseEvent event) {
         super.mouseClicked(event);
 
-        f.mouseClicked(event);
-        p.mouseClicked(event);
+        f.mouseClicked(event.getX(), event.getY());
+        p.mouseClicked(event.getX(), event.getY());
     }
 
     public void settings() {

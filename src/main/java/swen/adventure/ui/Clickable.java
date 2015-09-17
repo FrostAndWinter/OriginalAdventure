@@ -8,5 +8,5 @@ import processing.event.MouseEvent;
 public interface Clickable {
     public void addClickListener(OnClickListener c);
     public void removeClickListener(OnClickListener c);
-    public void clicked(MouseEvent e);
+    public void clicked(int x, int y);
 }

@@ -85,7 +85,7 @@ public class Button extends UIComponent implements Clickable {
         listeners.add(c);
     }
 
-    public void clicked(MouseEvent e) {
+    public void clicked(int x, int y) {
         ClickEvent event = new ClickEvent(this);
 
         for (OnClickListener l : listeners) {
@@ -99,7 +99,7 @@ public class Button extends UIComponent implements Clickable {
     }
 
     @Override
-    protected void componentClicked(MouseEvent e) {
-        clicked(e);
+    protected void componentClicked(int x, int y) {
+        clicked(x, y);
     }
 }

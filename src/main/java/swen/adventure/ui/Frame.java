@@ -40,9 +40,9 @@ public class Frame extends UIComponent {
     }
 
     @Override
-    protected void componentClicked(MouseEvent e) {
+    protected void componentClicked(int x, int y) {
         for (UIComponent c : children) {
-            c.mouseClicked(e);
+            c.mouseClicked(x, y);
         }
     }
 }

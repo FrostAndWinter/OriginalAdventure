@@ -18,6 +18,8 @@ public class Panel extends UIComponent {
     private int width;
     private int height;
 
+    private boolean dynamicSize;
+
     public Panel(PApplet p, int x, int y, int width, int height) {
         super(p);
 
@@ -29,17 +31,34 @@ public class Panel extends UIComponent {
         children = new ArrayList<>();
     }
 
+    public Panel(PApplet p, int x, int y) {
+        super(p);
+
+        this.x = x;
+        this.y = y;
+
+        // TODO: Make actaully dynamic size
+        this.width = 500;
+        this.height = 500;
+
+        dynamicSize = true;
+    }
+
     @Override
     public void drawComponent(PGraphics g) {
 
         g.fill(23, 54, 123);
         g.rect(x, y, width, height);
 
+        // Translate coord system so that positioning inside the
+        // panel is relative
         g.translate(x, y);
 
         for (UIComponent c : children) {
             c.draw(g);
         }
+
+        g.translate(-x, -y);
     }
 
     public void addChild(UIComponent c) {
@@ -56,9 +75,9 @@ public class Panel extends UIComponent {
     }
 
     @Override
-    protected void componentClicked(MouseEvent e) {
+    protected void componentClicked(int x, int y) {
         for (UIComponent c : children) {
-            c.mouseClicked(e);
+            c.mouseClicked(x - this.x, y - this.y);
         }
     }
 }

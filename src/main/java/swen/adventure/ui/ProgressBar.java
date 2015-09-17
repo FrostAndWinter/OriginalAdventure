@@ -16,7 +16,7 @@ public class ProgressBar extends UIComponent {
     private int maxValue;
     private int count;
 
-    public ProgressBar(PApplet a, int maxValue) {
+    public ProgressBar(PApplet a, int maxValue, int x, int y) {
         super(a);
 
         x = 200;
@@ -57,5 +57,5 @@ public class ProgressBar extends UIComponent {
     }
 
     @Override
-    protected void componentClicked(MouseEvent e) {}
+    protected void componentClicked(int x, int y) {}
 }
