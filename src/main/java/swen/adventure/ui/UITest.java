@@ -7,11 +7,13 @@ import processing.event.MouseEvent;
 /**
  * Created by danielbraithwt on 9/15/15.
  */
-public class UI extends PApplet {
+public class UITest extends PApplet {
 
     private Frame f;
     private Button b;
+    private Button pgb;
     private Dialog p;
+    private ProgressBar pg;
 
     @Override
     public void setup() {
@@ -20,7 +22,9 @@ public class UI extends PApplet {
         f = new Frame(this);
         b = new Button(this, "TEST", 50, 50);
         p = new Dialog(this, Dialog.CONFIRM_DIALOG);
-        //f.addChild(p);
+
+        pg = new ProgressBar(this, 100);
+        f.addChild(pg);
 
         b.addClickListener(new OnClickListener() {
             @Override
@@ -30,6 +34,16 @@ public class UI extends PApplet {
         });
 
         f.addChild(b);
+
+        pgb = new Button(this, "Increment", 200, 50);
+        pgb.addClickListener(new OnClickListener() {
+            @Override
+            public void onClick(ClickEvent e) {
+                pg.changeProgress(5);
+            }
+        });
+
+        f.addChild(pgb);
     }
 
     @Override
