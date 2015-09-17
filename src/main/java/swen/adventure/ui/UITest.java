@@ -72,6 +72,6 @@ public class UITest extends PApplet {
     }
 
     public static void main(String[] args) {
-        PApplet.main(new String[]{"--present", "swen.adventure.ui.UI"});
+        PApplet.main(new String[]{"swen.adventure.ui.UITest"});
     }
 }
