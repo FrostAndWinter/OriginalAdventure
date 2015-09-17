@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by danielbraithwt on 9/15/15.
  */
-public class Button extends Component implements Clickable {
+public class Button extends UIComponent implements Clickable {
     protected String text;
     protected int x;
     protected int y;

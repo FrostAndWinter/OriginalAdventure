@@ -8,10 +8,10 @@ import processing.event.MouseEvent;
 /**
  * Created by danielbraithwt on 9/15/15.
  */
-public abstract class Component {
+public abstract class UIComponent {
     protected PApplet applet;
 
-    public Component(PApplet a) {
+    public UIComponent(PApplet a) {
         applet = a;
     }
 

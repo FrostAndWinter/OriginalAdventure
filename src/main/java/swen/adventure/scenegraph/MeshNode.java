@@ -11,8 +11,8 @@ public class MeshNode extends SceneNode {
 
     private PShape _mesh;
 
-    public MeshNode(final Optional<String> id, final SceneNode parent, PShape mesh) {
-        super(id, parent);
+    public MeshNode(String id, final SceneNode parent, PShape mesh) {
+        super(id, parent, false);
         _mesh = mesh;
     }
 }
