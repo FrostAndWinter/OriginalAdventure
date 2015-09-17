@@ -34,14 +34,15 @@ public class Frame extends Component {
         children.remove(c);
     }
 
-    public void mouseClicked(MouseEvent e) {
-        for (Component c : children) {
-            c.mouseClicked(e);
-        }
-    }
-
     @Override
     public boolean withinBounds(int x, int y) {
         return true;
+    }
+
+    @Override
+    protected void componentClicked(MouseEvent e) {
+        for (Component c : children) {
+            c.mouseClicked(e);
+        }
     }
 }

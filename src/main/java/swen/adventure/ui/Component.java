@@ -20,12 +20,10 @@ public abstract class Component {
     public abstract boolean withinBounds(int x, int y);
 
     public void mouseClicked(MouseEvent e) {
-        if (this instanceof Clickable) {
-            Clickable c = ((Clickable) this);
-
-            if (this.withinBounds(e.getX(), e.getY())) {
-                c.clicked(e);
-            }
+        if (this.withinBounds(e.getX(), e.getY())) {
+            componentClicked(e);
         }
     }
+
+    protected abstract void componentClicked(MouseEvent e);
 }

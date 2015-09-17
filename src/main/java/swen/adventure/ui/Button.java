@@ -98,4 +98,8 @@ public class Button extends Component implements Clickable {
         return (x > this.x && y > this.y) && (x < this.x + this.width && y < this.y + this.height);
     }
 
+    @Override
+    protected void componentClicked(MouseEvent e) {
+        clicked(e);
+    }
 }
