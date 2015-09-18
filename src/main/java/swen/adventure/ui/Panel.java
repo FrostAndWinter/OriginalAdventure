@@ -11,7 +11,7 @@ import java.util.List;
  * Created by danielbraithwt on 9/17/15.
  */
 public class Panel extends UIComponent {
-    private List<UIComponent> children;
+    private List<UIComponent> children = new ArrayList<>();
 
     private int x;
     private int y;
@@ -27,8 +27,6 @@ public class Panel extends UIComponent {
         this.y = y;
         this.height = height;
         this.width = width;
-
-        children = new ArrayList<>();
     }
 
     public Panel(PApplet p, int x, int y) {

@@ -47,17 +47,19 @@ public class TransformNode extends SceneNode {
 
     private Matrix4 calculateModelToWorldTransform() {
         Matrix4 transform = this.parent().isPresent() ? this.parent().get().modelToWorldSpaceTransform() : new Matrix4();
-        transform = transform.scaleWithVector3(_scale);
+
+        transform = transform.translate(_translation);
         transform = transform.rotate(_rotation);
-        transform = transform.translateWithVector3(_translation);
+        transform = transform.scale(_scale);
+
         return transform;
     }
 
     private Matrix4 calculateWorldToModelTransform() {
         Matrix4 transform = this.parent().isPresent() ? this.parent().get().worldToModelSpaceTransform() : new Matrix4();
-        transform = transform.scaleWithVector3(new Vector3(1.f, 1.f, 1.f).divide(_scale));
-        transform = transform.rotate(_rotation);
-        transform = transform.translateWithVector3(_translation.negate());
+        transform = transform.scale(new Vector3(1.f, 1.f, 1.f).divide(_scale));
+        transform = transform.rotate(_rotation.conjugate());
+        transform = transform.translate(_translation.negate());
         return transform;
     }
 
@@ -73,10 +75,10 @@ public class TransformNode extends SceneNode {
     @Override
     public Matrix4 worldToModelSpaceTransform() {
         if (_needsRecalculateTransformWorldModelTransform) {
-            _modelToWorldTransform = this.calculateModelToWorldTransform();
+            _worldToModelTransform = this.calculateWorldToModelTransform();
             _needsRecalculateTransformWorldModelTransform = false;
         }
-        return _modelToWorldTransform;
+        return _worldToModelTransform;
     }
 
     private void checkForModificationOfStaticNode() {
@@ -85,46 +87,50 @@ public class TransformNode extends SceneNode {
         }
     }
 
-    public void translateBy(Vector3 translation) {
+    public void setTranslation(Vector3 translation) {
         this.checkForModificationOfStaticNode();
-        _translation = _translation.add(translation);
+        _translation = translation;
+        this.setNeedsRecalculateTransform();
+    }
+
+    public void translateBy(Vector3 translation) {
+        this.setTranslation(_translation.add(translation));
+    }
+
+    public void setRotation(Quaternion rotation) {
+        this.checkForModificationOfStaticNode();
+        _rotation = rotation;
         this.setNeedsRecalculateTransform();
     }
 
     public void rotateBy(Quaternion rotation) {
-        this.checkForModificationOfStaticNode();
-        _rotation = _rotation.multiply(rotation);
-        this.setNeedsRecalculateTransform();
+        this.setRotation(_rotation.multiply(rotation));
     }
 
     public void rotateX(float xRotationRadians) {
-        this.checkForModificationOfStaticNode();
-        _rotation = _rotation.rotateByAngleX(xRotationRadians);
-        this.setNeedsRecalculateTransform();
+        this.setRotation(_rotation.rotateByAngleX(xRotationRadians));
     }
 
     public void rotateY(float yRotationRadians) {
-        this.checkForModificationOfStaticNode();
-        _rotation = _rotation.rotateByAngleY(yRotationRadians);
-        this.setNeedsRecalculateTransform();
+        this.setRotation(_rotation.rotateByAngleY(yRotationRadians));
     }
 
     public void rotateZ(float zRotationRadians) {
+        this.setRotation(_rotation.rotateByAngleZ(zRotationRadians));
+    }
+
+    public void setScale(Vector3 scale) {
         this.checkForModificationOfStaticNode();
-        _rotation = _rotation.rotateByAngleZ(zRotationRadians);
+        _scale = scale;
         this.setNeedsRecalculateTransform();
     }
 
     public void scaleBy(Vector3 scale) {
-        this.checkForModificationOfStaticNode();
-        _scale = _scale.multiply(scale);
-        this.setNeedsRecalculateTransform();
+        this.setScale(_scale.multiply(scale));
     }
 
     public void scaleBy(float scale) {
-        this.checkForModificationOfStaticNode();
-        _scale = _scale.multiplyScalar(scale);
-        this.setNeedsRecalculateTransform();
+        this.setScale(_scale.multiplyScalar(scale));
     }
 
 }

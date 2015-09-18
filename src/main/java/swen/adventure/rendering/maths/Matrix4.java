@@ -355,7 +355,7 @@ public class Matrix4 {
                 this.m[3] * tx + this.m[7] * ty + this.m[11] * tz + this.m[15]);
     }
 
-    public Matrix4 translateWithVector3(Vector3 translationVector) {
+    public Matrix4 translate(Vector3 translationVector) {
         return new Matrix4(this.m[0], this.m[1], this.m[2], this.m[3],
                 this.m[4], this.m[5], this.m[6], this.m[7],
                 this.m[8], this.m[9], this.m[10], this.m[11],
@@ -365,7 +365,7 @@ public class Matrix4 {
                 this.m[3] * translationVector.v[0] + this.m[7] * translationVector.v[1] + this.m[11] * translationVector.v[2] + this.m[15]);
     }
 
-    public Matrix4 translateWithVector4(Vector4 translationVector) {
+    public Matrix4 translate(Vector4 translationVector) {
         return new Matrix4(this.m[0], this.m[1], this.m[2], this.m[3],
                 this.m[4], this.m[5], this.m[6], this.m[7],
                 this.m[8], this.m[9], this.m[10], this.m[11],
@@ -382,14 +382,14 @@ public class Matrix4 {
                 this.m[12], this.m[13], this.m[14], this.m[15]);
     }
 
-    public Matrix4 scaleWithVector3(Vector3 scaleVector) {
+    public Matrix4 scale(Vector3 scaleVector) {
         return new Matrix4(this.m[0] * scaleVector.v[0], this.m[1] * scaleVector.v[0], this.m[2] * scaleVector.v[0], this.m[3] * scaleVector.v[0],
                 this.m[4] * scaleVector.v[1], this.m[5] * scaleVector.v[1], this.m[6] * scaleVector.v[1], this.m[7] * scaleVector.v[1],
                 this.m[8] * scaleVector.v[2], this.m[9] * scaleVector.v[2], this.m[10] * scaleVector.v[2], this.m[11] * scaleVector.v[2],
                 this.m[12], this.m[13], this.m[14], this.m[15]);
     }
 
-    public Matrix4 scaleWithVector4(Vector4 scaleVector) {
+    public Matrix4 scale(Vector4 scaleVector) {
         return new Matrix4(this.m[0] * scaleVector.v[0], this.m[1] * scaleVector.v[0], this.m[2] * scaleVector.v[0], this.m[3] * scaleVector.v[0],
                 this.m[4] * scaleVector.v[1], this.m[5] * scaleVector.v[1], this.m[6] * scaleVector.v[1], this.m[7] * scaleVector.v[1],
                 this.m[8] * scaleVector.v[2], this.m[9] * scaleVector.v[2], this.m[10] * scaleVector.v[2], this.m[11] * scaleVector.v[2],
@@ -410,7 +410,7 @@ public class Matrix4 {
         return this.multiply(rm);
     }
 
-    public Matrix4 rotateWithVector4(float radians, Vector4 axisVector) {
+    public Matrix4 rotate(float radians, Vector4 axisVector) {
         Matrix4 rm = Matrix4.makeRotation(radians, axisVector.v[0], axisVector.v[1], axisVector.v[2]);
         return this.multiply(rm);
     }
@@ -474,9 +474,9 @@ public class Matrix4 {
     }
 
     /**
-     *
+     * Returns the PMatrix representation of this matrix
      * Note: PMatrix is row-major, whereas this is column major. Therefore, we want to pass the transpose.
-     * @return
+     * @return a PMatrix3D version of this matrix.
      */
     public PMatrix3D toPMatrix() {
         return new PMatrix3D(
