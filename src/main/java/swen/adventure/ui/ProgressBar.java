@@ -16,7 +16,7 @@ public class ProgressBar extends UIComponent {
     private int maxValue;
     private int count;
 
-    public ProgressBar(PApplet a, int maxValue, int x, int y) {
+    public ProgressBar(PApplet a, int maxValue, int startingVal, int x, int y) {
         super(a);
 
         this.x = x;
@@ -24,7 +24,7 @@ public class ProgressBar extends UIComponent {
         height = 25;
         width = 200;
 
-        count = 0;
+        this.count = startingVal;
         this.maxValue = maxValue;
     }
 

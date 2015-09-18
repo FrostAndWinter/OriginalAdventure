@@ -23,7 +23,7 @@ public class UITest extends PApplet {
         b = new Button(this, "TEST", 50, 50);
         p = new Dialog(this, Dialog.CONFIRM_DIALOG, 50, 50);
 
-        pg = new ProgressBar(this, 100, 0, 0);
+        pg = new ProgressBar(this, 100, 100, 0, 0);
         f.addChild(pg);
 
         b.addClickListener(new OnClickListener() {
