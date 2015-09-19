@@ -431,21 +431,21 @@ public class Matrix4 {
     }
 
     public Vector3 multiply(Vector3 vectorRight) {
-        Vector4 v4 = this.multiplyVector4(new Vector4(vectorRight.v[0], vectorRight.v[1], vectorRight.v[2], 0.0f));
+        Vector4 v4 = this.multiply(new Vector4(vectorRight.v[0], vectorRight.v[1], vectorRight.v[2], 0.0f));
         return new Vector3(v4.v[0], v4.v[1], v4.v[2]);
     }
 
     public Vector3 multiplyWithTranslation(Vector3 vectorRight) {
-        Vector4 v4 = this.multiplyVector4(new Vector4(vectorRight.v[0], vectorRight.v[1], vectorRight.v[2], 1.0f));
+        Vector4 v4 = this.multiply(new Vector4(vectorRight.v[0], vectorRight.v[1], vectorRight.v[2], 1.0f));
         return new Vector3(v4.v[0], v4.v[1], v4.v[2]);
     }
 
     public Vector3 multiplyAndProjectVector3(Vector3 vectorRight) {
-        Vector4 v4 = this.multiplyVector4(new Vector4(vectorRight.v[0], vectorRight.v[1], vectorRight.v[2], 1.0f));
+        Vector4 v4 = this.multiply(new Vector4(vectorRight.v[0], vectorRight.v[1], vectorRight.v[2], 1.0f));
         return new Vector3(v4.v[0], v4.v[1], v4.v[2]).multiplyScalar(1.0f / v4.v[3]);
     }
 
-    public void multiplyArray(Vector3[] vectors) {
+    public void multiply(Vector3[] vectors) {
         for (int i = 0; i < vectors.length; i++)
             vectors[i] = this.multiply(vectors[i]);
     }
@@ -460,7 +460,7 @@ public class Matrix4 {
             vectors[i] = this.multiplyAndProjectVector3(vectors[i]);
     }
 
-    public Vector4 multiplyVector4(Vector4 vectorRight) {
+    public Vector4 multiply(Vector4 vectorRight) {
         Vector4 v = new Vector4(this.m[0] * vectorRight.v[0] + this.m[4] * vectorRight.v[1] + this.m[8] * vectorRight.v[2] + this.m[12] * vectorRight.v[3],
                 this.m[1] * vectorRight.v[0] + this.m[5] * vectorRight.v[1] + this.m[9] * vectorRight.v[2] + this.m[13] * vectorRight.v[3],
                 this.m[2] * vectorRight.v[0] + this.m[6] * vectorRight.v[1] + this.m[10] * vectorRight.v[2] + this.m[14] * vectorRight.v[3],
@@ -468,9 +468,9 @@ public class Matrix4 {
         return v;
     }
 
-    public void multiplyVector4Array(Vector4[] vectors) {
+    public void multiply(Vector4[] vectors) {
         for (int i=0; i < vectors.length; i++)
-            vectors[i] = this.multiplyVector4(vectors[i]);
+            vectors[i] = this.multiply(vectors[i]);
     }
 
     /**

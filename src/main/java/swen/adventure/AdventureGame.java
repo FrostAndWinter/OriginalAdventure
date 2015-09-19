@@ -3,29 +3,32 @@ package swen.adventure;
 
 import processing.core.PApplet;
 import processing.core.PShape;
-import processing.core.PShapeOBJ;
 import processing.opengl.PGraphics3D;
-import swen.adventure.rendering.Renderer;
+import swen.adventure.rendering.GLRenderer;
+import swen.adventure.rendering.ProcessingRenderer;
 import swen.adventure.rendering.maths.Quaternion;
 import swen.adventure.rendering.maths.Vector3;
 import swen.adventure.scenegraph.MeshNode;
 import swen.adventure.scenegraph.SceneNode;
 import swen.adventure.scenegraph.TransformNode;
 
-import java.io.*;
-
 public class AdventureGame extends PApplet {
 
-    private Renderer _renderer;
+    private ProcessingRenderer _processingRenderer;
+    private GLRenderer _glRenderer;
     private SceneNode _sceneGraph;
 
     @Override
     public void setup() {
         super.setup();
-        _renderer = new Renderer((PGraphics3D)this.getGraphics());
+
+        beginPGL();
+        _processingRenderer = new ProcessingRenderer((PGraphics3D)this.getGraphics());
+        _glRenderer = new GLRenderer((PGraphics3D)this.getGraphics());
+        endPGL();
 
         _sceneGraph = new TransformNode("root", new Vector3(0.f, 0.f, -200.f), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
-        PShape groundPlane = this.createShape(BOX, 500.f, 0.f, 500.f);
+        PShape groundPlane = createShape(BOX, 500, 0, 500);
         groundPlane.setFill(0xFF00AA0B);
         new MeshNode("groundPlane", _sceneGraph, groundPlane);
 
@@ -36,6 +39,7 @@ public class AdventureGame extends PApplet {
         TransformNode sphereTransform = new TransformNode("sphereTransform", _sceneGraph, false, new Vector3(25, 60.f, -10.f), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
         TransformNode sphereOffset = new TransformNode("sphereOffset", sphereTransform, true, new Vector3(0, 0, 0), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
         new MeshNode("sphereMesh", sphereOffset, createShape(SPHERE, 20.f));
+
     }
 
     @Override
@@ -48,7 +52,7 @@ public class AdventureGame extends PApplet {
         TransformNode boxTransform = (TransformNode) _sceneGraph.nodeWithID("boxTransform").get();
         boxTransform.rotateY(0.02f);
 
-        _renderer.render(_sceneGraph);
+        _processingRenderer.render(_sceneGraph);
     }
 
     public void settings() {

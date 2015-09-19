@@ -73,10 +73,10 @@ public class Vector3 {
         
     }
 
-    public Vector3 divideScalar(Vector3 vector, float value) {
-        return new Vector3(vector.v[0] / value,
-                vector.v[1] / value,
-                vector.v[2] / value);
+    public Vector3 divideScalar(float value) {
+        return new Vector3(this.v[0] / value,
+                this.v[1] / value,
+                this.v[2] / value);
         
     }
 

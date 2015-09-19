@@ -4,7 +4,6 @@ import swen.adventure.utils.BoundingBox;
 import swen.adventure.Event;
 
 import java.lang.reflect.Field;
-import java.util.Optional;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 15/09/15.
@@ -21,7 +20,7 @@ public class GameObject extends SceneNode {
 
     public BoundingBox boundingBox() {
         if (_needsRecalculateBoundingBox) {
-            _transformedBoundingBox = _boundingBox.transformByMatrix(this.modelToWorldSpaceTransform());
+            _transformedBoundingBox = _boundingBox.transformByMatrix(this.nodeToWorldSpaceTransform());
         }
         return _transformedBoundingBox;
     }

@@ -1,21 +1,19 @@
 package swen.adventure.rendering;
 
 import processing.core.PGraphics;
-import processing.core.PMatrix3D;
 import processing.core.PShape;
 import processing.opengl.PGraphics3D;
-import processing.opengl.PGraphicsOpenGL;
 import swen.adventure.rendering.maths.Matrix4;
 import swen.adventure.scenegraph.*;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 17/09/15.
  */
-public class Renderer {
+public class ProcessingRenderer {
 
     private PGraphics3D _graphicsContext;
 
-    public Renderer(PGraphics3D graphicsContext) {
+    public ProcessingRenderer(PGraphics3D graphicsContext) {
         _graphicsContext = graphicsContext;
     }
 
@@ -51,8 +49,8 @@ public class Renderer {
             if (node instanceof MeshNode) {
                 PShape shape = ((MeshNode) node).mesh();
 
-                _graphicsContext.modelview = worldToCameraMatrix.multiply(node.modelToWorldSpaceTransform()).toPMatrix();
-                _graphicsContext.modelviewInv = node.worldToModelSpaceTransform().multiply(cameraToWorldMatrix).toPMatrix();
+                _graphicsContext.modelview = worldToCameraMatrix.multiply(node.nodeToWorldSpaceTransform()).toPMatrix();
+                _graphicsContext.modelviewInv = node.worldToNodeSpaceTransform().multiply(cameraToWorldMatrix).toPMatrix();
                 _graphicsContext.projmodelview.set(_graphicsContext.projection);
                 _graphicsContext.projmodelview.apply(_graphicsContext.modelview);
 

@@ -231,4 +231,8 @@ public class Vector4 {
         return projectionVector.multiplyScalar(scale);
     }
 
+    public String toString() {
+        return String.format("(%f, %f, %f, %f)", this.x, this.y, this.z, this.w);
+    }
+
 }

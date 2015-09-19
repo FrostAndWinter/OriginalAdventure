@@ -32,9 +32,6 @@ import java.util.Map;
  * @param <E> the type of object this swen.adventure.Event is paired to.
  */
 public class Event<E> {
-    public interface Action<E, T, L> {
-        void execute(E eventObject, T triggeringObject, L listener, Map<String, Object> data);
-    }
 
     private class ActionData<L> {
         public final L listener;

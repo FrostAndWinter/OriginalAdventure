@@ -77,15 +77,15 @@ public abstract class SceneNode {
      * Calculates if necessary and returns the world space transform of the nearest transform node, looking towards the root.
      * @return The world space transform of the nearest transform node.
      */
-    public Matrix4 modelToWorldSpaceTransform() {
-        return _parent.isPresent() ? _parent.get().modelToWorldSpaceTransform() : new Matrix4();
+    public Matrix4 nodeToWorldSpaceTransform() {
+        return _parent.isPresent() ? _parent.get().nodeToWorldSpaceTransform() : new Matrix4();
     }
 
     /**
      * Calculates if necessary and returns the world space transform of the nearest transform node, looking towards the root.
      * @return The world space transform of the nearest transform node.
      */
-    public Matrix4 worldToModelSpaceTransform() {
-        return _parent.isPresent() ? _parent.get().worldToModelSpaceTransform() : new Matrix4();
+    public Matrix4 worldToNodeSpaceTransform() {
+        return _parent.isPresent() ? _parent.get().worldToNodeSpaceTransform() : new Matrix4();
     }
 }
