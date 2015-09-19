@@ -12,6 +12,8 @@ import swen.adventure.scenegraph.MeshNode;
 import swen.adventure.scenegraph.SceneNode;
 import swen.adventure.scenegraph.TransformNode;
 
+import java.io.IOException;
+
 public class AdventureGame extends PApplet {
 
     private ProcessingRenderer _processingRenderer;

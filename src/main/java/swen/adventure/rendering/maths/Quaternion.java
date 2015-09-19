@@ -35,7 +35,7 @@ public class Quaternion {
         return new Quaternion(scale * x, scale * y, scale * z, (float)Math.cos(halfAngle));
     }
 
-    public static Quaternion makeWithAngleAndVector3Axis(float radians, Vector3 axisVector)
+    public static Quaternion makeWithAngleAndAxis(float radians, Vector3 axisVector)
     {
         return Quaternion.makeWithAngleAndAxis(radians, axisVector.v[0], axisVector.v[1], axisVector.v[2]);
     }

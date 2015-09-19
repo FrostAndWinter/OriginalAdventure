@@ -69,7 +69,7 @@ public class GLRenderer {
         float cameraFar = 10000.f;
         float cameraAspect = (float) _graphicsContext.width / (float) _graphicsContext.height;
 
-        Matrix4 perspectiveMatrix = Matrix4.makePerspective((float) Math.PI / 3, cameraAspect, cameraNear, cameraFar);
+        Matrix4 perspectiveMatrix = Matrix4.makePerspective(cameraFOV, cameraAspect, cameraNear, cameraFar);
 
         return perspectiveMatrix;
     }
