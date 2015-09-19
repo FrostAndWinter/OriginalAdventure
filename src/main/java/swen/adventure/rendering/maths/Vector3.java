@@ -175,4 +175,8 @@ public class Vector3 {
         float scale = projectionVector.dotProduct(vectorToProject) / projectionVector.dotProduct(projectionVector);
         return projectionVector.multiplyScalar(scale);
     }
+
+    public String toString() {
+        return String.format("(%f, %f, %f)", this.x, this.y, this.z);
+    }
 }
