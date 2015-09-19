@@ -5,14 +5,22 @@ import swen.adventure.ui.LayoutManagers.LayoutManager;
 import swen.adventure.ui.clickable.ClickEvent;
 import swen.adventure.ui.clickable.OnClickListener;
 
+import java.util.ArrayList;
+import java.util.EventObject;
+import java.util.List;
+
 /**
  * Created by danielbraithwt on 9/17/15.
  */
 public class Dialog extends Panel {
     public static final int CONFIRM_DIALOG = 0;
 
+    private List<DialogCloseListener> listeners;
+
     public Dialog(PApplet a, String info, int type, int x, int y) {
         super(a, x, y);
+
+        listeners = new ArrayList<>();
 
         switch (CONFIRM_DIALOG) {
             case CONFIRM_DIALOG:
@@ -24,11 +32,41 @@ public class Dialog extends Panel {
                 okay.addClickListener(new OnClickListener() {
                     @Override
                     public void onClick(ClickEvent e) {
-                        setVisible(false);
+                        closeDialog();
                     }
                 });
 
                 addChild(okay);
         }
     }
+
+    private synchronized void closeDialog() {
+        setVisible(false);
+
+        DialogCloseEvent e = new DialogCloseEvent(this);
+
+        for (DialogCloseListener l : listeners) {
+            l.onDialogClose(e);
+        }
+    }
+
+
+    public synchronized void addDialogCloseListener(DialogCloseListener l) {
+        listeners.add(l);
+    }
+
+    public synchronized void removeDialodCloseListener(DialogCloseListener l) {
+        listeners.remove(l);
+    }
+
+    public interface DialogCloseListener {
+        public void onDialogClose(DialogCloseEvent e);
+    }
+
+    public static class DialogCloseEvent extends EventObject {
+        public DialogCloseEvent(Object source) {
+            super(source);
+        }
+    }
+
 }
