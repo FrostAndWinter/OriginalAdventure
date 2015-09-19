@@ -32,6 +32,9 @@ public class LinearLayout extends LayoutManager {
 
     @Override
     public void applyLayout(PGraphics g) {
+        height = 0;
+        width = 0;
+
         int currentX = padding / 2;
         int currentY = padding / 2;
 
@@ -42,6 +45,7 @@ public class LinearLayout extends LayoutManager {
                 if (width < c.getWidth(g)) {
                     width = c.getWidth(g);
                 }
+
                 height += c.getHeight(g);
 
                 c.setX(currentX);
