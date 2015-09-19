@@ -1,6 +1,4 @@
-package swen.adventure.ui;
-
-import processing.event.MouseEvent;
+package swen.adventure.ui.clickable;
 
 /**
  * Created by danielbraithwt on 9/15/15.

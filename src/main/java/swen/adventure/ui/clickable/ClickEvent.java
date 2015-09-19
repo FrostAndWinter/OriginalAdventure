@@ -1,4 +1,4 @@
-package swen.adventure.ui;
+package swen.adventure.ui.clickable;
 
 import java.awt.*;
 import java.util.EventObject;

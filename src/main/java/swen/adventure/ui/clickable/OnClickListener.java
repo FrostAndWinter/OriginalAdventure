@@ -1,4 +1,4 @@
-package swen.adventure.ui;
+package swen.adventure.ui.clickable;
 
 /**
  * Created by danielbraithwt on 9/15/15.

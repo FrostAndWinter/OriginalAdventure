@@ -1,8 +1,7 @@
-package swen.adventure.ui;
+package swen.adventure.ui.components;
 
 import processing.core.PApplet;
 import processing.core.PGraphics;
-import processing.event.MouseEvent;
 
 import java.util.ArrayList;
 import java.util.List;

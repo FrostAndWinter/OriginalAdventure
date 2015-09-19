@@ -1,8 +1,8 @@
-package swen.adventure.ui;
+package swen.adventure.ui.components;
 
 import processing.core.PApplet;
+import processing.core.PFont;
 import processing.core.PGraphics;
-import processing.event.MouseEvent;
 
 /**
  * Created by danielbraithwt on 9/17/15.
@@ -16,6 +16,8 @@ public class ProgressBar extends UIComponent {
     private int maxValue;
     private int count;
 
+    private PFont font;
+
     public ProgressBar(PApplet a, int maxValue, int startingVal, int x, int y) {
         super(a);
 
@@ -26,6 +28,8 @@ public class ProgressBar extends UIComponent {
 
         this.count = startingVal;
         this.maxValue = maxValue;
+
+        this.font = applet.createFont("Airal", 16);
     }
 
     public int changeProgress(int delta) {
@@ -45,10 +49,22 @@ public class ProgressBar extends UIComponent {
         g.fill(150, 130, 180);
         g.rect(x, y, width, height);
 
+        // Draw the filled portion of the bar
         int completed = (width/maxValue) * count;
 
         g.fill(255, 0, 0);
         g.rect(x, y, completed, height);
+
+        // Draw the current bar value
+        g.textFont(font);
+        g.color(255);
+        g.fill(255);
+        String countString = String.format("%d", count);
+
+        int stringWidth = (int) g.textWidth(countString);
+        int stringHeight = (int) (g.textAscent() + g.textDescent());
+
+        g.text(countString.toCharArray(), 0, countString.length(), x + width / 2 - stringWidth / 2, y + stringHeight);
     }
 
     @Override

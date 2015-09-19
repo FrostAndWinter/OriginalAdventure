@@ -1,10 +1,12 @@
-package swen.adventure.ui;
+package swen.adventure.ui.components;
 
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PGraphics;
 
-import processing.event.MouseEvent;
+import swen.adventure.ui.clickable.ClickEvent;
+import swen.adventure.ui.clickable.Clickable;
+import swen.adventure.ui.clickable.OnClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,11 +15,14 @@ import java.util.List;
  * Created by danielbraithwt on 9/15/15.
  */
 public class Button extends UIComponent implements Clickable {
+    private static final int DEFAULT_PADDING = 20;
+
     protected String text;
     protected int x;
     protected int y;
     protected int height;
     protected int width;
+    protected int padding;
 
     private boolean dynamicSize;
 
@@ -38,6 +43,8 @@ public class Button extends UIComponent implements Clickable {
 
         // Create the font
         font = applet.createFont("Arial", 16);
+
+        padding = DEFAULT_PADDING;
     }
 
     public Button(PApplet app, String text, int x, int y, int height, int width) {
@@ -53,6 +60,12 @@ public class Button extends UIComponent implements Clickable {
 
         // Create the font
         font = applet.createFont("Arial", 16);
+
+        padding = DEFAULT_PADDING;
+    }
+
+    public void setPadding(int p) {
+        padding = p;
     }
 
     @Override
@@ -61,8 +74,8 @@ public class Button extends UIComponent implements Clickable {
         int stringHeight = (int) (g.textAscent() + g.textDescent());
 
         if (dynamicSize) {
-            width = 10 + stringWidth;
-            height = 10 + stringHeight;
+            width = padding + stringWidth;
+            height = padding + stringHeight;
         }
 
         // Draw the background
@@ -74,7 +87,7 @@ public class Button extends UIComponent implements Clickable {
         g.fill(0);
         g.textFont(font);
 
-        g.text(text.toCharArray(), 0, text.length(), x + 5, y + stringHeight);
+        g.text(text.toCharArray(), 0, text.length(), x + padding/2, y + stringHeight + padding/2);
     }
 
     public synchronized void addClickListener(OnClickListener c) {

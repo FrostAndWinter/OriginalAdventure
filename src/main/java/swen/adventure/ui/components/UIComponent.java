@@ -1,4 +1,4 @@
-package swen.adventure.ui;
+package swen.adventure.ui.components;
 
 import processing.core.PApplet;
 import processing.core.PGraphics;
