@@ -11,12 +11,8 @@ import java.util.List;
  */
 public class Frame extends UIComponent {
 
-    private List<UIComponent> children;
-
-    public Frame(PApplet p) {
-        super(p);
-
-        children = new ArrayList<>();
+    public Frame(PApplet p, int x, int y, int w, int h) {
+        super(p, x, y, w, h);
     }
 
     @Override
@@ -24,14 +20,6 @@ public class Frame extends UIComponent {
         for (UIComponent c : children) {
             c.draw(g);
         }
-    }
-
-    public void addChild(UIComponent c) {
-        children.add(c);
-    }
-
-    public void removeChild(UIComponent c) {
-        children.remove(c);
     }
 
     @Override

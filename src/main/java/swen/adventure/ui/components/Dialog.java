@@ -1,6 +1,7 @@
 package swen.adventure.ui.components;
 
 import processing.core.PApplet;
+import swen.adventure.ui.LayoutManagers.LayoutManager;
 import swen.adventure.ui.clickable.ClickEvent;
 import swen.adventure.ui.clickable.OnClickListener;
 
@@ -15,6 +16,9 @@ public class Dialog extends Panel {
 
         switch (CONFIRM_DIALOG) {
             case CONFIRM_DIALOG:
+                TextBox t = new TextBox(a, info, 0, 0);
+                super.addChild(t);
+
                 Button okay = new Button(applet, "Okay", 100, 100);
 
                 okay.addClickListener(new OnClickListener() {
@@ -27,5 +31,4 @@ public class Dialog extends Panel {
                 addChild(okay);
         }
     }
-
 }

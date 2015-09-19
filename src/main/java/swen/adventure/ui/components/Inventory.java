@@ -2,6 +2,7 @@ package swen.adventure.ui.components;
 
 import processing.core.PApplet;
 import processing.core.PGraphics;
+import swen.adventure.ui.LayoutManagers.LayoutManager;
 
 /**
  * Created by danielbraithwt on 9/18/15.
@@ -9,21 +10,27 @@ import processing.core.PGraphics;
 public class Inventory extends UIComponent {
     private static final int BOX_SIZE = 30;
 
-    private int x;
-    private int y;
-    private int width;
-    private int height;
-
     private int numItems;
 
     public Inventory(PApplet a, int numItems, int x, int y) {
-        super(a);
+        super(a, x, y, numItems * BOX_SIZE, BOX_SIZE);
 
-        this.x = x;
-        this.y = y;
-        this.width = numItems * BOX_SIZE;
-        this.height = BOX_SIZE;
         this.numItems = numItems;
+    }
+
+    @Override
+    public void setLayoutManager(LayoutManager lm) {
+        throw new UnsupportedOperationException("Inventory cant use a layout manager");
+    }
+
+    @Override
+    public void addChild(UIComponent c) {
+        throw new UnsupportedOperationException("Inventory cant contain child ui elements");
+    }
+
+    @Override
+    public void removeChild(UIComponent c) {
+        throw new UnsupportedOperationException("Inventory cant contain child ui elements");
     }
 
     @Override

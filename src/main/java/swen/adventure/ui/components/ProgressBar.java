@@ -3,28 +3,19 @@ package swen.adventure.ui.components;
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PGraphics;
+import swen.adventure.ui.LayoutManagers.LayoutManager;
 
 /**
  * Created by danielbraithwt on 9/17/15.
  */
 public class ProgressBar extends UIComponent {
-    private int x;
-    private int y;
-    private int width;
-    private int height;
-
     private int maxValue;
     private int count;
 
     private PFont font;
 
     public ProgressBar(PApplet a, int maxValue, int startingVal, int x, int y) {
-        super(a);
-
-        this.x = x;
-        this.y = y;
-        height = 25;
-        width = 200;
+        super(a, x, y, 200, 25);
 
         this.count = startingVal;
         this.maxValue = maxValue;
@@ -74,4 +65,19 @@ public class ProgressBar extends UIComponent {
 
     @Override
     protected void componentClicked(int x, int y) {}
+
+    @Override
+    public void setLayoutManager(LayoutManager lm) {
+        throw new UnsupportedOperationException("Inventory cant use a layout manager");
+    }
+
+    @Override
+    public void addChild(UIComponent c) {
+        throw new UnsupportedOperationException("Inventory cant contain child ui elements");
+    }
+
+    @Override
+    public void removeChild(UIComponent c) {
+        throw new UnsupportedOperationException("Inventory cant contain child ui elements");
+    }
 }
