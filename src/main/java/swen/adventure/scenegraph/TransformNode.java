@@ -12,11 +12,11 @@ public class TransformNode extends SceneNode {
     private Quaternion _rotation;
     private Vector3 _scale;
 
-    private boolean _needsRecalculateModelWorldTransform = true;
-    private boolean _needsRecalculateTransformWorldModelTransform = true;
+    private boolean _needsRecalculateNodeWorldTransform = true;
+    private boolean _needsRecalculateTransformWorldNodeTransform = true;
 
-    private Matrix4 _modelToWorldTransform; //formed by translating, scaling, then rotating.
-    private Matrix4 _worldToModelTransform;
+    private Matrix4 _nodeToWorldTransform; //formed by translating, scaling, then rotating.
+    private Matrix4 _worldToNodeTransform;
 
     public TransformNode(final String id, Vector3 translation, Quaternion rotation, Vector3 scale) {
         super(id);
@@ -33,20 +33,20 @@ public class TransformNode extends SceneNode {
     }
 
     private void setNeedsRecalculateTransform() {
-        _needsRecalculateModelWorldTransform = true;
-        _needsRecalculateTransformWorldModelTransform = true;
+        _needsRecalculateNodeWorldTransform = true;
+        _needsRecalculateTransformWorldNodeTransform = true;
         this.traverse((node) -> {
             if (node instanceof TransformNode) {
-                ((TransformNode)node)._needsRecalculateTransformWorldModelTransform = true;
-                ((TransformNode)node)._needsRecalculateModelWorldTransform = true;
+                ((TransformNode)node)._needsRecalculateTransformWorldNodeTransform = true;
+                ((TransformNode)node)._needsRecalculateNodeWorldTransform = true;
             } else if (node instanceof GameObject) {
                 ((GameObject)node).transformDidChange();
             }
         });
     }
 
-    private Matrix4 calculateModelToWorldTransform() {
-        Matrix4 transform = this.parent().isPresent() ? this.parent().get().modelToWorldSpaceTransform() : new Matrix4();
+    private Matrix4 calculateNodeToWorldTransform() {
+        Matrix4 transform = this.parent().isPresent() ? this.parent().get().nodeToWorldSpaceTransform() : new Matrix4();
 
         transform = transform.translate(_translation);
         transform = transform.rotate(_rotation);
@@ -55,8 +55,8 @@ public class TransformNode extends SceneNode {
         return transform;
     }
 
-    private Matrix4 calculateWorldToModelTransform() {
-        Matrix4 transform = this.parent().isPresent() ? this.parent().get().worldToModelSpaceTransform() : new Matrix4();
+    private Matrix4 calculateWorldToNodeTransform() {
+        Matrix4 transform = this.parent().isPresent() ? this.parent().get().worldToNodeSpaceTransform() : new Matrix4();
         transform = transform.scale(new Vector3(1.f, 1.f, 1.f).divide(_scale));
         transform = transform.rotate(_rotation.conjugate());
         transform = transform.translate(_translation.negate());
@@ -64,21 +64,21 @@ public class TransformNode extends SceneNode {
     }
 
     @Override
-    public Matrix4 modelToWorldSpaceTransform() {
-        if (_needsRecalculateModelWorldTransform) {
-            _modelToWorldTransform = this.calculateModelToWorldTransform();
-            _needsRecalculateModelWorldTransform = false;
+    public Matrix4 nodeToWorldSpaceTransform() {
+        if (_needsRecalculateNodeWorldTransform) {
+            _nodeToWorldTransform = this.calculateNodeToWorldTransform();
+            _needsRecalculateNodeWorldTransform = false;
         }
-        return _modelToWorldTransform;
+        return _nodeToWorldTransform;
     }
 
     @Override
-    public Matrix4 worldToModelSpaceTransform() {
-        if (_needsRecalculateTransformWorldModelTransform) {
-            _worldToModelTransform = this.calculateWorldToModelTransform();
-            _needsRecalculateTransformWorldModelTransform = false;
+    public Matrix4 worldToNodeSpaceTransform() {
+        if (_needsRecalculateTransformWorldNodeTransform) {
+            _worldToNodeTransform = this.calculateWorldToNodeTransform();
+            _needsRecalculateTransformWorldNodeTransform = false;
         }
-        return _worldToModelTransform;
+        return _worldToNodeTransform;
     }
 
     private void checkForModificationOfStaticNode() {
