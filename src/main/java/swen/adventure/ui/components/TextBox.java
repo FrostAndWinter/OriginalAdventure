@@ -32,7 +32,7 @@ public class TextBox extends UIComponent {
     }
 
     @Override
-    public void drawComponent(PGraphics g) {
+    public void drawComponent(PGraphics g, float scaleX, float scaleY) {
         int stringWidth = (int) g.textWidth(text);
         int stringHeight = (int) (g.textAscent() + g.textDescent());
 
@@ -42,7 +42,7 @@ public class TextBox extends UIComponent {
         g.fill(0);
         g.textFont(font);
 
-        g.text(text.toCharArray(), 0, text.length(), x + padding/2, y + stringHeight + padding/2);
+        g.text(text.toCharArray(), 0, text.length(), (x + padding/2) * scaleX, (y + stringHeight + padding/2) * scaleY);
     }
 
     @Override

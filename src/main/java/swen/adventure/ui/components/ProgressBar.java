@@ -35,16 +35,16 @@ public class ProgressBar extends UIComponent {
     }
 
     @Override
-    public void drawComponent(PGraphics g) {
+    public void drawComponent(PGraphics g, float scaleX, float scaleY) {
         // Draw the grey bar
         g.fill(150, 130, 180);
-        g.rect(x, y, width, height);
+        g.rect(x * scaleX, y * scaleY, width * scaleX, height * scaleY);
 
         // Draw the filled portion of the bar
         int completed = (width/maxValue) * count;
 
         g.fill(255, 0, 0);
-        g.rect(x, y, completed, height);
+        g.rect(x * scaleX, y * scaleY, completed * scaleX, height * scaleY);
 
         // Draw the current bar value
         g.textFont(font);
@@ -55,7 +55,7 @@ public class ProgressBar extends UIComponent {
         int stringWidth = (int) g.textWidth(countString);
         int stringHeight = (int) (g.textAscent() + g.textDescent());
 
-        g.text(countString.toCharArray(), 0, countString.length(), x + width / 2 - stringWidth / 2, y + stringHeight);
+        g.text(countString.toCharArray(), 0, countString.length(), (x + width / 2 - stringWidth / 2)  * scaleX, (y + stringHeight) * scaleY);
     }
 
     @Override
