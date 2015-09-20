@@ -4,7 +4,7 @@ package swen.adventure.rendering.maths;
  * Created by Thomas Roughton, Student ID 300313924, on 17/09/15.
  * Methods adapted from and designed to emulate Apple's GLKit framework.
  */
-public class Vector4 {
+public class Vector4 implements Vector {
     public final float[] v;
     public final float x, y, z, w; //I'd rather duplicate the data than use a getter since it's guaranteed not to change.
 
@@ -235,4 +235,36 @@ public class Vector4 {
         return String.format("(%f, %f, %f, %f)", this.x, this.y, this.z, this.w);
     }
 
+    @Override
+         public int numberOfComponents() {
+        return 4;
+    }
+
+    @Override
+    public float[] data() {
+        return this.v;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final Vector4 vector4 = (Vector4) o;
+
+        if (Float.compare(vector4.x, x) != 0) return false;
+        if (Float.compare(vector4.y, y) != 0) return false;
+        if (Float.compare(vector4.z, z) != 0) return false;
+        return Float.compare(vector4.w, w) == 0;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (x != +0.0f ? Float.floatToIntBits(x) : 0);
+        result = 31 * result + (y != +0.0f ? Float.floatToIntBits(y) : 0);
+        result = 31 * result + (z != +0.0f ? Float.floatToIntBits(z) : 0);
+        result = 31 * result + (w != +0.0f ? Float.floatToIntBits(w) : 0);
+        return result;
+    }
 }

@@ -1,5 +1,6 @@
 package swen.adventure.datastorage;
 
+import swen.adventure.rendering.maths.Vector;
 import swen.adventure.rendering.maths.Vector3;
 import swen.adventure.rendering.maths.Vector4;
 
@@ -7,36 +8,45 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
 /**
  * Created by Liam O'Neill, Student ID 300312734, on 19/09/15.
+ * Modified by Thomas Roughton, Student ID 300313924.
  */
 public class WavefrontParser {
+
+    public class IndexData {
+        public final int vertexIndex;
+        public final Optional<Integer> normalIndex;
+        public final Optional<Integer> textureCoordinateIndex;
+
+        public IndexData(int vertexIndex, Optional<Integer> textureCoordinateIndex, Optional<Integer> normalIndex) {
+            this.vertexIndex = vertexIndex;
+            this.textureCoordinateIndex = textureCoordinateIndex;
+            this.normalIndex = normalIndex;
+        }
+    }
 
     private static final Pattern COMMENT_PAT = Pattern.compile("#.*");
     private static final Pattern GEOMETRIC_VERTEX_PAT = Pattern.compile("v");
     private static final Pattern TEXTURE_VERTEX_PAT = Pattern.compile("vt");
     private static final Pattern VERTEX_NORMAL_PAT = Pattern.compile("vn");
     private static final Pattern PARAMETER_SPACE_VERTEX_PAT = Pattern.compile("vp");
-    private static final Pattern POLYGONAL_FACE_PAT = Pattern.compile("f");
+    private static final Pattern POLYGONAL_FACE_START_PAT = Pattern.compile("f");
+    private static final Pattern POLYGONAL_FACE_PAT = Pattern.compile("f\\s+(\\d+(/(\\d+)?(/\\d+)?)?\\s*){3,}");
 
-    // f v1/vt1 v2/vt2 v3/vt3
-    private static final Pattern FACE_VERTEX_TEXTURE_PAT = Pattern.compile("\\d+/\\d+");
 
-    // f v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3
-    private static final Pattern FACE_VERTEX_TEXTURE_NORMAL_PAT = Pattern.compile("\\d+/\\d+/\\d+");
+    private static final Pattern FORWARD_SLASH_PATTERN = Pattern.compile("/");
 
-    // f v1//vn1 v2//vn2 v3//vn3
-    private static final Pattern FACE_VERTEX_NORMAL_PAT = Pattern.compile("\\d+//\\d+");
+    private final Scanner scanner;
 
-    private final Scanner scan;
-
-    private final List<Vector4> geometricVertices = new ArrayList<>();
+    private final List<Vector> geometricVertices = new ArrayList<>();
     private final List<Vector3> textureVertices = new ArrayList<>();
     private final List<Vector3> vertexNormals = new ArrayList<>();
-    private final List<List<Vector4>> polygonFaces = new ArrayList<>();
+    private final List<List<IndexData>> polygonFaces = new ArrayList<>();
 
     public static Result parse(File file) throws FileNotFoundException {
         InputStream is = new FileInputStream(file);
@@ -54,55 +64,56 @@ public class WavefrontParser {
     }
 
     private WavefrontParser(InputStream is) {
-        this.scan = new Scanner(is);
+        this.scanner = new Scanner(is);
         parse();
     }
 
     private void parse(){
         while(hasNext()){
 
-            if(hasNext(COMMENT_PAT))
-                scan.nextLine();
-
-            else if(hasNext(GEOMETRIC_VERTEX_PAT))
+            if(hasNext(GEOMETRIC_VERTEX_PAT)) {
                 parseGeometricVertex();
 
-            else if(hasNext(TEXTURE_VERTEX_PAT))
+            } else if(hasNext(TEXTURE_VERTEX_PAT)) {
                 parseTextureVertex();
 
-            else if(hasNext(VERTEX_NORMAL_PAT))
+            } else if(hasNext(VERTEX_NORMAL_PAT)) {
                 parseVertexNormal();
 
-            else if(hasNext(PARAMETER_SPACE_VERTEX_PAT))
+            } else if(hasNext(PARAMETER_SPACE_VERTEX_PAT)) {
                 parseParameterSpaceVertex();
 
-            else if(hasNext(POLYGONAL_FACE_PAT))
+            } else if(hasNext(POLYGONAL_FACE_PAT)) {
                 parsePolygonFace();
+
+            } else {
+                scanner.nextLine();
+            }
         }
     }
 
     private void parseGeometricVertex() {
         ensuredGobble(GEOMETRIC_VERTEX_PAT, "Geometric vertices should start with a 'v'");
-        float x = scan.nextFloat();
-        float y = scan.nextFloat();
-        float z = scan.nextFloat();
-        float w = scan.hasNextFloat() ? scan.nextFloat() : 1f;
-        geometricVertices.add(new Vector4(x, y, z, w));
+        float x = scanner.nextFloat();
+        float y = scanner.nextFloat();
+        float z = scanner.nextFloat();
+        float w = scanner.hasNextFloat() ? scanner.nextFloat() : 1f;
+        geometricVertices.add(w == 1.f ? new Vector3(x, y, z) : new Vector4(x, y, z, w));
     }
 
     private void parseTextureVertex() {
         ensuredGobble(TEXTURE_VERTEX_PAT, "Texture vertices should start with a 'vt'");
-        float u = scan.nextFloat();
-        float v = scan.nextFloat();
-        float w = scan.hasNextFloat() ? scan.nextFloat() : 0f;
+        float u = scanner.nextFloat();
+        float v = scanner.nextFloat();
+        float w = scanner.hasNextFloat() ? scanner.nextFloat() : 0f;
         textureVertices.add(new Vector3(u, v, w));
     }
 
     private void parseVertexNormal() {
         ensuredGobble(VERTEX_NORMAL_PAT, "Vertex should start with a 'vn'");
-        float x = scan.nextFloat();
-        float y = scan.nextFloat();
-        float z = scan.nextFloat();
+        float x = scanner.nextFloat();
+        float y = scanner.nextFloat();
+        float z = scanner.nextFloat();
         vertexNormals.add(new Vector3(x, y, z));
     }
 
@@ -111,23 +122,34 @@ public class WavefrontParser {
     }
 
     private void parsePolygonFace() {
-        ensuredGobble(POLYGONAL_FACE_PAT, "Polygons faces should start with 'f'");
-        List<Vector4> face = new ArrayList<>();
+        ensuredGobble(POLYGONAL_FACE_START_PAT, "Polygons faces should start with 'f'");
+        List<IndexData> vertexIndices = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
-            face.add(parsePolygonVertex());
+            vertexIndices.add(parsePolygonVertex());
         }
-        polygonFaces.add(face);
+        polygonFaces.add(vertexIndices);
     }
 
-    private Vector4 parsePolygonVertex() {
-        // need to look into regex capturing groups.
-        if(scan.hasNextInt()){
-            int vetexIndex = scan.nextInt();
-        } else if (hasNext(FACE_VERTEX_TEXTURE_PAT)) {
+    private IndexData parsePolygonVertex() {
+        if (scanner.hasNextInt()) {
+            Optional<Integer> normalIndex = Optional.empty();
+            Optional<Integer> textureCoordinateIndex = Optional.empty();
 
-        } else if (hasNext(FACE_VERTEX_TEXTURE_NORMAL_PAT)){
+            int vertexIndex = scanner.nextInt();
+            if (gobble(FORWARD_SLASH_PATTERN)) {
+                if (scanner.hasNextInt()) {
+                    textureCoordinateIndex = Optional.of(scanner.nextInt());
+                }
+                if (gobble(FORWARD_SLASH_PATTERN)) {
+                    if (scanner.hasNextInt()) {
+                        normalIndex = Optional.of(scanner.nextInt());
+                    } else {
+                        fail("Missing a normal index.");
+                    }
+                }
+            }
 
-        } else if (hasNext(FACE_VERTEX_NORMAL_PAT)){
+            return new IndexData(vertexIndex, textureCoordinateIndex, normalIndex);
 
         } else
             fail("Can't parse polygon vertex");
@@ -136,16 +158,16 @@ public class WavefrontParser {
     }
 
     private boolean hasNext(){
-        return scan.hasNext();
+        return scanner.hasNext();
     }
 
     private boolean hasNext(Pattern p){
-        return scan.hasNext(p);
+        return scanner.hasNext(p);
     }
 
     private boolean gobble(Pattern p) {
-        if (scan.hasNext(p)) {
-            scan.next();
+        if (scanner.hasNext(p)) {
+            scanner.next();
             return true;
         } else {
             return false;
@@ -169,20 +191,20 @@ public class WavefrontParser {
      */
     private void fail(String message) throws RuntimeException {
         String msg = message + "\n   @ ...";
-        for (int i = 0; i < 10 && scan.hasNext(); i++) {
-            msg += " " + scan.next();
+        for (int i = 0; i < 10 && scanner.hasNext(); i++) {
+            msg += " " + scanner.next();
         }
         throw new RuntimeException(msg + "...");
     }
 
     // this class is temporary
     public static class Result {
-        final List<Vector4> geometricVertices;
-        final List<Vector3> textureVertices;
-        final List<Vector3> vertexNormals;
-        final List<List<Vector4>> polygonFaces;
+        public final List<Vector> geometricVertices;
+        public final List<Vector3> textureVertices;
+        public final List<Vector3> vertexNormals;
+        public final List<List<IndexData>> polygonFaces;
 
-        public Result(List<Vector4> geometricVertices, List<Vector3> textureVertices, List<Vector3> vertexNormals, List<List<Vector4>> polygonFaces) {
+        public Result(List<Vector> geometricVertices, List<Vector3> textureVertices, List<Vector3> vertexNormals, List<List<IndexData>> polygonFaces) {
             this.geometricVertices = geometricVertices;
             this.textureVertices = textureVertices;
             this.vertexNormals = vertexNormals;
