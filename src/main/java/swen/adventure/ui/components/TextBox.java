@@ -3,11 +3,7 @@ package swen.adventure.ui.components;
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PGraphics;
-import swen.adventure.ui.LayoutManagers.LayoutManager;
-import swen.adventure.ui.clickable.ClickEvent;
-import swen.adventure.ui.clickable.OnClickListener;
-
-import java.util.ArrayList;
+import swen.adventure.ui.layoutmanagers.LayoutManager;
 
 /**
  * Created by danielbraithwt on 9/19/15.

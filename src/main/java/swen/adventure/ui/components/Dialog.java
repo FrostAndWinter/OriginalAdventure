@@ -1,7 +1,6 @@
 package swen.adventure.ui.components;
 
 import processing.core.PApplet;
-import swen.adventure.ui.LayoutManagers.LayoutManager;
 import swen.adventure.ui.clickable.ClickEvent;
 import swen.adventure.ui.clickable.OnClickListener;
 

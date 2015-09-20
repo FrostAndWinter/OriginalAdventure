@@ -2,10 +2,7 @@ package swen.adventure.ui.components;
 
 import processing.core.PApplet;
 import processing.core.PGraphics;
-import swen.adventure.ui.LayoutManagers.LinearLayout;
-
-import java.util.ArrayList;
-import java.util.List;
+import swen.adventure.ui.layoutmanagers.LinearLayout;
 
 /**
  * Created by danielbraithwt on 9/17/15.

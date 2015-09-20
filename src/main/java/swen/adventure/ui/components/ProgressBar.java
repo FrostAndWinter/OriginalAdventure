@@ -3,7 +3,7 @@ package swen.adventure.ui.components;
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PGraphics;
-import swen.adventure.ui.LayoutManagers.LayoutManager;
+import swen.adventure.ui.layoutmanagers.LayoutManager;
 
 /**
  * Created by danielbraithwt on 9/17/15.

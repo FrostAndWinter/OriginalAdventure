@@ -4,7 +4,7 @@ import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PGraphics;
 
-import swen.adventure.ui.LayoutManagers.LayoutManager;
+import swen.adventure.ui.layoutmanagers.LayoutManager;
 import swen.adventure.ui.clickable.ClickEvent;
 import swen.adventure.ui.clickable.Clickable;
 import swen.adventure.ui.clickable.OnClickListener;
