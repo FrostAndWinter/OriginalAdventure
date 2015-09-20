@@ -35,8 +35,9 @@ public class WavefrontParser {
     private static final Pattern TEXTURE_VERTEX_PAT = Pattern.compile("vt");
     private static final Pattern VERTEX_NORMAL_PAT = Pattern.compile("vn");
     private static final Pattern PARAMETER_SPACE_VERTEX_PAT = Pattern.compile("vp");
-    private static final Pattern POLYGONAL_FACE_START_PAT = Pattern.compile("f");
-    private static final Pattern POLYGONAL_FACE_PAT = Pattern.compile("f\\s+(\\d+(/(\\d+)?(/\\d+)?)?\\s*){3,}");
+    private static final Pattern POLYGONAL_FACE_PAT = Pattern.compile("f");
+    private static final Pattern POLYGONAL_FACE_VERTEX_PATTERN = Pattern.compile("\\d+(/(\\d+)?)*");
+   // private static final Pattern POLYGONAL_FACE_PAT = Pattern.compile("f\\s+(\\d+(/(\\d+)?(/\\d+)?)?\\s*){3,}");
 
 
     private static final Pattern FORWARD_SLASH_PATTERN = Pattern.compile("/");
@@ -122,39 +123,46 @@ public class WavefrontParser {
     }
 
     private void parsePolygonFace() {
-        ensuredGobble(POLYGONAL_FACE_START_PAT, "Polygons faces should start with 'f'");
+        ensuredGobble(POLYGONAL_FACE_PAT, "Polygons faces should start with 'f'");
         List<IndexData> vertexIndices = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            vertexIndices.add(parsePolygonVertex());
+        String vertexToken = scanner.next();
+
+        while (scanner.hasNext(POLYGONAL_FACE_VERTEX_PATTERN)) {
+            vertexIndices.add(parsePolygonVertex(vertexToken));
+            scanner.next(); //we've parsed the string in a separate scanner, so move on.
         }
         polygonFaces.add(vertexIndices);
     }
 
-    private IndexData parsePolygonVertex() {
-        if (scanner.hasNextInt()) {
-            Optional<Integer> normalIndex = Optional.empty();
-            Optional<Integer> textureCoordinateIndex = Optional.empty();
+    private IndexData parsePolygonVertex(String vertex) {
+        Scanner vertexScanner = new Scanner(vertex);
+        vertexScanner.useDelimiter(FORWARD_SLASH_PATTERN);
 
-            int vertexIndex = scanner.nextInt();
-            if (gobble(FORWARD_SLASH_PATTERN)) {
-                if (scanner.hasNextInt()) {
-                    textureCoordinateIndex = Optional.of(scanner.nextInt());
+        Optional<Integer> normalIndex = Optional.empty();
+        Optional<Integer> textureCoordinateIndex = Optional.empty();
+
+        if (vertexScanner.hasNextInt()) {
+
+            int vertexIndex = vertexScanner.nextInt();
+
+            if (vertexScanner.hasNextInt()) {
+                normalIndex = Optional.of(vertexScanner.nextInt());
+                if (vertexScanner.hasNextInt()) {
+                    textureCoordinateIndex = Optional.of(vertexScanner.nextInt());
                 }
-                if (gobble(FORWARD_SLASH_PATTERN)) {
-                    if (scanner.hasNextInt()) {
-                        normalIndex = Optional.of(scanner.nextInt());
-                    } else {
-                        fail("Missing a normal index.");
-                    }
-                }
+            }
+
+            if (!textureCoordinateIndex.isPresent() && vertex.length() - vertex.replace("/", "").length() == 2) { //then the second number we parsed was really the texture coordinate index
+                                                                                                                //the replace trick simply counts the number of occurences of / in the string.
+                textureCoordinateIndex = normalIndex;
+                normalIndex = Optional.empty();
             }
 
             return new IndexData(vertexIndex, textureCoordinateIndex, normalIndex);
 
         } else
             fail("Can't parse polygon vertex");
-
-        throw new UnsupportedOperationException("parsePolygonVertex isn't implemented yet");
+        return null;
     }
 
     private boolean hasNext(){
