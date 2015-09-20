@@ -2,7 +2,7 @@ package swen.adventure.ui.components;
 
 import processing.core.PApplet;
 import processing.core.PGraphics;
-import swen.adventure.ui.LayoutManagers.LayoutManager;
+import swen.adventure.ui.layoutmanagers.LayoutManager;
 
 /**
  * Created by danielbraithwt on 9/18/15.
@@ -34,13 +34,13 @@ public class Inventory extends UIComponent {
     }
 
     @Override
-    protected void drawComponent(PGraphics g) {
+    protected void drawComponent(PGraphics g, float scaleX, float scaleY) {
         int currentX = x;
         int currentY = y;
 
         g.fill(34, 50, 90);
         for (int i = 0; i < numItems; i++) {
-            g.rect(currentX, currentY, BOX_SIZE, BOX_SIZE);
+            g.rect(currentX * scaleX, currentY * scaleY, BOX_SIZE * scaleX, BOX_SIZE * scaleY);
             currentX += BOX_SIZE;
         }
     }

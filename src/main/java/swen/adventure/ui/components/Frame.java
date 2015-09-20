@@ -16,9 +16,9 @@ public class Frame extends UIComponent {
     }
 
     @Override
-    public void drawComponent(PGraphics g) {
+    public void drawComponent(PGraphics g, float scaleX, float scaleY) {
         for (UIComponent c : children) {
-            c.draw(g);
+            c.draw(g, scaleX, scaleY);
         }
     }
 

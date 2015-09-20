@@ -3,8 +3,7 @@ package swen.adventure.ui.components;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
-import processing.event.MouseEvent;
-import swen.adventure.ui.LayoutManagers.LayoutManager;
+import swen.adventure.ui.layoutmanagers.LayoutManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +33,10 @@ public abstract class UIComponent {
     }
 
     public void draw(PGraphics g) {
+        draw(g, 1, 1);
+    }
+
+    public void draw(PGraphics g, float scaleX, float scaleY) {
         if (!visible) {
             return;
         }
@@ -45,7 +48,7 @@ public abstract class UIComponent {
             height = manager.getHeight();
         }
 
-        drawComponent(g);
+        drawComponent(g, scaleX, scaleY);
     }
 
     public void addChild(UIComponent c) {
@@ -59,6 +62,10 @@ public abstract class UIComponent {
     public void setLayoutManager(LayoutManager lm) {
         manager = lm;
         manager.setComponents(children);
+    }
+
+    public void mouseClicked(int x, int y, float scaleX, float scaleY) {
+        mouseClicked((int) (x / scaleX), (int) (y / scaleY));
     }
 
     public void mouseClicked(int x, int y) {
@@ -113,7 +120,11 @@ public abstract class UIComponent {
         this.height = height;
     }
 
-    protected abstract void drawComponent(PGraphics g);
+    protected abstract void drawComponent(PGraphics g, float scaleX, float scaleY);
+
+    protected void drawComponenet(PGraphics g) {
+        draw(g, 1, 1);
+    }
 
     public abstract boolean withinBounds(int x, int y);
 

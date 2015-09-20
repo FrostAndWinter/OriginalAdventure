@@ -4,7 +4,7 @@ import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PGraphics;
 
-import swen.adventure.ui.LayoutManagers.LayoutManager;
+import swen.adventure.ui.layoutmanagers.LayoutManager;
 import swen.adventure.ui.clickable.ClickEvent;
 import swen.adventure.ui.clickable.Clickable;
 import swen.adventure.ui.clickable.OnClickListener;
@@ -62,7 +62,7 @@ public class Button extends UIComponent implements Clickable {
 
 
     @Override
-    public void drawComponent(PGraphics g) {
+    public void drawComponent(PGraphics g, float scaleX, float scaleY) {
         int stringWidth = (int) g.textWidth(text);
         int stringHeight = (int) (g.textAscent() + g.textDescent());
 
@@ -74,13 +74,13 @@ public class Button extends UIComponent implements Clickable {
         // Draw the background
         g.fill(255);
         g.color(50);
-        g.rect(x, y, width, height);
+        g.rect(x * scaleX, y * scaleY, width * scaleX, height * scaleY);
 
 
         g.fill(0);
         g.textFont(font, 16);
 
-        g.text(text.toCharArray(), 0, text.length(), x + padding/2, y + stringHeight + padding/2);
+        g.text(text.toCharArray(), 0, text.length(), (x + padding/2) * scaleX, (y + stringHeight + padding/2) * scaleY);
     }
 
     public synchronized void addClickListener(OnClickListener c) {

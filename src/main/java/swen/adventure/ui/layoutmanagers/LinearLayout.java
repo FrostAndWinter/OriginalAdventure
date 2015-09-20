@@ -1,9 +1,7 @@
-package swen.adventure.ui.LayoutManagers;
+package swen.adventure.ui.layoutmanagers;
 
 import processing.core.PGraphics;
 import swen.adventure.ui.components.UIComponent;
-
-import java.util.List;
 
 /**
  * Created by danielbraithwt on 9/19/15.

@@ -1,4 +1,4 @@
-package swen.adventure.ui.LayoutManagers;
+package swen.adventure.ui.layoutmanagers;
 
 import processing.core.PGraphics;
 import swen.adventure.ui.components.UIComponent;

@@ -2,10 +2,7 @@ package swen.adventure.ui.components;
 
 import processing.core.PApplet;
 import processing.core.PGraphics;
-import swen.adventure.ui.LayoutManagers.LinearLayout;
-
-import java.util.ArrayList;
-import java.util.List;
+import swen.adventure.ui.layoutmanagers.LinearLayout;
 
 /**
  * Created by danielbraithwt on 9/17/15.
@@ -27,20 +24,20 @@ public class Panel extends UIComponent {
     }
 
     @Override
-    public void drawComponent(PGraphics g) {
+    public void drawComponent(PGraphics g, float scaleX, float scaleY) {
 
         g.fill(23, 54, 123);
-        g.rect(x, y, width, height);
+        g.rect(x * scaleX, y * scaleY, width * scaleX, height * scaleY);
 
         // Translate coord system so that positioning inside the
         // panel is relative
-        g.translate(x, y);
+        g.translate(x * scaleX, y * scaleY);
 
         for (UIComponent c : children) {
-            c.draw(g);
+            c.draw(g, scaleX, scaleY);
         }
 
-        g.translate(-x, -y);
+        g.translate(-x * scaleX, -y * scaleY);
     }
 
     @Override
