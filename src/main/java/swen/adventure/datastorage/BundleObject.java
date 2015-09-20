@@ -18,22 +18,22 @@ public class BundleObject {
         this.storedValues = storedValues;
     }
 
-    public void put(String name, int value) { put(name, value, Integer.class); }
+    public BundleObject put(String name, int value) { putValue(name, value); return this; }
     public int getInt(String name) { return getValue(name, Integer.class); }
 
-    public void put(String name, float value) { put(name, value, Float.class); }
+    public BundleObject put(String name, float value) { putValue(name, value); return this; }
     public float getFloat(String name) { return getValue(name, Float.class); }
 
-    public void put(String name, long value) { put(name, value, Long.class); }
+    public BundleObject put(String name, long value) { putValue(name, value); return this; }
     public long getLong(String name) { return getValue(name, Long.class); }
 
-    public void put(String name, String value) { put(name, value, String.class); }
+    public BundleObject put(String name, String value) { putValue(name, value); return this; }
     public String getString(String name) { return getValue(name, String.class); }
 
-    public void put(String name, BundleArray bundleArray) { put(name, bundleArray, BundleArray.class); }
+    public BundleObject put(String name, BundleArray value) { putValue(name, value); return this; }
     public BundleArray getBundleArray(String name) { return getValue(name, BundleArray.class); }
 
-    public void put(String name, BundleObject bundleObject) { put(name, bundleObject, BundleObject.class); }
+    public BundleObject put(String name, BundleObject value) { putValue(name, value); return this; }
     public BundleObject getBundleObject(String name) { return getValue(name, BundleObject.class); }
 
     public boolean hasProperty(String name) {
@@ -44,8 +44,8 @@ public class BundleObject {
         return storedValues.values();
     }
 
-    private <T> void put(String name, T value, Class<T> class0) {
-        storedValues.put(name, new Property(name, value, class0));
+    private <T> void putValue(String name, T value) {
+        storedValues.put(name, new Property(name, value, value.getClass()));
     }
 
     private <T> T getValue(String name, Class<T> class0) {
