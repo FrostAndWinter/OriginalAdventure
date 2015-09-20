@@ -22,7 +22,7 @@ public class GLRenderer {
                         "smooth in vec4 interpColor;\n" +
                         "out vec4 outputColor;\n" +
                         "void main() {\n" +
-                        "outputColor = vec4(gl_FragCoord.xy/800.f, 1.f, 1.f);\n" +
+                        "outputColor = interpColor;\n" +
                         "}";
 
     private static final String VertexShader = "#version 330\n" +
@@ -115,9 +115,6 @@ public class GLRenderer {
 
             } else if (node instanceof ObjMesh) {
 
-                _gl.glDisable(GL3.GL_CULL_FACE);
-                _gl.glDepthMask(false);
-                _gl.glDisable(GL3.GL_DEPTH_TEST);
                 Matrix4 nodeToClipSpaceTransform = cameraToClipMatrix.multiply(worldToCameraMatrix).multiply(node.nodeToWorldSpaceTransform());
 
                 _gl.glUniformMatrix4fv(_defaultProgram.modelToClipMatrixUniformRef, 1, false, FloatBuffer.wrap(nodeToClipSpaceTransform.m));
