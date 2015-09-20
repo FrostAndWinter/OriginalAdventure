@@ -28,7 +28,7 @@ public abstract class GLMesh<T> extends SceneNode {
 
         /**
          * Constructs a new non-indexed command.
-         * @param primitiveType
+         * @param primitiveType Either GL_UNSIGNED_BYTE or GL_UNSIGNED_SHORT
          * @param startIndex
          */
         public RenderCommand(int primitiveType, int startIndex, int elementCount) {

@@ -1,5 +1,6 @@
 package swen.adventure.rendering;
 
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 import processing.opengl.PGraphics3D;
 import processing.opengl.PJOGL;
@@ -21,7 +22,7 @@ public class GLRenderer {
                         "smooth in vec4 interpColor;\n" +
                         "out vec4 outputColor;\n" +
                         "void main() {\n" +
-                        "outputColor = interpColor;\n" +
+                        "outputColor = vec4(gl_FragCoord.xy/800.f, 1.f, 1.f);\n" +
                         "}";
 
     private static final String VertexShader = "#version 330\n" +
@@ -84,34 +85,39 @@ public class GLRenderer {
 
         if (tableMesh == null) {
             try {
-                TransformNode boxTransform = new TransformNode("ObjBoxTransform", sceneGraph, false, new Vector3(0.f, 0.f, 0.f), new Quaternion(), new Vector3(200.f, 200.f, 200.f));
-                tableMesh = ObjMesh.loadMesh("boxMesh", boxTransform, _gl, "box");
+                TransformNode boxTransform = new TransformNode("ObjBoxTransform", sceneGraph, true, new Vector3(20.f, 10.f, 0.f), new Quaternion(), new Vector3(3.f, 3.f, 3.f));
+                tableMesh = ObjMesh.loadMesh("boxMesh", boxTransform, _gl, "Table");
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         }
 
-        _gl.glUseProgram(_defaultProgram.glProgramRef);
+        ((TransformNode)tableMesh.parent().get()).rotateY(-0.1f);
 
+        _gl.glUseProgram(_defaultProgram.glProgramRef);
 
         Matrix4 cameraToClipMatrix = this.perspectiveMatrix();
         Matrix4 worldToCameraMatrix = Matrix4.makeTranslation(0, -30.f, 0.f);
 
         sceneGraph.traverse((node) -> {
             if (node instanceof ProcessingMesh) {
-//              Matrix4 nodeToClipSpaceTransform = cameraToClipMatrix.multiply(worldToCameraMatrix).multiply(node.nodeToWorldSpaceTransform());
-//
-//                _gl.glUniformMatrix4fv(_defaultProgram.modelToClipMatrixUniformRef, 1, false, FloatBuffer.wrap(nodeToClipSpaceTransform.m));
-//
-//                int rgb = ((ProcessingMesh)node).mesh().getFill(0);
-//                int red = (rgb >> 16) & 0xFF;
-//                int green = (rgb >> 8) & 0xFF;
-//                int blue = rgb & 0xFF;
-//                _gl.glUniform4f(_defaultProgram.colourUniformRef, red/255.f, green/255.f, blue/255.f, 1.f);
-//
-//                ((ProcessingMesh)node).render(_gl);
+              Matrix4 nodeToClipSpaceTransform = cameraToClipMatrix.multiply(worldToCameraMatrix).multiply(node.nodeToWorldSpaceTransform());
+
+                _gl.glUniformMatrix4fv(_defaultProgram.modelToClipMatrixUniformRef, 1, false, FloatBuffer.wrap(nodeToClipSpaceTransform.m));
+
+                int rgb = ((ProcessingMesh)node).mesh().getFill(0);
+                int red = (rgb >> 16) & 0xFF;
+                int green = (rgb >> 8) & 0xFF;
+                int blue = rgb & 0xFF;
+                _gl.glUniform4f(_defaultProgram.colourUniformRef, red/255.f, green/255.f, blue/255.f, 1.f);
+
+                ((ProcessingMesh)node).render(_gl);
 
             } else if (node instanceof ObjMesh) {
+
+                _gl.glDisable(GL3.GL_CULL_FACE);
+                _gl.glDepthMask(false);
+                _gl.glDisable(GL3.GL_DEPTH_TEST);
                 Matrix4 nodeToClipSpaceTransform = cameraToClipMatrix.multiply(worldToCameraMatrix).multiply(node.nodeToWorldSpaceTransform());
 
                 _gl.glUniformMatrix4fv(_defaultProgram.modelToClipMatrixUniformRef, 1, false, FloatBuffer.wrap(nodeToClipSpaceTransform.m));

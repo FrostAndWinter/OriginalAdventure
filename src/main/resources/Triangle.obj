@@ -1,0 +1,9 @@
+# Vertex list
+
+v -1 -1 0
+v -1 1 0
+v 1 1 0
+
+# Point/Line/Face list
+
+f 1 2 3

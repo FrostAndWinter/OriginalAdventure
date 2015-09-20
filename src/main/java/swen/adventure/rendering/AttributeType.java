@@ -53,6 +53,7 @@ public enum AttributeType {
         for (T element : dataArray) {
             additionMethod.addToBuffer(element, buffer);
         }
+        buffer.rewind();
 
         gl.glBufferSubData(glBuffer, offset, dataArray.size() * this.sizeInBytes, buffer);
     }

@@ -52,12 +52,6 @@ public class ProcessingMesh extends SceneNode {
         _glInitialised = true;
     }
 
-    float vertexPositions[] = {
-            0.75f, 0.75f, 0.0f, 1.0f,
-            0.75f, -0.75f, 0.0f, 1.0f,
-            -0.75f, -0.75f, 0.0f, 1.0f,
-    };
-
     private float[] verticesFromPShape(PShape shape) {
         float[] vertices = new float[shape.getVertexCount() * 3];
         PVector vector = new PVector();
