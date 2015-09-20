@@ -46,8 +46,8 @@ public class ProcessingRenderer {
         Matrix4 cameraToWorldMatrix = Matrix4.makeTranslation(0, 30.f, 0.f);
 
         sceneGraph.traverse((node) -> {
-            if (node instanceof MeshNode) {
-                PShape shape = ((MeshNode) node).mesh();
+            if (node instanceof ProcessingMesh) {
+                PShape shape = ((ProcessingMesh) node).mesh();
 
                 _graphicsContext.modelview = worldToCameraMatrix.multiply(node.nodeToWorldSpaceTransform()).toPMatrix();
                 _graphicsContext.modelviewInv = node.worldToNodeSpaceTransform().multiply(cameraToWorldMatrix).toPMatrix();

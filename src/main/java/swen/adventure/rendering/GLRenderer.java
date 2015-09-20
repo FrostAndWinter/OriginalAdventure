@@ -1,16 +1,16 @@
 package swen.adventure.rendering;
 
 import com.jogamp.opengl.GL3;
-import javafx.scene.shape.Mesh;
 import processing.opengl.PGraphics3D;
 import processing.opengl.PJOGL;
 import swen.adventure.rendering.maths.Matrix4;
-import swen.adventure.rendering.maths.Vector4;
-import swen.adventure.scenegraph.MeshNode;
+import swen.adventure.rendering.maths.Quaternion;
+import swen.adventure.rendering.maths.Vector3;
 import swen.adventure.scenegraph.SceneNode;
+import swen.adventure.scenegraph.TransformNode;
 
+import java.io.FileNotFoundException;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 19/09/15.
@@ -53,14 +53,14 @@ public class GLRenderer {
 
         _defaultProgram = new ShaderProgram(_gl, VertexShader, FragmentShader);
 
-        _gl.glDisable(GL3.GL_CULL_FACE);
-        //_gl.glCullFace(GL3.GL_BACK);
-      // _gl.glFrontFace(GL3.GL_CCW);
-      _gl.glDisable(GL3.GL_DEPTH_TEST);
-      //  _gl.glDepthMask(true);
-     //   _gl.glDepthFunc(GL3.GL_LEQUAL);
-     // _gl.glDepthRange(0.0f, 1.0f);
-     //_gl.glEnable(GL3.GL_DEPTH_CLAMP);
+//            _gl.glEnable(GL3.GL_CULL_FACE);
+//            _gl.glCullFace(GL3.GL_BACK);
+//           _gl.glFrontFace(GL3.GL_CCW);
+//          _gl.glEnable(GL3.GL_DEPTH_TEST);
+//            _gl.glDepthMask(true);
+//            _gl.glDepthFunc(GL3.GL_LEQUAL);
+//          _gl.glDepthRange(0.0f, 1.0f);
+//         _gl.glEnable(GL3.GL_DEPTH_CLAMP);
     }
 
     public Matrix4 perspectiveMatrix() {
@@ -74,10 +74,22 @@ public class GLRenderer {
         return perspectiveMatrix;
     }
 
+    ObjMesh tableMesh;
+
+
     public void render(SceneNode sceneGraph) {
 
         _graphicsContext.background(0);
         _graphicsContext.beginPGL();
+
+        if (tableMesh == null) {
+            try {
+                TransformNode boxTransform = new TransformNode("ObjBoxTransform", sceneGraph, false, new Vector3(0.f, 0.f, 0.f), new Quaternion(), new Vector3(200.f, 200.f, 200.f));
+                tableMesh = ObjMesh.loadMesh("boxMesh", boxTransform, _gl, "box");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
 
         _gl.glUseProgram(_defaultProgram.glProgramRef);
 
@@ -86,19 +98,27 @@ public class GLRenderer {
         Matrix4 worldToCameraMatrix = Matrix4.makeTranslation(0, -30.f, 0.f);
 
         sceneGraph.traverse((node) -> {
-            if (node instanceof MeshNode) {
-              Matrix4 nodeToClipSpaceTransform = cameraToClipMatrix.multiply(worldToCameraMatrix).multiply(node.nodeToWorldSpaceTransform());
+            if (node instanceof ProcessingMesh) {
+//              Matrix4 nodeToClipSpaceTransform = cameraToClipMatrix.multiply(worldToCameraMatrix).multiply(node.nodeToWorldSpaceTransform());
+//
+//                _gl.glUniformMatrix4fv(_defaultProgram.modelToClipMatrixUniformRef, 1, false, FloatBuffer.wrap(nodeToClipSpaceTransform.m));
+//
+//                int rgb = ((ProcessingMesh)node).mesh().getFill(0);
+//                int red = (rgb >> 16) & 0xFF;
+//                int green = (rgb >> 8) & 0xFF;
+//                int blue = rgb & 0xFF;
+//                _gl.glUniform4f(_defaultProgram.colourUniformRef, red/255.f, green/255.f, blue/255.f, 1.f);
+//
+//                ((ProcessingMesh)node).render(_gl);
+
+            } else if (node instanceof ObjMesh) {
+                Matrix4 nodeToClipSpaceTransform = cameraToClipMatrix.multiply(worldToCameraMatrix).multiply(node.nodeToWorldSpaceTransform());
 
                 _gl.glUniformMatrix4fv(_defaultProgram.modelToClipMatrixUniformRef, 1, false, FloatBuffer.wrap(nodeToClipSpaceTransform.m));
 
-                int rgb = ((MeshNode)node).mesh().getFill(0);
-                int red = (rgb >> 16) & 0xFF;
-                int green = (rgb >> 8) & 0xFF;
-                int blue = rgb & 0xFF;
-                _gl.glUniform4f(_defaultProgram.colourUniformRef, red/255.f, green/255.f, blue/255.f, 1.f);
+                _gl.glUniform4f(_defaultProgram.colourUniformRef, 1.f, 0.f, 0.f, 1.f);
 
-                ((MeshNode)node).render(_gl);
-
+                ((ObjMesh)node).render(_gl);
             }
         });
 

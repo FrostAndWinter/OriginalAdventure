@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * Created by Thomas Roughton, Student ID 300313924, on 20/09/15.
  * Adapted from the ArcSynthesis GL Tutorials (https://bitbucket.org/alfonse/gltut/wiki/Home)
  */
-public abstract class Mesh<T> extends SceneNode {
+public abstract class GLMesh<T> extends SceneNode {
 
     static class RenderCommand {
         public final boolean isIndexedCommand;
@@ -47,7 +47,7 @@ public abstract class Mesh<T> extends SceneNode {
 
         /**
          * Constructs a new indexed command. The _startIndex, _elementCount, _indexDataType, and _primitiveRestart fields need to be filled in before use.
-         * @param primitiveType
+         * @param primitiveType Either GL_UNSIGNED_BYTE or GL_UNSIGNED_SHORT
          * @param primitiveRestart
          */
         public RenderCommand(int primitiveType, int primitiveRestart) {
@@ -63,6 +63,7 @@ public abstract class Mesh<T> extends SceneNode {
             } else {
                 gl.glDrawArrays(primitiveType, _startIndex, _elementCount);
             }
+
         }
 
         public void setStartIndex(final int startIndex) {
@@ -171,7 +172,7 @@ public abstract class Mesh<T> extends SceneNode {
     private List<RenderCommand> _primitives;
     private Map<String, Integer> _namedVAOs = new HashMap<>();
 
-    public Mesh(String id, SceneNode parent) {
+    public GLMesh(String id, SceneNode parent) {
         super(id, parent, false);
     }
 

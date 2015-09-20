@@ -2,6 +2,7 @@ package swen.adventure.datastorage;
 
 import org.junit.Test;
 import swen.adventure.Utilities;
+import swen.adventure.rendering.ObjMesh;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package swen.adventure.scenegraph;
+package swen.adventure.rendering;
 
 import com.jogamp.opengl.GL3;
 import processing.core.PGraphics;
@@ -7,6 +7,7 @@ import processing.core.PVector;
 import swen.adventure.rendering.maths.Matrix4;
 import swen.adventure.rendering.maths.Vector3;
 import swen.adventure.rendering.maths.Vector4;
+import swen.adventure.scenegraph.SceneNode;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -15,14 +16,14 @@ import java.util.Optional;
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 15/09/15.
  */
-public class MeshNode extends SceneNode {
+public class ProcessingMesh extends SceneNode {
 
     private PShape _mesh;
     private int _vertexArrayObjectRef;
     private int _vertexPositionBufferRef;
     private boolean _glInitialised = false;
 
-    public MeshNode(String id, final SceneNode parent, PShape mesh) {
+    public ProcessingMesh(String id, final SceneNode parent, PShape mesh) {
         super(id, parent, false);
         _mesh = mesh;
     }
@@ -86,7 +87,7 @@ public class MeshNode extends SceneNode {
 
         gl.glVertexAttribPointer(0, 3, GL3.GL_FLOAT, false, 0, 0);
 
-        gl.glDrawArrays(GL3.GL_TRIANGLES, 0, _mesh.getVertexCount());
+        gl.glDrawArrays(GL3.GL_TRIANGLE_FAN, 0, _mesh.getVertexCount());
 
         gl.glDisableVertexAttribArray(0);
         gl.glBindVertexArray(0);

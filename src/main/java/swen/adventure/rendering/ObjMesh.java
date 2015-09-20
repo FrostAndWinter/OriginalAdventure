@@ -2,19 +2,22 @@ package swen.adventure.rendering;
 
 import com.jogamp.opengl.GL3;
 import javafx.util.Pair;
+import swen.adventure.Utilities;
 import swen.adventure.datastorage.WavefrontParser;
 import swen.adventure.rendering.maths.Vector;
 import swen.adventure.rendering.maths.Vector3;
 import swen.adventure.rendering.maths.Vector4;
 import swen.adventure.scenegraph.SceneNode;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 20/09/15.
  */
-public class ObjMesh extends Mesh<Float> {
+public class ObjMesh extends GLMesh<Float> {
 
     class VertexData {
         final Vector vertexPosition;
@@ -62,8 +65,13 @@ public class ObjMesh extends Mesh<Float> {
     private boolean _hasTextureCoordinates = false;
     private boolean _hasFourComponentGeoVectors = false;
     private List<VertexData> _vertices = new ArrayList<>();
-    private List<Integer> _triIndices = new ArrayList<>();
-    private List<Integer> _quadIndices = new ArrayList<>();
+    private List<Short> _triIndices = new ArrayList<>();
+
+    public static ObjMesh loadMesh(String id, SceneNode parent, GL3 gl, String fileName) throws FileNotFoundException {
+        File file = new File(Utilities.pathForResource(fileName, "obj"));
+        WavefrontParser.Result result = WavefrontParser.parse(file);
+        return new ObjMesh(id, parent, gl, result);
+    }
 
     public ObjMesh(String id, SceneNode parent, GL3 gl, WavefrontParser.Result parsedFile) {
         super(id, parent);
@@ -73,9 +81,9 @@ public class ObjMesh extends Mesh<Float> {
 
         for (List<WavefrontParser.IndexData> indices : parsedFile.polygonFaces) {
             for (WavefrontParser.IndexData indexData : indices) {
-                Vector geometricVertex = parsedFile.geometricVertices.get(indexData.vertexIndex);
-                Optional<Vector3> textureCoordinate = indexData.textureCoordinateIndex.isPresent() ? Optional.of(parsedFile.textureVertices.get(indexData.textureCoordinateIndex.get())) : Optional.empty();
-                Optional<Vector3> vertexNormal = indexData.normalIndex.isPresent() ? Optional.of(parsedFile.vertexNormals.get(indexData.normalIndex.get())) : Optional.empty();
+                Vector geometricVertex = parsedFile.geometricVertices.get(indexData.vertexIndex - 1);
+                Optional<Vector3> textureCoordinate = indexData.textureCoordinateIndex.isPresent() ? Optional.of(parsedFile.textureVertices.get(indexData.textureCoordinateIndex.get() - 1)) : Optional.empty();
+                Optional<Vector3> vertexNormal = indexData.normalIndex.isPresent() ? Optional.of(parsedFile.vertexNormals.get(indexData.normalIndex.get() - 1)) : Optional.empty();
 
                 _hasNormals = _hasNormals || vertexNormal.isPresent();
                 _hasTextureCoordinates = _hasTextureCoordinates || textureCoordinate.isPresent();
@@ -91,14 +99,16 @@ public class ObjMesh extends Mesh<Float> {
         _vertices = vertexData.stream().collect(Collectors.toList());
 
         for (List<WavefrontParser.IndexData> indices : parsedFile.polygonFaces) {
-            for (WavefrontParser.IndexData indexData : indices) {
-                VertexData vertex = objIndicesToVertices.get(indexData);
-                int index = _vertices.indexOf(vertex);
-                if (indices.size() == 4) {
-                    _quadIndices.add(index);
-                } else {
-                    _triIndices.add(index);
-                }
+            List<Short> vertexIndices = indices.stream().map((data) -> {
+                VertexData vertex = objIndicesToVertices.get(data);
+                return (short)_vertices.indexOf(vertex);
+            }).collect(Collectors.toList());
+
+            if (vertexIndices.size() == 4) {
+                _triIndices.addAll(Arrays.asList(vertexIndices.get(0), vertexIndices.get(1), vertexIndices.get(3))); //convert to triangles
+                _triIndices.addAll(Arrays.asList(vertexIndices.get(1), vertexIndices.get(2), vertexIndices.get(3)));
+            } else {
+                _triIndices.addAll(vertexIndices);
             }
         }
 
@@ -117,11 +127,11 @@ public class ObjMesh extends Mesh<Float> {
 
             if (_hasNormals) {
                 this.addVectorToList(vertex.vertexNormal.isPresent() ? vertex.vertexNormal.get() : new Vector3(1.f, 0.f, 0.f), vertexNormals);
-                System.err.println("Warning: mesh with id " + id + " has missing normals for vertex at " + geometricPosition);
+                if (!vertex.vertexNormal.isPresent()) { System.err.println("Warning: mesh with id " + id + " has missing normals for vertex at " + geometricPosition); }
             }
             if (_hasTextureCoordinates) {
                 this.addVectorToList(vertex.textureCoordinate.isPresent() ? vertex.textureCoordinate.get() : new Vector3(1.f, 0.f, 0.f), textureCoordinates);
-                System.err.println("Warning: mesh with id " + id + " has missing texture coordinates for vertex at " + geometricPosition);
+                if (!vertex.textureCoordinate.isPresent()) { System.err.println("Warning: mesh with id " + id + " has missing texture coordinates for vertex at " + geometricPosition); }
             }
         }
 
@@ -137,14 +147,9 @@ public class ObjMesh extends Mesh<Float> {
         List<RenderCommand> renderCommands = new ArrayList<>();
         List<IndexData<?>> indexData = new ArrayList<>();
 
-        if (!_quadIndices.isEmpty()) {
-            renderCommands.add(new RenderCommand(GL3.GL_QUADS, -1));
-            indexData.add(new IndexData(_quadIndices, AttributeType.Int));
-        }
-
         if (!_triIndices.isEmpty()) {
             renderCommands.add(new RenderCommand(GL3.GL_TRIANGLES, -1));
-            indexData.add(new IndexData(_quadIndices, AttributeType.Int));
+            indexData.add(new IndexData(_triIndices, AttributeType.UShort));
         }
 
         List<Pair<String, List<Integer>>> namedVAOs = new ArrayList<>();

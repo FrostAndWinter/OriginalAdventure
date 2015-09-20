@@ -5,14 +5,13 @@ import processing.core.PApplet;
 import processing.core.PShape;
 import processing.opengl.PGraphics3D;
 import swen.adventure.rendering.GLRenderer;
+import swen.adventure.rendering.ObjMesh;
 import swen.adventure.rendering.ProcessingRenderer;
 import swen.adventure.rendering.maths.Quaternion;
 import swen.adventure.rendering.maths.Vector3;
-import swen.adventure.scenegraph.MeshNode;
+import swen.adventure.rendering.ProcessingMesh;
 import swen.adventure.scenegraph.SceneNode;
 import swen.adventure.scenegraph.TransformNode;
-
-import java.io.IOException;
 
 public class AdventureGame extends PApplet {
 
@@ -24,23 +23,24 @@ public class AdventureGame extends PApplet {
     public void setup() {
         super.setup();
 
-        beginPGL();
-        _processingRenderer = new ProcessingRenderer((PGraphics3D)this.getGraphics());
-        _glRenderer = new GLRenderer((PGraphics3D)this.getGraphics());
-        endPGL();
-
         _sceneGraph = new TransformNode("root", new Vector3(0.f, 0.f, -200.f), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
         PShape groundPlane = createShape(BOX, 500, 0, 500);
         groundPlane.setFill(0xFF00AA0B);
-        new MeshNode("groundPlane", _sceneGraph, groundPlane);
+        new ProcessingMesh("groundPlane", _sceneGraph, groundPlane);
 
         TransformNode boxTransform = new TransformNode("boxTransform", _sceneGraph, true, new Vector3(-80, 25.f, 0.f), Quaternion.makeWithAngleAndAxis(1.f, 0.f, 1.f, 0.f), new Vector3(0.6f, 1.f, 0.8f));
         PShape box = createShape(BOX, 50.f);
-        new MeshNode("boxMesh", boxTransform, box);
+        new ProcessingMesh("boxMesh", boxTransform, box);
 
         TransformNode sphereTransform = new TransformNode("sphereTransform", _sceneGraph, false, new Vector3(25, 60.f, -10.f), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
         TransformNode sphereOffset = new TransformNode("sphereOffset", sphereTransform, true, new Vector3(0, 0, 0), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
-        new MeshNode("sphereMesh", sphereOffset, createShape(SPHERE, 20.f));
+        new ProcessingMesh("sphereMesh", sphereOffset, createShape(SPHERE, 20.f));
+
+        beginPGL();
+        _processingRenderer = new ProcessingRenderer((PGraphics3D)this.getGraphics());
+        _glRenderer = new GLRenderer((PGraphics3D)this.getGraphics());
+
+        endPGL();
 
     }
 
@@ -54,7 +54,7 @@ public class AdventureGame extends PApplet {
         TransformNode boxTransform = (TransformNode) _sceneGraph.nodeWithID("boxTransform").get();
         boxTransform.rotateY(0.02f);
 
-        _processingRenderer.render(_sceneGraph);
+        _glRenderer.render(_sceneGraph);
     }
 
     public void settings() {

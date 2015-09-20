@@ -125,11 +125,10 @@ public class WavefrontParser {
     private void parsePolygonFace() {
         ensuredGobble(POLYGONAL_FACE_PAT, "Polygons faces should start with 'f'");
         List<IndexData> vertexIndices = new ArrayList<>();
-        String vertexToken = scanner.next();
 
         while (scanner.hasNext(POLYGONAL_FACE_VERTEX_PATTERN)) {
-            vertexIndices.add(parsePolygonVertex(vertexToken));
-            scanner.next(); //we've parsed the string in a separate scanner, so move on.
+            String vertexToken = scanner.next();
+            vertexIndices.add(parsePolygonVertex(vertexToken)); //we've parsed the string in a separate scanner, so move on.
         }
         polygonFaces.add(vertexIndices);
     }
@@ -146,16 +145,16 @@ public class WavefrontParser {
             int vertexIndex = vertexScanner.nextInt();
 
             if (vertexScanner.hasNextInt()) {
-                normalIndex = Optional.of(vertexScanner.nextInt());
+                textureCoordinateIndex = Optional.of(vertexScanner.nextInt());
                 if (vertexScanner.hasNextInt()) {
-                    textureCoordinateIndex = Optional.of(vertexScanner.nextInt());
+                    normalIndex = Optional.of(vertexScanner.nextInt());
                 }
             }
 
-            if (!textureCoordinateIndex.isPresent() && vertex.length() - vertex.replace("/", "").length() == 2) { //then the second number we parsed was really the texture coordinate index
+            if (!normalIndex.isPresent() && vertex.length() - vertex.replace("/", "").length() == 2) { //then the second number we parsed was really the normal index
                                                                                                                 //the replace trick simply counts the number of occurences of / in the string.
-                textureCoordinateIndex = normalIndex;
-                normalIndex = Optional.empty();
+                normalIndex = textureCoordinateIndex;
+                textureCoordinateIndex = Optional.empty();
             }
 
             return new IndexData(vertexIndex, textureCoordinateIndex, normalIndex);
