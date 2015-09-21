@@ -134,34 +134,23 @@ public class WavefrontParser {
     }
 
     private IndexData parsePolygonVertex(String vertex) { //TODO This works, but is hopelessly inefficient.
-        Scanner vertexScanner = new Scanner(vertex);
-        vertexScanner.useDelimiter(FORWARD_SLASH_PATTERN);
+
+        String[] components = vertex.split("/", -1); //the -1 means to include empty strings.
 
         Optional<Integer> normalIndex = Optional.empty();
         Optional<Integer> textureCoordinateIndex = Optional.empty();
 
-        if (vertexScanner.hasNextInt()) {
+        int vertexIndex = Integer.parseInt(components[0]);
 
-            int vertexIndex = vertexScanner.nextInt();
+        if (components.length > 1 && components[1].length() > 0) {
+            textureCoordinateIndex = Optional.of(Integer.parseInt(components[1]));
+        }
+        if (components.length > 2 && components[2].length() > 0) {
+            normalIndex = Optional.of(Integer.parseInt(components[2]));
+        }
 
-            if (vertexScanner.hasNextInt()) {
-                textureCoordinateIndex = Optional.of(vertexScanner.nextInt());
-                if (vertexScanner.hasNextInt()) {
-                    normalIndex = Optional.of(vertexScanner.nextInt());
-                }
-            }
+        return new IndexData(vertexIndex, textureCoordinateIndex, normalIndex);
 
-            if (!normalIndex.isPresent() && vertex.length() - vertex.replace("/", "").length() == 2) { //then the second number we parsed was really the normal index
-                                                                                                                //the replace trick simply counts the number of occurences of / in the string.
-                normalIndex = textureCoordinateIndex;
-                textureCoordinateIndex = Optional.empty();
-            }
-
-            return new IndexData(vertexIndex, textureCoordinateIndex, normalIndex);
-
-        } else
-            fail("Can't parse polygon vertex");
-        return null;
     }
 
     private boolean hasNext(){
