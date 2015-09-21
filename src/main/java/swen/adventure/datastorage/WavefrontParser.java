@@ -133,7 +133,7 @@ public class WavefrontParser {
         polygonFaces.add(vertexIndices);
     }
 
-    private IndexData parsePolygonVertex(String vertex) {
+    private IndexData parsePolygonVertex(String vertex) { //TODO This works, but is hopelessly inefficient.
         Scanner vertexScanner = new Scanner(vertex);
         vertexScanner.useDelimiter(FORWARD_SLASH_PATTERN);
 

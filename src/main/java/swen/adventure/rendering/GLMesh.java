@@ -128,6 +128,10 @@ public abstract class GLMesh<T> extends SceneNode {
                 return this.data.size() * this.attributeType.sizeInBytes;
             }
 
+            public int sizePerElement() {
+                return this.numberOfComponents * this.attributeType.sizeInBytes;
+            }
+
             public void fillBoundBufferObject(GL3 gl, int offset) {
                 this.attributeType.writeToBuffer(gl, GL3.GL_ARRAY_BUFFER, this.data, offset);
             }

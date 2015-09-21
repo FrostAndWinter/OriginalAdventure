@@ -85,7 +85,7 @@ public class GLRenderer {
 
         if (tableMesh == null) {
             try {
-                TransformNode boxTransform = new TransformNode("ObjBoxTransform", sceneGraph, true, new Vector3(20.f, 10.f, 0.f), new Quaternion(), new Vector3(3.f, 3.f, 3.f));
+                TransformNode boxTransform = new TransformNode("ObjBoxTransform", sceneGraph, true, new Vector3(20.f, 10.f, 0.f), new Quaternion(), new Vector3(0.5f, 0.5f, 0.5f));
                 tableMesh = ObjMesh.loadMesh("boxMesh", boxTransform, _gl, "Table");
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
