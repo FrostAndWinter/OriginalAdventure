@@ -7,6 +7,7 @@ import processing.opengl.PJOGL;
 import swen.adventure.rendering.maths.Matrix4;
 import swen.adventure.rendering.maths.Quaternion;
 import swen.adventure.rendering.maths.Vector3;
+import swen.adventure.scenegraph.CameraNode;
 import swen.adventure.scenegraph.SceneNode;
 import swen.adventure.scenegraph.TransformNode;
 
@@ -78,7 +79,7 @@ public class GLRenderer {
     ObjMesh tableMesh;
 
 
-    public void render(SceneNode sceneGraph) {
+    public void render(SceneNode sceneGraph, CameraNode cameraNode) {
 
         _graphicsContext.background(0);
         _graphicsContext.beginPGL();
@@ -97,7 +98,7 @@ public class GLRenderer {
         _gl.glUseProgram(_defaultProgram.glProgramRef);
 
         Matrix4 cameraToClipMatrix = this.perspectiveMatrix();
-        Matrix4 worldToCameraMatrix = Matrix4.makeTranslation(0, -30.f, 0.f);
+        Matrix4 worldToCameraMatrix = cameraNode.worldToNodeSpaceTransform();
 
         sceneGraph.traverse((node) -> {
             if (node instanceof ProcessingMesh) {

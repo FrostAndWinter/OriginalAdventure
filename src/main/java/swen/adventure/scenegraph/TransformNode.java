@@ -133,4 +133,7 @@ public class TransformNode extends SceneNode {
         this.setScale(_scale.multiplyScalar(scale));
     }
 
+    public Quaternion rotation() {
+        return _rotation;
+    }
 }
