@@ -1,11 +1,11 @@
 package swen.adventure.network;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Collectors;
 
 /**
  * Created by David Barnett, Student ID 3003123764, on 17/09/15.
@@ -13,6 +13,7 @@ import java.util.*;
 public class NetworkServer implements Server {
     private final Map<Integer, ClientSession> clients;
     private final ServerSocket serverSocket;
+    private final Queue<Packet> eventQueue;
 
     private Thread acceptThread;
 
@@ -25,6 +26,7 @@ public class NetworkServer implements Server {
     public NetworkServer(int port) throws IOException {
         serverSocket = new ServerSocket(port);
         clients = new HashMap<>();
+        eventQueue = new ConcurrentLinkedQueue<>();
     }
 
     /**
@@ -49,7 +51,7 @@ public class NetworkServer implements Server {
         try {
             serverSocket.close();
             for (ClientSession session : clients.values()) {
-                session.client.close(); // FIXME: make stopping more graceful than ripping the plug out
+                session.close(); // FIXME: make stopping more graceful than ripping the plug out
             }
         } catch (IOException ex) {
 
@@ -63,12 +65,19 @@ public class NetworkServer implements Server {
             return false;
         }
         try {
-            session.send(message.getBytes());
+            Packet toSend = new Packet(Packet.Operation.SERVER_DATA, message.getBytes());
+            session.send(toSend.toBytes());
             return true;
         } catch (IOException ex) {
             System.out.println("Server: Failed to send to " + id + ": " + ex);
             return false;
         }
+    }
+
+    @Override
+    public List<Integer> getClientIds() {
+        return clients.values().stream().filter(clientSession -> clientSession.isConnected())
+                .map(ClientSession::getId).collect(Collectors.toList());
     }
 
     /**
@@ -85,7 +94,12 @@ public class NetworkServer implements Server {
      */
     @Override
     public synchronized Optional<String> poll() {
-        return Optional.empty();
+        Packet event = eventQueue.poll();
+        if (event != null) {
+            return Optional.of(new String(event.getPayload()));
+        } else {
+            return Optional.empty();
+        }
     }
 
 
@@ -98,7 +112,7 @@ public class NetworkServer implements Server {
                 Socket accepted = serverSocket.accept();
                 System.out.println("Server accepted client on port: " + accepted.getPort());
 
-                ClientSession session = new ClientSession(accepted);
+                ClientSession session = new ClientSession(accepted, eventQueue);
                 Thread clientThread = new Thread(session);
                 clientThread.start();
                 clients.put(session.getId(), session);
@@ -110,91 +124,30 @@ public class NetworkServer implements Server {
         }
     }
 
-    private static class ClientSession implements Runnable { // FIXME
-        private final Socket client;
-        private final OutputStream outputStream;
-
-        private final int id;
-        private static int ID_COUNT = 0; // FIXME: better id for connected clients
-
-        public ClientSession(Socket client) throws IOException {
-            this.client = client;
-            id = ID_COUNT++;
-            outputStream = client.getOutputStream();
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public void send(byte[] data) throws IOException {
-            outputStream.write(data);
-        }
-
-        public void run() {
-            InputStream input;
-            byte[] buffer;
-            try {
-                input = client.getInputStream();
-                buffer = new byte[client.getReceiveBufferSize()];
-            } catch (IOException ex) {
-                System.out.println("client#" + id + " input stream error: " + ex);
-                return;
-            }
-
-            while (!client.isClosed() && client.isConnected()) {
-                try {
-                    int len = input.read(buffer);
-                    if (len == -1) {
-                        System.out.println("Client#" + id + " End of Stream");
-                        break;
-                    }
-                    byte[] recv = Arrays.copyOf(buffer, len);
-
-                    // TODO: transform into a useful object
-                    String recvStr = new String(recv);
-
-                    System.out.println("Client#" + id + " recv: " + recvStr.length());
-
-                } catch (IOException ex) {
-                    System.out.println("Client#" + id + " error: " + ex);
-                    break;
-                }
-            }
-
-            // Cleanup
-            if (!client.isClosed()) {
-                try {
-                    client.close();
-                } catch (IOException ex) {
-                    // muffu muffu~
-                }
-            }
-        }
-    }
-
     // Example usage & live testing
     public static void main(String[] args) {
         try {
             NetworkServer srv = new NetworkServer(1025);
+
             srv.start();
+            while(true) {
+                // emulate game-loop
+                Optional<String> res = srv.poll();
+                if (res.isPresent()) {
+                    System.out.println("Polled: " + res.get());
+                }
 
-            // emulate game-loop
-            Optional<String> res = srv.poll();
-            if (res.isPresent()) {
-                System.out.println(res.get());
-            }
+                try {
+                    // Kill server after 10sec to test shutdown
+                    Thread.sleep(16);
+                    //srv.stop();
+                } catch (InterruptedException ex) {
 
-            try {
-                // Kill server after 10sec to test shutdown
-                Thread.sleep(10000);
-                srv.stop();
-            } catch (InterruptedException ex) {
-
+                }
             }
 
         } catch (IOException ex) {
-
+            System.out.println("Err: " + ex);
         }
     }
 }
