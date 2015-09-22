@@ -13,14 +13,14 @@ public abstract class SceneNode {
         void visit(SceneNode node);
     }
 
-    private Optional<SceneNode> _parent = Optional.empty();
-    private Set<SceneNode> _childNodes = new HashSet<>();
+    private Optional<TransformNode> _parent = Optional.empty();
+    protected Set<SceneNode> _childNodes = new HashSet<>();
 
     /** Dynamic nodes are any nodes whose transforms may change during the execution of the game. */
     private boolean _isDynamic = false;
 
     public final String id;
-    private Map<String, SceneNode> _idsToNodesMap;
+    protected Map<String, SceneNode> _idsToNodesMap;
 
     /**
      * Construct a new root SceneNode.
@@ -35,7 +35,7 @@ public abstract class SceneNode {
     }
 
     /** Construct a SceneNode that is a child of parent. */
-    public SceneNode(String id, SceneNode parent, boolean isDynamic) {
+    public SceneNode(String id, TransformNode parent, boolean isDynamic) {
 
         //Add this node as a child of parent.
         parent._childNodes.add(this);
@@ -50,7 +50,7 @@ public abstract class SceneNode {
         _isDynamic = isDynamic || parent.isDynamic(); //a node is considered dynamic if it or any of its parents can have a changing transform.
     }
 
-    public Optional<SceneNode> parent() {
+    public Optional<TransformNode> parent() {
         return _parent;
     }
 

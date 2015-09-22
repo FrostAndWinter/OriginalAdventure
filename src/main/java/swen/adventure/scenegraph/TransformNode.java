@@ -1,5 +1,6 @@
 package swen.adventure.scenegraph;
 
+import processing.core.PMatrix3D;
 import swen.adventure.rendering.maths.Matrix4;
 import swen.adventure.rendering.maths.Quaternion;
 import swen.adventure.rendering.maths.Vector3;
@@ -25,7 +26,7 @@ public class TransformNode extends SceneNode {
         _scale = scale;
     }
 
-    public TransformNode(final String id, final SceneNode parent, boolean isDynamic, Vector3 translation, Quaternion rotation, Vector3 scale) {
+    public TransformNode(final String id, final TransformNode parent, boolean isDynamic, Vector3 translation, Quaternion rotation, Vector3 scale) {
         super(id, parent, isDynamic);
         _translation = translation;
         _rotation = rotation;
@@ -60,6 +61,7 @@ public class TransformNode extends SceneNode {
         transform = transform.scale(new Vector3(1.f, 1.f, 1.f).divide(_scale));
         transform = transform.rotate(_rotation.conjugate());
         transform = transform.translate(_translation.negate());
+
         return transform;
     }
 

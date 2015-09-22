@@ -13,8 +13,14 @@ import java.util.List;
  */
 public class ShaderProgram {
     public int glProgramRef;
-    public int modelToClipMatrixUniformRef;
+    public int modelToCameraMatrixUniformRef;
+    public int cameraToClipMatrixUniformRef;
+    public int normalModelToCameraMatrixUniformRef;
     public int colourUniformRef;
+
+    public int cameraSpaceLightPositionUniformRef;
+    public int lightIntensityUniformRef;
+    public int ambientLightUniformRef;
 
     public ShaderProgram(GL3 gl, String vertexShaderText, String fragmentShaderText) {
         List<Integer> shaders = new ArrayList<>(2);
@@ -24,8 +30,15 @@ public class ShaderProgram {
 
         this.glProgramRef = ShaderProgram.createProgram(gl, shaders);
 
-        this.modelToClipMatrixUniformRef = gl.glGetUniformLocation(this.glProgramRef, "modelToClipMatrix");
+        this.modelToCameraMatrixUniformRef = gl.glGetUniformLocation(this.glProgramRef, "modelToCameraMatrixUniform");
         this.colourUniformRef = gl.glGetUniformLocation(this.glProgramRef, "colour");
+
+        this.cameraToClipMatrixUniformRef = gl.glGetUniformLocation(this.glProgramRef, "cameraToClipMatrixUniform");
+        this.normalModelToCameraMatrixUniformRef = gl.glGetUniformLocation(this.glProgramRef, "normalModelToCameraMatrixUniform");
+
+        this.cameraSpaceLightPositionUniformRef = gl.glGetUniformLocation(this.glProgramRef, "cameraSpaceLightPosition");
+        this.lightIntensityUniformRef = gl.glGetUniformLocation(this.glProgramRef, "lightIntensity");
+        this.ambientLightUniformRef = gl.glGetUniformLocation(this.glProgramRef, "ambientIntensity");
     }
 
     public static int createProgram(GL3 gl, List<Integer> shaderList){
@@ -45,7 +58,7 @@ public class ShaderProgram {
 
             ByteBuffer strInfoLog = ByteBuffer.allocate(infoLogLengthBuffer.get(0) + 1);
             gl.glGetProgramInfoLog(program, infoLogLengthBuffer.get(0), null, strInfoLog);
-            System.err.printf("Linker failure: %s\n", strInfoLog);
+            System.err.printf("Linker failure: %s\n", new String(strInfoLog.array(), Charset.defaultCharset()));
         }
 
         for (int shader : shaderList) {

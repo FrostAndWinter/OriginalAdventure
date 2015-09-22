@@ -8,6 +8,7 @@ import swen.adventure.rendering.maths.Vector;
 import swen.adventure.rendering.maths.Vector3;
 import swen.adventure.rendering.maths.Vector4;
 import swen.adventure.scenegraph.SceneNode;
+import swen.adventure.scenegraph.TransformNode;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -67,13 +68,13 @@ public class ObjMesh extends GLMesh<Float> {
     private List<VertexData> _vertices = new ArrayList<>();
     private List<Short> _triIndices = new ArrayList<>();
 
-    public static ObjMesh loadMesh(String id, SceneNode parent, GL3 gl, String fileName) throws FileNotFoundException {
+    public static ObjMesh loadMesh(String id, TransformNode parent, GL3 gl, String fileName) throws FileNotFoundException {
         File file = new File(Utilities.pathForResource(fileName, "obj"));
         WavefrontParser.Result result = WavefrontParser.parse(file);
         return new ObjMesh(id, parent, gl, result);
     }
 
-    public ObjMesh(String id, SceneNode parent, GL3 gl, WavefrontParser.Result parsedFile) {
+    public ObjMesh(String id, TransformNode parent, GL3 gl, WavefrontParser.Result parsedFile) {
         super(id, parent);
 
         Set<VertexData> vertexData = new LinkedHashSet<>(); //We use a LinkedHashSet to try and maintain ordering where possible (keep vertices in the same faces close together in memory).
@@ -152,16 +153,16 @@ public class ObjMesh extends GLMesh<Float> {
             indexData.add(new IndexData(_triIndices, AttributeType.UShort));
         }
 
-        List<Pair<String, List<Integer>>> namedVAOs = new ArrayList<>();
-        namedVAOs.add(new Pair<>(VAOPositions, Arrays.asList(VertexGeometryAttributeIndex)));
+        List<NamedVertexArrayObject> namedVAOs = new ArrayList<>();
+        namedVAOs.add(new NamedVertexArrayObject(VAOPositions, Arrays.asList(VertexGeometryAttributeIndex)));
         if (_hasNormals) {
-            namedVAOs.add(new Pair<>(VAOPositionsAndNormals, Arrays.asList(VertexGeometryAttributeIndex, VertexNormalAttributeIndex)));
+            namedVAOs.add(new NamedVertexArrayObject(VAOPositionsAndNormals, Arrays.asList(VertexGeometryAttributeIndex, VertexNormalAttributeIndex)));
         }
         if (_hasTextureCoordinates) {
-            namedVAOs.add(new Pair<>(VAOPositionsAndTexCoords, Arrays.asList(VertexGeometryAttributeIndex, TextureCoordinateAttributeIndex)));
+            namedVAOs.add(new NamedVertexArrayObject(VAOPositionsAndTexCoords, Arrays.asList(VertexGeometryAttributeIndex, TextureCoordinateAttributeIndex)));
         }
         if (_hasNormals && _hasTextureCoordinates) {
-            namedVAOs.add(new Pair<>(VAOPositionsNormalsTexCoords, Arrays.asList(VertexGeometryAttributeIndex, VertexNormalAttributeIndex, TextureCoordinateAttributeIndex)));
+            namedVAOs.add(new NamedVertexArrayObject(VAOPositionsNormalsTexCoords, Arrays.asList(VertexGeometryAttributeIndex, VertexNormalAttributeIndex, TextureCoordinateAttributeIndex)));
         }
 
         super.initialise(gl, attributes, indexData, namedVAOs, renderCommands);

@@ -1,6 +1,5 @@
 package swen.adventure.scenegraph;
 
-import swen.adventure.rendering.maths.Vector;
 import swen.adventure.rendering.maths.Vector3;
 
 /**
@@ -8,13 +7,15 @@ import swen.adventure.rendering.maths.Vector3;
  */
 public class Player extends GameObject {
 
-    public Player(String id, SceneNode parent) {
+    public Player(String id, TransformNode parent) {
         super(id, parent);
     }
 
     public void move(Vector3 vector) {
         TransformNode transformNode = (TransformNode) parent().get();
-        transformNode.translateBy(transformNode.rotation().rotateVector3(vector));
+        Vector3 translation = transformNode.rotation().rotateVector3(vector);
+        Vector3 lateralTranslation = new Vector3(translation.x, 0, translation.z).normalise().multiplyScalar(vector.length());
+        this.parent().get().translateBy(lateralTranslation);
     }
 
 }

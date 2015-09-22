@@ -139,21 +139,21 @@ public class Vector3 implements Vector {
                 this.v[2] >= value);
     }
 
-    public Vector3 normalize() {
+    public Vector3 normalise() {
         float scale = 1.0f / this.length();
         return new Vector3(this.v[0] * scale, this.v[1] * scale, this.v[2] * scale);
         
     }
 
-    float dotProduct(Vector3 vectorRight) {
+    public float dotProduct(Vector3 vectorRight) {
         return this.v[0] * vectorRight.v[0] + this.v[1] * vectorRight.v[1] + this.v[2] * vectorRight.v[2];
     }
 
-    float length() {
+    public float length() {
         return (float)Math.sqrt(this.v[0] * this.v[0] + this.v[1] * this.v[1] + this.v[2] * this.v[2]);
     }
 
-    float distance(Vector3 vectorEnd) {
+    public float distance(Vector3 vectorEnd) {
         return vectorEnd.subtract(this).length();
     }
 

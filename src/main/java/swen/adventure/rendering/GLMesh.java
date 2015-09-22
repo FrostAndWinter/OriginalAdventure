@@ -6,6 +6,7 @@ import swen.adventure.datastorage.WavefrontParser;
 import swen.adventure.rendering.maths.Vector;
 import swen.adventure.rendering.maths.Vector3;
 import swen.adventure.scenegraph.SceneNode;
+import swen.adventure.scenegraph.TransformNode;
 
 import java.nio.Buffer;
 import java.nio.IntBuffer;
@@ -169,6 +170,16 @@ public abstract class GLMesh<T> extends SceneNode {
         }
     }
 
+    static class NamedVertexArrayObject {
+        public final String name;
+        public final List<Integer> attributeIndices;
+
+        public NamedVertexArrayObject(final String name, final List<Integer> attributeIndices) {
+            this.name = name;
+            this.attributeIndices = attributeIndices;
+        }
+    }
+
     private int _attributeArrraysBufferRef = 0;
     private int _indexBufferRef = 0;
     private int _vertexArrayObjectRef = 0;
@@ -176,11 +187,11 @@ public abstract class GLMesh<T> extends SceneNode {
     private List<RenderCommand> _primitives;
     private Map<String, Integer> _namedVAOs = new HashMap<>();
 
-    public GLMesh(String id, SceneNode parent) {
+    public GLMesh(String id, TransformNode parent) {
         super(id, parent, false);
     }
 
-    protected void initialise(GL3 gl, List<Attribute> attributes, List<IndexData<?>> indexData, List<Pair<String, List<Integer>>> namedVAOList, List<RenderCommand> primitives) {
+    protected void initialise(GL3 gl, List<Attribute> attributes, List<IndexData<?>> indexData, List<NamedVertexArrayObject> namedVAOList, List<RenderCommand> primitives) {
 
         _primitives = primitives;
 
@@ -228,15 +239,15 @@ public abstract class GLMesh<T> extends SceneNode {
         }
 
         //Fill the named VAOs.
-        for (Pair<String, List<Integer>> namedVao : namedVAOList) {
+        for (NamedVertexArrayObject namedVao : namedVAOList) {
 
             int vao = -1;
             gl.glGenVertexArrays(1, buffer);
             vao = buffer.get(0);
             gl.glBindVertexArray(vao);
 
-            for (int attributeIndex = 0; attributeIndex < namedVao.getValue().size(); attributeIndex++) {
-                int attributeRef = namedVao.getValue().get(attributeIndex);
+            for (int attributeIndex = 0; attributeIndex < namedVao.attributeIndices.size(); attributeIndex++) {
+                int attributeRef = namedVao.attributeIndices.get(attributeIndex);
                 int attributeOffset = -1;
                 for (int count = 0; count < attributes.size(); count++) {
                     if (attributes.get(count).attributeIndex == attributeRef) {
@@ -249,7 +260,7 @@ public abstract class GLMesh<T> extends SceneNode {
                 attribute.setupAttributeArray(gl, attribStartLocs[attributeOffset]);
             }
 
-            _namedVAOs.put(namedVao.getKey(), vao);
+            _namedVAOs.put(namedVao.name, vao);
         }
 
         gl.glBindVertexArray(0);

@@ -103,7 +103,7 @@ public class Matrix3 {
 
     public static Matrix3 makeRotation(float radians, float x, float y, float z)
     {
-        Vector3 v = new Vector3(x, y, z).normalize();
+        Vector3 v = new Vector3(x, y, z).normalise();
         float cos = (float)Math.cos(radians);
         float cosp = 1.0f - cos;
         float sin = (float)Math.sin(radians);
@@ -321,4 +321,21 @@ public class Matrix3 {
             vectors[i] = this.multiply(vectors[i]);
     }
 
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder("(");
+        int column = 0;
+        int row = 0;
+        for (int i = 0; i < 9; i++) {
+            stringBuilder.append(this.m[column * 3 + row] + ", ");
+            column++;
+            if (column == 3) {
+                column = 0;
+                row++;
+                stringBuilder.append("\n");
+            }
+        }
+        stringBuilder.append(")\n");
+        return stringBuilder.toString();
+    }
 }

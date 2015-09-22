@@ -5,7 +5,7 @@ package swen.adventure.scenegraph;
  */
 public class CameraNode extends GameObject {
 
-    public CameraNode(String id, SceneNode parent) {
+    public CameraNode(String id, TransformNode parent) {
         super(id, parent);
     }
 

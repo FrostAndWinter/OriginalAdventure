@@ -4,6 +4,7 @@ package swen.adventure;
 import processing.core.PApplet;
 import processing.core.PShape;
 import processing.opengl.PGraphics3D;
+import processing.opengl.PSurfaceJOGL;
 import swen.adventure.rendering.GLRenderer;
 import swen.adventure.rendering.ProcessingRenderer;
 import swen.adventure.rendering.maths.Quaternion;
@@ -22,7 +23,7 @@ public class AdventureGame extends PApplet {
 
     private ProcessingRenderer _processingRenderer;
     private GLRenderer _glRenderer;
-    private SceneNode _sceneGraph;
+    private TransformNode _sceneGraph;
     private Player player;
 
     private Robot robot;
@@ -68,8 +69,9 @@ public class AdventureGame extends PApplet {
         TransformNode sphereOffset = new TransformNode("sphereOffset", sphereTransform, true, new Vector3(0, 0, 0), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
         new ProcessingMesh("sphereMesh", sphereOffset, createShape(SPHERE, 20.f));
 
-        TransformNode playerTransform = new TransformNode("playerTransform", _sceneGraph, true, new Vector3(0, 10, 0), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
-        new CameraNode("playerCamera", playerTransform);
+        TransformNode playerTransform = new TransformNode("playerTransform", _sceneGraph, true, new Vector3(0, 20, 0), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
+        TransformNode cameraTransform = new TransformNode("cameraTransform", playerTransform, true, new Vector3(0, 0, 0), new Quaternion(), new Vector3(1, 1, 1));
+        new CameraNode("playerCamera", cameraTransform);
         player = new Player("player", playerTransform);
 
         beginPGL();
@@ -77,19 +79,19 @@ public class AdventureGame extends PApplet {
         _glRenderer = new GLRenderer((PGraphics3D) this.getGraphics());
 
         endPGL();
-
     }
 
     @Override
     public void draw() {
         super.draw();
 
+        //robot.mouseMove(this.displayWidth / 2, this.displayHeight / 2);
+
         float xOffset = mouseX - width/2;
-        float angle = xOffset/(width / 2);
+        float xAngle = -xOffset/(width);
+        float yOffset = mouseY - height/2;
+        float yAngle = -yOffset/(height);
 
-        angle = 0.002f;
-
-        robot.mouseMove(frame.getX() + width / 2, frame.getY() + height / 2);
 
         if (keyPressed) {
            switch (key) {
@@ -107,8 +109,7 @@ public class AdventureGame extends PApplet {
                    break;
            }
         }
-
-        ((TransformNode)player.parent().get()).rotateY(angle);
+        ((TransformNode)player.parent().get()).setRotation(Quaternion.makeWithAngleAndAxis(xAngle, 0, 1, 0).multiply(Quaternion.makeWithAngleAndAxis(yAngle, 1, 0, 0)));
 
         TransformNode sphereOffset = (TransformNode) _sceneGraph.nodeWithID("sphereOffset").get();
         sphereOffset.setTranslation(new Vector3(0.f, 40 * sin(this.frameCount / 60.f), 0.f));

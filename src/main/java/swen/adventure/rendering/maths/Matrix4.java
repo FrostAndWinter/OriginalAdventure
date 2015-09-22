@@ -116,7 +116,7 @@ public class Matrix4 {
     }
 
     public static Matrix4 makeRotation(float radians, float x, float y, float z) {
-        Vector3 v = new Vector3(x, y, z).normalize();
+        Vector3 v = new Vector3(x, y, z).normalise();
         float cos = (float)Math.cos(radians);
         float cosp = 1.0f - cos;
         float sin = (float)Math.sin(radians);
@@ -217,8 +217,8 @@ public class Matrix4 {
         Vector3 ev = new Vector3(eyeX, eyeY, eyeZ);
         Vector3 cv = new Vector3(centerX, centerY, centerZ);
         Vector3 uv = new Vector3(upX, upY, upZ);
-        Vector3 n = ev.subtract(cv).normalize();
-        Vector3 u = uv.crossProduct(n).normalize();
+        Vector3 n = ev.subtract(cv).normalise();
+        Vector3 u = uv.crossProduct(n).normalise();
         Vector3 v = n.crossProduct(u);
 
         return new Matrix4(u.v[0], v.v[0], n.v[0], 0.0f,
@@ -474,6 +474,107 @@ public class Matrix4 {
     }
 
     /**
+     * Calculates the inverse transpose of the matrix. Code adapted from PMatrix3D's invert function.
+     * @return the inverse transpose of the matrix.
+     */
+    public Matrix4 inverseTranspose() {
+        float determinant = determinant();
+        if (determinant == 0) {
+            throw new RuntimeException("The matrix " + this + " is not invertible.");
+        }
+
+        Matrix4 result = new Matrix4();
+
+    // first row
+        float t00 =  determinant3x3(m[5], m[9], m[13], m[6], m[10], m[14], m[7], m[11], m[15]);
+        float t01 = -determinant3x3(m[1], m[9], m[13], m[2], m[10], m[14], m[3], m[11], m[15]);
+        float t02 =  determinant3x3(m[1], m[5], m[13], m[2], m[6], m[14], m[3], m[7], m[15]);
+        float t03 = -determinant3x3(m[1], m[5], m[9], m[2], m[6], m[10], m[3], m[7], m[11]);
+
+// second row
+        float t10 = -determinant3x3(m[4], m[8], m[12], m[6], m[10], m[14], m[7], m[11], m[15]);
+        float t11 =  determinant3x3(m[0], m[8], m[12], m[2], m[10], m[14], m[3], m[11], m[15]);
+        float t12 = -determinant3x3(m[0], m[4], m[12], m[2], m[6], m[14], m[3], m[7], m[15]);
+        float t13 =  determinant3x3(m[0], m[4], m[8], m[2], m[6], m[10], m[3], m[7], m[11]);
+
+// third row
+        float t20 =  determinant3x3(m[4], m[8], m[12], m[5], m[9], m[13], m[7], m[11], m[15]);
+        float t21 = -determinant3x3(m[0], m[8], m[12], m[1], m[9], m[13], m[3], m[11], m[15]);
+        float t22 =  determinant3x3(m[0], m[4], m[12], m[1], m[5], m[13], m[3], m[7], m[15]);
+        float t23 = -determinant3x3(m[0], m[4], m[8], m[1], m[5], m[9], m[3], m[7], m[11]);
+
+// fourth row
+        float t30 = -determinant3x3(m[4], m[8], m[12], m[5], m[9], m[13], m[6], m[10], m[14]);
+        float t31 =  determinant3x3(m[0], m[8], m[12], m[1], m[9], m[13], m[2], m[10], m[14]);
+        float t32 = -determinant3x3(m[0], m[4], m[12], m[1], m[5], m[13], m[2], m[6], m[14]);
+        float t33 =  determinant3x3(m[0], m[4], m[8], m[1], m[5], m[9], m[2], m[6], m[10]);
+
+        // divide by the determinant
+        result.m[0] = t00 / determinant;
+        result.m[4] = t10 / determinant;
+        result.m[8] = t20 / determinant;
+        result.m[12] = t30 / determinant;
+
+        result.m[1] = t01 / determinant;
+        result.m[5] = t11 / determinant;
+        result.m[9] = t21 / determinant;
+        result.m[13] = t31 / determinant;
+
+        result.m[2] = t02 / determinant;
+        result.m[6] = t12 / determinant;
+        result.m[10] = t22 / determinant;
+        result.m[14] = t32 / determinant;
+
+        result.m[3] = t03 / determinant;
+        result.m[7] = t13 / determinant;
+        result.m[11] = t23 / determinant;
+        result.m[15] = t33 / determinant;
+
+        return result;
+    }
+
+
+    /**
+     * Calculate the determinant of a 3x3 matrix.
+     * @return result
+     */
+    private float determinant3x3(float t00, float t01, float t02,
+                                 float t10, float t11, float t12,
+                                 float t20, float t21, float t22) {
+        return (t00 * (t11 * t22 - t12 * t21) +
+                t01 * (t12 * t20 - t10 * t22) +
+                t02 * (t10 * t21 - t11 * t20));
+    }
+
+
+    /**
+     * @return the determinant of the matrix
+     */public float determinant() {
+        float f =
+            m[0]
+                    * ((m[5] * m[10] * m[15] + m[9] * m[14] * m[7] + m[13] * m[6] * m[11])
+                    - m[13] * m[10] * m[7]
+                    - m[5] * m[14] * m[11]
+                    - m[9] * m[6] * m[15]);
+        f -= m[4]
+                * ((m[1] * m[10] * m[15] + m[9] * m[14] * m[3] + m[13] * m[2] * m[11])
+                - m[13] * m[10] * m[3]
+                - m[1] * m[14] * m[11]
+                - m[9] * m[2] * m[15]);
+        f += m[8]
+                * ((m[1] * m[6] * m[15] + m[5] * m[14] * m[3] + m[13] * m[2] * m[7])
+                - m[13] * m[6] * m[3]
+                - m[1] * m[14] * m[7]
+                - m[5] * m[2] * m[15]);
+        f -= m[12]
+                * ((m[1] * m[6] * m[11] + m[5] * m[10] * m[3] + m[9] * m[2] * m[7])
+                - m[9] * m[6] * m[3]
+                - m[1] * m[10] * m[7]
+                - m[5] * m[2] * m[11]);
+        return f;
+    }
+
+    /**
      * Returns the PMatrix representation of this matrix
      * Note: PMatrix is row-major, whereas this is column major. Therefore, we want to pass the transpose.
      * @return a PMatrix3D version of this matrix.
@@ -486,4 +587,21 @@ public class Matrix4 {
                 this.m[3], this.m[7], this.m[11], this.m[15]);
     }
 
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder("(");
+        int column = 0;
+        int row = 0;
+        for (int i = 0; i < 16; i++) {
+            stringBuilder.append(this.m[column * 4 + row] + ", ");
+            column++;
+            if (column == 4) {
+                column = 0;
+                row++;
+                stringBuilder.append("\n");
+            }
+        }
+        stringBuilder.append(")\n");
+        return stringBuilder.toString();
+    }
 }

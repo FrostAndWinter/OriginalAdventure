@@ -8,6 +8,7 @@ import swen.adventure.rendering.maths.Matrix4;
 import swen.adventure.rendering.maths.Vector3;
 import swen.adventure.rendering.maths.Vector4;
 import swen.adventure.scenegraph.SceneNode;
+import swen.adventure.scenegraph.TransformNode;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -23,7 +24,7 @@ public class ProcessingMesh extends SceneNode {
     private int _vertexPositionBufferRef;
     private boolean _glInitialised = false;
 
-    public ProcessingMesh(String id, final SceneNode parent, PShape mesh) {
+    public ProcessingMesh(String id, final TransformNode parent, PShape mesh) {
         super(id, parent, false);
         _mesh = mesh;
     }

@@ -14,7 +14,7 @@ public class GameObject extends SceneNode {
     private BoundingBox _boundingBox;
     private BoundingBox _transformedBoundingBox;
 
-    public GameObject(String id, final SceneNode parent) {
+    public GameObject(String id, final TransformNode parent) {
         super(id, parent, true);
     }
 
