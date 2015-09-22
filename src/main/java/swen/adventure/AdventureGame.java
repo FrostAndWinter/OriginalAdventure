@@ -3,8 +3,8 @@ package swen.adventure;
 
 import processing.core.PApplet;
 import processing.core.PShape;
+import processing.event.MouseEvent;
 import processing.opengl.PGraphics3D;
-import processing.opengl.PSurfaceJOGL;
 import swen.adventure.rendering.GLRenderer;
 import swen.adventure.rendering.ProcessingRenderer;
 import swen.adventure.rendering.maths.Quaternion;
@@ -12,11 +12,10 @@ import swen.adventure.rendering.maths.Vector3;
 import swen.adventure.rendering.ProcessingMesh;
 import swen.adventure.scenegraph.CameraNode;
 import swen.adventure.scenegraph.Player;
-import swen.adventure.scenegraph.SceneNode;
 import swen.adventure.scenegraph.TransformNode;
 
 import java.awt.AWTException;
-import java.awt.GraphicsEnvironment;
+import java.awt.Point;
 import java.awt.Robot;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,11 +35,6 @@ public class AdventureGame extends PApplet {
     public void setup() {
         super.setup();
 
-        try {
-            robot = new Robot();
-        } catch (AWTException e) {
-            e.printStackTrace();
-        }
         keyInput = new KeyInput();
 
         noCursor();
@@ -84,19 +78,41 @@ public class AdventureGame extends PApplet {
         _glRenderer = new GLRenderer((PGraphics3D) this.getGraphics());
 
         endPGL();
+
+
+        try {
+            robot = new Robot();
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
     }
+
+    boolean hasBeenCentred = false;
 
     @Override
     public void draw() {
         super.draw();
 
-        //robot.mouseMove(this.displayWidth / 2, this.displayHeight / 2);
+        float centreX = width/2;
+        float centreY = height/2;
 
-        float xOffset = mouseX - width/2;
-        float xAngle = -xOffset/(width);
-        float yOffset = mouseY - height/2;
-        float yAngle = -yOffset/(height);
+        float yOffset = mouseY - centreY;
+        float xOffset = mouseX - centreX;
 
+        // wait until the mouse has been centred by robot at least once
+        // otherwise you start looking off in a direction offset by the window size
+        if (yOffset == 0 && xOffset == 0) {
+            hasBeenCentred = true;
+        }
+
+        if (hasBeenCentred) {
+            TransformNode playerTransform = player.parent().get();
+
+            playerTransform.rotateX(-yOffset/(width));
+            playerTransform.rotateY(-xOffset/(height));
+        }
+
+        robot.mouseMove(this.displayWidth/2, this.displayHeight/2);
 
         // handle the movement input from the player
         if (keyInput.isKeyPressed('w')) {
@@ -111,7 +127,6 @@ public class AdventureGame extends PApplet {
         if (keyInput.isKeyPressed('a')) {
             player.move(new Vector3(-20, 0, 0));
         }
-        ((TransformNode)player.parent().get()).setRotation(Quaternion.makeWithAngleAndAxis(xAngle, 0, 1, 0).multiply(Quaternion.makeWithAngleAndAxis(yAngle, 1, 0, 0)));
 
         TransformNode sphereOffset = (TransformNode) _sceneGraph.nodeWithID("sphereOffset").get();
         sphereOffset.setTranslation(new Vector3(0.f, 40 * sin(this.frameCount / 60.f), 0.f));
@@ -140,6 +155,10 @@ public class AdventureGame extends PApplet {
 
     }
 
+    @Override
+    public void mouseMoved(MouseEvent event) {
+        super.mouseMoved(event);
+    }
 
     @Override
     public void keyPressed(processing.event.KeyEvent event) {
