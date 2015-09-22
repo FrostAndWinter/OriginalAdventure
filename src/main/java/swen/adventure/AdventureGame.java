@@ -18,6 +18,8 @@ import swen.adventure.scenegraph.TransformNode;
 import java.awt.AWTException;
 import java.awt.GraphicsEnvironment;
 import java.awt.Robot;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AdventureGame extends PApplet {
 
@@ -28,6 +30,8 @@ public class AdventureGame extends PApplet {
 
     private Robot robot;
 
+    private KeyInput keyInput = new KeyInput();
+
     @Override
     public void setup() {
         super.setup();
@@ -37,6 +41,7 @@ public class AdventureGame extends PApplet {
         } catch (AWTException e) {
             e.printStackTrace();
         }
+        keyInput = new KeyInput();
 
         noCursor();
 
@@ -93,21 +98,18 @@ public class AdventureGame extends PApplet {
         float yAngle = -yOffset/(height);
 
 
-        if (keyPressed) {
-           switch (key) {
-               case 'w':
-                   player.move(new Vector3(0, 0, -1));
-                   break;
-               case 'd':
-                   player.move(new Vector3(1, 0, 0));
-                   break;
-               case 's':
-                   player.move(new Vector3(0, 0, 1));
-                   break;
-               case 'a':
-                   player.move(new Vector3(-1, 0, 0));
-                   break;
-           }
+        // handle the movement input from the player
+        if (keyInput.isKeyPressed('w')) {
+            player.move(new Vector3(0, 0, -20));
+        }
+        if (keyInput.isKeyPressed('d')) {
+            player.move(new Vector3(20, 0, 0));
+        }
+        if (keyInput.isKeyPressed('s')) {
+            player.move(new Vector3(0, 0, 20));
+        }
+        if (keyInput.isKeyPressed('a')) {
+            player.move(new Vector3(-20, 0, 0));
         }
         ((TransformNode)player.parent().get()).setRotation(Quaternion.makeWithAngleAndAxis(xAngle, 0, 1, 0).multiply(Quaternion.makeWithAngleAndAxis(yAngle, 1, 0, 0)));
 
@@ -118,8 +120,37 @@ public class AdventureGame extends PApplet {
         boxTransform.rotateY(0.02f);
 
         _glRenderer.render(_sceneGraph, (CameraNode) _sceneGraph.nodeWithID("playerCamera").get());
+    }
 
 
+    private static class KeyInput {
+        private Map<Character, Boolean> keyPressedMap = new HashMap<>();
+
+        public void pressKey(Character key) {
+            keyPressedMap.put(key, true);
+        }
+
+        public void releaseKey(Character key) {
+            keyPressedMap.put(key, false);
+        }
+
+        public boolean isKeyPressed(Character c) {
+            return keyPressedMap.getOrDefault(c, false);
+        }
+
+    }
+
+
+    @Override
+    public void keyPressed(processing.event.KeyEvent event) {
+        super.keyPressed(event);
+        keyInput.pressKey(event.getKey());
+    }
+
+    @Override
+    public void keyReleased(processing.event.KeyEvent event) {
+        super.keyReleased(event);
+        keyInput.releaseKey(event.getKey());
     }
 
     public void settings() {
