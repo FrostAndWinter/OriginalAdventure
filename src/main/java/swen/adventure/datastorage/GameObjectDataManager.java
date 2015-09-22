@@ -2,6 +2,7 @@ package swen.adventure.datastorage;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
+import swen.adventure.Utilities;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -20,15 +21,15 @@ import java.util.Map;
 /**
  * Created by Liam O'Neill, Student ID 300312734, on 18/09/15.
  */
-public class DataManager {
+public class GameObjectDataManager {
 
     private static final ParserManager PARSER_MANAGER = new ParserManager();
 
     public String toXml(BundleObject bundleObject) {
-        Document document = createNewDocument();
+        Document document = Utilities.createDocument();
         writeBundleObject(document, document, bundleObject);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        writeOut(document, os);
+        Utilities.writeOutDocument(document, os);
         return new String(os.toByteArray(), StandardCharsets.UTF_8);
     }
 
@@ -43,7 +44,7 @@ public class DataManager {
     }
 
     public BundleObject fromXml(InputStream is) {
-        Document document = createExistingDocument(is);
+        Document document = Utilities.loadExistingXmlDocument(is);
         document.getDocumentElement().normalize();
         return readBundleObject(document.getFirstChild());
     }
@@ -93,7 +94,7 @@ public class DataManager {
     }
 
     private static void writeBundleArray(Node parent, Document document, BundleArray value) {
-
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     private static void addProperty(Property property, Document document, Element parent){
@@ -110,42 +111,10 @@ public class DataManager {
         } else if(property.class0 == BundleArray.class) {
             writeBundleArray(valueElem, document, (BundleArray) property.value);
         } else {
-            Node valueText = document.createTextNode(PARSER_MANAGER.convertToString(property.value, property.class0));
+            Node valueText = document.createTextNode(PARSER_MANAGER.convertToString(property.value, (Class<Object>)property.class0));
             valueElem.appendChild(valueText);
         }
     }
 
-    private static Document createNewDocument() {
-        try {
-            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-            return docBuilder.newDocument();
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
-    private static Document createExistingDocument(InputStream is) {
-        try {
-            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-            return docBuilder.parse(is);
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static void writeOut(Document doc, OutputStream os) {
-        try {
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            //transformerFactory.setAttribute("indent-number", 2);
-            Transformer transformer = transformerFactory.newTransformer();
-            //transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(os);
-            transformer.transform(source, result);
-        } catch (TransformerException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

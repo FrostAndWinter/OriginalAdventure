@@ -26,38 +26,47 @@ class ParserManager {
         parsers.put(class0, parser);
     }
 
-    private static Parser<?> getParser(Class<?> class0) {
-        Parser<?> parser = PARSERS.get(class0);
+    private static <T> Parser<T> getParser(Class<T> class0) {
+        Parser<?> unknownParser = PARSERS.get(class0);
 
-        if(parser == null)
+        if(unknownParser == null)
             throw new ClassCastException(class0.getSimpleName() + " doesn't have a parser.");
 
-        return parser;
+        @SuppressWarnings("unchecked")
+        Parser<T> uncheckedParser = (Parser<T>)unknownParser;
+        return uncheckedParser;
     }
 
-    String convertToString(Object object, Class<?> class0) {
-        return getParser(class0).convertToString(object);
+    <T> Function<T, String> getToStringFunction(Class<T> class0){
+        return getParser(class0).toStringFunction;
     }
 
-    Object convertFromString(String str, Class<?> class0) {
+    <T> Function<String, T> getFromStringFunction(Class<T> class0){
+        return getParser(class0).fromStringFunction;
+    }
+
+    <T> String convertToString(T t, Class<T> class0) {
+        return getParser(class0).convertToString(t);
+    }
+
+    <T> T convertFromString(String str, Class<T> class0) {
         return getParser(class0).convertToInstance(str);
     }
 
     private static class Parser<T> {
-        private final Function<Object, String> toStringFunction;
-        private final Function<String, Object> fromStringFunction;
+        private final Function<T, String> toStringFunction;
+        private final Function<String, T> fromStringFunction;
 
-        @SuppressWarnings("unchecked")
         public Parser(Function<T, String> toStringFunction, Function<String, T> fromStringFunction) {
-            this.toStringFunction = (Function<Object, String>)toStringFunction;
-            this.fromStringFunction = (Function<String, Object>)fromStringFunction;
+            this.toStringFunction = toStringFunction;
+            this.fromStringFunction = fromStringFunction;
         }
 
-        String convertToString(Object object) {
-            return toStringFunction.apply(object);
+        String convertToString(T t) {
+            return toStringFunction.apply(t);
         }
 
-        Object convertToInstance(String str) {
+        T convertToInstance(String str) {
             return fromStringFunction.apply(str);
         }
     }

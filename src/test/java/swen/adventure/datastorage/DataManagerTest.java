@@ -13,7 +13,7 @@ public class DataManagerTest {
 
     @Test
     public void testBundleObjectToXml(){
-        DataManager dataMan = new DataManager();
+        GameObjectDataManager dataMan = new GameObjectDataManager();
         String xml = dataMan.toXml(createDummyBundleObject());
 
         isXmlCorrect(
@@ -23,7 +23,7 @@ public class DataManagerTest {
 
     @Test
     public void testNestedBundleObjectToXml1(){
-        DataManager dataMan = new DataManager();
+        GameObjectDataManager dataMan = new GameObjectDataManager();
 
         BundleObject bundleObject1 = createDummyBundleObject();
         BundleObject bundleObject2 = new BundleObject();
@@ -42,7 +42,7 @@ public class DataManagerTest {
 
     @Test
     public void testNestedBundleObjectToXml2(){
-        DataManager dataMan = new DataManager();
+        GameObjectDataManager dataMan = new GameObjectDataManager();
 
         BundleObject bundleObject1 = createDummyBundleObject();
         BundleObject bundleObject2 = new BundleObject();
@@ -58,7 +58,7 @@ public class DataManagerTest {
 
     @Test
     public void testSimpleXmlToBundleObject(){
-        DataManager dataMan = new DataManager();
+        GameObjectDataManager dataMan = new GameObjectDataManager();
         BundleObject bundleObject = dataMan.fromXml("<BundleObject><property name=\"id\"><value type=\"java.lang.Integer\">25</value></property></BundleObject>");
 
         assertEquals(createDummyBundleObject(), bundleObject);

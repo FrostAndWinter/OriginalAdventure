@@ -1,12 +1,22 @@
 package swen.adventure;
 
-import java.io.File;
-import java.io.IOException;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,4 +45,62 @@ public class Utilities {
         return lines.stream().collect(Collectors.joining("\n"));
     }
 
+    public static InputStream stringToInputStream(String input){
+        return new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static InputStream fileToInputStream(File inputFile) throws FileNotFoundException {
+        return new FileInputStream(inputFile);
+    }
+
+    public static Document loadExistingXmlDocument(String input){
+        return loadExistingXmlDocument(stringToInputStream(input));
+    }
+
+    public static Document loadExistingXmlDocument(File inputFile) throws FileNotFoundException {
+        return loadExistingXmlDocument(fileToInputStream(inputFile));
+    }
+
+    public static Document loadExistingXmlDocument(InputStream is) {
+        try {
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+            return docBuilder.parse(is);
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Document createDocument() {
+        try {
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+            return docBuilder.newDocument();
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void writeOutDocument(Document doc, OutputStream os) {
+        writeOutDocument(doc, os, false);
+    }
+
+    public static void writeOutDocument(Document doc, OutputStream os, boolean neat) {
+        try {
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+
+            if(neat)
+                transformerFactory.setAttribute("indent-number", 2);
+
+            Transformer transformer = transformerFactory.newTransformer();
+            if(neat)
+                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(os);
+            transformer.transform(source, result);
+        } catch (TransformerException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
