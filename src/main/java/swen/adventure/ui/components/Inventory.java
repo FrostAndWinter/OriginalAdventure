@@ -11,11 +11,17 @@ public class Inventory extends UIComponent {
     private static final int BOX_SIZE = 30;
 
     private int numItems;
+    private int boxSize;
 
     public Inventory(PApplet a, int numItems, int x, int y) {
         super(a, x, y, numItems * BOX_SIZE, BOX_SIZE);
 
         this.numItems = numItems;
+        boxSize = BOX_SIZE;
+    }
+
+    public void setBoxSize(int boxSize) {
+        this.boxSize = boxSize;
     }
 
     @Override
@@ -40,8 +46,8 @@ public class Inventory extends UIComponent {
 
         g.fill(34, 50, 90);
         for (int i = 0; i < numItems; i++) {
-            g.rect(currentX * scaleX, currentY * scaleY, BOX_SIZE * scaleX, BOX_SIZE * scaleY);
-            currentX += BOX_SIZE;
+            g.rect(currentX * scaleX, currentY * scaleY, boxSize * scaleX, boxSize * scaleY);
+            currentX += boxSize;
         }
     }
 
