@@ -13,7 +13,6 @@ public class NetworkClient implements Client, Session.SessionStrategy {
 
     private final Queue<String> queue;
     private Session session;
-    private Socket socket;
 
 
     public NetworkClient() {
@@ -22,8 +21,7 @@ public class NetworkClient implements Client, Session.SessionStrategy {
 
     @Override
     public void connect(String host, int port) throws IOException {
-        socket = new Socket(host, port);
-        session = new Session(socket, this);
+        session = new Session(new Socket(host, port), this);
 
         new Thread(session, this.getClass().getSimpleName() + "Thread").start();
     }
@@ -34,7 +32,7 @@ public class NetworkClient implements Client, Session.SessionStrategy {
             throw new RuntimeException("Cannot disconnect a client that is not connected");
         }
         try {
-            socket.close();
+            session.close();
         } catch (IOException ex) {
             // muffu muffu~
         }
@@ -51,7 +49,7 @@ public class NetworkClient implements Client, Session.SessionStrategy {
 
     @Override
     public boolean isConnected() {
-        return socket != null && socket.isConnected();
+        return session != null && session.isConnected();
     }
 
     @Override
