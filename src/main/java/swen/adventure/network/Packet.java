@@ -11,13 +11,18 @@ import java.util.Optional;
 public class Packet {
 
     public enum Operation {
+        // FIXME: awful names
         // packets coming from the server
         CLIENT_CONNECT,
         CLIENT_DISCONNECT,
         CLIENT_DATA,
 
+        // Mutual packet types
+        PING,
+        PONG,
+
         // Server packets going out
-        SERVER_DATA, // FIXME: awful name
+        SERVER_DATA,
         SERVER_KILL;
 
         public byte toByte() {
@@ -77,6 +82,10 @@ public class Packet {
     }
 
     public byte[] getPayload() {
-        return this.payload;
+        return payload;
+    }
+
+    public Operation getOperation() {
+        return op;
     }
 }

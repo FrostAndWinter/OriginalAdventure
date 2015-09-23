@@ -1,5 +1,7 @@
 package swen.adventure.network;
 
+import java.io.IOError;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,7 +13,7 @@ public interface Server {
     /**
      * Start the server accepting clients and messages
      */
-    void start();
+    void start(int port) throws IOException;
 
     /**
      * Stop serving all clients
