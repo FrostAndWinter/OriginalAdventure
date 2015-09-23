@@ -138,4 +138,45 @@ public class TransformNode extends SceneNode {
     public Quaternion rotation() {
         return _rotation;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TransformNode that = (TransformNode) o;
+
+        if (_needsRecalculateNodeWorldTransform != that._needsRecalculateNodeWorldTransform) return false;
+        if (_needsRecalculateTransformWorldNodeTransform != that._needsRecalculateTransformWorldNodeTransform)
+            return false;
+        if (!_translation.equals(that._translation)) return false;
+        if (!_rotation.equals(that._rotation)) return false;
+        return _scale.equals(that._scale);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = _translation.hashCode();
+        result = 31 * result + _rotation.hashCode();
+        result = 31 * result + _scale.hashCode();
+        result = 31 * result + (_needsRecalculateNodeWorldTransform ? 1 : 0);
+        result = 31 * result + (_needsRecalculateTransformWorldNodeTransform ? 1 : 0);
+        result = 31 * result + _nodeToWorldTransform.hashCode();
+        result = 31 * result + _worldToNodeTransform.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "TransformNode{" +
+                "_needsRecalculateNodeWorldTransform=" + _needsRecalculateNodeWorldTransform +
+                ", _translation=" + _translation +
+                ", _rotation=" + _rotation +
+                ", _scale=" + _scale +
+                ", _needsRecalculateTransformWorldNodeTransform=" + _needsRecalculateTransformWorldNodeTransform +
+                ", _nodeToWorldTransform=" + _nodeToWorldTransform +
+                ", _worldToNodeTransform=" + _worldToNodeTransform +
+                '}';
+    }
 }
