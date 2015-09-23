@@ -69,6 +69,11 @@ public class NetworkServer implements Server, Session.SessionStrategy {
         if (session == null) {
             return false;
         }
+        if (!session.isConnected()) {
+            this.clients.remove(id);
+            return false;
+        }
+
         try {
             session.send(new Packet(Packet.Operation.SERVER_DATA, message.getBytes()));
             return true;
@@ -83,7 +88,7 @@ public class NetworkServer implements Server, Session.SessionStrategy {
         if (!this.isRunning()) {
             throw new RuntimeException("Cannot get ids with a server which is not running");
         }
-        return clients.keySet().stream().collect(Collectors.toList());
+        return clients.keySet().stream().filter(id -> clients.get(id).isConnected()).collect(Collectors.toList());
     }
 
     /**
