@@ -47,4 +47,34 @@ public class GameObject extends SceneNode {
 
         throw new RuntimeException("Could not find an event of name " + eventName + " on " + this);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        GameObject that = (GameObject) o;
+
+        if (_needsRecalculateBoundingBox != that._needsRecalculateBoundingBox) return false;
+        if (_boundingBox != null ? !_boundingBox.equals(that._boundingBox) : that._boundingBox != null) return false;
+        return !(_transformedBoundingBox != null ? !_transformedBoundingBox.equals(that._transformedBoundingBox) : that._transformedBoundingBox != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (_needsRecalculateBoundingBox ? 1 : 0);
+        result = 31 * result + (_boundingBox != null ? _boundingBox.hashCode() : 0);
+        result = 31 * result + (_transformedBoundingBox != null ? _transformedBoundingBox.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "GameObject{" +
+                "_boundingBox=" + _boundingBox +
+                ", _needsRecalculateBoundingBox=" + _needsRecalculateBoundingBox +
+                ", _transformedBoundingBox=" + _transformedBoundingBox +
+                '}';
+    }
 }

@@ -5,6 +5,8 @@ import swen.adventure.rendering.maths.Matrix4;
 import swen.adventure.rendering.maths.Quaternion;
 import swen.adventure.rendering.maths.Vector3;
 
+import java.util.Objects;
+
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 15/09/15.
  */
@@ -21,16 +23,16 @@ public class TransformNode extends SceneNode {
 
     public TransformNode(final String id, Vector3 translation, Quaternion rotation, Vector3 scale) {
         super(id);
-        _translation = translation;
-        _rotation = rotation;
-        _scale = scale;
+        _translation = Objects.requireNonNull(translation);
+        _rotation = Objects.requireNonNull(rotation);
+        _scale = Objects.requireNonNull(scale);
     }
 
     public TransformNode(final String id, final TransformNode parent, boolean isDynamic, Vector3 translation, Quaternion rotation, Vector3 scale) {
         super(id, parent, isDynamic);
-        _translation = translation;
-        _rotation = rotation;
-        _scale = scale;
+        _translation = Objects.requireNonNull(translation);
+        _rotation = Objects.requireNonNull(rotation);
+        _scale = Objects.requireNonNull(scale);
     }
 
     private void setNeedsRecalculateTransform() {
@@ -149,21 +151,24 @@ public class TransformNode extends SceneNode {
         if (_needsRecalculateNodeWorldTransform != that._needsRecalculateNodeWorldTransform) return false;
         if (_needsRecalculateTransformWorldNodeTransform != that._needsRecalculateTransformWorldNodeTransform)
             return false;
-        if (!_translation.equals(that._translation)) return false;
-        if (!_rotation.equals(that._rotation)) return false;
-        return _scale.equals(that._scale);
+        if (_translation != null ? !_translation.equals(that._translation) : that._translation != null) return false;
+        if (_rotation != null ? !_rotation.equals(that._rotation) : that._rotation != null) return false;
+        if (_scale != null ? !_scale.equals(that._scale) : that._scale != null) return false;
+        if (_nodeToWorldTransform != null ? !_nodeToWorldTransform.equals(that._nodeToWorldTransform) : that._nodeToWorldTransform != null)
+            return false;
+        return !(_worldToNodeTransform != null ? !_worldToNodeTransform.equals(that._worldToNodeTransform) : that._worldToNodeTransform != null);
 
     }
 
     @Override
     public int hashCode() {
-        int result = _translation.hashCode();
-        result = 31 * result + _rotation.hashCode();
-        result = 31 * result + _scale.hashCode();
+        int result = _translation != null ? _translation.hashCode() : 0;
+        result = 31 * result + (_rotation != null ? _rotation.hashCode() : 0);
+        result = 31 * result + (_scale != null ? _scale.hashCode() : 0);
         result = 31 * result + (_needsRecalculateNodeWorldTransform ? 1 : 0);
         result = 31 * result + (_needsRecalculateTransformWorldNodeTransform ? 1 : 0);
-        result = 31 * result + _nodeToWorldTransform.hashCode();
-        result = 31 * result + _worldToNodeTransform.hashCode();
+        result = 31 * result + (_nodeToWorldTransform != null ? _nodeToWorldTransform.hashCode() : 0);
+        result = 31 * result + (_worldToNodeTransform != null ? _worldToNodeTransform.hashCode() : 0);
         return result;
     }
 
