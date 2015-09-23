@@ -21,6 +21,7 @@ class ParserManager {
         addParser(Integer.class, new Parser<>(Object::toString, Integer::parseInt), parsers);
         addParser(Float.class, new Parser<>(Object::toString, Float::parseFloat), parsers);
         addParser(Long.class, new Parser<>(Object::toString, Long::parseLong), parsers);
+        addParser(Boolean.class, new Parser<>(Object::toString, Boolean::parseBoolean), parsers);
 
         addParser(Vector3.class, new Parser<>(
                 v -> toCsvString(Arrays.asList(v.x, v.y, v.z)),
