@@ -49,6 +49,8 @@ public class Button extends UIComponent implements Clickable {
 
         dynamicSize = false;
 
+        listeners = new ArrayList<>();
+
         // Create the font
         font = applet.createFont("Arial", 16);
 
@@ -71,6 +73,9 @@ public class Button extends UIComponent implements Clickable {
             height = padding + stringHeight;
         }
 
+        int stringX = (width - stringWidth)/2;
+        int stringY = (height - stringHeight)/2;
+
         // Draw the background
         g.fill(255);
         g.color(50);
@@ -80,7 +85,7 @@ public class Button extends UIComponent implements Clickable {
         g.fill(0);
         g.textFont(font, 16);
 
-        g.text(text.toCharArray(), 0, text.length(), (x + padding/2) * scaleX, (y + stringHeight + padding/2) * scaleY);
+        g.text(text.toCharArray(), 0, text.length(), (stringX + padding/2) * scaleX, (stringY + stringHeight + padding/2) * scaleY);
     }
 
     public synchronized void addClickListener(OnClickListener c) {
@@ -106,14 +111,22 @@ public class Button extends UIComponent implements Clickable {
 
     @Override
     public int getWidth(PGraphics g) {
-        g.textFont(font);
-        return padding + (int) g.textWidth(text);
+        if (dynamicSize) {
+            g.textFont(font);
+            return padding + (int) g.textWidth(text);
+        }
+
+        return width;
     }
 
     @Override
     public int getHeight(PGraphics g) {
-        g.textFont(font);
-        return padding + (int) (g.textAscent() + g.textDescent());
+        if (dynamicSize) {
+            g.textFont(font);
+            return padding + (int) (g.textAscent() + g.textDescent());
+        }
+
+        return height;
     }
 
     @Override
