@@ -2,6 +2,8 @@ package swen.adventure.rendering.maths;
 
 import processing.core.PMatrix3D;
 
+import java.util.Arrays;
+
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 17/09/15.
  * Methods adapted from and designed to emulate Apple's GLKit framework.
@@ -585,6 +587,22 @@ public class Matrix4 {
                 this.m[1], this.m[5], this.m[9], this.m[13],
                 this.m[2], this.m[6], this.m[10], this.m[14],
                 this.m[3], this.m[7], this.m[11], this.m[15]);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Matrix4 matrix4 = (Matrix4) o;
+
+        return Arrays.equals(m, matrix4.m);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(m);
     }
 
     @Override
