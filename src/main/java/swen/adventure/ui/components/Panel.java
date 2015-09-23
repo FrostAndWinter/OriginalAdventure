@@ -2,6 +2,7 @@ package swen.adventure.ui.components;
 
 import processing.core.PApplet;
 import processing.core.PGraphics;
+import swen.adventure.ui.color.Color;
 import swen.adventure.ui.layoutmanagers.LinearLayout;
 
 /**
@@ -10,6 +11,7 @@ import swen.adventure.ui.layoutmanagers.LinearLayout;
 public class Panel extends UIComponent {
 
     private boolean dynamicSize;
+    private Color color;
 
     public Panel(PApplet p, int x, int y, int width, int height) {
         super(p, x, y, width, height);
@@ -23,10 +25,18 @@ public class Panel extends UIComponent {
         setLayoutManager(new LinearLayout(LinearLayout.LINEAR_LAYOUT_VERTICAL));
     }
 
+    public void setColor(Color c) {
+        color = c;
+    }
+
     @Override
     public void drawComponent(PGraphics g, float scaleX, float scaleY) {
 
-        g.fill(23, 54, 123);
+        if (color == null) {
+            g.fill(23, 54, 123);
+        } else {
+            g.fill(color.getB(), color.getG(), color.getB(), color.getA());
+        }
         g.rect(x * scaleX, y * scaleY, width * scaleX, height * scaleY);
 
         // Translate coord system so that positioning inside the
