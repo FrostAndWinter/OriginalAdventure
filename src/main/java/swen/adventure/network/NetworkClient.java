@@ -81,4 +81,9 @@ public class NetworkClient implements Client, Session.SessionStrategy {
                 break;
         }
     }
+
+    @Override
+    public String toString() {
+        return "NetworkClient";
+    }
 }

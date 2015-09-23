@@ -176,4 +176,9 @@ public class NetworkServer implements Server, Session.SessionStrategy {
             System.out.println("Err: " + ex);
         }
     }
+
+    @Override
+    public String toString() {
+        return "NetworkServer";
+    }
 }

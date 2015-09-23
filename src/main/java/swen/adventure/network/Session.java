@@ -45,18 +45,19 @@ class Session implements Runnable { // FIXME
             input = socket.getInputStream();
             buffer = new byte[socket.getReceiveBufferSize()];
         } catch (IOException ex) {
-            System.out.println("session@" + socket.getLocalSocketAddress() + " input stream error: " + ex);
+            System.out.println(strategy + "@" + socket.getLocalSocketAddress() + " input stream error: " + ex);
             return;
         }
 
-        System.out.println("session@" + socket.getLocalSocketAddress() + " started loop");
+        System.out.println(strategy + "@" + socket.getLocalSocketAddress() + " started loop");
         while (!socket.isClosed() && socket.isConnected()) {
             try {
                 int len = input.read(buffer);
                 if (len == -1) {
-                    System.out.println("session@" + socket.getLocalSocketAddress() + " End of Stream");
+                    System.out.println(strategy + "@" + socket.getLocalSocketAddress() + " End of Stream");
                     break;
                 }
+
                 // TODO: Make sure packet boundaries are correct
                 byte[] recv = Arrays.copyOf(buffer, len);
 
@@ -67,7 +68,7 @@ class Session implements Runnable { // FIXME
 
 
             } catch (IOException ex) {
-                System.out.println("session@" + socket.getLocalSocketAddress() + " error: " + ex);
+                System.out.println(strategy + "@" + socket.getLocalSocketAddress() + " error: " + ex);
                 break;
             }
         }
