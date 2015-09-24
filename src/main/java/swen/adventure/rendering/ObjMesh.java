@@ -1,19 +1,18 @@
 package swen.adventure.rendering;
 
-import com.jogamp.opengl.GL3;
-import javafx.util.Pair;
 import swen.adventure.Utilities;
 import swen.adventure.datastorage.WavefrontParser;
 import swen.adventure.rendering.maths.Vector;
 import swen.adventure.rendering.maths.Vector3;
 import swen.adventure.rendering.maths.Vector4;
-import swen.adventure.scenegraph.SceneNode;
 import swen.adventure.scenegraph.TransformNode;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.lwjgl.opengl.GL11.*;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 20/09/15.
@@ -68,15 +67,13 @@ public class ObjMesh extends GLMesh<Float> {
     private List<VertexData> _vertices = new ArrayList<>();
     private List<Short> _triIndices = new ArrayList<>();
 
-    public static ObjMesh loadMesh(String id, TransformNode parent, GL3 gl, String fileName) throws FileNotFoundException {
-        File file = new File(Utilities.pathForResource(fileName, "obj"));
+    public static ObjMesh loadMesh(String fileName) throws FileNotFoundException {
+        File file = new File(Utilities.pathForResource(fileName, null));
         WavefrontParser.Result result = WavefrontParser.parse(file);
-        return new ObjMesh(id, parent, gl, result);
+        return new ObjMesh(fileName, result);
     }
 
-    public ObjMesh(String id, TransformNode parent, GL3 gl, WavefrontParser.Result parsedFile) {
-        super(id, parent);
-
+    public ObjMesh(String fileName, WavefrontParser.Result parsedFile) {
         Set<VertexData> vertexData = new LinkedHashSet<>(); //We use a LinkedHashSet to try and maintain ordering where possible (keep vertices in the same faces close together in memory).
         Map<WavefrontParser.IndexData, VertexData> objIndicesToVertices = new HashMap<>();
 
@@ -128,11 +125,11 @@ public class ObjMesh extends GLMesh<Float> {
 
             if (_hasNormals) {
                 this.addVectorToList(vertex.vertexNormal.isPresent() ? vertex.vertexNormal.get() : new Vector3(1.f, 0.f, 0.f), vertexNormals);
-                if (!vertex.vertexNormal.isPresent()) { System.err.println("Warning: mesh with id " + id + " has missing normals for vertex at " + geometricPosition); }
+                if (!vertex.vertexNormal.isPresent()) { System.err.println("Warning: mesh with name " + fileName + " has missing normals for vertex at " + geometricPosition); }
             }
             if (_hasTextureCoordinates) {
                 this.addVectorToList(vertex.textureCoordinate.isPresent() ? vertex.textureCoordinate.get() : new Vector3(1.f, 0.f, 0.f), textureCoordinates);
-                if (!vertex.textureCoordinate.isPresent()) { System.err.println("Warning: mesh with id " + id + " has missing texture coordinates for vertex at " + geometricPosition); }
+                if (!vertex.textureCoordinate.isPresent()) { System.err.println("Warning: mesh with name " + fileName + " has missing texture coordinates for vertex at " + geometricPosition); }
             }
         }
 
@@ -149,7 +146,7 @@ public class ObjMesh extends GLMesh<Float> {
         List<IndexData<?>> indexData = new ArrayList<>();
 
         if (!_triIndices.isEmpty()) {
-            renderCommands.add(new RenderCommand(GL3.GL_TRIANGLES, -1));
+            renderCommands.add(new RenderCommand(GL_TRIANGLES, -1));
             indexData.add(new IndexData(_triIndices, AttributeType.UShort));
         }
 
@@ -165,7 +162,7 @@ public class ObjMesh extends GLMesh<Float> {
             namedVAOs.add(new NamedVertexArrayObject(VAOPositionsNormalsTexCoords, Arrays.asList(VertexGeometryAttributeIndex, VertexNormalAttributeIndex, TextureCoordinateAttributeIndex)));
         }
 
-        super.initialise(gl, attributes, indexData, namedVAOs, renderCommands);
+        super.initialise(attributes, indexData, namedVAOs, renderCommands);
 
     }
 

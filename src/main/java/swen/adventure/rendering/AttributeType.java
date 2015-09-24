@@ -1,6 +1,11 @@
 package swen.adventure.rendering;
 
-import com.jogamp.opengl.GL3;
+import org.lwjgl.opengl.Util;
+
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL30.*;
+import org.lwjgl.BufferUtils;
 
 import java.nio.*;
 import java.util.List;
@@ -10,51 +15,102 @@ import java.util.List;
  */
 public enum AttributeType {
     
-    Float(false, GL3.GL_FLOAT, 4, FloatBuffer::allocate, ((object, buffer) -> ((FloatBuffer)buffer).put((float)object))),
-    Half(false, GL3.GL_HALF_FLOAT, 2, ShortBuffer::allocate, ((object, buffer) -> ((ShortBuffer)buffer).put((short)object))),
-    Int(false, GL3.GL_INT, 4, IntBuffer::allocate, ((object, buffer) -> ((IntBuffer)buffer).put((int)object))),
-    UInt(false, GL3.GL_UNSIGNED_INT, 4, IntBuffer::allocate, ((object, buffer) -> ((IntBuffer)buffer).put((int)object))),
-    NormalisedInt(true, GL3.GL_INT, 4, IntBuffer::allocate, ((object, buffer) -> ((IntBuffer)buffer).put((int)object))),
-    NormalisedUInt(true, GL3.GL_UNSIGNED_INT, 4, IntBuffer::allocate, ((object, buffer) -> ((IntBuffer)buffer).put((int)object))),
-    Short(false, GL3.GL_SHORT, 2, ShortBuffer::allocate, ((object, buffer) -> ((ShortBuffer)buffer).put((short)object))),
-    UShort(false, GL3.GL_UNSIGNED_SHORT, 2, ShortBuffer::allocate, ((object, buffer) -> ((ShortBuffer)buffer).put((short)object))),
-    NormalisedShort(true, GL3.GL_SHORT, 2, ShortBuffer::allocate, ((object, buffer) -> ((ShortBuffer)buffer).put((short)object))),
-    NormalisedUShort(true, GL3.GL_UNSIGNED_SHORT, 2, ShortBuffer::allocate, ((object, buffer) -> ((ShortBuffer)buffer).put((short)object))),
-    Byte(false, GL3.GL_BYTE, 1, ByteBuffer::allocate, ((object, buffer) -> ((ByteBuffer)buffer).put((byte)object))),
-    UnsignedByte(false, GL3.GL_UNSIGNED_BYTE, 1, ByteBuffer::allocate, ((object, buffer) -> ((ByteBuffer)buffer).put((byte)object))),
-    NormalisedByte(true, GL3.GL_BYTE, 1, ByteBuffer::allocate, ((object, buffer) -> ((ByteBuffer)buffer).put((byte)object))),
-    NormalisedUnsignedByte(true, GL3.GL_UNSIGNED_BYTE, 1, ByteBuffer::allocate, ((object, buffer) -> ((ByteBuffer)buffer).put((byte)object)));
-
-    interface BufferAllocationMethod {
-        Buffer allocate(int capacity);
-    }
-
-    interface BufferAdditionMethod<T> {
-        void addToBuffer(T object, Buffer buffer);
-    }
+    Float(false, GL_FLOAT, 4),
+    Half(false, GL_HALF_FLOAT, 2),
+    Int(false, GL_INT, 4),
+    UInt(false, GL_UNSIGNED_INT, 4),
+    NormalisedInt(true, GL_INT, 4),
+    NormalisedUInt(true, GL_UNSIGNED_INT, 4),
+    Short(false, GL_SHORT, 2),
+    UShort(false, GL_UNSIGNED_SHORT, 2),
+    NormalisedShort(true, GL_SHORT, 2),
+    NormalisedUShort(true, GL_UNSIGNED_SHORT, 2),
+    Byte(false, GL_BYTE, 1),
+    UnsignedByte(false, GL_UNSIGNED_BYTE, 1),
+    NormalisedByte(true, GL_BYTE, 1),
+    NormalisedUnsignedByte(true, GL_UNSIGNED_BYTE, 1);
 
     public final boolean isNormalised;
     public final int glType;
     public final int sizeInBytes;
-    public final BufferAllocationMethod bufferAllocationMethod;
-    public final BufferAdditionMethod<?> bufferAdditionMethod;
 
-    AttributeType(boolean isNormalised, int glType, int sizeInBytes, BufferAllocationMethod allocationMethod, BufferAdditionMethod<?> additionMethod) {
+    AttributeType(boolean isNormalised, int glType, int sizeInBytes) {
         this.isNormalised = isNormalised;
         this.glType = glType;
         this.sizeInBytes = sizeInBytes;
-        this.bufferAllocationMethod = allocationMethod;
-        this.bufferAdditionMethod = additionMethod;
     }
 
-    public <T> void writeToBuffer(GL3 gl, int glBuffer, List<T> dataArray, int offset) {
-        Buffer buffer = this.bufferAllocationMethod.allocate(dataArray.size());
-        BufferAdditionMethod<T> additionMethod = (BufferAdditionMethod<T>)this.bufferAdditionMethod;
-        for (T element : dataArray) {
-            additionMethod.addToBuffer(element, buffer);
+    public void writeToBuffer(int glBuffer, List<?> dataArray, int offset, AttributeType type) {
+        switch (type) {
+            case Float:
+                this.writeToFloatBuffer(glBuffer, (List<Float>)dataArray, offset);
+                break;
+            case Half:
+            case Short:
+            case UShort:
+            case NormalisedShort:
+            case NormalisedUShort:
+                this.writeToShortBuffer(glBuffer, (List<Short>)dataArray, offset);
+                break;
+            case Int:
+            case UInt:
+            case NormalisedInt:
+            case NormalisedUInt:
+                this.writeToIntBuffer(glBuffer, (List<Integer>)dataArray, offset);
+                break;
+            case Byte:
+            case UnsignedByte:
+            case NormalisedByte:
+            case NormalisedUnsignedByte:
+                this.writeToByteBuffer(glBuffer, (List<Byte>)dataArray, offset);
+                break;
         }
-        buffer.rewind();
+    }
 
-        gl.glBufferSubData(glBuffer, offset, dataArray.size() * this.sizeInBytes, buffer);
+    private void writeToByteBuffer(int glBuffer, List<Byte> dataArray, int offset) {
+
+        ByteBuffer byteBuffer = BufferUtils.createByteBuffer(dataArray.size());
+        for (Byte element : dataArray) {
+            byteBuffer.put(element);
+        }
+        byteBuffer.flip();
+
+        glBufferSubData(glBuffer, offset, byteBuffer);
+    }
+
+    private void writeToIntBuffer(int glBuffer, List<Integer> dataArray, int offset) {
+
+        IntBuffer intBuffer = BufferUtils.createIntBuffer(dataArray.size() * Int.sizeInBytes);
+
+        for (Integer element : dataArray) {
+            intBuffer.put(element);
+        }
+        intBuffer.flip();
+
+        glBufferSubData(glBuffer, offset, intBuffer);
+    }
+
+    private void writeToShortBuffer(int glBuffer, List<Short> dataArray, int offset) {
+
+        ShortBuffer shortBuffer = BufferUtils.createShortBuffer(dataArray.size());
+
+        for (Short element : dataArray) {
+            shortBuffer.put(element);
+        }
+        shortBuffer.flip();
+
+        glBufferSubData(glBuffer, offset, shortBuffer);
+    }
+
+    private void writeToFloatBuffer(int glBuffer, List<Float> dataArray, int offset) {
+
+        FloatBuffer floatBuffer = BufferUtils.createFloatBuffer(dataArray.size());
+
+        for (Float element : dataArray) {
+            floatBuffer.put(element);
+        }
+        floatBuffer.flip();
+
+        glBufferSubData(glBuffer, offset, floatBuffer);
     }
 }

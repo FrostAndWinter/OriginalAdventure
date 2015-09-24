@@ -1,5 +1,9 @@
 package swen.adventure.rendering.maths;
 
+import org.lwjgl.BufferUtils;
+
+import java.nio.FloatBuffer;
+
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 17/09/15.
  * Methods adapted from and designed to emulate Apple's GLKit framework.
@@ -266,5 +270,12 @@ public class Vector4 implements Vector {
         result = 31 * result + (z != +0.0f ? Float.floatToIntBits(z) : 0);
         result = 31 * result + (w != +0.0f ? Float.floatToIntBits(w) : 0);
         return result;
+    }
+
+    public FloatBuffer asFloatBuffer() {
+        FloatBuffer buffer = BufferUtils.createFloatBuffer(4);
+        buffer.put(this.v);
+        buffer.flip();
+        return buffer;
     }
 }

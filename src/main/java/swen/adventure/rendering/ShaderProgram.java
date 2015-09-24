@@ -1,6 +1,8 @@
 package swen.adventure.rendering;
 
-import com.jogamp.opengl.GL3;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL32.*;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -13,85 +15,59 @@ import java.util.List;
  */
 public class ShaderProgram {
     public int glProgramRef;
-    public int modelToCameraMatrixUniformRef;
-    public int cameraToClipMatrixUniformRef;
-    public int normalModelToCameraMatrixUniformRef;
-    public int colourUniformRef;
 
-    public int cameraSpaceLightPositionUniformRef;
-    public int lightIntensityUniformRef;
-    public int ambientLightUniformRef;
-
-    public ShaderProgram(GL3 gl, String vertexShaderText, String fragmentShaderText) {
+    public ShaderProgram(String vertexShaderText, String fragmentShaderText) {
         List<Integer> shaders = new ArrayList<>(2);
 
-        shaders.add(ShaderProgram.createShader(gl, GL3.GL_VERTEX_SHADER, vertexShaderText));
-        shaders.add(ShaderProgram.createShader(gl, GL3.GL_FRAGMENT_SHADER, fragmentShaderText));
+        shaders.add(ShaderProgram.createShader(GL_VERTEX_SHADER, vertexShaderText));
+        shaders.add(ShaderProgram.createShader(GL_FRAGMENT_SHADER, fragmentShaderText));
 
-        this.glProgramRef = ShaderProgram.createProgram(gl, shaders);
-
-        this.modelToCameraMatrixUniformRef = gl.glGetUniformLocation(this.glProgramRef, "modelToCameraMatrixUniform");
-        this.colourUniformRef = gl.glGetUniformLocation(this.glProgramRef, "colour");
-
-        this.cameraToClipMatrixUniformRef = gl.glGetUniformLocation(this.glProgramRef, "cameraToClipMatrixUniform");
-        this.normalModelToCameraMatrixUniformRef = gl.glGetUniformLocation(this.glProgramRef, "normalModelToCameraMatrixUniform");
-
-        this.cameraSpaceLightPositionUniformRef = gl.glGetUniformLocation(this.glProgramRef, "cameraSpaceLightPosition");
-        this.lightIntensityUniformRef = gl.glGetUniformLocation(this.glProgramRef, "lightIntensity");
-        this.ambientLightUniformRef = gl.glGetUniformLocation(this.glProgramRef, "ambientIntensity");
+        this.glProgramRef = ShaderProgram.createProgram(shaders);
     }
 
-    public static int createProgram(GL3 gl, List<Integer> shaderList){
-        int program = gl.glCreateProgram();
+    public static int createProgram(List<Integer> shaderList){
+        int program = glCreateProgram();
 
         for (int shader : shaderList) {
-            gl.glAttachShader(program, shader);
+            glAttachShader(program, shader);
         }
 
-        gl.glLinkProgram(program);
+        glLinkProgram(program);
 
-        IntBuffer statusBuffer = IntBuffer.allocate(1);
-        gl.glGetProgramiv (program, GL3.GL_LINK_STATUS, statusBuffer);
-        if (statusBuffer.get(0) == GL3.GL_FALSE) {
-            IntBuffer infoLogLengthBuffer = IntBuffer.allocate(1);
-            gl.glGetProgramiv(program, GL3.GL_INFO_LOG_LENGTH, infoLogLengthBuffer);
+        int status = glGetProgrami(program, GL_LINK_STATUS);
+        if (status == GL_FALSE) {
+            int infoLogLength = glGetProgrami(program, GL_INFO_LOG_LENGTH);
 
-            ByteBuffer strInfoLog = ByteBuffer.allocate(infoLogLengthBuffer.get(0) + 1);
-            gl.glGetProgramInfoLog(program, infoLogLengthBuffer.get(0), null, strInfoLog);
-            System.err.printf("Linker failure: %s\n", new String(strInfoLog.array(), Charset.defaultCharset()));
+            String error = glGetProgramInfoLog(program, infoLogLength);
+            System.err.printf("Linker failure: %s\n", error);
         }
 
         for (int shader : shaderList) {
-            gl.glDetachShader(program, shader);
+            glDetachShader(program, shader);
         }
 
         return program;
     }
 
-    public static int createShader(GL3 gl, int shaderType, String shaderText) {
-        int shader = gl.glCreateShader(shaderType);
-        gl.glShaderSource(shader, 1, new String[]{shaderText}, null);
-        gl.glCompileShader(shader);
+    public static int createShader(int shaderType, String shaderText) {
+        int shader = glCreateShader(shaderType);
+        glShaderSource(shader, shaderText);
+        glCompileShader(shader);
 
-        IntBuffer statusBuffer = IntBuffer.allocate(1);
-        gl.glGetShaderiv(shader, GL3.GL_COMPILE_STATUS, statusBuffer);
-        if (statusBuffer.get(0) == GL3.GL_FALSE) {
-            IntBuffer infoLogLengthBuffer = IntBuffer.allocate(1);
-            gl.glGetShaderiv(shader, GL3.GL_INFO_LOG_LENGTH, infoLogLengthBuffer);
-            int infoLogLength = infoLogLengthBuffer.get(0);
+        int status = glGetShaderi(shader, GL_COMPILE_STATUS);
+        if (status == GL_FALSE) {
+            int infoLogLength = glGetShaderi(shader, GL_INFO_LOG_LENGTH);
 
-            byte[] strInfoLog = new byte[infoLogLength + 1];
-            ByteBuffer byteBuffer = ByteBuffer.wrap(strInfoLog);
-            gl.glGetShaderInfoLog(shader, infoLogLength, null, byteBuffer);
+            String info = glGetShaderInfoLog(shader, infoLogLength);
 
             String strShaderType = null;
             switch (shaderType) {
-                case GL3.GL_VERTEX_SHADER: strShaderType = "vertex"; break;
-                case GL3.GL_GEOMETRY_SHADER: strShaderType = "geometry"; break;
-                case GL3.GL_FRAGMENT_SHADER: strShaderType = "fragment"; break;
+                case GL_VERTEX_SHADER: strShaderType = "vertex"; break;
+                case GL_GEOMETRY_SHADER: strShaderType = "geometry"; break;
+                case GL_FRAGMENT_SHADER: strShaderType = "fragment"; break;
             }
 
-            System.err.printf("Compile failure in %s shader:\n%s\n", strShaderType, new String(byteBuffer.array(), Charset.defaultCharset()));
+            System.err.printf("Compile failure in %s shader:\n%s\n", strShaderType, info);
         }
         return shader;
     }

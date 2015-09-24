@@ -1,86 +1,72 @@
 package swen.adventure.rendering;
 
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL3;
-import processing.opengl.PGraphics3D;
-import processing.opengl.PJOGL;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.Util;
 import swen.adventure.Utilities;
 import swen.adventure.rendering.maths.Matrix4;
 import swen.adventure.rendering.maths.Quaternion;
 import swen.adventure.rendering.maths.Vector3;
+import swen.adventure.rendering.maths.Vector4;
+import swen.adventure.rendering.shaders.DirectionalLightShader;
 import swen.adventure.scenegraph.CameraNode;
+import swen.adventure.scenegraph.MeshNode;
 import swen.adventure.scenegraph.SceneNode;
 import swen.adventure.scenegraph.TransformNode;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.FloatBuffer;
+
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL32.*;
+import static org.lwjgl.opengl.GL20.*;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 19/09/15.
  */
 public class GLRenderer {
 
-
-    private PGraphics3D _graphicsContext;
-    private PJOGL _glContext;
-    private GL3 _gl;
-
-    private ShaderProgram _defaultProgram;
+    private DirectionalLightShader _defaultProgram;
     private int _vertexArrayRef;
 
-    public GLRenderer(PGraphics3D graphicsContext) {
-        _graphicsContext = graphicsContext;
-        _glContext = (PJOGL)graphicsContext.pgl;
-        _gl = (GL3)_glContext.gl;
+    private int _width, _height;
+
+    public GLRenderer(int width, int height) {
+        _width = width;
+        _height = height;
 
         try {
-            _defaultProgram = new ShaderProgram(_gl, Utilities.readFile(Utilities.pathForResource("VertexShader", "vert")), Utilities.readFile(Utilities.pathForResource("FragmentLighting", "frag")));
+            _defaultProgram = new DirectionalLightShader(Utilities.readFile(Utilities.pathForResource("VertexShader", "vert")), Utilities.readFile(Utilities.pathForResource("FragmentLighting", "frag")));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-//            _gl.glEnable(GL3.GL_CULL_FACE);
-//            _gl.glCullFace(GL3.GL_BACK);
-//           _gl.glFrontFace(GL3.GL_CCW);
-//          _gl.glEnable(GL3.GL_DEPTH_TEST);
-//            _gl.glDepthMask(true);
-//            _gl.glDepthFunc(GL3.GL_LEQUAL);
-//          _gl.glDepthRange(0.0f, 1.0f);
-//         _gl.glEnable(GL3.GL_DEPTH_CLAMP);
+//        glEnable(GL_CULL_FACE);
+//        glCullFace(GL_BACK);
+//        glFrontFace(GL_CCW);
+
+        glEnable(GL_DEPTH_TEST);
+        glDepthMask(true);
+        glDepthFunc(GL_LEQUAL);
+        glDepthRange(0.0f, 1.0f);
+        glEnable(GL_DEPTH_CLAMP);
     }
 
     public Matrix4 perspectiveMatrix() {
         float cameraFOV = (float)Math.PI/3.f;
         float cameraNear = 1.f;
         float cameraFar = 10000.f;
-        float cameraAspect = (float) _graphicsContext.width / (float) _graphicsContext.height;
+        float cameraAspect = _width / (float) _height;
 
         Matrix4 perspectiveMatrix = Matrix4.makePerspective(cameraFOV, cameraAspect, cameraNear, cameraFar);
 
         return perspectiveMatrix;
     }
 
-    ObjMesh tableMesh;
 
 
     public void render(SceneNode sceneGraph, CameraNode cameraNode) {
 
-        _graphicsContext.background(0);
-        _graphicsContext.beginPGL();
-
-        if (tableMesh == null) {
-            try {
-                TransformNode boxTransform = new TransformNode("ObjBoxTransform", (TransformNode)sceneGraph, true, new Vector3(20.f, 10.f, 0.f), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
-                tableMesh = ObjMesh.loadMesh("boxMesh", boxTransform, _gl, "Table");
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-
-        ((TransformNode)tableMesh.parent().get()).rotateY(-0.005f);
-
-        _gl.glUseProgram(_defaultProgram.glProgramRef);
+        glUseProgram(_defaultProgram.glProgramRef);
 
         Matrix4 cameraToClipMatrix = this.perspectiveMatrix();
         Matrix4 worldToCameraMatrix = cameraNode.worldToNodeSpaceTransform();
@@ -88,43 +74,28 @@ public class GLRenderer {
         final Vector3 lightPosition = new Vector3(30, 100, 0);
         Vector3 cameraSpaceLightPosition = worldToCameraMatrix.multiplyWithTranslation(sceneGraph.nodeToWorldSpaceTransform().multiplyWithTranslation(lightPosition));
 
-        System.out.println(cameraSpaceLightPosition);
-        _gl.glUniformMatrix4fv(_defaultProgram.cameraToClipMatrixUniformRef, 1, false, FloatBuffer.wrap(cameraToClipMatrix.m));
+        glUniformMatrix4(_defaultProgram.cameraToClipMatrixUniformRef, false, cameraToClipMatrix.asFloatBuffer());
 
-        _gl.glUniform3fv(_defaultProgram.cameraSpaceLightPositionUniformRef, 1, FloatBuffer.wrap(cameraSpaceLightPosition.v));
-        _gl.glUniform4f(_defaultProgram.ambientLightUniformRef, 0.05f, 0.05f, 0.05f, 1.f);
-        _gl.glUniform4f(_defaultProgram.lightIntensityUniformRef, 0.8f, 0.8f, 0.9f, 1.f);
+        glUniform3f(_defaultProgram.cameraSpaceLightPositionUniformRef, cameraSpaceLightPosition.x, cameraSpaceLightPosition.y, cameraSpaceLightPosition.z);
+        glUniform4f(_defaultProgram.ambientLightUniformRef, 0.2f, 0.2f, 0.2f, 1.f);
+        glUniform4f(_defaultProgram.lightIntensityUniformRef, 0.8f, 0.8f, 0.8f, 1.f);
+
 
         sceneGraph.traverse((node) -> {
-            if (node instanceof ProcessingMesh) {
-                Matrix4 nodeToCameraSpaceTransform = worldToCameraMatrix.multiply(node.nodeToWorldSpaceTransform());
-                Matrix4 normalModelToCameraSpaceTransform = nodeToCameraSpaceTransform.inverseTranspose();
-
-                _gl.glUniformMatrix4fv(_defaultProgram.modelToCameraMatrixUniformRef, 1, false, FloatBuffer.wrap(nodeToCameraSpaceTransform.m));
-                _gl.glUniformMatrix4fv(_defaultProgram.normalModelToCameraMatrixUniformRef, 1, false, FloatBuffer.wrap(normalModelToCameraSpaceTransform.m));
-
-                int rgb = ((ProcessingMesh)node).mesh().getFill(0);
-                int red = (rgb >> 16) & 0xFF;
-                int green = (rgb >> 8) & 0xFF;
-                int blue = rgb & 0xFF;
-                _gl.glUniform4f(_defaultProgram.colourUniformRef, red/255.f, green/255.f, blue/255.f, 1.f);
-
-                ((ProcessingMesh)node).render(_gl);
-
-            } else if (node instanceof GLMesh) {
+            if (node instanceof MeshNode) {
+                MeshNode meshNode = (MeshNode)node;
 
                 Matrix4 nodeToCameraSpaceTransform = worldToCameraMatrix.multiply(node.nodeToWorldSpaceTransform());
                 Matrix4 normalModelToCameraSpaceTransform = nodeToCameraSpaceTransform.inverseTranspose();
 
-                _gl.glUniformMatrix4fv(_defaultProgram.modelToCameraMatrixUniformRef, 1, false, FloatBuffer.wrap(nodeToCameraSpaceTransform.m));
-                _gl.glUniformMatrix4fv(_defaultProgram.normalModelToCameraMatrixUniformRef, 1, false, FloatBuffer.wrap(normalModelToCameraSpaceTransform.m));
+                glUniformMatrix4(_defaultProgram.modelToCameraMatrixUniformRef, false, nodeToCameraSpaceTransform.asFloatBuffer());
+                glUniformMatrix4(_defaultProgram.normalModelToCameraMatrixUniformRef, false, normalModelToCameraSpaceTransform.asFloatBuffer());
 
-                _gl.glUniform4f(_defaultProgram.colourUniformRef, 1.f, 0.6f, 0.6f, 1.f);
+                Vector4 colour = meshNode.colour().orElse(new Vector4(1.f, 0.f, 0.f, 1.f));
+                glUniform4(_defaultProgram.colourUniformRef, colour.asFloatBuffer());
 
-                ((GLMesh)node).render(_gl);
+                ((MeshNode) node).render();
             }
         });
-
-        _graphicsContext.endPGL();
     }
 }

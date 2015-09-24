@@ -1,5 +1,9 @@
 package swen.adventure.rendering.maths;
 
+import org.lwjgl.BufferUtils;
+
+import java.nio.FloatBuffer;
+
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 17/09/15.
  * Methods adapted from and designed to emulate Apple's GLKit framework.
@@ -38,7 +42,7 @@ public class Matrix3 {
         this.m = values;
     }
 
-    public Matrix3 makeWithArrayAndTranspose(float[] values)
+    public static Matrix3 makeWithArrayAndTranspose(float[] values)
     {
         return new Matrix3(values[0], values[3], values[6],
                 values[1], values[4], values[7],
@@ -210,7 +214,7 @@ public class Matrix3 {
         return m;
     }
 
-    public Matrix3 Matrix3Add(Matrix3 thisRight)
+    public Matrix3 add(Matrix3 thisRight)
     {
         Matrix3 m = new Matrix3();
 
@@ -337,5 +341,12 @@ public class Matrix3 {
         }
         stringBuilder.append(")\n");
         return stringBuilder.toString();
+    }
+
+    public FloatBuffer asFloatBuffer() {
+        FloatBuffer buffer = BufferUtils.createFloatBuffer(9);
+        buffer.put(this.m);
+        buffer.flip();
+        return buffer;
     }
 }

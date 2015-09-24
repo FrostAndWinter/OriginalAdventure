@@ -1,118 +1,79 @@
 package swen.adventure;
-
-
-import processing.core.PApplet;
-import processing.core.PShape;
-import processing.event.MouseEvent;
-import processing.opengl.PGraphics3D;
 import swen.adventure.rendering.GLRenderer;
-import swen.adventure.rendering.ProcessingRenderer;
 import swen.adventure.rendering.maths.Quaternion;
 import swen.adventure.rendering.maths.Vector3;
-import swen.adventure.rendering.ProcessingMesh;
+import swen.adventure.rendering.maths.Vector4;
 import swen.adventure.scenegraph.CameraNode;
+import swen.adventure.scenegraph.MeshNode;
 import swen.adventure.scenegraph.Player;
 import swen.adventure.scenegraph.TransformNode;
 
-import java.awt.AWTException;
-import java.awt.Point;
-import java.awt.Robot;
 import java.util.HashMap;
 import java.util.Map;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
 
-public class AdventureGame extends PApplet {
+public class AdventureGame {
 
-    private ProcessingRenderer _processingRenderer;
     private GLRenderer _glRenderer;
     private TransformNode _sceneGraph;
     private Player player;
 
-    private Robot robot;
-
     private KeyInput keyInput = new KeyInput();
 
-    @Override
     public void setup() {
-        super.setup();
-
-        keyInput = new KeyInput();
-
-        noCursor();
 
         _sceneGraph = new TransformNode("root", new Vector3(0.f, 0.f, -200.f), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
-        PShape groundPlane = createShape(BOX, 500, 0, 500);
-        groundPlane.setFill(0xFF00AA0B);
-        new ProcessingMesh("groundPlane", _sceneGraph, groundPlane);
+        TransformNode groundPlaneTransform = new TransformNode("groundPlaneTransform", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis((float)Math.PI/2.f, -1, 0, 0), new Vector3(250, 250, 1));
+        MeshNode groundPlane = new MeshNode("Plane.obj", groundPlaneTransform);
+        groundPlane.setColour(new Vector4(0.1f, 0.8f, 0.3f, 1.f));
 
-        TransformNode yAxisTransform = new TransformNode("yAxis", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis(0.0f, 0.f, 0.0f, 0.f), new Vector3(1, 1, 1));
-        PShape yAxisMesh = createShape(BOX, 2, 1000, 2);
-        yAxisMesh.setFill(0xFF00FF00);
-        new ProcessingMesh("yAxisMesh", yAxisTransform, yAxisMesh);
+        TransformNode yAxisTransform = new TransformNode("yAxis", _sceneGraph, false, new Vector3(0, 0, 0), new Quaternion(), new Vector3(2, 1000, 2));
+        MeshNode yAxis = new MeshNode("box.obj", yAxisTransform);
+        yAxis.setColour(new Vector4(0.f, 1.f, 0.f, 1.f));
 
-        TransformNode xAxisTransform = new TransformNode("xAxis", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis(0.0f, 0.f, 0.0f, 0.f), new Vector3(1, 1, 1));
-        PShape xAxisMesh = createShape(BOX, 1000, 2, 2);
-        xAxisMesh.setFill(0xFF0000FF);
-        new ProcessingMesh("xAxisMesh", xAxisTransform, xAxisMesh);
+        TransformNode xAxisTransform = new TransformNode("xAxis", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis(0.0f, 0.f, 0.0f, 0.f), new Vector3(1000, 2, 2));
+        MeshNode xAxis = new MeshNode("box.obj", xAxisTransform);
+        xAxis.setColour(new Vector4(0.f, 0.f, 1.f, 1.f));
 
-        TransformNode zAxisTransform = new TransformNode("zAxis", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis(0.0f, 0.f, 0.0f, 0.f), new Vector3(1, 1, 1));
-        PShape zAxisMesh = createShape(BOX, 2, 2, 1000);
-        zAxisMesh.setFill(0xFFFF0000);
-        new ProcessingMesh("zAxisMesh", zAxisTransform, zAxisMesh);
+        TransformNode zAxisTransform = new TransformNode("zAxis", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis(0.0f, 0.f, 0.0f, 0.f), new Vector3(2, 2, 1000));
+        MeshNode zAxis = new MeshNode("box.obj", zAxisTransform);
+        zAxis.setColour(new Vector4(1.f, 1.f, 0.f, 1.f));
 
-
-        TransformNode boxTransform = new TransformNode("boxTransform", _sceneGraph, true, new Vector3(-80, 25.f, 0.f), Quaternion.makeWithAngleAndAxis(1.f, 0.f, 1.f, 0.f), new Vector3(0.6f, 1.f, 0.8f));
-        PShape box = createShape(BOX, 50.f);
-        new ProcessingMesh("boxMesh", boxTransform, box);
-
-        TransformNode sphereTransform = new TransformNode("sphereTransform", _sceneGraph, false, new Vector3(25, 60.f, -10.f), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
-        TransformNode sphereOffset = new TransformNode("sphereOffset", sphereTransform, true, new Vector3(0, 0, 0), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
-        new ProcessingMesh("sphereMesh", sphereOffset, createShape(SPHERE, 20.f));
-
-        TransformNode playerTransform = new TransformNode("playerTransform", _sceneGraph, true, new Vector3(0, 20, 0), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
+        TransformNode playerTransform = new TransformNode("playerTransform", _sceneGraph, true, new Vector3(0, 20, 200), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
         TransformNode cameraTransform = new TransformNode("cameraTransform", playerTransform, true, new Vector3(0, 0, 0), new Quaternion(), new Vector3(1, 1, 1));
         new CameraNode("playerCamera", cameraTransform);
         player = new Player("player", playerTransform);
 
-        beginPGL();
-        _processingRenderer = new ProcessingRenderer((PGraphics3D) this.getGraphics());
-        _glRenderer = new GLRenderer((PGraphics3D) this.getGraphics());
+        TransformNode tableTransform = new TransformNode("ObjBoxTransform", (TransformNode)_sceneGraph, true, new Vector3(0.1f, 0.f, -300.f), new Quaternion(), new Vector3(3.f, 3.f, 1.f));
+        new MeshNode("Table.obj", tableTransform);
 
-        endPGL();
-
-
-        try {
-            robot = new Robot();
-        } catch (AWTException e) {
-            e.printStackTrace();
-        }
+        DisplayMode displayMode = Display.getDisplayMode();
+        _glRenderer = new GLRenderer(displayMode.getWidth(), displayMode.getHeight());
     }
 
     boolean hasBeenCentred = false;
 
-    @Override
-    public void draw() {
-        super.draw();
+    public void update(long deltaMillis) {
 
-        float centreX = width/2;
-        float centreY = height/2;
-
-        float yOffset = mouseY - centreY;
-        float xOffset = mouseX - centreX;
-
-        // wait until the mouse has been centred by robot at least once
-        // otherwise you start looking off in a direction offset by the window size
-        if (yOffset == 0 && xOffset == 0) {
-            hasBeenCentred = true;
-        }
-
-        if (hasBeenCentred) {
-            TransformNode playerTransform = player.parent().get();
-
-            playerTransform.rotateX(-yOffset/(width));
-            playerTransform.rotateY(-xOffset/(height));
-        }
-
-        robot.mouseMove(this.displayWidth/2, this.displayHeight/2);
+//        float centreX = width/2;
+//        float centreY = height/2;
+//
+//        float yOffset = mouseY - centreY;
+//        float xOffset = mouseX - centreX;
+//
+//        // wait until the mouse has been centred by robot at least once
+//        // otherwise you start looking off in a direction offset by the window size
+//        if (yOffset == 0 && xOffset == 0) {
+//            hasBeenCentred = true;
+//        }
+//
+//        if (hasBeenCentred) {
+//            TransformNode playerTransform = player.parent().get();
+//
+//            playerTransform.rotateX(-yOffset/(width));
+//            playerTransform.rotateY(-xOffset/(height));
+//        }
 
         // handle the movement input from the player
         if (keyInput.isKeyPressed('w')) {
@@ -128,15 +89,9 @@ public class AdventureGame extends PApplet {
             player.move(new Vector3(-20, 0, 0));
         }
 
-        TransformNode sphereOffset = (TransformNode) _sceneGraph.nodeWithID("sphereOffset").get();
-        sphereOffset.setTranslation(new Vector3(0.f, 40 * sin(this.frameCount / 60.f), 0.f));
-
-        TransformNode boxTransform = (TransformNode) _sceneGraph.nodeWithID("boxTransform").get();
-        boxTransform.rotateY(0.02f);
-
         _glRenderer.render(_sceneGraph, (CameraNode) _sceneGraph.nodeWithID("playerCamera").get());
-    }
 
+    }
 
     private static class KeyInput {
         private Map<Character, Boolean> keyPressedMap = new HashMap<>();
@@ -155,28 +110,20 @@ public class AdventureGame extends PApplet {
 
     }
 
-    @Override
-    public void mouseMoved(MouseEvent event) {
-        super.mouseMoved(event);
-    }
-
-    @Override
-    public void keyPressed(processing.event.KeyEvent event) {
-        super.keyPressed(event);
-        keyInput.pressKey(event.getKey());
-    }
-
-    @Override
-    public void keyReleased(processing.event.KeyEvent event) {
-        super.keyReleased(event);
-        keyInput.releaseKey(event.getKey());
-    }
-
-    public void settings() {
-        size(800, 600, P3D);
-    }
-
-    public static void main(String args[]) {
-        PApplet.main(new String[]{"swen.adventure.AdventureGame"});
-    }
+//    @Override
+//    public void mouseMoved(MouseEvent event) {
+//        super.mouseMoved(event);
+//    }
+//
+//    @Override
+//    public void keyPressed(processing.event.KeyEvent event) {
+//        super.keyPressed(event);
+//        keyInput.pressKey(event.getKey());
+//    }
+//
+//    @Override
+//    public void keyReleased(processing.event.KeyEvent event) {
+//        super.keyReleased(event);
+//        keyInput.releaseKey(event.getKey());
+//    }
 }

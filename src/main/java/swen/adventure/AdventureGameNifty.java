@@ -1,19 +1,11 @@
 package swen.adventure;
 
-import static org.lwjgl.opengl.GL11.glBlendFunc;
-import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glViewport;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import org.lwjgl.BufferUtils;
-import org.lwjgl.LWJGLException;
-import org.lwjgl.input.Cursor;
+import org.lwjgl.Sys;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
@@ -41,15 +33,26 @@ import de.lessvoid.nifty.spi.time.impl.AccurateTimeProvider;
 import de.lessvoid.nifty.tools.Color;
 import de.lessvoid.nifty.tools.SizeValue;
 
+import static org.lwjgl.opengl.GL11.*;
 
-public class NiftyDemo {
+
+public class AdventureGameNifty {
   private static final int WIDTH = 1024;
   private static final int HEIGHT = 768;
+
+  private static AdventureGame _game;
+
+  private static long _timeLastUpdate;
 
   public static void main(final String[] args) throws Exception {
     SharedLibraryLoader.load();
     initLWJGL();
     initGL();
+    _game = new AdventureGame();
+
+    _timeLastUpdate = GetTime();
+
+    _game.setup();
 
     // blank out cursor.
 //    Cursor emptyCursor = new Cursor(1, 1, 0, 0, 1, BufferUtils.createIntBuffer(1), null);
@@ -62,12 +65,20 @@ public class NiftyDemo {
     nifty.loadControlFile("nifty-default-controls.xml");
     createIntroScreen(nifty, new MyScreenController());
 
-
     nifty.gotoScreen("start");
 
     renderLoop(nifty);
 
     shutDown(inputSystem);
+  }
+
+  /**
+   * Get the time in milliseconds
+   *
+   * @return The system time in milliseconds
+   */
+  private static long GetTime() {
+    return (Sys.getTime() * 1000) / Sys.getTimerResolution();
   }
 
   private static LwjglInputSystem initInput() throws Exception {
@@ -119,8 +130,8 @@ public class NiftyDemo {
     int x = (currentMode.getWidth() - Display.getDisplayMode().getWidth()) / 2;
     int y = (currentMode.getHeight() - Display.getDisplayMode().getHeight()) / 2;
     Display.setLocation(x, y);
-    Display.setFullscreen(true);
-    Display.create(new PixelFormat(), new ContextAttribs(3, 2).withProfileCore(true));
+    Display.setFullscreen(false);
+    Display.create(new PixelFormat(), new ContextAttribs(3, 3).withProfileCore(true));
     Display.setVSyncEnabled(true);
     Display.setTitle("Hello Nifty");
   }
@@ -128,7 +139,7 @@ public class NiftyDemo {
   private static void initGL() {
     glViewport(0, 0, Display.getDisplayMode().getWidth(), Display.getDisplayMode().getHeight());
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL11.GL_COLOR_BUFFER_BIT);
+    glClear(GL11.GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL11.GL_BLEND);
     glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
   }
@@ -162,7 +173,7 @@ public class NiftyDemo {
           text(new TextBuilder() {{
             text("Nifty 1.4 Core Hello World");
             style("base-font");
-            color(Color.BLACK);
+            color(Color.WHITE);
             alignCenter();
             valignCenter();
           }});
@@ -188,8 +199,11 @@ public class NiftyDemo {
         done = true;
       }
 
-      GL11.glClearColor(0.8f, 0.6f, 1.f, 1.f);
-      GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+      long currentTime = GetTime();
+
+      _game.update(currentTime - _timeLastUpdate);
+
+      _timeLastUpdate = currentTime;
 
       nifty.render(false);
 
