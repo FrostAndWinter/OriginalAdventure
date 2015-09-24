@@ -1,5 +1,8 @@
 package swen.adventure.network;
 
+import java.io.IOError;
+import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -10,7 +13,7 @@ public interface Server {
     /**
      * Start the server accepting clients and messages
      */
-    void start();
+    void start(int port) throws IOException;
 
     /**
      * Stop serving all clients
@@ -40,4 +43,11 @@ public interface Server {
      * @return returns true if the message was successfully sent, otherwise false
      */
     boolean send(int id, String message); // FIXME: replace String with an encapsulate data-type
+
+    /**
+     * List of Ids of connected clients
+     *
+     * @return list of ids to connected clients
+     */
+    List<Integer> getClientIds();
 }

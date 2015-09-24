@@ -1,9 +1,12 @@
 package swen.adventure.datastorage;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import swen.adventure.rendering.maths.Quaternion;
+import swen.adventure.rendering.maths.Vector3;
+import swen.adventure.rendering.maths.Vector4;
+
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Created by Liam O'Neill, Student ID 300312734, on 18/09/15.
@@ -18,8 +21,44 @@ class ParserManager {
         addParser(Integer.class, new Parser<>(Object::toString, Integer::parseInt), parsers);
         addParser(Float.class, new Parser<>(Object::toString, Float::parseFloat), parsers);
         addParser(Long.class, new Parser<>(Object::toString, Long::parseLong), parsers);
+        addParser(Boolean.class, new Parser<>(Object::toString, Boolean::parseBoolean), parsers);
+
+        addParser(Vector3.class, new Parser<>(
+                v -> toCsvString(Arrays.asList(v.x, v.y, v.z)),
+                s -> {
+                    List<Float> xyz = fromCsvString(s, Float.class);
+                    return new Vector3(xyz.get(0), xyz.get(1), xyz.get(2));
+                }), parsers);
+
+        addParser(Vector4.class, new Parser<>(
+                v -> toCsvString(Arrays.asList(v.x, v.y, v.z)),
+                s -> {
+                    List<Float> xyzw = fromCsvString(s, Float.class);
+                    return new Vector4(xyzw.get(0), xyzw.get(1), xyzw.get(2), xyzw.get(3));
+                }), parsers);
+
+        addParser(Quaternion.class, new Parser<>(
+                q -> toCsvString(Arrays.asList(q.x, q.y, q.z, q.w)),
+                s -> {
+                    List<Float> xyzw = fromCsvString(s, Float.class);
+                    return new Quaternion(xyzw.get(0), xyzw.get(1), xyzw.get(2), xyzw.get(3));
+                }), parsers);
 
         PARSERS = Collections.unmodifiableMap(parsers);
+    }
+
+    private static String toCsvString(List<?> elements) {
+        return elements.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(", "));
+    }
+
+    private static <T> List<T> fromCsvString(String csv, Class<T> class0){
+        Parser<T> parser = getParser(class0);
+        return Arrays.stream(csv.split(","))
+                .map(String::trim)
+                .map(parser::convertToInstance)
+                .collect(Collectors.toList());
     }
 
     private static <T> void addParser(Class<T> class0, Parser<T> parser, Map<Class<?>, Parser<?>> parsers) {

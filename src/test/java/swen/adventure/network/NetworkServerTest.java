@@ -13,47 +13,46 @@ public class NetworkServerTest extends TestCase {
 
     @Test
     public void testStart() throws Exception {
-        Server srv;
+        Server srv = new NetworkServer();
         try {
-            srv = new NetworkServer(61451);
+            srv.start(61451);
         } catch (IOException ex) {
             Assume.assumeNoException(ex);
             return;
         }
-        srv.start();
         assertTrue(srv.isRunning());
         srv.stop();
     }
 
     @Test
     public void testStartAfterStarted() throws Exception {
-        Server srv;
+        Server srv = new NetworkServer();
         try {
-            srv = new NetworkServer(61452);
+            srv.start(61452);
         } catch (IOException ex) {
             Assume.assumeNoException(ex);
             return;
         }
-        srv.start();
         assertTrue(srv.isRunning());
+
         try {
-            srv.start(); // expected to error here
+            srv.start(61452); // expected to error here
             fail();
         } catch (RuntimeException ex) {
         }
+
         srv.stop();
     }
 
     @Test
     public void testStop() throws Exception {
-        Server srv;
+        Server srv = new NetworkServer();
         try {
-            srv = new NetworkServer(61453);
+            srv.start(61453);
         } catch (IOException ex) {
             Assume.assumeNoException(ex);
             return;
         }
-        srv.start();
 
         assertTrue(srv.isRunning());
 

@@ -1,5 +1,7 @@
 package swen.adventure.rendering.maths;
 
+import java.util.Arrays;
+
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 17/09/15.
  * Methods adapted from and designed to emulate Apple's GLKit framework.
@@ -319,6 +321,22 @@ public class Matrix3 {
     {
         for (int i=0; i < vectors.length; i++)
             vectors[i] = this.multiply(vectors[i]);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Matrix3 matrix3 = (Matrix3) o;
+
+        return Arrays.equals(m, matrix3.m);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(m);
     }
 
     @Override

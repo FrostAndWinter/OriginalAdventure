@@ -7,13 +7,13 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by Liam O'Neill, Student ID 300312734, on 18/09/15.
  */
-public class DataManagerTest {
+public class BundleSerializerTest {
 
     private static final String XML_HEAD = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>";
 
     @Test
     public void testBundleObjectToXml(){
-        GameObjectDataManager dataMan = new GameObjectDataManager();
+        BundleSerializer dataMan = new BundleSerializer();
         String xml = dataMan.toXml(createDummyBundleObject());
 
         isXmlCorrect(
@@ -23,7 +23,7 @@ public class DataManagerTest {
 
     @Test
     public void testNestedBundleObjectToXml1(){
-        GameObjectDataManager dataMan = new GameObjectDataManager();
+        BundleSerializer dataMan = new BundleSerializer();
 
         BundleObject bundleObject1 = createDummyBundleObject();
         BundleObject bundleObject2 = new BundleObject();
@@ -42,7 +42,7 @@ public class DataManagerTest {
 
     @Test
     public void testNestedBundleObjectToXml2(){
-        GameObjectDataManager dataMan = new GameObjectDataManager();
+        BundleSerializer dataMan = new BundleSerializer();
 
         BundleObject bundleObject1 = createDummyBundleObject();
         BundleObject bundleObject2 = new BundleObject();
@@ -58,7 +58,7 @@ public class DataManagerTest {
 
     @Test
     public void testSimpleXmlToBundleObject(){
-        GameObjectDataManager dataMan = new GameObjectDataManager();
+        BundleSerializer dataMan = new BundleSerializer();
         BundleObject bundleObject = dataMan.fromXml("<BundleObject><property name=\"id\"><value type=\"java.lang.Integer\">25</value></property></BundleObject>");
 
         assertEquals(createDummyBundleObject(), bundleObject);
