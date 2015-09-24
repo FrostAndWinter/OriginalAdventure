@@ -33,7 +33,7 @@ public class Utilities {
             e.printStackTrace();
         }
         String pathString = new File(path).getPath().replaceFirst("classes" + File.separator + "main", "resources" + File.separator + "main");
-        return pathString + File.separator + resourceName + "." + extension;
+        return pathString + File.separator + resourceName + (extension == null ? "" : "." + extension);
     }
 
     public static List<String> readLinesFromFile(String filePath) throws IOException {
