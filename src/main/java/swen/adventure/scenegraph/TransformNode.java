@@ -1,6 +1,5 @@
 package swen.adventure.scenegraph;
 
-import processing.core.PMatrix3D;
 import swen.adventure.rendering.maths.Matrix4;
 import swen.adventure.rendering.maths.Quaternion;
 import swen.adventure.rendering.maths.Vector3;

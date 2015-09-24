@@ -1,6 +1,8 @@
 package swen.adventure.rendering.maths;
 
-import processing.core.PMatrix3D;
+import org.lwjgl.BufferUtils;
+
+import java.nio.FloatBuffer;
 
 import java.util.Arrays;
 
@@ -576,19 +578,6 @@ public class Matrix4 {
         return f;
     }
 
-    /**
-     * Returns the PMatrix representation of this matrix
-     * Note: PMatrix is row-major, whereas this is column major. Therefore, we want to pass the transpose.
-     * @return a PMatrix3D version of this matrix.
-     */
-    public PMatrix3D toPMatrix() {
-        return new PMatrix3D(
-                this.m[0], this.m[4], this.m[8], this.m[12],
-                this.m[1], this.m[5], this.m[9], this.m[13],
-                this.m[2], this.m[6], this.m[10], this.m[14],
-                this.m[3], this.m[7], this.m[11], this.m[15]);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -621,5 +610,12 @@ public class Matrix4 {
         }
         stringBuilder.append(")\n");
         return stringBuilder.toString();
+    }
+
+    public FloatBuffer asFloatBuffer() {
+        FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
+        buffer.put(this.m);
+        buffer.flip();
+        return buffer;
     }
 }

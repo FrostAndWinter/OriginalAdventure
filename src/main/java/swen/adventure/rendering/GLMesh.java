@@ -1,23 +1,22 @@
 package swen.adventure.rendering;
 
-import com.jogamp.opengl.GL3;
-import javafx.util.Pair;
-import swen.adventure.datastorage.WavefrontParser;
-import swen.adventure.rendering.maths.Vector;
-import swen.adventure.rendering.maths.Vector3;
+import org.lwjgl.opengl.Util;
 import swen.adventure.scenegraph.SceneNode;
 import swen.adventure.scenegraph.TransformNode;
 
-import java.nio.Buffer;
 import java.nio.IntBuffer;
 import java.util.*;
-import java.util.stream.Collectors;
+
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL30.*;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 20/09/15.
  * Adapted from the ArcSynthesis GL Tutorials (https://bitbucket.org/alfonse/gltut/wiki/Home)
  */
-public abstract class GLMesh<T> extends SceneNode {
+public abstract class GLMesh<T> {
 
     static class RenderCommand {
         public final boolean isIndexedCommand;
@@ -58,11 +57,11 @@ public abstract class GLMesh<T> extends SceneNode {
             _primitiveRestart = primitiveRestart;
         }
 
-        public void render(GL3 gl) {
+        public void render() {
             if (this.isIndexedCommand) {
-                gl.glDrawElements(primitiveType, _elementCount, _indexDataType, _startIndex);
+                glDrawElements(primitiveType, _elementCount, _indexDataType, _startIndex);
             } else {
-                gl.glDrawArrays(primitiveType, _startIndex, _elementCount);
+                glDrawArrays(primitiveType, _startIndex, _elementCount);
             }
 
         }
@@ -133,17 +132,17 @@ public abstract class GLMesh<T> extends SceneNode {
                 return this.numberOfComponents * this.attributeType.sizeInBytes;
             }
 
-            public void fillBoundBufferObject(GL3 gl, int offset) {
-                this.attributeType.writeToBuffer(gl, GL3.GL_ARRAY_BUFFER, this.data, offset);
+            public void fillBoundBufferObject(int offset) {
+                this.attributeType.writeToBuffer(GL_ARRAY_BUFFER, this.data, offset, this.attributeType);
             }
 
-            public void setupAttributeArray(GL3 gl, int offset)  {
-                gl.glEnableVertexAttribArray(this.attributeIndex); //TODO This should really be interleaved data (see Tut 13 - Purloined Primitives in the Modern Graphics Programming Book).
+            public void setupAttributeArray( int offset)  {
+                glEnableVertexAttribArray(this.attributeIndex); //TODO This should really be interleaved data (see Tut 13 - Purloined Primitives in the Modern Graphics Programming Book).
                 if (this.isIntegral)  {
-                    gl.glVertexAttribIPointer(this.attributeIndex, this.numberOfComponents, this.attributeType.glType,
+                    glVertexAttribIPointer(this.attributeIndex, this.numberOfComponents, this.attributeType.glType,
                             0, offset);
                 } else {
-                    gl.glVertexAttribPointer(this.attributeIndex, this.numberOfComponents,
+                    glVertexAttribPointer(this.attributeIndex, this.numberOfComponents,
                             this.attributeType.glType, this.attributeType.isNormalised,
                             0, offset);
                 }
@@ -164,8 +163,8 @@ public abstract class GLMesh<T> extends SceneNode {
             return data.size() * attributeType.sizeInBytes;
         }
 
-        public void fillBoundBufferObject(GL3 gl, int offset) {
-            this.attributeType.writeToBuffer(gl, GL3.GL_ELEMENT_ARRAY_BUFFER, this.data, offset);
+        public void fillBoundBufferObject( int offset) {
+            this.attributeType.writeToBuffer(GL_ELEMENT_ARRAY_BUFFER, this.data, offset, this.attributeType);
 
         }
     }
@@ -187,11 +186,9 @@ public abstract class GLMesh<T> extends SceneNode {
     private List<RenderCommand> _primitives;
     private Map<String, Integer> _namedVAOs = new HashMap<>();
 
-    public GLMesh(String id, TransformNode parent) {
-        super(id, parent, false);
-    }
+    private Set<TransformNode> _parentNodes = new HashSet<>();
 
-    protected void initialise(GL3 gl, List<Attribute> attributes, List<IndexData<?>> indexData, List<NamedVertexArrayObject> namedVAOList, List<RenderCommand> primitives) {
+    protected void initialise(List<Attribute> attributes, List<IndexData<?>> indexData, List<NamedVertexArrayObject> namedVAOList, List<RenderCommand> primitives) {
 
         _primitives = primitives;
 
@@ -218,33 +215,28 @@ public abstract class GLMesh<T> extends SceneNode {
             }
         }
 
-        IntBuffer buffer = IntBuffer.allocate(1);
 
         //Create the "Everything" VAO.
-        gl.glGenVertexArrays(1, buffer);
-        _vertexArrayObjectRef = buffer.get(0);
-        gl.glBindVertexArray(_vertexArrayObjectRef);
+        _vertexArrayObjectRef = glGenVertexArrays();
+        glBindVertexArray(_vertexArrayObjectRef);
 
         //Create the buffer object.
-        gl.glGenBuffers(1, buffer);
-        _attributeArrraysBufferRef = buffer.get(0);
-        gl.glBindBuffer(GL3.GL_ARRAY_BUFFER, _attributeArrraysBufferRef);
-        gl.glBufferData(GL3.GL_ARRAY_BUFFER, attributeBufferSize, null, GL3.GL_STATIC_DRAW);
+        _attributeArrraysBufferRef = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, _attributeArrraysBufferRef);
+        glBufferData(GL_ARRAY_BUFFER, attributeBufferSize, GL_STATIC_DRAW);
 
         //Fill in our data and set up the attribute arrays.
         for(int i = 0; i < attributes.size(); i++) {
             Attribute attribute = attributes.get(i);
-            attribute.fillBoundBufferObject(gl, attribStartLocs[i]);
-            attribute.setupAttributeArray(gl, attribStartLocs[i]);
+            attribute.fillBoundBufferObject(attribStartLocs[i]);
+            attribute.setupAttributeArray(attribStartLocs[i]);
         }
 
         //Fill the named VAOs.
         for (NamedVertexArrayObject namedVao : namedVAOList) {
 
-            int vao = -1;
-            gl.glGenVertexArrays(1, buffer);
-            vao = buffer.get(0);
-            gl.glBindVertexArray(vao);
+            int vao = glGenVertexArrays();
+            glBindVertexArray(vao);
 
             for (int attributeIndex = 0; attributeIndex < namedVao.attributeIndices.size(); attributeIndex++) {
                 int attributeRef = namedVao.attributeIndices.get(attributeIndex);
@@ -257,13 +249,13 @@ public abstract class GLMesh<T> extends SceneNode {
                 }
 
                 Attribute attribute = attributes.get(attributeOffset);
-                attribute.setupAttributeArray(gl, attribStartLocs[attributeOffset]);
+                attribute.setupAttributeArray(attribStartLocs[attributeOffset]);
             }
 
             _namedVAOs.put(namedVao.name, vao);
         }
 
-        gl.glBindVertexArray(0);
+        glBindVertexArray(0);
 
         //Get the size of our index buffer data.
         int indexBufferSize = 0;
@@ -281,17 +273,16 @@ public abstract class GLMesh<T> extends SceneNode {
 
         //Create the index buffer object.
         if (indexBufferSize > 0) {
-            gl.glBindVertexArray(_vertexArrayObjectRef);
+            glBindVertexArray(_vertexArrayObjectRef);
 
-            gl.glGenBuffers(1, buffer);
-            _indexBufferRef = buffer.get(0);
-            gl.glBindBuffer(GL3.GL_ELEMENT_ARRAY_BUFFER, _indexBufferRef);
-            gl.glBufferData(GL3.GL_ELEMENT_ARRAY_BUFFER, indexBufferSize, null, GL3.GL_STATIC_DRAW);
+            _indexBufferRef = glGenBuffers();
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferRef);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBufferSize, GL_STATIC_DRAW);
 
             //Fill with data.
             for (int i = 0; i < indexData.size(); i++) {
                 IndexData data = indexData.get(i);
-                data.fillBoundBufferObject(gl, indexStartLocs[i]);
+                data.fillBoundBufferObject(indexStartLocs[i]);
             }
 
             //Fill in indexed rendering commands.
@@ -306,43 +297,43 @@ public abstract class GLMesh<T> extends SceneNode {
             }
 
             for (int vao : _namedVAOs.values()) {
-                gl.glBindVertexArray(vao);
-                gl.glBindBuffer(GL3.GL_ELEMENT_ARRAY_BUFFER, _indexBufferRef);
+                glBindVertexArray(vao);
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferRef);
             }
 
-            gl.glBindVertexArray(0);
+            glBindVertexArray(0);
         }
 
     }
 
-    public void render(GL3 gl) {
+    public void render() {
         if (_vertexArrayObjectRef == 0) {
             return;
         }
 
-        gl.glBindVertexArray(_vertexArrayObjectRef);
+        glBindVertexArray(_vertexArrayObjectRef);
 
         for (RenderCommand primitive : _primitives) {
-            primitive.render(gl);
+            primitive.render();
         }
 
-        gl.glBindVertexArray(0);
+        glBindVertexArray(0);
     }
 
-    public void render(GL3 gl, String vertexArrayObjectName) {
+    public void render(String vertexArrayObjectName) {
         Integer vaoObj = _namedVAOs.get(vertexArrayObjectName);
         if (vaoObj == null) {
             return;
         }
         int vao = vaoObj;
 
-        gl.glBindVertexArray(vao);
+        glBindVertexArray(vao);
 
         for (RenderCommand primitive : _primitives) {
-            primitive.render(gl);
+            primitive.render();
         }
 
-        gl.glBindVertexArray(0);
+        glBindVertexArray(0);
     }
 
 
