@@ -21,7 +21,7 @@ import java.util.Map;
 /**
  * Created by Liam O'Neill, Student ID 300312734, on 18/09/15.
  */
-public class GameObjectDataManager {
+public class BundleSerializer {
 
     private static final ParserManager PARSER_MANAGER = new ParserManager();
 

@@ -1,5 +1,7 @@
 package swen.adventure.rendering.maths;
 
+import java.util.Arrays;
+
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 17/09/15.
  * Methods adapted from and designed to emulate Apple's GLKit framework.
@@ -144,4 +146,38 @@ public class Quaternion {
         return new Quaternion(this.x * cosHalfAngle + this.y * sinHalfAngle, -this.x * sinHalfAngle + this.y * cosHalfAngle, this.z * cosHalfAngle + this.w * sinHalfAngle, -this.z * sinHalfAngle + this.w * cosHalfAngle);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Quaternion that = (Quaternion) o;
+
+        if (Float.compare(that.x, x) != 0) return false;
+        if (Float.compare(that.y, y) != 0) return false;
+        if (Float.compare(that.z, z) != 0) return false;
+        if (Float.compare(that.w, w) != 0) return false;
+        return Arrays.equals(q, that.q);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Arrays.hashCode(q);
+        result = 31 * result + (x != +0.0f ? Float.floatToIntBits(x) : 0);
+        result = 31 * result + (y != +0.0f ? Float.floatToIntBits(y) : 0);
+        result = 31 * result + (z != +0.0f ? Float.floatToIntBits(z) : 0);
+        result = 31 * result + (w != +0.0f ? Float.floatToIntBits(w) : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Quaternion{" +
+                ", x=" + x +
+                ", y=" + y +
+                ", z=" + z +
+                ", w=" + w +
+                '}';
+    }
 }

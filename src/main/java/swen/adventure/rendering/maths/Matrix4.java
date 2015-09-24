@@ -4,6 +4,8 @@ import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
 
+import java.util.Arrays;
+
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 17/09/15.
  * Methods adapted from and designed to emulate Apple's GLKit framework.
@@ -574,6 +576,22 @@ public class Matrix4 {
                 - m[1] * m[10] * m[7]
                 - m[5] * m[2] * m[11]);
         return f;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Matrix4 matrix4 = (Matrix4) o;
+
+        return Arrays.equals(m, matrix4.m);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(m);
     }
 
     @Override

@@ -4,6 +4,7 @@ import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PGraphics;
 
+import swen.adventure.ui.color.Color;
 import swen.adventure.ui.layoutmanagers.LayoutManager;
 import swen.adventure.ui.clickable.ClickEvent;
 import swen.adventure.ui.clickable.Clickable;
@@ -26,6 +27,7 @@ public class Button extends UIComponent implements Clickable {
     private List<OnClickListener> listeners;
 
     private PFont font;
+    private Color color;
 
     public Button(PApplet app, String text, int x, int y) {
         super(app, x, y, 0, 0);
@@ -49,6 +51,8 @@ public class Button extends UIComponent implements Clickable {
 
         dynamicSize = false;
 
+        listeners = new ArrayList<>();
+
         // Create the font
         font = applet.createFont("Arial", 16);
 
@@ -59,6 +63,13 @@ public class Button extends UIComponent implements Clickable {
         padding = p;
     }
 
+    public void setFont(PFont f) {
+        font = f;
+    }
+
+    public void setColor(Color c) {
+        color = c;
+    }
 
 
     @Override
@@ -71,16 +82,24 @@ public class Button extends UIComponent implements Clickable {
             height = padding + stringHeight;
         }
 
+        int stringX = (width - stringWidth)/2;
+        int stringY = (height - stringHeight)/2;
         // Draw the background
         g.fill(255);
-        g.color(50);
+
+        if(color == null) {
+            g.color(50);
+        } else {
+            g.fill(color.getB(), color.getG(), color.getB(), color.getA());
+        }
+
         g.rect(x * scaleX, y * scaleY, width * scaleX, height * scaleY);
 
 
         g.fill(0);
-        g.textFont(font, 16);
+        g.textFont(font, font.getSize());
 
-        g.text(text.toCharArray(), 0, text.length(), (x + padding/2) * scaleX, (y + stringHeight + padding/2) * scaleY);
+        g.text(text.toCharArray(), 0, text.length(), (stringX + padding/2) * scaleX, (stringY + stringHeight + padding/2) * scaleY);
     }
 
     public synchronized void addClickListener(OnClickListener c) {
@@ -106,14 +125,22 @@ public class Button extends UIComponent implements Clickable {
 
     @Override
     public int getWidth(PGraphics g) {
-        g.textFont(font);
-        return padding + (int) g.textWidth(text);
+        if (dynamicSize) {
+            g.textFont(font);
+            return padding + (int) g.textWidth(text);
+        }
+
+        return width;
     }
 
     @Override
     public int getHeight(PGraphics g) {
-        g.textFont(font);
-        return padding + (int) (g.textAscent() + g.textDescent());
+        if (dynamicSize) {
+            g.textFont(font);
+            return padding + (int) (g.textAscent() + g.textDescent());
+        }
+
+        return height;
     }
 
     @Override

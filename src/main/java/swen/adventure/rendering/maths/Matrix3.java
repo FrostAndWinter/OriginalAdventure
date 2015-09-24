@@ -1,7 +1,6 @@
 package swen.adventure.rendering.maths;
 
 import org.lwjgl.BufferUtils;
-
 import java.nio.FloatBuffer;
 
 /**
@@ -323,6 +322,22 @@ public class Matrix3 {
     {
         for (int i=0; i < vectors.length; i++)
             vectors[i] = this.multiply(vectors[i]);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Matrix3 matrix3 = (Matrix3) o;
+
+        return Arrays.equals(m, matrix3.m);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(m);
     }
 
     @Override
