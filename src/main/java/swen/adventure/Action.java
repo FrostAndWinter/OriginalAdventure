@@ -9,6 +9,7 @@ import java.util.Map;
 public interface Action<E, T, L> {
     void execute(E eventObject, T triggeringObject, L listener, Map<String, Object> data);
 
+    @SuppressWarnings("unchecked")
     /**
      * Takes a name for an action (e.g. OpenDoor) and tries to find the action corresponding to the name.
      * The search pattern is thus: firstly, it looks in Actions for a field of the name action{name}.
@@ -18,35 +19,32 @@ public interface Action<E, T, L> {
      * @return The action.
      * @throws RuntimeException if the action could not be found.
      */
-    public static <L> Action<?, ?, L> actionWithName(String name, L listeningObject) {
+    static <L> Action<?, ?, L> actionWithName(String name, L listeningObject) {
         String fieldName = "action" + name;
 
         try {
             Field field = Actions.class.getDeclaredField(name);
             //field.setAccessible(true);
-            Action<?, ?, L> action = (Action<?, ?, L>) field.get(Actions.class);
-            return action;
+            return (Action<?, ?, L>) field.get(Actions.class);
         } catch (IllegalAccessException e) {
             System.err.println("Error accessing action with name " + name + ": " + e);
-        } catch (NoSuchFieldException e) {
+        } catch (NoSuchFieldException ignored) {
         }
 
         try {
             Field field = listeningObject.getClass().getField(name);
-            Action<?, ?, L> action = (Action<?, ?, L>) field.get(listeningObject);
-            return action;
+            return (Action<?, ?, L>) field.get(listeningObject);
         } catch (IllegalAccessException e) {
             System.err.println("Error accessing action with name " + name + ": " + e);
-        } catch (NoSuchFieldException e) {
+        } catch (NoSuchFieldException ignored) {
         }
 
         try {
             Class<? extends Action<?, ?, L>> actionClass = (Class<? extends Action<?, ?, L>>) Class.forName(name);
-            Action<?, ?, L> action = actionClass.newInstance();
-            return action;
+            return actionClass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             System.err.println("Error instantiating Action class for name " + name + ": ");
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException ignored) {
         }
 
         throw new RuntimeException("Could not find an action with name " + name + " on object " + listeningObject);

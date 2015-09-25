@@ -1,15 +1,14 @@
 package swen.adventure.rendering;
 
-import org.lwjgl.opengl.Util;
-import swen.adventure.scenegraph.SceneNode;
 import swen.adventure.scenegraph.TransformNode;
 
-import java.nio.IntBuffer;
 import java.util.*;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.glDrawArrays;
+import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.*;
 
 /**
@@ -29,7 +28,7 @@ public abstract class GLMesh<T> {
         /**
          * Constructs a new non-indexed command.
          * @param primitiveType Either GL_UNSIGNED_BYTE or GL_UNSIGNED_SHORT
-         * @param startIndex
+         * @param startIndex The start index for drawing the array.
          */
         public RenderCommand(int primitiveType, int startIndex, int elementCount) {
             this.isIndexedCommand = false;

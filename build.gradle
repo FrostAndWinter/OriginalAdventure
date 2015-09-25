@@ -22,12 +22,16 @@ buildscript {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs/nifty', include: ['*.jar'])
-    compile fileTree(dir: 'libs/nifty/dependencies', include: ['*.jar'])
-
     testCompile group: 'junit', name: 'junit', version: '4.11'
+}
 
-    compile 'org.lwjgl.lwjgl:lwjgl:2.9.3'
+project.ext.lwjglVersion = "3.0.0a"
+
+dependencies {
+    compile "org.lwjgl:lwjgl:${lwjglVersion}"
+    compile "org.lwjgl:lwjgl-platform:${lwjglVersion}:natives-windows"
+    compile "org.lwjgl:lwjgl-platform:${lwjglVersion}:natives-linux"
+    compile "org.lwjgl:lwjgl-platform:${lwjglVersion}:natives-osx"
 }
 
 jacocoTestReport {

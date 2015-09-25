@@ -1,14 +1,16 @@
 package swen.adventure.rendering;
 
-import org.lwjgl.opengl.Util;
-
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL30.*;
 import org.lwjgl.BufferUtils;
 
-import java.nio.*;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.util.List;
+
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL15.glBufferSubData;
+import static org.lwjgl.opengl.GL30.GL_HALF_FLOAT;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 20/09/15.
@@ -40,6 +42,7 @@ public enum AttributeType {
         this.sizeInBytes = sizeInBytes;
     }
 
+    @SuppressWarnings("unchecked")
     public void writeToBuffer(int glBuffer, List<?> dataArray, int offset, AttributeType type) {
         switch (type) {
             case Float:

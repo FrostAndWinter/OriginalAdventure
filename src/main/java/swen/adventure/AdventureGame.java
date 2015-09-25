@@ -10,8 +10,6 @@ import swen.adventure.scenegraph.TransformNode;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
 
 public class AdventureGame {
 
@@ -45,11 +43,10 @@ public class AdventureGame {
         new CameraNode("playerCamera", cameraTransform);
         player = new Player("player", playerTransform);
 
-        TransformNode tableTransform = new TransformNode("ObjBoxTransform", (TransformNode)_sceneGraph, true, new Vector3(0.1f, 0.f, -300.f), new Quaternion(), new Vector3(3.f, 3.f, 1.f));
+        TransformNode tableTransform = new TransformNode("ObjBoxTransform", _sceneGraph, true, new Vector3(0.1f, 0.f, -300.f), new Quaternion(), new Vector3(3.f, 3.f, 1.f));
         new MeshNode("Table.obj", tableTransform);
 
-        DisplayMode displayMode = Display.getDisplayMode();
-        _glRenderer = new GLRenderer(displayMode.getWidth(), displayMode.getHeight());
+        _glRenderer = new GLRenderer(800, 600);
     }
 
     boolean hasBeenCentred = false;

@@ -1,24 +1,19 @@
 package swen.adventure.rendering;
 
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.Util;
 import swen.adventure.Utilities;
 import swen.adventure.rendering.maths.Matrix4;
-import swen.adventure.rendering.maths.Quaternion;
 import swen.adventure.rendering.maths.Vector3;
 import swen.adventure.rendering.maths.Vector4;
 import swen.adventure.rendering.shaders.DirectionalLightShader;
 import swen.adventure.scenegraph.CameraNode;
 import swen.adventure.scenegraph.MeshNode;
 import swen.adventure.scenegraph.SceneNode;
-import swen.adventure.scenegraph.TransformNode;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL32.*;
 import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL32.GL_DEPTH_CLAMP;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 19/09/15.
@@ -57,9 +52,7 @@ public class GLRenderer {
         float cameraFar = 10000.f;
         float cameraAspect = _width / (float) _height;
 
-        Matrix4 perspectiveMatrix = Matrix4.makePerspective(cameraFOV, cameraAspect, cameraNear, cameraFar);
-
-        return perspectiveMatrix;
+        return Matrix4.makePerspective(cameraFOV, cameraAspect, cameraNear, cameraFar);
     }
 
 
@@ -74,7 +67,7 @@ public class GLRenderer {
         final Vector3 lightPosition = new Vector3(30, 100, 0);
         Vector3 cameraSpaceLightPosition = worldToCameraMatrix.multiplyWithTranslation(sceneGraph.nodeToWorldSpaceTransform().multiplyWithTranslation(lightPosition));
 
-        glUniformMatrix4(_defaultProgram.cameraToClipMatrixUniformRef, false, cameraToClipMatrix.asFloatBuffer());
+        glUniformMatrix4fv(_defaultProgram.cameraToClipMatrixUniformRef, false, cameraToClipMatrix.asFloatBuffer());
 
         glUniform3f(_defaultProgram.cameraSpaceLightPositionUniformRef, cameraSpaceLightPosition.x, cameraSpaceLightPosition.y, cameraSpaceLightPosition.z);
         glUniform4f(_defaultProgram.ambientLightUniformRef, 0.2f, 0.2f, 0.2f, 1.f);
@@ -88,11 +81,11 @@ public class GLRenderer {
                 Matrix4 nodeToCameraSpaceTransform = worldToCameraMatrix.multiply(node.nodeToWorldSpaceTransform());
                 Matrix4 normalModelToCameraSpaceTransform = nodeToCameraSpaceTransform.inverseTranspose();
 
-                glUniformMatrix4(_defaultProgram.modelToCameraMatrixUniformRef, false, nodeToCameraSpaceTransform.asFloatBuffer());
-                glUniformMatrix4(_defaultProgram.normalModelToCameraMatrixUniformRef, false, normalModelToCameraSpaceTransform.asFloatBuffer());
+                glUniformMatrix4fv(_defaultProgram.modelToCameraMatrixUniformRef, false, nodeToCameraSpaceTransform.asFloatBuffer());
+                glUniformMatrix4fv(_defaultProgram.normalModelToCameraMatrixUniformRef, false, normalModelToCameraSpaceTransform.asFloatBuffer());
 
                 Vector4 colour = meshNode.colour().orElse(new Vector4(1.f, 0.f, 0.f, 1.f));
-                glUniform4(_defaultProgram.colourUniformRef, colour.asFloatBuffer());
+                glUniform4fv(_defaultProgram.colourUniformRef, colour.asFloatBuffer());
 
                 ((MeshNode) node).render();
             }
