@@ -125,7 +125,8 @@ public class AdventureGameLWJGL {
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-        InputStream input = processing.core.PApplet.createInput("/Users/Thomas/Documents/OneDrive/University/SWEN 222 – Software Design/AdventureGame/src/main/resources/AveriaSans-Regular-16.vlw");
+        String fontPath = Utilities.pathForResource("AveriaSans-Regular-16", "vlw");
+        InputStream input = processing.core.PApplet.createInput(fontPath);
         PFont font = null;
         try {
             font = new PFont(input);
