@@ -1,15 +1,9 @@
 package swen.adventure.rendering;
 
-import org.lwjgl.BufferUtils;
-
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.glBufferSubData;
 import static org.lwjgl.opengl.GL30.GL_HALF_FLOAT;
 
 /**
@@ -43,77 +37,94 @@ public enum AttributeType {
     }
 
     @SuppressWarnings("unchecked")
-    public void writeToBuffer(int glBuffer, List<?> dataArray, int offset, AttributeType type) {
+    public void writeToBuffer(ByteBuffer buffer, List<?> dataArray, int componentsPerStride, int offset, int stride, AttributeType type) {
         switch (type) {
             case Float:
-                this.writeToFloatBuffer(glBuffer, (List<Float>)dataArray, offset);
+                this.writeToFloatBuffer(buffer, (List<Float>)dataArray, componentsPerStride, offset, stride);
                 break;
             case Half:
             case Short:
             case UShort:
             case NormalisedShort:
             case NormalisedUShort:
-                this.writeToShortBuffer(glBuffer, (List<Short>)dataArray, offset);
+                this.writeToShortBuffer(buffer, (List<Short>)dataArray, componentsPerStride, offset, stride);
                 break;
             case Int:
             case UInt:
             case NormalisedInt:
             case NormalisedUInt:
-                this.writeToIntBuffer(glBuffer, (List<Integer>)dataArray, offset);
+                this.writeToIntBuffer(buffer, (List<Integer>)dataArray, componentsPerStride, offset, stride);
                 break;
             case Byte:
             case UnsignedByte:
             case NormalisedByte:
             case NormalisedUnsignedByte:
-                this.writeToByteBuffer(glBuffer, (List<Byte>)dataArray, offset);
+                this.writeToByteBuffer(buffer, (List<Byte>)dataArray, componentsPerStride, offset, stride);
                 break;
         }
     }
 
-    private void writeToByteBuffer(int glBuffer, List<Byte> dataArray, int offset) {
+    private void writeToByteBuffer(ByteBuffer buffer, List<Byte> dataArray, int componentsPerStride, int offset, int stride) {
+            int component = 0;
+            int strideIndex = 0;
 
-        ByteBuffer byteBuffer = BufferUtils.createByteBuffer(dataArray.size());
-        for (Byte element : dataArray) {
-            byteBuffer.put(element);
-        }
-        byteBuffer.flip();
+            for (Byte element : dataArray) {
+                int index = offset + component + stride * strideIndex;
+                buffer.put(index, element);
 
-        glBufferSubData(glBuffer, offset, byteBuffer);
+                component++;
+                if (component == componentsPerStride) {
+                    component = 0;
+                    strideIndex++;
+                }
+            }
     }
 
-    private void writeToIntBuffer(int glBuffer, List<Integer> dataArray, int offset) {
-
-        IntBuffer intBuffer = BufferUtils.createIntBuffer(dataArray.size() * Int.sizeInBytes);
+    private void writeToIntBuffer(ByteBuffer buffer, List<Integer> dataArray, int componentsPerStride, int offset, int stride) {
+        int component = 0;
+        int strideIndex = 0;
 
         for (Integer element : dataArray) {
-            intBuffer.put(element);
-        }
-        intBuffer.flip();
+            int index = offset + 4 * component + stride * strideIndex;
+            buffer.putInt(index, element);
 
-        glBufferSubData(glBuffer, offset, intBuffer);
+            component++;
+            if (component == componentsPerStride) {
+                component = 0;
+                strideIndex++;
+            }
+        }
     }
 
-    private void writeToShortBuffer(int glBuffer, List<Short> dataArray, int offset) {
-
-        ShortBuffer shortBuffer = BufferUtils.createShortBuffer(dataArray.size());
+    private void writeToShortBuffer(ByteBuffer buffer, List<Short> dataArray, int componentsPerStride, int offset, int stride) {
+        int component = 0;
+        int strideIndex = 0;
 
         for (Short element : dataArray) {
-            shortBuffer.put(element);
-        }
-        shortBuffer.flip();
+            int index = offset + 2 * component + stride * strideIndex;
+            buffer.putShort(index, element);
 
-        glBufferSubData(glBuffer, offset, shortBuffer);
+            component++;
+            if (component == componentsPerStride) {
+                component = 0;
+                strideIndex++;
+            }
+        }
     }
 
-    private void writeToFloatBuffer(int glBuffer, List<Float> dataArray, int offset) {
-
-        FloatBuffer floatBuffer = BufferUtils.createFloatBuffer(dataArray.size());
+    private void writeToFloatBuffer(ByteBuffer buffer, List<Float> dataArray, int componentsPerStride, int offset, int stride) {
+        int component = 0;
+        int strideIndex = 0;
 
         for (Float element : dataArray) {
-            floatBuffer.put(element);
-        }
-        floatBuffer.flip();
+            int index = offset + 4 * component + stride * strideIndex;
+            buffer.putFloat(index, element);
 
-        glBufferSubData(glBuffer, offset, floatBuffer);
+            component++;
+            if (component == componentsPerStride) {
+                component = 0;
+                strideIndex++;
+            }
+        }
     }
 }
