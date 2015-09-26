@@ -83,7 +83,7 @@ public enum AttributeType {
 
     private void writeToIntBuffer(int glBuffer, List<Integer> dataArray, int offset) {
 
-        IntBuffer intBuffer = BufferUtils.createIntBuffer(dataArray.size() * Int.sizeInBytes);
+        IntBuffer intBuffer = BufferUtils.createIntBuffer(dataArray.size());
 
         for (Integer element : dataArray) {
             intBuffer.put(element);
