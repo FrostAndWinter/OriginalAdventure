@@ -132,9 +132,9 @@ import java.util.WeakHashMap;
  * We're working right now on synchronizing the two references, so the website reference
  * is generated from the javadoc comments. Yay.
  *
- * @webref rendering
+ *  rendering
  * @instanceName graphics any object of the type PGraphics
- * @usage Web &amp; Application
+ * Web &amp; Application
  */
 public class PGraphics extends PImage implements PConstants {
 
@@ -801,7 +801,6 @@ public void dispose() {  // ignore
  * image data, for instance a BufferedImage with tint() settings applied for
  * PGraphicsJava2D, or resized image data and OpenGL texture indices for
  * PGraphicsOpenGL.
- * @param renderer The PGraphics renderer associated to the image
  * @param storage The metadata required by the renderer
  */
 public void setCache(PImage image, Object storage) {  // ignore
@@ -814,7 +813,6 @@ public void setCache(PImage image, Object storage) {  // ignore
  * will cache data in different formats, it's necessary to store cache data
  * keyed by the renderer object. Otherwise, attempting to draw the same
  * image to both a PGraphicsJava2D and a PGraphicsOpenGL will cause errors.
- * @param renderer The PGraphics renderer associated to the image
  * @return metadata stored for the specified renderer
  */
 public Object getCache(PImage image) {  // ignore
@@ -824,7 +822,6 @@ public Object getCache(PImage image) {  // ignore
 
 /**
  * Remove information associated with this renderer from the cache, if any.
- * @param renderer The PGraphics renderer whose cache data should be removed
  */
 public void removeCache(PImage image) {  // ignore
   cacheMap.remove(image);
@@ -866,7 +863,7 @@ public void removeCache(PImage image) {  // ignore
  * When creating your own PGraphics, you should call this before
  * drawing anything.
  *
- * @webref pgraphics:method
+ *  pgraphics:method
  * @brief Sets the default properties for a PGraphics object
  */
 public void beginDraw() {  // ignore
@@ -884,7 +881,7 @@ public void beginDraw() {  // ignore
  * When creating your own PGraphics, you should call this when
  * you're finished drawing.
  *
- * @webref pgraphics:method
+ *  pgraphics:method
  * @brief Finalizes the rendering of a PGraphics object
  */
 public void endDraw() {  // ignore
@@ -1119,7 +1116,7 @@ protected void reapplySettings() {
  *
  * ( end auto-generated )
  *
- * @webref rendering
+ *  rendering
  * @param which name of the hint to be enabled or disabled
  * @see PGraphics
  */
@@ -1179,7 +1176,7 @@ public void beginShape() {
  * <b>beginShape()</b>/<b>endShape()</b> block with any renderer.
  *
  * ( end auto-generated )
- * @webref shape:vertex
+ *  shape:vertex
  * @param kind Either POINTS, LINES, TRIANGLES, TRIANGLE_FAN, TRIANGLE_STRIP, QUADS, or QUAD_STRIP
  * @see PShape
  * @see PGraphics#endShape()
@@ -1212,7 +1209,7 @@ public void edge(boolean edge) {
  * function is identical to glNormal3f() in OpenGL.
  *
  * ( end auto-generated )
- * @webref lights_camera:lights
+ *  lights_camera:lights
  * @param nx x direction
  * @param ny y direction
  * @param nz z direction
@@ -1281,7 +1278,7 @@ public void attrib(String name, boolean... values) {
  * NORMAL_SPACE is (0,0) (0,1) (1,1) (0,1).
  *
  * ( end auto-generated )
- * @webref image:textures
+ *  image:textures
  * @param mode either IMAGE or NORMAL
  * @see PGraphics#texture(PImage)
  * @see PGraphics#textureWrap(int)
@@ -1300,7 +1297,7 @@ public void textureMode(int mode) {
  *
  * ( end auto-generated from textureWrap.xml )
  *
- * @webref image:textures
+ *  image:textures
  * @param wrap Either CLAMP (default) or REPEAT
  * @see PGraphics#texture(PImage)
  * @see PGraphics#textureMode(int)
@@ -1321,7 +1318,7 @@ public void textureWrap(int wrap) {
  * to specify the color of the texture as it is applied to the shape.
  *
  * ( end auto-generated )
- * @webref image:textures
+ *  image:textures
  * @param image reference to a PImage object
  * @see PGraphics#textureMode(int)
  * @see PGraphics#textureWrap(int)
@@ -1576,7 +1573,7 @@ public void vertex(float x, float y, float u, float v) {
  * this relation can be changed with <b>textureMode()</b>.
  *
  * ( end auto-generated )
-* @webref shape:vertex
+*  shape:vertex
 * @param x x-coordinate of the vertex
 * @param y y-coordinate of the vertex
 * @param z z-coordinate of the vertex
@@ -1646,7 +1643,7 @@ protected void vertexTexture(float u, float v) {
 //  }
 
 /**
- * @webref shape:vertex
+ *  shape:vertex
  */
 public void beginContour() {
   showMissingWarning("beginContour");
@@ -1654,7 +1651,7 @@ public void beginContour() {
 
 
 /**
- * @webref shape:vertex
+ *  shape:vertex
  */
 public void endContour() {
   showMissingWarning("endContour");
@@ -1677,7 +1674,7 @@ public void endShape() {
  * beginning and the end).
  *
  * ( end auto-generated )
- * @webref shape:vertex
+ *  shape:vertex
  * @param mode use CLOSE to close the shape
  * @see PShape
  * @see PGraphics#beginShape(int)
@@ -1693,7 +1690,7 @@ public void endShape(int mode) {
 
 
 /**
- * @webref shape
+ *  shape
  * @param filename name of file to load, can be .svg or .obj
  * @see PShape
  */
@@ -1718,7 +1715,7 @@ public PShape loadShape(String filename, String options) {
 
 
 /**
- * @webref shape
+ *  shape
  * @see PShape
  * @see PShape#endShape()
  */
@@ -1844,7 +1841,7 @@ protected PShape createShapePrimitive(int kind, float... p) {
  *
  * ( end auto-generated )
  *
- * @webref rendering:shaders
+ *  rendering:shaders
  * @param fragFilename name of fragment shader file
  */
 public PShader loadShader(String fragFilename) {
@@ -1869,7 +1866,7 @@ public PShader loadShader(String fragFilename, String vertFilename) {
  *
  * ( end auto-generated )
  *
- * @webref rendering:shaders
+ *  rendering:shaders
  * @param shader name of shader file
  */
 public void shader(PShader shader) {
@@ -1892,7 +1889,7 @@ public void shader(PShader shader, int kind) {
  *
  * ( end auto-generated )
  *
- * @webref rendering:shaders
+ *  rendering:shaders
  */
 public void resetShader() {
   showMissingWarning("resetShader");
@@ -1921,7 +1918,7 @@ public void filter(PShader shader) {
 // CLIPPING
 
 /*
- * @webref rendering:shaders
+ *  rendering:shaders
  * @param a x-coordinate of the rectangle by default
  * @param b y-coordinate of the rectangle by default
  * @param c width of the rectangle by default
@@ -1965,7 +1962,7 @@ protected void clipImpl(float x1, float y1, float x2, float y2) {
 }
 
 /*
- * @webref rendering:shaders
+ *  rendering:shaders
  */
 public void noClip() {
   showMissingWarning("noClip");
@@ -1984,7 +1981,7 @@ public void noClip() {
  *
  * ( end auto-generated )
  *
- * @webref rendering
+ *  rendering
  * @param mode the blending mode to use
  */
 public void blendMode(int mode) {
@@ -2064,7 +2061,7 @@ public void bezierVertex(float x2, float y2,
  * for more information).
  *
  * ( end auto-generated )
-* @webref shape:vertex
+*  shape:vertex
 * @param x2 the x-coordinate of the 1st control point
 * @param y2 the y-coordinate of the 1st control point
 * @param z2 the z-coordinate of the 1st control point
@@ -2112,7 +2109,7 @@ public void bezierVertex(float x2, float y2, float z2,
 }
 
 /**
- * @webref shape:vertex
+ *  shape:vertex
  * @param cx the x-coordinate of the control point
  * @param cy the y-coordinate of the control point
  * @param x3 the x-coordinate of the anchor point
@@ -2193,7 +2190,7 @@ protected void curveVertexCheck(int shape) {
  *
  * ( end auto-generated )
 *
-* @webref shape:vertex
+*  shape:vertex
 * @param x the x-coordinate of the vertex
 * @param y the y-coordinate of the vertex
 * @see PGraphics#curve(float, float, float, float, float, float, float, float, float, float, float, float)
@@ -2344,7 +2341,7 @@ protected void curveVertexSegment(float x1, float y1, float z1,
  *
  * ( end auto-generated )
  *
- * @webref shape:2d_primitives
+ *  shape:2d_primitives
  * @param x x-coordinate of the point
  * @param y y-coordinate of the point
  */
@@ -2377,7 +2374,7 @@ public void point(float x, float y, float z) {
  * parameter in combination with <b>size()</b> as shown in the above example.
  *
  * ( end auto-generated )
- * @webref shape:2d_primitives
+ *  shape:2d_primitives
  * @param x1 x-coordinate of the first point
  * @param y1 y-coordinate of the first point
  * @param x2 x-coordinate of the second point
@@ -2414,7 +2411,7 @@ public void line(float x1, float y1, float z1,
  * second point, and the last two arguments specify the third point.
  *
  * ( end auto-generated )
- * @webref shape:2d_primitives
+ *  shape:2d_primitives
  * @param x1 x-coordinate of the first point
  * @param y1 y-coordinate of the first point
  * @param x2 x-coordinate of the second point
@@ -2442,7 +2439,7 @@ public void triangle(float x1, float y1, float x2, float y2,
  * counter-clockwise around the defined shape.
  *
  * ( end auto-generated )
- * @webref shape:2d_primitives
+ *  shape:2d_primitives
  * @param x1 x-coordinate of the first corner
  * @param y1 y-coordinate of the first corner
  * @param x2 x-coordinate of the second corner
@@ -2488,7 +2485,7 @@ public void quad(float x1, float y1, float x2, float y2,
  * was shortened to RADIUS.
  *
  * ( end auto-generated )
- * @webref shape:attributes
+ *  shape:attributes
  * @param mode either CORNER, CORNERS, CENTER, or RADIUS
  * @see PGraphics#rect(float, float, float, float)
  */
@@ -2508,7 +2505,7 @@ public void rectMode(int mode) {
  *
  * ( end auto-generated )
  *
- * @webref shape:2d_primitives
+ *  shape:2d_primitives
  * @param a x-coordinate of the rectangle by default
  * @param b y-coordinate of the rectangle by default
  * @param c width of the rectangle by default
@@ -2684,7 +2681,7 @@ protected void rectImpl(float x1, float y1, float x2, float y2,
  * because Processing is a case-sensitive language.
  *
  * ( end auto-generated )
- * @webref shape:attributes
+ *  shape:attributes
  * @param mode either CENTER, RADIUS, CORNER, or CORNERS
  */
 public void ellipseMode(int mode) {
@@ -2701,7 +2698,7 @@ public void ellipseMode(int mode) {
  * The origin may be changed with the <b>ellipseMode()</b> function.
  *
  * ( end auto-generated )
- * @webref shape:2d_primitives
+ *  shape:2d_primitives
  * @param a x-coordinate of the ellipse
  * @param b y-coordinate of the ellipse
  * @param c width of the ellipse by default
@@ -2756,7 +2753,7 @@ protected void ellipseImpl(float x, float y, float w, float h) {
  * parameters specify the angles at which to draw the arc.
  *
  * ( end auto-generated )
- * @webref shape:2d_primitives
+ *  shape:2d_primitives
  * @param a x-coordinate of the arc's ellipse
  * @param b y-coordinate of the arc's ellipse
  * @param c width of the arc's ellipse by default
@@ -2845,7 +2842,7 @@ protected void arcImpl(float x, float y, float w, float h,
  *
  * ( end auto-generated )
  *
- * @webref shape:3d_primitives
+ *  shape:3d_primitives
  * @param size dimension of the box in all dimensions (creates a cube)
  * @see PGraphics#sphere(float)
  */
@@ -2943,7 +2940,7 @@ public void box(float w, float h, float d) {
  * Code for enhanced u/v version from davbol [080801].
  *
  * @param res number of segments (minimum 3) used per full circle revolution
- * @webref shape:3d_primitives
+ *  shape:3d_primitives
  * @see PGraphics#sphere(float)
  */
 public void sphereDetail(int res) {
@@ -3025,7 +3022,7 @@ public void sphereDetail(int ures, int vres) {
  * [davbol 080801] now using separate sphereDetailU/V
  * </PRE>
  *
- * @webref shape:3d_primitives
+ *  shape:3d_primitives
  * @param r the radius of the sphere
  * @see PGraphics#sphereDetail(int)
  */
@@ -3132,7 +3129,7 @@ public void sphere(float r) {
  * }
  * endShape();</PRE>
  *
- * @webref shape:curves
+ *  shape:curves
  * @param a coordinate of first point on the curve
  * @param b coordinate of first control point
  * @param c coordinate of second control point
@@ -3160,7 +3157,7 @@ public float bezierPoint(float a, float b, float c, float d, float t) {
  * <h3>Advanced</h3>
  * Code submitted by Dave Bollinger (davol) for release 0136.
  *
- * @webref shape:curves
+ *  shape:curves
  * @param a coordinate of first point on the curve
  * @param b coordinate of first control point
  * @param c coordinate of second control point
@@ -3200,7 +3197,7 @@ protected void bezierInit() {
  *
  * ( end auto-generated )
  *
- * @webref shape:curves
+ *  shape:curves
  * @param detail resolution of the curves
  * @see PGraphics#curve(float, float, float, float, float, float, float, float, float, float, float, float)
  * @see PGraphics#curveVertex(float, float, float)
@@ -3271,7 +3268,7 @@ public void bezier(float x1, float y1,
  * use the control point twice by doubling it:
  * <PRE>bezier(x1, y1, cx, cy, cx, cy, x2, y2);</PRE>
  *
- * @webref shape:curves
+ *  shape:curves
  * @param x1 coordinates for the first anchor point
  * @param y1 coordinates for the first anchor point
  * @param z1 coordinates for the first anchor point
@@ -3316,7 +3313,7 @@ public void bezier(float x1, float y1, float z1,
  *
  * ( end auto-generated )
  *
- * @webref shape:curves
+ *  shape:curves
  * @param a coordinate of first point on the curve
  * @param b coordinate of second point on the curve
  * @param c coordinate of third point on the curve
@@ -3353,7 +3350,7 @@ public float curvePoint(float a, float b, float c, float d, float t) {
  * <h3>Advanced</h3>
  * Code thanks to Dave Bollinger (Bug #715)
  *
- * @webref shape:curves
+ *  shape:curves
  * @param a coordinate of first point on the curve
  * @param b coordinate of first control point
  * @param c coordinate of second control point
@@ -3388,7 +3385,7 @@ public float curveTangent(float a, float b, float c, float d, float t) {
  *
  * ( end auto-generated )
  *
- * @webref shape:curves
+ *  shape:curves
  * @param detail resolution of the curves
  * @see PGraphics#curve(float, float, float, float, float, float, float, float, float, float, float, float)
  * @see PGraphics#curveVertex(float, float)
@@ -3413,7 +3410,7 @@ public void curveDetail(int detail) {
  *
  * ( end auto-generated )
  *
- * @webref shape:curves
+ *  shape:curves
  * @param tightness amount of deformation from the original vertices
  * @see PGraphics#curve(float, float, float, float, float, float, float, float, float, float, float, float)
  * @see PGraphics#curveVertex(float, float)
@@ -3506,7 +3503,7 @@ protected void curveInit() {
  * endShape();
  * </PRE>
  *
- * @webref shape:curves
+ *  shape:curves
  * @param x1 coordinates for the beginning control point
  * @param y1 coordinates for the beginning control point
  * @param x2 coordinates for the first point
@@ -3635,7 +3632,7 @@ private void smoothWarning(String method) {
  *
  * ( end auto-generated )
  *
- * @webref image:loading_displaying
+ *  image:loading_displaying
  * @param mode either CORNER, CORNERS, or CENTER
  * @see PApplet#loadImage(String, String)
  * @see PImage
@@ -3679,7 +3676,7 @@ public void imageMode(int mode) {
  * Starting with release 0124, when using the default (JAVA2D) renderer,
  * smooth() will also improve image quality of resized images.
  *
- * @webref image:loading_displaying
+ *  image:loading_displaying
  * @param img the image to display
  * @param a x-coordinate of the image
  * @param b y-coordinate of the image
@@ -3847,7 +3844,7 @@ protected void imageImpl(PImage img,
  *
  * ( end auto-generated )
  *
- * @webref shape:loading_displaying
+ *  shape:loading_displaying
  * @param mode either CORNER, CORNERS, CENTER
  * @see PShape
  * @see PGraphics#shape(PShape)
@@ -3899,7 +3896,7 @@ public void shape(PShape shape) {
  *
  * ( end auto-generated )
  *
- * @webref shape:loading_displaying
+ *  shape:loading_displaying
  * @param shape the shape to display
  * @param x x-coordinate of the shape
  * @param y y-coordinate of the shape
@@ -4048,7 +4045,7 @@ public void textAlign(int alignX) {
  *
  * ( end auto-generated )
  *
- * @webref typography:attributes
+ *  typography:attributes
  * @param alignX horizontal alignment, either LEFT, CENTER, or RIGHT
  * @param alignY vertical alignment, either TOP, BOTTOM, CENTER, or BASELINE
  * @see PFont
@@ -4073,7 +4070,7 @@ public void textAlign(int alignX, int alignY) {
  *
  * ( end auto-generated )
  *
- * @webref typography:metrics
+ *  typography:metrics
  * @see PGraphics#textDescent()
  */
 public float textAscent() {
@@ -4094,7 +4091,7 @@ public float textAscent() {
  *
  * ( end auto-generated )
  *
- * @webref typography:metrics
+ *  typography:metrics
  * @see PGraphics#textAscent()
  */
 public float textDescent() {
@@ -4126,7 +4123,7 @@ public float textDescent() {
  *
  * ( end auto-generated )
  *
- * @webref typography:loading_displaying
+ *  typography:loading_displaying
  * @param which any variable of the type PFont
  * @see PApplet#createFont(String, float, boolean)
  * @see PApplet#loadFont(String)
@@ -4213,7 +4210,7 @@ protected void textFontImpl(PFont which, float size) {
  *
  * ( end auto-generated )
  *
- * @webref typography:attributes
+ *  typography:attributes
  * @param leading the size in pixels for spacing between lines
  * @see PApplet#loadFont(String)
  * @see PFont#PFont
@@ -4249,7 +4246,7 @@ public void textLeading(float leading) {
  *
  * ( end auto-generated )
  *
- * @webref typography:attributes
+ *  typography:attributes
  * @param mode either MODEL or SHAPE
  * @see PFont#PFont
  * @see PGraphics#text(String, float, float)
@@ -4293,7 +4290,7 @@ protected boolean textModeCheck(int mode) {
  *
  * ( end auto-generated )
  *
- * @webref typography:attributes
+ *  typography:attributes
  * @param size the size of the letters in units of pixels
  * @see PFont#PFont
  * @see PGraphics#text(String, float, float)
@@ -4356,7 +4353,7 @@ public float textWidth(char c) {
  *
  * ( end auto-generated )
  *
- * @webref typography:attributes
+ *  typography:attributes
  * @param str the String of characters to measure
  * @see PFont#PFont
  * @see PGraphics#text(String, float, float)
@@ -4438,7 +4435,7 @@ protected float textWidthImpl(char buffer[], int start, int stop) {
  *
  * ( end auto-generated )
  *
- * @webref typography:loading_displaying
+ *  typography:loading_displaying
  * @param c the alphanumeric character to be displayed
  * @param x x-coordinate of text
  * @param y y-coordinate of text
@@ -5067,7 +5064,7 @@ protected void textCharScreenImpl(PImage glyph,
  *
  * ( end auto-generated )
  *
- * @webref transform
+ *  transform
  * @see PGraphics#popMatrix()
  * @see PGraphics#translate(float, float, float)
  * @see PGraphics#scale(float)
@@ -5094,7 +5091,7 @@ public void pushMatrix() {
  *
  * ( end auto-generated )
  *
- * @webref transform
+ *  transform
  * @see PGraphics#pushMatrix()
  */
 public void popMatrix() {
@@ -5126,7 +5123,7 @@ public void popMatrix() {
  *
  * ( end auto-generated )
  *
- * @webref transform
+ *  transform
  * @param x left/right translation
  * @param y up/down translation
  * @see PGraphics#popMatrix()
@@ -5171,7 +5168,7 @@ public void translate(float x, float y, float z) {
  *
  * ( end auto-generated )
  *
- * @webref transform
+ *  transform
  * @param angle angle of rotation specified in radians
  * @see PGraphics#popMatrix()
  * @see PGraphics#pushMatrix()
@@ -5204,7 +5201,7 @@ public void rotate(float angle) {
  *
  * ( end auto-generated )
  *
- * @webref transform
+ *  transform
  * @param angle angle of rotation specified in radians
  * @see PGraphics#popMatrix()
  * @see PGraphics#pushMatrix()
@@ -5237,7 +5234,7 @@ public void rotateX(float angle) {
  *
  * ( end auto-generated )
  *
- * @webref transform
+ *  transform
  * @param angle angle of rotation specified in radians
  * @see PGraphics#popMatrix()
  * @see PGraphics#pushMatrix()
@@ -5270,7 +5267,7 @@ public void rotateY(float angle) {
  *
  * ( end auto-generated )
  *
- * @webref transform
+ *  transform
  * @param angle angle of rotation specified in radians
  * @see PGraphics#popMatrix()
  * @see PGraphics#pushMatrix()
@@ -5315,7 +5312,7 @@ public void rotate(float angle, float x, float y, float z) {
  *
  * ( end auto-generated )
  *
- * @webref transform
+ *  transform
  * @param s percentage to scale the object
  * @see PGraphics#pushMatrix()
  * @see PGraphics#popMatrix()
@@ -5373,7 +5370,7 @@ public void scale(float x, float y, float z) {
  *
  * ( end auto-generated )
  *
- * @webref transform
+ *  transform
  * @param angle angle of shear specified in radians
  * @see PGraphics#popMatrix()
  * @see PGraphics#pushMatrix()
@@ -5407,7 +5404,7 @@ public void shearX(float angle) {
  *
  * ( end auto-generated )
  *
- * @webref transform
+ *  transform
  * @param angle angle of shear specified in radians
  * @see PGraphics#popMatrix()
  * @see PGraphics#pushMatrix()
@@ -5434,7 +5431,7 @@ public void shearY(float angle) {
  *
  * ( end auto-generated )
  *
- * @webref transform
+ *  transform
  * @see PGraphics#pushMatrix()
  * @see PGraphics#popMatrix()
  * @see PGraphics#applyMatrix(PMatrix)
@@ -5454,7 +5451,7 @@ public void resetMatrix() {
  *
  * ( end auto-generated )
  *
- * @webref transform
+ *  transform
  * @source
  * @see PGraphics#pushMatrix()
  * @see PGraphics#popMatrix()
@@ -5585,7 +5582,7 @@ public void setMatrix(PMatrix3D source) {
  *
  * ( end auto-generated )
  *
- * @webref transform
+ *  transform
  * @see PGraphics#pushMatrix()
  * @see PGraphics#popMatrix()
  * @see PGraphics#resetMatrix()
@@ -5622,7 +5619,7 @@ public void printMatrix() {
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:camera
+ *  lights_camera:camera
  * @see PGraphics#camera()
  * @see PGraphics#endCamera()
  * @see PGraphics#applyMatrix(PMatrix)
@@ -5643,7 +5640,7 @@ public void beginCamera() {
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:camera
+ *  lights_camera:camera
  * @see PGraphics#camera(float, float, float, float, float, float, float, float, float)
  */
 public void endCamera() {
@@ -5665,7 +5662,7 @@ public void endCamera() {
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:camera
+ *  lights_camera:camera
  * @see PGraphics#endCamera()
  * @see PGraphics#frustum(float, float, float, float, float, float)
  */
@@ -5697,7 +5694,7 @@ public void camera(float eyeX, float eyeY, float eyeZ,
  * bottom of Processing).
  *
  * ( end auto-generated )
-* @webref lights_camera:camera
+*  lights_camera:camera
 * @see PGraphics#camera(float, float, float, float, float, float, float, float, float)
 */
 public void printCamera() {
@@ -5724,7 +5721,7 @@ public void printCamera() {
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:camera
+ *  lights_camera:camera
  */
 public void ortho() {
   showMissingWarning("ortho");
@@ -5767,7 +5764,7 @@ public void ortho(float left, float right,
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:camera
+ *  lights_camera:camera
  */
 public void perspective() {
   showMissingWarning("perspective");
@@ -5792,7 +5789,7 @@ public void perspective(float fovy, float aspect, float zNear, float zFar) {
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:camera
+ *  lights_camera:camera
  * @param left left coordinate of the clipping plane
  * @param right right coordinate of the clipping plane
  * @param bottom bottom coordinate of the clipping plane
@@ -5817,7 +5814,7 @@ public void frustum(float left, float right,
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:camera
+ *  lights_camera:camera
  * @see PGraphics#camera(float, float, float, float, float, float, float, float, float)
  */
 public void printProjection() {
@@ -5839,7 +5836,7 @@ public void printProjection() {
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:coordinates
+ *  lights_camera:coordinates
  * @param x 3D x-coordinate to be mapped
  * @param y 3D y-coordinate to be mapped
  * @see PGraphics#screenY(float, float, float)
@@ -5859,7 +5856,7 @@ public float screenX(float x, float y) {
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:coordinates
+ *  lights_camera:coordinates
  * @param x 3D x-coordinate to be mapped
  * @param y 3D y-coordinate to be mapped
  * @see PGraphics#screenX(float, float, float)
@@ -5898,7 +5895,7 @@ public float screenY(float x, float y, float z) {
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:coordinates
+ *  lights_camera:coordinates
  * @param x 3D x-coordinate to be mapped
  * @param y 3D y-coordinate to be mapped
  * @param z 3D z-coordinate to be mapped
@@ -5929,7 +5926,7 @@ public float screenZ(float x, float y, float z) {
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:coordinates
+ *  lights_camera:coordinates
  * @param x 3D x-coordinate to be mapped
  * @param y 3D y-coordinate to be mapped
  * @param z 3D z-coordinate to be mapped
@@ -5960,7 +5957,7 @@ public float modelX(float x, float y, float z) {
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:coordinates
+ *  lights_camera:coordinates
  * @param x 3D x-coordinate to be mapped
  * @param y 3D y-coordinate to be mapped
  * @param z 3D z-coordinate to be mapped
@@ -5991,7 +5988,7 @@ public float modelY(float x, float y, float z) {
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:coordinates
+ *  lights_camera:coordinates
  * @param x 3D x-coordinate to be mapped
  * @param y 3D y-coordinate to be mapped
  * @param z 3D z-coordinate to be mapped
@@ -6029,7 +6026,7 @@ public float modelZ(float x, float y, float z) {
  *
  * ( end auto-generated )
  *
- * @webref structure
+ *  structure
  * @see PGraphics#popStyle()
  */
 public void pushStyle() {
@@ -6056,7 +6053,7 @@ public void pushStyle() {
  *
  * ( end auto-generated )
  *
- * @webref structure
+ *  structure
  * @see PGraphics#pushStyle()
  */
 public void popStyle() {
@@ -6222,7 +6219,7 @@ public PStyle getStyle(PStyle s) {  // ignore
  *
  * ( end auto-generated )
  *
- * @webref shape:attributes
+ *  shape:attributes
  * @param weight the weight (in pixels) of the stroke
  * @see PGraphics#stroke(int, float)
  * @see PGraphics#strokeJoin(int)
@@ -6247,7 +6244,7 @@ public void strokeWeight(float weight) {
  *
  * ( end auto-generated )
  *
- * @webref shape:attributes
+ *  shape:attributes
  * @param join either MITER, BEVEL, ROUND
  * @see PGraphics#stroke(int, float)
  * @see PGraphics#strokeWeight(float)
@@ -6271,7 +6268,7 @@ public void strokeJoin(int join) {
  *
  * ( end auto-generated )
  *
- * @webref shape:attributes
+ *  shape:attributes
  * @param cap either SQUARE, PROJECT, or ROUND
  * @see PGraphics#stroke(int, float)
  * @see PGraphics#strokeWeight(float)
@@ -6296,7 +6293,7 @@ public void strokeCap(int cap) {
  *
  * ( end auto-generated )
  *
- * @webref color:setting
+ *  color:setting
  * @see PGraphics#stroke(int, float)
  * @see PGraphics#fill(float, float, float, float)
  * @see PGraphics#noFill()
@@ -6373,7 +6370,7 @@ public void stroke(float gray, float alpha) {
  * @param v1 red or hue value (depending on current color mode)
  * @param v2 green or saturation value (depending on current color mode)
  * @param v3 blue or brightness value (depending on current color mode)
- * @webref color:setting
+ *  color:setting
  */
 public void stroke(float v1, float v2, float v3) {
   colorCalc(v1, v2, v3);
@@ -6416,8 +6413,8 @@ protected void strokeFromCalc() {
  *
  * ( end auto-generated )
  *
- * @webref image:loading_displaying
- * @usage web_application
+ *  image:loading_displaying
+ * web_application
  * @see PGraphics#tint(float, float, float, float)
  * @see PGraphics#image(PImage, float, float, float, float)
  */
@@ -6454,8 +6451,8 @@ public void noTint() {
  *
  * ( end auto-generated )
  *
- * @webref image:loading_displaying
- * @usage web_application
+ *  image:loading_displaying
+ * web_application
  * @param rgb color value in hexadecimal notation
  * @see PGraphics#noTint()
  * @see PGraphics#image(PImage, float, float, float, float)
@@ -6535,8 +6532,8 @@ protected void tintFromCalc() {
  *
  * ( end auto-generated )
  *
- * @webref color:setting
- * @usage web_application
+ *  color:setting
+ * web_application
  * @see PGraphics#fill(float, float, float, float)
  * @see PGraphics#stroke(int, float)
  * @see PGraphics#noStroke()
@@ -6571,8 +6568,8 @@ public void noFill() {
  *
  * ( end auto-generated )
  *
- * @webref color:setting
- * @usage web_application
+ *  color:setting
+ * web_application
  * @param rgb color variable or hex value
  * @see PGraphics#noFill()
  * @see PGraphics#stroke(int, float)
@@ -6660,8 +6657,8 @@ protected void fillFromCalc() {
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:material_properties
- * @usage web_application
+ *  lights_camera:material_properties
+ * web_application
  * @param rgb any value of the color datatype
  * @see PGraphics#emissive(float, float, float)
  * @see PGraphics#specular(float, float, float)
@@ -6718,8 +6715,8 @@ protected void ambientFromCalc() {
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:material_properties
- * @usage web_application
+ *  lights_camera:material_properties
+ * web_application
  * @param rgb color to set
  * @see PGraphics#lightSpecular(float, float, float)
  * @see PGraphics#ambient(float, float, float)
@@ -6776,8 +6773,8 @@ protected void specularFromCalc() {
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:material_properties
- * @usage web_application
+ *  lights_camera:material_properties
+ * web_application
  * @param shine degree of shininess
  * @see PGraphics#emissive(float, float, float)
  * @see PGraphics#ambient(float, float, float)
@@ -6797,8 +6794,8 @@ public void shininess(float shine) {
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:material_properties
- * @usage web_application
+ *  lights_camera:material_properties
+ * web_application
  * @param rgb color to set
  * @see PGraphics#ambient(float, float, float)
  * @see PGraphics#specular(float, float, float)
@@ -6865,8 +6862,8 @@ protected void emissiveFromCalc() {
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:lights
- * @usage web_application
+ *  lights_camera:lights
+ * web_application
  * @see PGraphics#ambientLight(float, float, float, float, float, float)
  * @see PGraphics#directionalLight(float, float, float, float, float, float)
  * @see PGraphics#pointLight(float, float, float, float, float, float)
@@ -6887,8 +6884,8 @@ public void lights() {
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:lights
- * @usage web_application
+ *  lights_camera:lights
+ * web_application
  * @see PGraphics#lights()
  */
 public void noLights() {
@@ -6909,8 +6906,8 @@ public void noLights() {
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:lights
- * @usage web_application
+ *  lights_camera:lights
+ * web_application
  * @param v1 red or hue value (depending on current color mode)
  * @param v2 green or saturation value (depending on current color mode)
  * @param v3 blue or brightness value (depending on current color mode)
@@ -6950,8 +6947,8 @@ public void ambientLight(float v1, float v2, float v3,
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:lights
- * @usage web_application
+ *  lights_camera:lights
+ * web_application
  * @param v1 red or hue value (depending on current color mode)
  * @param v2 green or saturation value (depending on current color mode)
  * @param v3 blue or brightness value (depending on current color mode)
@@ -6981,8 +6978,8 @@ public void directionalLight(float v1, float v2, float v3,
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:lights
- * @usage web_application
+ *  lights_camera:lights
+ * web_application
  * @param v1 red or hue value (depending on current color mode)
  * @param v2 green or saturation value (depending on current color mode)
  * @param v3 blue or brightness value (depending on current color mode)
@@ -7014,8 +7011,8 @@ public void pointLight(float v1, float v2, float v3,
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:lights
- * @usage web_application
+ *  lights_camera:lights
+ * web_application
  * @param v1 red or hue value (depending on current color mode)
  * @param v2 green or saturation value (depending on current color mode)
  * @param v3 blue or brightness value (depending on current color mode)
@@ -7057,8 +7054,8 @@ public void spotLight(float v1, float v2, float v3,
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:lights
- * @usage web_application
+ *  lights_camera:lights
+ * web_application
  * @param constant constant value or determining falloff
  * @param linear linear value for determining falloff
  * @param quadratic quadratic value for determining falloff
@@ -7085,8 +7082,8 @@ public void lightFalloff(float constant, float linear, float quadratic) {
  *
  * ( end auto-generated )
  *
- * @webref lights_camera:lights
- * @usage web_application
+ *  lights_camera:lights
+ * web_application
  * @param v1 red or hue value (depending on current color mode)
  * @param v2 green or saturation value (depending on current color mode)
  * @param v3 blue or brightness value (depending on current color mode)
@@ -7136,8 +7133,8 @@ public void lightSpecular(float v1, float v2, float v3) {
  * of transparency. To do a semi-transPApplet overlay, use fill() with alpha
  * and draw a rectangle.</p>
  *
- * @webref color:setting
- * @usage web_application
+ *  color:setting
+ * web_application
  * @param rgb any value of the color datatype
  * @see PGraphics#stroke(float)
  * @see PGraphics#fill(float)
@@ -7223,7 +7220,7 @@ public void background(float v1, float v2, float v3, float alpha) {
 }
 
 /**
- * @webref color:setting
+ *  color:setting
  */
 public void clear() {
   background(0, 0, 0, 0);
@@ -7345,8 +7342,8 @@ protected void backgroundImpl() {
  *
  * ( end auto-generated )
  *
- * @webref color:setting
- * @usage web_application
+ *  color:setting
+ * web_application
  * @param mode Either RGB or HSB, corresponding to Red/Green/Blue and Hue/Saturation/Brightness
  * @see PGraphics#background(float)
  * @see PGraphics#fill(float)
@@ -7682,8 +7679,8 @@ public final int color(float v1, float v2, float v3, float a) {  // ignore
  * Extracts the alpha value from a color.
  *
  * ( end auto-generated )
- * @webref color:creating_reading
- * @usage web_application
+ *  color:creating_reading
+ * web_application
  * @param rgb any value of the color datatype
  * @see PGraphics#red(int)
  * @see PGraphics#green(int)
@@ -7714,8 +7711,8 @@ public final float alpha(int rgb) {
  *
  * ( end auto-generated )
  *
- * @webref color:creating_reading
- * @usage web_application
+ *  color:creating_reading
+ * web_application
  * @param rgb any value of the color datatype
  * @see PGraphics#green(int)
  * @see PGraphics#blue(int)
@@ -7747,8 +7744,8 @@ public final float red(int rgb) {
  *
  * ( end auto-generated )
  *
- * @webref color:creating_reading
- * @usage web_application
+ *  color:creating_reading
+ * web_application
  * @param rgb any value of the color datatype
  * @see PGraphics#red(int)
  * @see PGraphics#blue(int)
@@ -7780,8 +7777,8 @@ public final float green(int rgb) {
  *
  * ( end auto-generated )
  *
- * @webref color:creating_reading
- * @usage web_application
+ *  color:creating_reading
+ * web_application
  * @param rgb any value of the color datatype
  * @see PGraphics#red(int)
  * @see PGraphics#green(int)
@@ -7804,8 +7801,8 @@ public final float blue(int rgb) {
  * Extracts the hue value from a color.
  *
  * ( end auto-generated )
- * @webref color:creating_reading
- * @usage web_application
+ *  color:creating_reading
+ * web_application
  * @param rgb any value of the color datatype
  * @see PGraphics#red(int)
  * @see PGraphics#green(int)
@@ -7830,8 +7827,8 @@ public final float hue(int rgb) {
  * Extracts the saturation value from a color.
  *
  * ( end auto-generated )
- * @webref color:creating_reading
- * @usage web_application
+ *  color:creating_reading
+ * web_application
  * @param rgb any value of the color datatype
  * @see PGraphics#red(int)
  * @see PGraphics#green(int)
@@ -7857,8 +7854,8 @@ public final float saturation(int rgb) {
  *
  * ( end auto-generated )
  *
- * @webref color:creating_reading
- * @usage web_application
+ *  color:creating_reading
+ * web_application
  * @param rgb any value of the color datatype
  * @see PGraphics#red(int)
  * @see PGraphics#green(int)
@@ -7895,8 +7892,8 @@ public final float brightness(int rgb) {
  *
  * ( end auto-generated )
  *
- * @webref color:creating_reading
- * @usage web_application
+ *  color:creating_reading
+ * web_application
  * @param c1 interpolate from this color
  * @param c2 interpolate to this color
  * @param amt between 0.0 and 1.0

@@ -2738,7 +2738,7 @@ public class PApplet implements PConstants {
   static public String[][] matchAll(String str, String regexp) {
     Pattern p = matchPattern(regexp);
     Matcher m = p.matcher(str);
-    ArrayList<String[]> results = new ArrayList<String[]>();
+    ArrayList<String[]> results = new ArrayList<>();
     int count = m.groupCount() + 1;
     while (m.find()) {
       String[] groups = new String[count];
@@ -3146,8 +3146,8 @@ public class PApplet implements PConstants {
 
   static public float parseFloat(String what, float otherwise) {
     try {
-      return new Float(what).floatValue();
-    } catch (NumberFormatException e) { }
+      return new Float(what);
+    } catch (NumberFormatException ignored) { }
 
     return otherwise;
   }
@@ -3196,7 +3196,7 @@ public class PApplet implements PConstants {
     float output[] = new float[what.length];
     for (int i = 0; i < what.length; i++) {
       try {
-        output[i] = new Float(what[i]).floatValue();
+        output[i] = new Float(what[i]);
       } catch (NumberFormatException e) {
         output[i] = missing;
       }

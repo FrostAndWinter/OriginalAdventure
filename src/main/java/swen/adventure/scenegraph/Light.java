@@ -25,7 +25,7 @@ public class Light extends SceneNode {
     public enum LightFalloff {
         None(0),
         Linear(1),
-        Quadratic(2)
+        Quadratic(2);
 
         public final float glValue;
 
