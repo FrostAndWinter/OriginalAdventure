@@ -9,6 +9,8 @@ import java.nio.FloatBuffer;
  * Methods adapted from and designed to emulate Apple's GLKit framework.
  */
 public class Vector4 implements Vector {
+    public static final int sizeInBytes = 16;
+
     public final float[] v;
     public final float x, y, z, w; //I'd rather duplicate the data than use a getter since it's guaranteed not to change.
 
@@ -256,10 +258,7 @@ public class Vector4 implements Vector {
 
         final Vector4 vector4 = (Vector4) o;
 
-        if (Float.compare(vector4.x, x) != 0) return false;
-        if (Float.compare(vector4.y, y) != 0) return false;
-        if (Float.compare(vector4.z, z) != 0) return false;
-        return Float.compare(vector4.w, w) == 0;
+        return this.x == vector4.x && this.y == vector4.y && this.z == vector4.z && this.w == vector4.w;
 
     }
 
@@ -272,7 +271,7 @@ public class Vector4 implements Vector {
         return result;
     }
 
-    public FloatBuffer asFloatBuffer() {
+    public FloatBuffer toFloatBuffer() {
         FloatBuffer buffer = BufferUtils.createFloatBuffer(4);
         buffer.put(this.v);
         buffer.flip();

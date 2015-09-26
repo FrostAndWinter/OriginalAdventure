@@ -234,20 +234,18 @@ public class Matrix4 {
                 1.0f);
     }
 
-    Matrix3 getMatrix3(Matrix4 matrix) {
+    public Matrix3 getMatrix3() {
         return new Matrix3(this.m[0], this.m[1], this.m[2],
                 this.m[4], this.m[5], this.m[6],
                 this.m[8], this.m[9], this.m[10]);
     }
 
     public Vector4 getRow(int row) {
-        Vector4 v = new Vector4(this.m[row], this.m[4 + row], this.m[8 + row], this.m[12 + row]);
-        return v;
+        return new Vector4(this.m[row], this.m[4 + row], this.m[8 + row], this.m[12 + row]);
     }
 
     public Vector4 getColumn(int column) {
-        Vector4 v = new Vector4(this.m[column * 4 + 0], this.m[column * 4 + 1], this.m[column * 4 + 2], this.m[column * 4 + 3]);
-        return v;
+        return new Vector4(this.m[column * 4 + 0], this.m[column * 4 + 1], this.m[column * 4 + 2], this.m[column * 4 + 3]);
     }
 
     public void setRow(int row, Vector4 vector) {
@@ -465,11 +463,10 @@ public class Matrix4 {
     }
 
     public Vector4 multiply(Vector4 vectorRight) {
-        Vector4 v = new Vector4(this.m[0] * vectorRight.v[0] + this.m[4] * vectorRight.v[1] + this.m[8] * vectorRight.v[2] + this.m[12] * vectorRight.v[3],
+        return new Vector4(this.m[0] * vectorRight.v[0] + this.m[4] * vectorRight.v[1] + this.m[8] * vectorRight.v[2] + this.m[12] * vectorRight.v[3],
                 this.m[1] * vectorRight.v[0] + this.m[5] * vectorRight.v[1] + this.m[9] * vectorRight.v[2] + this.m[13] * vectorRight.v[3],
                 this.m[2] * vectorRight.v[0] + this.m[6] * vectorRight.v[1] + this.m[10] * vectorRight.v[2] + this.m[14] * vectorRight.v[3],
                 this.m[3] * vectorRight.v[0] + this.m[7] * vectorRight.v[1] + this.m[11] * vectorRight.v[2] + this.m[15] * vectorRight.v[3]);
-        return v;
     }
 
     public void multiply(Vector4[] vectors) {
@@ -600,7 +597,7 @@ public class Matrix4 {
         int column = 0;
         int row = 0;
         for (int i = 0; i < 16; i++) {
-            stringBuilder.append(this.m[column * 4 + row] + ", ");
+            stringBuilder.append(this.m[column * 4 + row]).append(", ");
             column++;
             if (column == 4) {
                 column = 0;
@@ -612,7 +609,7 @@ public class Matrix4 {
         return stringBuilder.toString();
     }
 
-    public FloatBuffer asFloatBuffer() {
+    public FloatBuffer toFloatBuffer() {
         FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
         buffer.put(this.m);
         buffer.flip();

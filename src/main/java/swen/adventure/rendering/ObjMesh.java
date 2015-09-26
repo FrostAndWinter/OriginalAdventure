@@ -5,14 +5,13 @@ import swen.adventure.datastorage.WavefrontParser;
 import swen.adventure.rendering.maths.Vector;
 import swen.adventure.rendering.maths.Vector3;
 import swen.adventure.rendering.maths.Vector4;
-import swen.adventure.scenegraph.TransformNode;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 20/09/15.
@@ -37,9 +36,7 @@ public class ObjMesh extends GLMesh<Float> {
 
             final VertexData that = (VertexData) o;
 
-            if (!vertexPosition.equals(that.vertexPosition)) return false;
-            if (!vertexNormal.equals(that.vertexNormal)) return false;
-            return textureCoordinate.equals(that.textureCoordinate);
+            return vertexPosition.equals(that.vertexPosition) && vertexNormal.equals(that.vertexNormal) && textureCoordinate.equals(that.textureCoordinate);
 
         }
 
@@ -53,8 +50,8 @@ public class ObjMesh extends GLMesh<Float> {
     }
 
     private static final int VertexGeometryAttributeIndex = 0;
-    private static final int VertexNormalAttributeIndex = 1;
-    private static final int TextureCoordinateAttributeIndex = 2;
+    private static final int VertexNormalAttributeIndex = 2;
+    private static final int TextureCoordinateAttributeIndex = 1;
 
     private static final String VAOPositions = "vaoPositions";
     private static final String VAOPositionsAndNormals = "vaoPositionsAndNormals";
@@ -133,7 +130,7 @@ public class ObjMesh extends GLMesh<Float> {
             }
         }
 
-        List<Attribute> attributes = new ArrayList<Attribute>();
+        List<Attribute> attributes = new ArrayList<>();
         attributes.add(new Attribute(VertexGeometryAttributeIndex, _hasFourComponentGeoVectors ? 4 : 3, AttributeType.Float, false, vertexGeometry));
         if (_hasNormals) {
             attributes.add(new Attribute(VertexNormalAttributeIndex, 3, AttributeType.Float, false, vertexNormals));
@@ -147,11 +144,11 @@ public class ObjMesh extends GLMesh<Float> {
 
         if (!_triIndices.isEmpty()) {
             renderCommands.add(new RenderCommand(GL_TRIANGLES, -1));
-            indexData.add(new IndexData(_triIndices, AttributeType.UShort));
+            indexData.add(new IndexData<>(_triIndices, AttributeType.UShort));
         }
 
         List<NamedVertexArrayObject> namedVAOs = new ArrayList<>();
-        namedVAOs.add(new NamedVertexArrayObject(VAOPositions, Arrays.asList(VertexGeometryAttributeIndex)));
+        namedVAOs.add(new NamedVertexArrayObject(VAOPositions, Collections.singletonList(VertexGeometryAttributeIndex)));
         if (_hasNormals) {
             namedVAOs.add(new NamedVertexArrayObject(VAOPositionsAndNormals, Arrays.asList(VertexGeometryAttributeIndex, VertexNormalAttributeIndex)));
         }

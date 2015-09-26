@@ -325,6 +325,31 @@ public class Matrix3 {
             vectors[i] = this.multiply(vectors[i]);
     }
 
+    public float determinant() {
+        return
+                        + m[0] * (m[4] * m[8] - m[7] * m[5])
+                        - m[3] * (m[1] * m[8] - m[7] * m[2])
+                        + m[6] * (m[1] * m[5] - m[4] * m[2]);
+    }
+
+    public Matrix3 inverse() {
+        float determinant = this.determinant();
+
+        Matrix3 result = new Matrix3();
+
+        result.m[0] = + (m[4] * m[8] - m[7] * m[5]) / determinant;
+        result.m[3] = - (m[3] * m[8] - m[6] * m[5]) / determinant;
+        result.m[6] = + (m[3] * m[7] - m[6] * m[4]) / determinant;
+        result.m[1] = - (m[1] * m[8] - m[7] * m[2]) / determinant;
+        result.m[4] = + (m[0] * m[8] - m[6] * m[2]) / determinant;
+        result.m[7] = - (m[0] * m[7] - m[6] * m[1]) / determinant;
+        result.m[2] = + (m[1] * m[5] - m[4] * m[2]) / determinant;
+        result.m[5] = - (m[0] * m[5] - m[3] * m[2]) / determinant;
+        result.m[8] = + (m[0] * m[4] - m[3] * m[1]) / determinant;
+
+        return result;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -347,7 +372,7 @@ public class Matrix3 {
         int column = 0;
         int row = 0;
         for (int i = 0; i < 9; i++) {
-            stringBuilder.append(this.m[column * 3 + row] + ", ");
+            stringBuilder.append(this.m[column * 3 + row]).append(", ");
             column++;
             if (column == 3) {
                 column = 0;
@@ -359,7 +384,7 @@ public class Matrix3 {
         return stringBuilder.toString();
     }
 
-    public FloatBuffer asFloatBuffer() {
+    public FloatBuffer toFloatBuffer() {
         FloatBuffer buffer = BufferUtils.createFloatBuffer(9);
         buffer.put(this.m);
         buffer.flip();

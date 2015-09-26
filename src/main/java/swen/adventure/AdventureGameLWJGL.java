@@ -3,6 +3,7 @@ package swen.adventure;
 import org.lwjgl.Sys;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
+import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.glfw.GLFWvidmode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
@@ -14,6 +15,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 import static org.lwjgl.glfw.Callbacks.errorCallbackPrint;
+import static org.lwjgl.glfw.Callbacks.glfwSetCallback;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
@@ -23,8 +25,10 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class AdventureGameLWJGL {
 
     // We need to strongly reference callback instances.
-    private GLFWErrorCallback errorCallback;
-    private GLFWKeyCallback   keyCallback;
+    private GLFWErrorCallback _errorCallback;
+    private GLFWKeyCallback _keyCallback;
+    private GLFWWindowSizeCallback _resizeCallback;
+
 
     // The window handle
     private long window;
@@ -41,18 +45,18 @@ public class AdventureGameLWJGL {
 
             // Release window and window callbacks
             glfwDestroyWindow(window);
-            keyCallback.release();
+            _keyCallback.release();
         } finally {
             // Terminate GLFW and release the GLFWerrorfun
             glfwTerminate();
-            errorCallback.release();
+            _errorCallback.release();
         }
     }
 
     private void init() {
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
-        glfwSetErrorCallback(errorCallback = errorCallbackPrint(System.err));
+        glfwSetErrorCallback(_errorCallback = errorCallbackPrint(System.err));
 
         // Initialize GLFW. Most GLFW functions will not work before doing this.
         if ( glfwInit() != GL11.GL_TRUE )
@@ -67,6 +71,7 @@ public class AdventureGameLWJGL {
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+        glfwWindowHint(GLFW_SAMPLES, 4);
 
         int WIDTH = 800;
         int HEIGHT = 600;
@@ -77,11 +82,19 @@ public class AdventureGameLWJGL {
             throw new RuntimeException("Failed to create the GLFW window");
 
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
-        glfwSetKeyCallback(window, keyCallback = new GLFWKeyCallback() {
+        glfwSetKeyCallback(window, _keyCallback = new GLFWKeyCallback() {
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
                 if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
                     glfwSetWindowShouldClose(window, GL_TRUE); // We will detect this in our rendering loop
+            }
+        });
+
+        glfwSetCallback(window, _resizeCallback = new GLFWWindowSizeCallback() {
+            @Override
+            public void invoke(final long window, final int width, final int height) {
+                _pGraphics.setSize(width, height);
+
             }
         });
 

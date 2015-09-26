@@ -137,10 +137,10 @@ public class PApplet implements PConstants {
   static {
     String osname = System.getProperty("os.name");
 
-    if (osname.indexOf("Mac") != -1) {
+    if (osname.contains("Mac")) {
       platform = MACOSX;
 
-    } else if (osname.indexOf("Windows") != -1) {
+    } else if (osname.contains("Windows")) {
       platform = WINDOWS;
 
     } else if (osname.equals("Linux")) {  // true for the ibm vm
@@ -166,14 +166,13 @@ public class PApplet implements PConstants {
    * value of a number is always positive.
    *
    * ( end auto-generated )
-   * @webref math:calculation
    * @param n number to compute
    */
-  static public final float abs(float n) {
+  static public float abs(float n) {
     return (n < 0) ? -n : n;
   }
 
-  static public final int abs(int n) {
+  static public int abs(int n) {
     return (n < 0) ? -n : n;
   }
 
@@ -185,11 +184,10 @@ public class PApplet implements PConstants {
    * positive result. For example, -1 * -1 = 1.
    *
    * ( end auto-generated )
-   * @webref math:calculation
    * @param n number to square
    * @see PApplet#sqrt(float)
    */
-  static public final float sq(float n) {
+  static public float sq(float n) {
     return n*n;
   }
 
@@ -202,12 +200,11 @@ public class PApplet implements PConstants {
    * is the opposite of squaring.
    *
    * ( end auto-generated )
-   * @webref math:calculation
    * @param n non-negative number
    * @see PApplet#pow(float, float)
    * @see PApplet#sq(float)
    */
-  static public final float sqrt(float n) {
+  static public float sqrt(float n) {
     return (float)Math.sqrt(n);
   }
 
@@ -218,10 +215,9 @@ public class PApplet implements PConstants {
    * number. This function expects the values greater than 0.0.
    *
    * ( end auto-generated )
-   * @webref math:calculation
    * @param n number greater than 0.0
    */
-  static public final float log(float n) {
+  static public float log(float n) {
     return (float)Math.log(n);
   }
 
@@ -232,10 +228,9 @@ public class PApplet implements PConstants {
    * <b>value</b> parameter.
    *
    * ( end auto-generated )
-   * @webref math:calculation
    * @param n exponent to raise
    */
-  static public final float exp(float n) {
+  static public float exp(float n) {
     return (float)Math.exp(n);
   }
 
@@ -248,12 +243,12 @@ public class PApplet implements PConstants {
    * expression 3*3*3*3*3 and <b>pow(3, -5)</b> is equivalent to 1 / 3*3*3*3*3.
    *
    * ( end auto-generated )
-   * @webref math:calculation
+   * @ math:calculation
    * @param n base of the exponential expression
    * @param e power by which to raise the base
    * @see PApplet#sqrt(float)
    */
-  static public final float pow(float n, float e) {
+  static public float pow(float n, float e) {
     return (float)Math.pow(n, e);
   }
 
@@ -263,7 +258,7 @@ public class PApplet implements PConstants {
    * Determines the largest value in a sequence of numbers.
    *
    * ( end auto-generated )
-   * @webref math:calculation
+   * @ math:calculation
    * @param a first number to compare
    * @param b second number to compare
    * @see PApplet#min(float, float, float)
@@ -272,7 +267,7 @@ public class PApplet implements PConstants {
     return (a > b) ? a : b;
   }
 
-  static public final float max(float a, float b) {
+  static public float max(float a, float b) {
     return (a > b) ? a : b;
   }
 
@@ -290,7 +285,7 @@ public class PApplet implements PConstants {
   }
 
 
-  static public final float max(float a, float b, float c) {
+  static public float max(float a, float b, float c) {
     return (a > b) ? ((a > c) ? a : c) : ((b > c) ? b : c);
   }
 
@@ -311,7 +306,7 @@ public class PApplet implements PConstants {
     return max;
   }
 
-  static public final float max(float[] list) {
+  static public float max(float[] list) {
     if (list.length == 0) {
       throw new ArrayIndexOutOfBoundsException(ERROR_MIN_MAX);
     }
@@ -346,7 +341,7 @@ public class PApplet implements PConstants {
     return (a < b) ? a : b;
   }
 
-  static public final float min(float a, float b) {
+  static public float min(float a, float b) {
     return (a < b) ? a : b;
   }
 
@@ -367,13 +362,13 @@ public class PApplet implements PConstants {
    * Determines the smallest value in a sequence of numbers.
    *
    * ( end auto-generated )
-   * @webref math:calculation
+   * @ math:calculation
    * @param a first number
    * @param b second number
    * @param c third number
    * @see PApplet#max(float, float, float)
    */
-  static public final float min(float a, float b, float c) {
+  static public float min(float a, float b, float c) {
     return (a < b) ? ((a < c) ? a : c) : ((b < c) ? b : c);
   }
 
@@ -398,7 +393,7 @@ public class PApplet implements PConstants {
     return min;
   }
 
-  static public final float min(float[] list) {
+  static public float min(float[] list) {
     if (list.length == 0) {
       throw new ArrayIndexOutOfBoundsException(ERROR_MIN_MAX);
     }
@@ -440,7 +435,7 @@ public class PApplet implements PConstants {
    * Constrains a value to not exceed a maximum and minimum value.
    *
    * ( end auto-generated )
-   * @webref math:calculation
+   * @ math:calculation
    * @param amt the value to constrain
    * @param low minimum limit
    * @param high maximum limit
@@ -448,7 +443,7 @@ public class PApplet implements PConstants {
    * @see PApplet#min(float, float, float)
    */
 
-  static public final float constrain(float amt, float low, float high) {
+  static public float constrain(float amt, float low, float high) {
     return (amt < low) ? low : ((amt > high) ? high : amt);
   }
 
@@ -460,13 +455,13 @@ public class PApplet implements PConstants {
    * 6.28). Values are returned in the range -1 to 1.
    *
    * ( end auto-generated )
-   * @webref math:trigonometry
+   * @ math:trigonometry
    * @param angle an angle in radians
    * @see PApplet#cos(float)
    * @see PApplet#tan(float)
    * @see PApplet#radians(float)
    */
-  static public final float sin(float angle) {
+  static public float sin(float angle) {
     return (float)Math.sin(angle);
   }
 
@@ -478,13 +473,13 @@ public class PApplet implements PConstants {
    * PI*2). Values are returned in the range -1 to 1.
    *
    * ( end auto-generated )
-   * @webref math:trigonometry
+   * @ math:trigonometry
    * @param angle an angle in radians
    * @see PApplet#sin(float)
    * @see PApplet#tan(float)
    * @see PApplet#radians(float)
    */
-  static public final float cos(float angle) {
+  static public float cos(float angle) {
     return (float)Math.cos(angle);
   }
 
@@ -497,13 +492,13 @@ public class PApplet implements PConstants {
    * <b>infinity</b> to <b>-infinity</b>.
    *
    * ( end auto-generated )
-   * @webref math:trigonometry
+   * @ math:trigonometry
    * @param angle an angle in radians
    * @see PApplet#cos(float)
    * @see PApplet#sin(float)
    * @see PApplet#radians(float)
    */
-  static public final float tan(float angle) {
+  static public float tan(float angle) {
     return (float)Math.tan(angle);
   }
 
@@ -515,13 +510,13 @@ public class PApplet implements PConstants {
    * returned in the range <b>-PI/2</b> to <b>PI/2</b>.
    *
    * ( end auto-generated )
-   * @webref math:trigonometry
+   * @ math:trigonometry
    * @param value the value whose arc sine is to be returned
    * @see PApplet#sin(float)
    * @see PApplet#acos(float)
    * @see PApplet#atan(float)
    */
-  static public final float asin(float value) {
+  static public float asin(float value) {
     return (float)Math.asin(value);
   }
 
@@ -533,13 +528,13 @@ public class PApplet implements PConstants {
    * returned in the range <b>0</b> to <b>PI (3.1415927)</b>.
    *
    * ( end auto-generated )
-   * @webref math:trigonometry
+   * @ math:trigonometry
    * @param value the value whose arc cosine is to be returned
    * @see PApplet#cos(float)
    * @see PApplet#asin(float)
    * @see PApplet#atan(float)
    */
-  static public final float acos(float value) {
+  static public float acos(float value) {
     return (float)Math.acos(value);
   }
 
@@ -551,13 +546,13 @@ public class PApplet implements PConstants {
    * (exclusive) and values are returned in the range <b>-PI/2</b> to <b>PI/2 </b>.
    *
    * ( end auto-generated )
-   * @webref math:trigonometry
+   * @ math:trigonometry
    * @param value -Infinity to Infinity (exclusive)
    * @see PApplet#tan(float)
    * @see PApplet#asin(float)
    * @see PApplet#acos(float)
    */
-  static public final float atan(float value) {
+  static public float atan(float value) {
     return (float)Math.atan(value);
   }
 
@@ -573,12 +568,12 @@ public class PApplet implements PConstants {
    * of calculating the tangent.
    *
    * ( end auto-generated )
-   * @webref math:trigonometry
+   * @ math:trigonometry
    * @param y y-coordinate of the point
    * @param x x-coordinate of the point
    * @see PApplet#tan(float)
    */
-  static public final float atan2(float y, float x) {
+  static public float atan2(float y, float x) {
     return (float)Math.atan2(y, x);
   }
 
@@ -592,11 +587,11 @@ public class PApplet implements PConstants {
    * require their parameters to be specified in radians.
    *
    * ( end auto-generated )
-   * @webref math:trigonometry
+   * @ math:trigonometry
    * @param radians radian value to convert to degrees
    * @see PApplet#radians(float)
    */
-  static public final float degrees(float radians) {
+  static public float degrees(float radians) {
     return radians * RAD_TO_DEG;
   }
 
@@ -610,11 +605,11 @@ public class PApplet implements PConstants {
    * require their parameters to be specified in radians.
    *
    * ( end auto-generated )
-   * @webref math:trigonometry
+   * @ math:trigonometry
    * @param degrees degree value to convert to radians
    * @see PApplet#degrees(float)
    */
-  static public final float radians(float degrees) {
+  static public float radians(float degrees) {
     return degrees * DEG_TO_RAD;
   }
 
@@ -625,7 +620,7 @@ public class PApplet implements PConstants {
    * value of the parameter. For example, <b>ceil(9.03)</b> returns the value 10.
    *
    * ( end auto-generated )
-   * @webref math:calculation
+   * @ math:calculation
    * @param n number to round up
    * @see PApplet#floor(float)
    * @see PApplet#round(float)
@@ -641,7 +636,7 @@ public class PApplet implements PConstants {
    * of the parameter.
    *
    * ( end auto-generated )
-   * @webref math:calculation
+   * @ math:calculation
    * @param n number to round down
    * @see PApplet#ceil(float)
    * @see PApplet#round(float)
@@ -657,7 +652,7 @@ public class PApplet implements PConstants {
    * example, <b>round(9.2)</b> returns the value 9.
    *
    * ( end auto-generated )
-   * @webref math:calculation
+   * @ math:calculation
    * @param n number to round
    * @see PApplet#floor(float)
    * @see PApplet#ceil(float)
@@ -667,7 +662,7 @@ public class PApplet implements PConstants {
   }
 
 
-  static public final float mag(float a, float b) {
+  static public float mag(float a, float b) {
     return (float)Math.sqrt(a*a + b*b);
   }
 
@@ -681,18 +676,18 @@ public class PApplet implements PConstants {
    * value. Therefore, mag() is a shortcut for writing "dist(0, 0, x, y)".
    *
    * ( end auto-generated )
-   * @webref math:calculation
+   * @ math:calculation
    * @param a first value
    * @param b second value
    * @param c third value
    * @see PApplet#dist(float, float, float, float)
    */
-  static public final float mag(float a, float b, float c) {
+  static public float mag(float a, float b, float c) {
     return (float)Math.sqrt(a*a + b*b + c*c);
   }
 
 
-  static public final float dist(float x1, float y1, float x2, float y2) {
+  static public float dist(float x1, float y1, float x2, float y2) {
     return sqrt(sq(x2-x1) + sq(y2-y1));
   }
 
@@ -702,7 +697,7 @@ public class PApplet implements PConstants {
    * Calculates the distance between two points.
    *
    * ( end auto-generated )
-   * @webref math:calculation
+   * @ math:calculation
    * @param x1 x-coordinate of the first point
    * @param y1 y-coordinate of the first point
    * @param z1 z-coordinate of the first point
@@ -710,7 +705,7 @@ public class PApplet implements PConstants {
    * @param y2 y-coordinate of the second point
    * @param z2 z-coordinate of the second point
    */
-  static public final float dist(float x1, float y1, float z1,
+  static public float dist(float x1, float y1, float z1,
                                  float x2, float y2, float z2) {
     return sqrt(sq(x2-x1) + sq(y2-y1) + sq(z2-z1));
   }
@@ -725,7 +720,7 @@ public class PApplet implements PConstants {
    * creating motion along a straight path and for drawing dotted lines.
    *
    * ( end auto-generated )
-   * @webref math:calculation
+   * @ math:calculation
    * @param start first value
    * @param stop second value
    * @param amt float between 0.0 and 1.0
@@ -734,7 +729,7 @@ public class PApplet implements PConstants {
    * @see PVector#lerp(PVector, float)
    * @see PGraphics#lerpColor(int, int, float)
    */
-  static public final float lerp(float start, float stop, float amt) {
+  static public float lerp(float start, float stop, float amt) {
     return start + (stop-start) * amt;
   }
 
@@ -749,14 +744,14 @@ public class PApplet implements PConstants {
    * out-of-range values are often intentional and useful.
    *
    * ( end auto-generated )
-   * @webref math:calculation
+   * @ math:calculation
    * @param value the incoming value to be converted
    * @param start lower bound of the value's current range
    * @param stop upper bound of the value's current range
    * @see PApplet#map(float, float, float, float, float)
    * @see PApplet#lerp(float, float, float)
    */
-  static public final float norm(float value, float start, float stop) {
+  static public float norm(float value, float start, float stop) {
     return (value - start) / (stop - start);
   }
 
@@ -772,7 +767,7 @@ public class PApplet implements PConstants {
    * out-of-range values are often intentional and useful.
    *
    * ( end auto-generated )
-   * @webref math:calculation
+   * @ math:calculation
    * @param value the incoming value to be converted
    * @param start1 lower bound of the value's current range
    * @param stop1 upper bound of the value's current range
@@ -781,7 +776,7 @@ public class PApplet implements PConstants {
    * @see PApplet#norm(float, float, float)
    * @see PApplet#lerp(float, float, float)
    */
-  static public final float map(float value,
+  static public float map(float value,
                                 float start1, float stop1,
                                 float start2, float stop2) {
     float outgoing =
@@ -858,7 +853,7 @@ public class PApplet implements PConstants {
    * be returned.
    *
    * ( end auto-generated )
-   * @webref math:random
+   * @ math:random
    * @see PApplet#random(float,float)
    * @see PApplet#noise(float, float, float)
    */
@@ -885,7 +880,7 @@ public class PApplet implements PConstants {
    * integer, use the <b>int()</b> function.
    *
    * ( end auto-generated )
-   * @webref math:random
+   * @ math:random
    * @param low lower limit
    * @param high upper limit
    * @see PApplet#randomSeed(long)
@@ -907,7 +902,7 @@ public class PApplet implements PConstants {
    * numbers each time the software is run.
    *
    * ( end auto-generated )
-   * @webref math:random
+   * @ math:random
    * @param seed seed value
    * @see PApplet#random(float,float)
    * @see PApplet#noise(float, float, float)
@@ -999,7 +994,7 @@ public class PApplet implements PConstants {
    *
    * ( end auto-generated )
    *
-   * @webref math:random
+   * @ math:random
    * @param x x-coordinate in noise space
    * @param y y-coordinate in noise space
    * @param z z-coordinate in noise space
@@ -1105,7 +1100,7 @@ public class PApplet implements PConstants {
    * function can be adapted to fit very specific needs and characteristics.
    *
    * ( end auto-generated )
-   * @webref math:random
+   * @ math:random
    * @param lod number of octaves to be used by the noise
    * @see PApplet#noise(float, float, float)
    */
@@ -1130,7 +1125,7 @@ public class PApplet implements PConstants {
    * numbers each time the software is run.
    *
    * ( end auto-generated )
-   * @webref math:random
+   * @ math:random
    * @param seed seed value
    * @see PApplet#noise(float, float, float)
    * @see PApplet#noiseDetail(int, float)
@@ -1165,7 +1160,7 @@ public class PApplet implements PConstants {
    * download files from the same server from which it came. Getting around
    * this restriction requires a <a
    * href="http://wiki.processing.org/w/Sign_an_Applet">signed
-   * applet</a>.<br/>
+   * graphics</a>.<br/>
    * <br/> <b>extension</b> parameter is used to determine the image type in
    * cases where the image filename does not end with a proper extension.
    * Specify the extension as the second parameter to <b>loadImage()</b>, as
@@ -1184,7 +1179,7 @@ public class PApplet implements PConstants {
    *
    * ( end auto-generated )
    *
-   * @webref image:loading_displaying
+   * @ image:loading_displaying
    * @param filename name of file to load, can be .gif, .jpg, .tga, or a handful of other image types depending on your platform
    * @see PImage
    * @see PGraphics#image(PImage, float, float, float, float)
@@ -1204,7 +1199,7 @@ public class PApplet implements PConstants {
 //  }
 
 //  /**
-//   * @nowebref
+//   * @no
 //   */
 //  public PImage loadImage(String filename, Object params) {
 //    return loadImage(filename, null, params);
@@ -1221,10 +1216,10 @@ public class PApplet implements PConstants {
   * security reasons, a Processing sketch found online can only download
   * files from the same server from which it came. Getting around this
           * restriction requires a <a
-  * href="http://wiki.processing.org/w/Sign_an_Applet">signed applet</a>.
+  * href="http://wiki.processing.org/w/Sign_an_Applet">signed graphics</a>.
           *
           * ( end auto-generated )
-          * @webref input:files
+          * @ input:files
   * @param filename name of a file in the data folder or a URL.
   *
           */
@@ -1248,7 +1243,7 @@ public class PApplet implements PConstants {
   }
 
   /**
-   * @nowebref
+   * @no
    */
   static public byte[] loadBytes(InputStream input) {
     try {
@@ -1383,7 +1378,7 @@ public class PApplet implements PConstants {
 
 
 //  /**
-//   * @nowebref
+//   * @no
 //   */
 //  public PImage requestImage(String filename, String extension, Object params) {
 //    PImage vessel = createImage(0, 0, ARGB, params);
@@ -1591,7 +1586,7 @@ public class PApplet implements PConstants {
 
     try {
       // attempt to load from a local file, used when running as
-      // an application, or as a signed applet
+      // an application, or as a signed graphics
       try {  // first try to catch any security exceptions
 
         try {
@@ -1651,7 +1646,7 @@ public class PApplet implements PConstants {
    * methods to take more control of how the stream is read.
    * <p>
    * If the requested item doesn't exist, null is returned.
-   * (Prior to 0096, die() would be called, killing the applet)
+   * (Prior to 0096, die() would be called, killing the graphics)
    * <p>
    * For 0096+, the "data" folder is exported intact with subfolders,
    * and openStream() properly handles subdirectories from the data folder
@@ -1673,7 +1668,7 @@ public class PApplet implements PConstants {
    * <LI>Another file to be opened locally (when running as an application)
    * </UL>
    *
-   * @webref input:files
+   * @ input:files
    * @param filename the name of the file to use as input
    *
    */
@@ -1749,7 +1744,7 @@ public class PApplet implements PConstants {
    * copying each element.
    *
    * ( end auto-generated )
-   * @webref data:array_functions
+   * @ data:array_functions
    * @param src the source array
    * @param srcPosition starting position in the source array
    * @param dst the destination array of the same data type as the source array
@@ -1817,7 +1812,7 @@ public class PApplet implements PConstants {
    *
    * ( end auto-generated )
    *
-   * @webref data:array_functions
+   * @ data:array_functions
    * @param list the array to expand
    * @see PApplet#shorten(boolean[])
    */
@@ -1906,7 +1901,7 @@ public class PApplet implements PConstants {
   }
 
  /**
-  * @nowebref
+  * @no
   */
   static public Object expand(Object array) {
     return expand(array, Array.getLength(array) << 1);
@@ -1936,7 +1931,7 @@ public class PApplet implements PConstants {
    *
    * ( end auto-generated )
    *
-   * @webref data:array_functions
+   * @ data:array_functions
    * @param array array to append
    * @param value new data for the array
    * @see PApplet#shorten(boolean[])
@@ -1991,7 +1986,7 @@ public class PApplet implements PConstants {
    *
    * ( end auto-generated )
    *
-   * @webref data:array_functions
+   * @ data:array_functions
    * @param list array to shorten
    * @see PApplet#append(byte[], byte)
    * @see PApplet#expand(boolean[])
@@ -2039,7 +2034,7 @@ public class PApplet implements PConstants {
    * items = (SomeClass[]) splice(array1, array2, index)</em>.
    *
    * ( end auto-generated )
-   * @webref data:array_functions
+   * @ data:array_functions
    * @param list array to splice into
    * @param value value to be spliced in
    * @param index position in the array from which to insert data
@@ -2209,7 +2204,7 @@ public class PApplet implements PConstants {
    * items = (SomeClass[]) subset(originalArray, 0, 4)</em>.
    *
    * ( end auto-generated )
-  * @webref data:array_functions
+  * @ data:array_functions
   * @param list array to extract from
   * @param start position to begin
   * @param count number of values to extract
@@ -2299,7 +2294,7 @@ public class PApplet implements PConstants {
    * items = (SomeClass[]) concat(array1, array2)</em>.
    *
    * ( end auto-generated )
-  * @webref data:array_functions
+  * @ data:array_functions
   * @param a first array to concatenate
   * @param b second array to concatenate
   * @see PApplet#splice(boolean[], boolean, int)
@@ -2366,7 +2361,7 @@ public class PApplet implements PConstants {
    * Reverses the order of an array.
    *
    * ( end auto-generated )
-  * @webref data:array_functions
+  * @ data:array_functions
   * @param list booleans[], bytes[], chars[], ints[], floats[], or Strings[]
   */
   static public boolean[] reverse(boolean list[]) {
@@ -2448,7 +2443,7 @@ public class PApplet implements PConstants {
    * return, and tab, this function also removes the Unicode "nbsp" character.
    *
    * ( end auto-generated )
-   * @webref data:string_functions
+   * @ data:string_functions
    * @param str any string
    * @see PApplet#split(String, String)
    * @see PApplet#join(String[], char)
@@ -2481,7 +2476,7 @@ public class PApplet implements PConstants {
    * <b>nf()</b> or <b>nfs()</b>.
    *
    * ( end auto-generated )
-   * @webref data:string_functions
+   * @ data:string_functions
    * @param list array of Strings
    * @param separator char or String to be placed between each item
    * @see PApplet#split(String, String)
@@ -2523,7 +2518,7 @@ public class PApplet implements PConstants {
    * <b>int()</b> and <b>float()</b> to convert the array of Strings.
    *
    * ( end auto-generated )
-   * @webref data:string_functions
+   * @ data:string_functions
    * @param value the String to be split
    * @param delim list of individual characters that will be used as separators
    * @see PApplet#split(String, String)
@@ -2571,7 +2566,7 @@ public class PApplet implements PConstants {
    * -->
    *
    * ( end auto-generated )
-   * @webref data:string_functions
+   * @ data:string_functions
    * @usage web_application
    * @param value the String to be split
    * @param delim the character or String used to separate the data
@@ -2680,7 +2675,7 @@ public class PApplet implements PConstants {
    * Tutorial</a> on the topic.
    *
    * ( end auto-generated )
-   * @webref data:string_functions
+   * @ data:string_functions
    * @param str the String to be searched
    * @param regexp the regexp to be used for matching
    * @see PApplet#matchAll(String, String)
@@ -2731,7 +2726,7 @@ public class PApplet implements PConstants {
    * Tutorial</a> on the topic.
    *
    * ( end auto-generated )
-   * @webref data:string_functions
+   * @ data:string_functions
    * @param str the String to be searched
    * @param regexp the regexp to be used for matching
    * @see PApplet#match(String, String)
@@ -3316,7 +3311,7 @@ public class PApplet implements PConstants {
    * functions.
    *
    * ( end auto-generated )
-   * @webref data:string_functions
+   * @ data:string_functions
    * @param num the number(s) to format
    * @param digits number of digits to pad with zero
    * @see PApplet#nfs(float, int, int)
@@ -3350,7 +3345,7 @@ public class PApplet implements PConstants {
    * whatever is apprioriate for that region.
    *
    * ( end auto-generated )
- * @webref data:string_functions
+ * @ data:string_functions
  * @param num the number(s) to format
  * @see PApplet#nf(float, int, int)
  * @see PApplet#nfp(float, int, int)
@@ -3405,7 +3400,7 @@ public class PApplet implements PConstants {
    * should always be positive integers.
    *
    * ( end auto-generated )
-  * @webref data:string_functions
+  * @ data:string_functions
   * @param num the number(s) to format
   * @param digits number of digits to pad with zeroes
   * @see PApplet#nf(float, int, int)
@@ -3441,7 +3436,7 @@ public class PApplet implements PConstants {
    * <b>left</b>, and <b>right</b> parameters should always be positive integers.
    *
    * ( end auto-generated )
-  * @webref data:string_functions
+  * @ data:string_functions
   * @param num the number(s) to format
   * @param digits number of digits to pad with zeroes
   * @see PApplet#nf(float, int, int)
@@ -3590,7 +3585,7 @@ public class PApplet implements PConstants {
    * simply shorten the string to eight anyway.
    *
    * ( end auto-generated )
-   * @webref data:conversion
+   * @ data:conversion
    * @param value the value to convert
    * @see PApplet#unhex(String)
    * @see PApplet#binary(byte)
@@ -3634,7 +3629,7 @@ public class PApplet implements PConstants {
    *
    * ( end auto-generated )
    *
-   * @webref data:conversion
+   * @ data:conversion
    * @param value String to convert to an integer
    * @see PApplet#hex(int, int)
    * @see PApplet#binary(byte)
@@ -3691,7 +3686,7 @@ public class PApplet implements PConstants {
    * shorten the string to 32 anyway.
    *
    * ( end auto-generated )
-  * @webref data:conversion
+  * @ data:conversion
   * @param value value to convert
   * @param digits number of digits to return
   * @see PApplet#unbinary(String)
@@ -3723,7 +3718,7 @@ public class PApplet implements PConstants {
    * integer value. For example, unbinary("00001000") will return 8.
    *
    * ( end auto-generated )
-   * @webref data:conversion
+   * @ data:conversion
    * @param value String to convert to an integer
    * @see PApplet#binary(byte)
    * @see PApplet#hex(int,int)

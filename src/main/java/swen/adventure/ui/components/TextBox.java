@@ -16,13 +16,13 @@ public class TextBox extends UIComponent {
     private PFont font;
     private int padding;
 
-    public TextBox(PApplet app, String text, int x, int y) {
-        super(app, x, y, 0, 0);
+    public TextBox(PGraphics g, String text, int x, int y) {
+        super(g, x, y, 0, 0);
 
         this.text = text;
 
         // Create the font
-        font = applet.createFont("Arial", 16);
+        font = g.createFont("Arial", 16);
 
         padding = DEFAULT_PADDING;
     }

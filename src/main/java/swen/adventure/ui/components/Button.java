@@ -29,8 +29,8 @@ public class Button extends UIComponent implements Clickable {
     private PFont font;
     private Color color;
 
-    public Button(PApplet app, String text, int x, int y) {
-        super(app, x, y, 0, 0);
+    public Button(PGraphics g, String text, int x, int y) {
+        super(g, x, y, 0, 0);
 
         this.text = text;
 
@@ -44,8 +44,8 @@ public class Button extends UIComponent implements Clickable {
         padding = DEFAULT_PADDING;
     }
 
-    public Button(PApplet app, String text, int x, int y, int height, int width) {
-        super(app, x, y, height, width);
+    public Button(PGraphics g, String text, int x, int y, int height, int width) {
+        super(g, x, y, height, width);
 
         this.text = text;
 
@@ -54,7 +54,7 @@ public class Button extends UIComponent implements Clickable {
         listeners = new ArrayList<>();
 
         // Create the font
-        font = applet.createFont("Arial", 16);
+        font = g.createFont("Arial", 16);
 
         padding = DEFAULT_PADDING;
     }

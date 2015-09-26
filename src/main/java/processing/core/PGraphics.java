@@ -957,7 +957,7 @@ protected void defaultSettings() {  // ignore
   textAlign = LEFT;
   textMode = MODEL;
 
-  // if this fella is associated with an applet, then clear its background.
+  // if this fella is associated with an graphics, then clear its background.
   // if it's been created by someone else through createGraphics,
   // they have to call background() themselves, otherwise everything gets
   // a gray background (when just a transPApplet surface or an empty pdf

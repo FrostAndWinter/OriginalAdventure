@@ -1,6 +1,5 @@
 package swen.adventure.ui.components;
 
-import processing.core.PApplet;
 import processing.core.PGraphics;
 
 import swen.adventure.ui.layoutmanagers.LayoutManager;
@@ -12,7 +11,7 @@ import java.util.List;
  * Created by danielbraithwt on 9/15/15.
  */
 public abstract class UIComponent {
-    protected PApplet applet;
+    protected PGraphics graphics;
     protected List<UIComponent> children;
     private LayoutManager manager;
     private boolean visible = true;
@@ -22,8 +21,8 @@ public abstract class UIComponent {
     protected int width;
     protected int height;
 
-    public UIComponent(PApplet a, int x, int y, int w, int h) {
-        applet = a;
+    public UIComponent(PGraphics g, int x, int y, int w, int h) {
+        graphics = g;
         children = new ArrayList<>();
 
         this.x = x;
@@ -122,7 +121,7 @@ public abstract class UIComponent {
 
     protected abstract void drawComponent(PGraphics g, float scaleX, float scaleY);
 
-    protected void drawComponenet(PGraphics g) {
+    protected void drawComponent(PGraphics g) {
         draw(g, 1, 1);
     }
 

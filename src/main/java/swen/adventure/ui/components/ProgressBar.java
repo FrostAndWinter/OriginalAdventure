@@ -20,7 +20,7 @@ public class ProgressBar extends UIComponent {
         this.count = startingVal;
         this.maxValue = maxValue;
 
-        this.font = applet.createFont("Arial", 16);
+        this.font = g.createFont("Arial", 16);
     }
 
     public int changeProgress(int delta) {

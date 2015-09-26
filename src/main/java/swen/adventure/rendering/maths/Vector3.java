@@ -9,6 +9,9 @@ import java.nio.FloatBuffer;
  * Methods adapted from and designed to emulate Apple's GLKit framework.
  */
 public class Vector3 implements Vector {
+    public static final int sizeInBytes = 12;
+
+
     public final float[] v;
     public final float x, y, z; //I'd rather duplicate the data than use a getter since it's guaranteed not to change.
 
@@ -215,7 +218,7 @@ public class Vector3 implements Vector {
         return result;
     }
 
-    public FloatBuffer asFloatBuffer() {
+    public FloatBuffer toFloatBuffer() {
         FloatBuffer buffer = BufferUtils.createFloatBuffer(3);
         buffer.put(this.v);
         buffer.flip();

@@ -21,12 +21,14 @@ public abstract class SceneNode {
 
     public final String id;
     protected Map<String, SceneNode> _idsToNodesMap;
+    protected Set<Light> _allLights; //FIXME maybe this should be in a separate SceneGraph wrapper class?
 
     /**
      * Construct a new root SceneNode.
      */
     public SceneNode(String id) {
         _idsToNodesMap = new HashMap<>();
+        _allLights = new HashSet<>();
 
         this.id = id;
         _idsToNodesMap.put(id, this);
@@ -41,13 +43,18 @@ public abstract class SceneNode {
         parent._childNodes.add(this);
         _parent = Optional.of(parent);
 
-        //Get a reference to the id-node dictionary.
+        //Get a reference to the id-node dictionary, and pass along a reference to the lights set.
         _idsToNodesMap = parent._idsToNodesMap;
+        _allLights = parent._allLights;
 
         this.id = id;
         _idsToNodesMap.put(id, this);
 
         _isDynamic = isDynamic || parent.isDynamic(); //a node is considered dynamic if it or any of its parents can have a changing transform.
+
+        if (this instanceof Light) {
+            _allLights.add((Light)this);
+        }
     }
 
     public Optional<TransformNode> parent() {
@@ -58,8 +65,19 @@ public abstract class SceneNode {
         return _isDynamic;
     }
 
+    /**
+     * @param nodeID The id of the node to fetch.
+     * @return The node in this node's graph with nodeID as its id, or Optional.empty if it can't be found.
+     */
     public Optional<SceneNode> nodeWithID(String nodeID) {
         return Optional.ofNullable(_idsToNodesMap.get(nodeID));
+    }
+
+    /**
+     * @return All of the lights in the scene.
+     */
+    public Set<Light> allLights() {
+        return _allLights;
     }
 
     /**

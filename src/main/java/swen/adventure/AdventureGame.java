@@ -3,10 +3,7 @@ import swen.adventure.rendering.GLRenderer;
 import swen.adventure.rendering.maths.Quaternion;
 import swen.adventure.rendering.maths.Vector3;
 import swen.adventure.rendering.maths.Vector4;
-import swen.adventure.scenegraph.CameraNode;
-import swen.adventure.scenegraph.MeshNode;
-import swen.adventure.scenegraph.Player;
-import swen.adventure.scenegraph.TransformNode;
+import swen.adventure.scenegraph.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,8 +40,12 @@ public class AdventureGame {
         new CameraNode("playerCamera", cameraTransform);
         player = new Player("player", playerTransform);
 
-        TransformNode tableTransform = new TransformNode("ObjBoxTransform", _sceneGraph, true, new Vector3(0.1f, 0.f, -300.f), new Quaternion(), new Vector3(3.f, 3.f, 1.f));
+        TransformNode tableTransform = new TransformNode("ObjBoxTransform", _sceneGraph, true, new Vector3(20f, 5.f, -5.f), new Quaternion(), new Vector3(3.f, 3.f, 3.f));
         new MeshNode("Table.obj", tableTransform);
+
+        Light.createAmbientLight("ambientLight", _sceneGraph, new Vector3(0.3f, 0.5f, 0.4f), 3.f);
+        Light.createDirectionalLight("directionalLight", _sceneGraph, new Vector3(0.7f, 0.7f, 0.7f), 7.f, new Vector3(0.4f, 0.2f, 0.6f));
+        Light.createPointLight("pointLight", cameraTransform, new Vector3(1.f, 0.9f, 0.8f), 9.f, Light.LightFalloff.Quadratic);
 
         _glRenderer = new GLRenderer(800, 600);
     }
@@ -52,6 +53,8 @@ public class AdventureGame {
     boolean hasBeenCentred = false;
 
     public void update(long deltaMillis) {
+
+        ((TransformNode)_sceneGraph.nodeWithID("ObjBoxTransform").get()).rotateY(0.005f);
 
 //        float centreX = width/2;
 //        float centreY = height/2;

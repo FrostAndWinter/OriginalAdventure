@@ -1,20 +1,17 @@
 package swen.adventure.rendering;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL32.*;
-
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.lwjgl.opengl.GL11.GL_FALSE;
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL32.GL_GEOMETRY_SHADER;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 19/09/15.
  */
 public class ShaderProgram {
-    public int glProgramRef;
+    private final int _glProgramRef;
 
     public ShaderProgram(String vertexShaderText, String fragmentShaderText) {
         List<Integer> shaders = new ArrayList<>(2);
@@ -22,7 +19,19 @@ public class ShaderProgram {
         shaders.add(ShaderProgram.createShader(GL_VERTEX_SHADER, vertexShaderText));
         shaders.add(ShaderProgram.createShader(GL_FRAGMENT_SHADER, fragmentShaderText));
 
-        this.glProgramRef = ShaderProgram.createProgram(shaders);
+        _glProgramRef = ShaderProgram.createProgram(shaders);
+    }
+
+    protected int glProgramRef() {
+        return _glProgramRef;
+    }
+
+    public void useProgram() {
+        glUseProgram(_glProgramRef);
+    }
+
+    public void endUseProgram() {
+        glUseProgram(0);
     }
 
     public static int createProgram(List<Integer> shaderList){
