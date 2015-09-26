@@ -59,8 +59,6 @@ import java.util.Iterator;
  * @usage Web &amp; Application
  * @instanceName pimg any object of type PImage
  * @see PApplet#loadImage(String)
- * @see PApplet#imageMode(int)
- * @see PApplet#createImage(int, int, int)
  */
 public class PImage implements PConstants, Cloneable {
 

@@ -1,10 +1,7 @@
 package swen.adventure;
 
 import org.lwjgl.Sys;
-import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWKeyCallback;
-import org.lwjgl.glfw.GLFWWindowSizeCallback;
-import org.lwjgl.glfw.GLFWvidmode;
+import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
 import processing.core.PFont;
@@ -28,7 +25,7 @@ public class AdventureGameLWJGL {
     private GLFWErrorCallback _errorCallback;
     private GLFWKeyCallback _keyCallback;
     private GLFWWindowSizeCallback _resizeCallback;
-
+    private GLFWFramebufferSizeCallback _framebufferSizeCallback;
 
     // The window handle
     private long window;
@@ -71,7 +68,7 @@ public class AdventureGameLWJGL {
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-        glfwWindowHint(GLFW_SAMPLES, 4);
+        glfwWindowHint(GLFW_SAMPLES, 8);
 
         int WIDTH = 800;
         int HEIGHT = 600;
@@ -95,6 +92,14 @@ public class AdventureGameLWJGL {
             public void invoke(final long window, final int width, final int height) {
                 _pGraphics.setSize(width, height);
 
+            }
+        });
+
+        glfwSetCallback(window, _framebufferSizeCallback = new GLFWFramebufferSizeCallback() {
+            @Override
+            public void invoke(final long window, final int width, final int height) {
+                glViewport(0, 0, width, height);
+                _pGraphics.setPixelDimensions(width, height);
             }
         });
 

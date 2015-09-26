@@ -62,7 +62,7 @@ public class ObjMesh extends GLMesh<Float> {
     private boolean _hasTextureCoordinates = false;
     private boolean _hasFourComponentGeoVectors = false;
     private List<VertexData> _vertices = new ArrayList<>();
-    private List<Short> _triIndices = new ArrayList<>();
+    private List<Integer> _triIndices = new ArrayList<>();
 
     public static ObjMesh loadMesh(String fileName) throws FileNotFoundException {
         File file = new File(Utilities.pathForResource(fileName, null));
@@ -94,9 +94,9 @@ public class ObjMesh extends GLMesh<Float> {
         _vertices = vertexData.stream().collect(Collectors.toList());
 
         for (List<WavefrontParser.IndexData> indices : parsedFile.polygonFaces) {
-            List<Short> vertexIndices = indices.stream().map((data) -> {
+            List<Integer> vertexIndices = indices.stream().map((data) -> {
                 VertexData vertex = objIndicesToVertices.get(data);
-                return (short)_vertices.indexOf(vertex);
+                return _vertices.indexOf(vertex);
             }).collect(Collectors.toList());
 
             if (vertexIndices.size() == 4) {
@@ -144,7 +144,7 @@ public class ObjMesh extends GLMesh<Float> {
 
         if (!_triIndices.isEmpty()) {
             renderCommands.add(new RenderCommand(GL_TRIANGLES, -1));
-            indexData.add(new IndexData<>(_triIndices, AttributeType.UShort));
+            indexData.add(new IndexData<>(_triIndices, AttributeType.UInt));
         }
 
         List<NamedVertexArrayObject> namedVAOs = new ArrayList<>();

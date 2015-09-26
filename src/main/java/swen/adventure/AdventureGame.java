@@ -44,8 +44,8 @@ public class AdventureGame {
         new MeshNode("Table.obj", tableTransform);
 
         Light.createAmbientLight("ambientLight", _sceneGraph, new Vector3(0.3f, 0.5f, 0.4f), 3.f);
-        Light.createDirectionalLight("directionalLight", _sceneGraph, new Vector3(0.7f, 0.7f, 0.7f), 7.f, new Vector3(0.4f, 0.2f, 0.6f));
-        Light.createPointLight("pointLight", cameraTransform, new Vector3(1.f, 0.9f, 0.8f), 9.f, Light.LightFalloff.Quadratic);
+        Light.createDirectionalLight("directionalLight", _sceneGraph, new Vector3(0.7f, 0.3f, 0.1f), 7.f, new Vector3(0.4f, 0.2f, 0.6f));
+        Light.createPointLight("pointLight", cameraTransform, new Vector3(0.4f, 0.5f, 0.8f), 9.f, Light.LightFalloff.Quadratic);
 
         _glRenderer = new GLRenderer(800, 600);
     }

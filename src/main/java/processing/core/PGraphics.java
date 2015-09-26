@@ -705,12 +705,15 @@ public PGraphics() {
 }
 
 
-public void setPApplet() {  // ignore
+public void setPixelDimensions(int width, int height) {  // ignore
 
   // Some renderers (OpenGL) need to know what smoothing level will be used
   // before the rendering surface is even created.
-  smooth = 1;
-  pixelDensity = 1; //FIXME should be 2 for Retina displays.
+  smooth = 4;
+  pixelDensity = width/this.width;
+
+  this.pixelWidth = width;
+  this.pixelHeight = height;
 }
 
 
