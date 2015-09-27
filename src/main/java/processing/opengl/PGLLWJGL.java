@@ -28,7 +28,6 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL31.GL_TEXTURE_BINDING_RECTANGLE;
 import static org.lwjgl.opengl.GL31.GL_TEXTURE_RECTANGLE;
-import static org.lwjgl.opengl.GL41.*;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 23/09/15.
@@ -445,7 +444,6 @@ public class PGLLWJGL extends PGL {
 
         RGBA4   = GL_RGBA4;
         RGB5_A1 = GL_RGB5_A1;
-        RGB565  = GL_RGB565;
         RGB8    = GL_RGB8;
         RGBA8   = GL_RGBA8;
         ALPHA8  = GL_ALPHA8;
@@ -579,13 +577,6 @@ public class PGLLWJGL extends PGL {
         BOOL_VEC4    = GL_BOOL_VEC4;
         SAMPLER_2D   = GL_SAMPLER_2D;
         SAMPLER_CUBE = GL_SAMPLER_CUBE;
-
-        LOW_FLOAT    = GL_LOW_FLOAT;
-        MEDIUM_FLOAT = GL_MEDIUM_FLOAT;
-        HIGH_FLOAT   = GL_HIGH_FLOAT;
-        LOW_INT      = GL_LOW_INT;
-        MEDIUM_INT   = GL_MEDIUM_INT;
-        HIGH_INT     = GL_HIGH_INT;
 
         CURRENT_VERTEX_ATTRIB = GL_CURRENT_VERTEX_ATTRIB;
 
@@ -1134,19 +1125,10 @@ public class PGLLWJGL extends PGL {
         glCompileShader(shader);
     }
 
-    @Override
-    public void releaseShaderCompiler() {
-        glReleaseShaderCompiler();
-    }
 
     @Override
     public void deleteShader(int shader) {
         glDeleteShader(shader);
-    }
-
-    @Override
-    public void shaderBinary(int count, ByteBuffer shaders, int binaryFormat, ByteBuffer binary, int length) {
-        glShaderBinary(count, shaders, binaryFormat, binary, length);
     }
 
     @Override
@@ -1330,11 +1312,6 @@ public class PGLLWJGL extends PGL {
     }
 
     @Override
-    public void getShaderPrecisionFormat(int shaderType, int precisionType, IntBuffer range, IntBuffer precision) {
-        glGetShaderPrecisionFormat(shaderType, precisionType, range, precision);
-    }
-
-    @Override
     public void getVertexAttribfv(int index, int pname, FloatBuffer params) {
         glGetVertexAttribfv(index, pname, params);
     }
@@ -1471,7 +1448,7 @@ public class PGLLWJGL extends PGL {
 
     @Override
     public void clearDepth(float d) {
-        glClearDepthf(d);
+        glClearDepth(d);
     }
 
     @Override
