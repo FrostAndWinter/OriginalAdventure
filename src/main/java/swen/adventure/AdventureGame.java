@@ -1,8 +1,8 @@
 package swen.adventure;
 import swen.adventure.rendering.GLRenderer;
+import swen.adventure.rendering.Material;
 import swen.adventure.rendering.maths.Quaternion;
 import swen.adventure.rendering.maths.Vector3;
-import swen.adventure.rendering.maths.Vector4;
 import swen.adventure.scenegraph.*;
 
 import java.util.HashMap;
@@ -21,19 +21,19 @@ public class AdventureGame {
         _sceneGraph = new TransformNode("root", new Vector3(0.f, 0.f, -200.f), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
         TransformNode groundPlaneTransform = new TransformNode("groundPlaneTransform", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis((float)Math.PI/2.f, -1, 0, 0), new Vector3(250, 250, 1));
         MeshNode groundPlane = new MeshNode("Plane.obj", groundPlaneTransform);
-        groundPlane.setColour(new Vector4(0.1f, 0.8f, 0.3f, 1.f));
+        groundPlane.setMaterial(new Material(Vector3.zero, new Vector3(0.1f, 0.8f, 0.3f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 0.8f));
 
         TransformNode yAxisTransform = new TransformNode("yAxis", _sceneGraph, false, new Vector3(0, 0, 0), new Quaternion(), new Vector3(2, 1000, 2));
         MeshNode yAxis = new MeshNode("box.obj", yAxisTransform);
-        yAxis.setColour(new Vector4(0.f, 1.f, 0.f, 1.f));
+        yAxis.setMaterial(new Material(Vector3.zero, new Vector3(0.f, 1.f, 0.f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 0.01f));
 
         TransformNode xAxisTransform = new TransformNode("xAxis", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis(0.0f, 0.f, 0.0f, 0.f), new Vector3(1000, 2, 2));
         MeshNode xAxis = new MeshNode("box.obj", xAxisTransform);
-        xAxis.setColour(new Vector4(0.f, 0.f, 1.f, 1.f));
+        xAxis.setMaterial(new Material(Vector3.zero, new Vector3(0.f, 0.f, 1.f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 0.01f));
 
         TransformNode zAxisTransform = new TransformNode("zAxis", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis(0.0f, 0.f, 0.0f, 0.f), new Vector3(2, 2, 1000));
         MeshNode zAxis = new MeshNode("box.obj", zAxisTransform);
-        zAxis.setColour(new Vector4(1.f, 1.f, 0.f, 1.f));
+        zAxis.setMaterial(new Material(Vector3.zero, new Vector3(1.f, 1.f, 0.f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 0.01f));
 
         TransformNode playerTransform = new TransformNode("playerTransform", _sceneGraph, true, new Vector3(0, 20, 200), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
         TransformNode cameraTransform = new TransformNode("cameraTransform", playerTransform, true, new Vector3(0, 0, 0), new Quaternion(), new Vector3(1, 1, 1));
@@ -41,7 +41,8 @@ public class AdventureGame {
         player = new Player("player", playerTransform);
 
         TransformNode tableTransform = new TransformNode("ObjBoxTransform", _sceneGraph, true, new Vector3(20f, 5.f, -5.f), new Quaternion(), new Vector3(3.f, 3.f, 3.f));
-        new MeshNode("Table.obj", tableTransform);
+        MeshNode table = new MeshNode("Table.obj", tableTransform);
+        table.setMaterial(new Material(Vector3.zero, new Vector3(0.8f, 0.3f, 0.4f), new Vector3(0.7f, 0.6f, 0.6f), 0.f, 0.2f));
 
         Light.createAmbientLight("ambientLight", _sceneGraph, new Vector3(0.3f, 0.5f, 0.4f), 3.f);
         Light.createDirectionalLight("directionalLight", _sceneGraph, new Vector3(0.7f, 0.3f, 0.1f), 7.f, new Vector3(0.4f, 0.2f, 0.6f));

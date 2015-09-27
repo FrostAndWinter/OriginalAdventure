@@ -2,8 +2,7 @@ package swen.adventure.rendering;
 
 import swen.adventure.rendering.maths.Matrix3;
 import swen.adventure.rendering.maths.Matrix4;
-import swen.adventure.rendering.maths.Vector4;
-import swen.adventure.rendering.shaders.MultipleLightsUniformMaterialShader;
+import swen.adventure.rendering.shaders.GaussianPerObjectMaterialShader;
 import swen.adventure.scenegraph.CameraNode;
 import swen.adventure.scenegraph.Light;
 import swen.adventure.scenegraph.MeshNode;
@@ -17,13 +16,13 @@ import static org.lwjgl.opengl.GL32.GL_DEPTH_CLAMP;
  */
 public class GLRenderer {
 
-    private MultipleLightsUniformMaterialShader _defaultShader;
+    private GaussianPerObjectMaterialShader _defaultShader;
     private int _vertexArrayRef;
 
     private Matrix4 _perspectiveMatrix;
 
     public GLRenderer(int width, int height) {
-        _defaultShader = new MultipleLightsUniformMaterialShader();
+        _defaultShader = new GaussianPerObjectMaterialShader();
 
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
@@ -75,11 +74,9 @@ public class GLRenderer {
                 _defaultShader.setModelToCameraMatrix(nodeToCameraSpaceTransform);
                 _defaultShader.setNormalModelToCameraMatrix(normalModelToCameraSpaceTransform);
 
-                Vector4 colour = meshNode.colour().orElse(new Vector4(1.f, 0.f, 0.f, 1.f));
-                _defaultShader.setColour(colour);
-                _defaultShader.setSpecularity(0.125f);
+                _defaultShader.setMaterial(meshNode.material().toFloatBuffer());
 
-                ((MeshNode) node).render();
+                meshNode.render();
             }
         });
 

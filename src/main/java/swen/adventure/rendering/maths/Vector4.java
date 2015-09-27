@@ -30,6 +30,10 @@ public class Vector4 implements Vector {
         this(new float[]{ vector.v[0], vector.v[1], vector.v[2], w });
     }
 
+    public static Vector4 zeroPosition = new Vector4(0.f, 0.f, 0.f, 1.f);
+
+    public static Vector4 zeroDirection = new Vector4(0.f, 0.f, 0.f, 0.f);
+
     public Vector4 negate()
     {
         return new Vector4(-this.v[0], -this.v[1], -this.v[2], -this.v[3]);

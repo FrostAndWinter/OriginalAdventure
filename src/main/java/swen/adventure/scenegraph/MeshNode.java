@@ -1,14 +1,12 @@
 package swen.adventure.scenegraph;
 
 import swen.adventure.rendering.GLMesh;
+import swen.adventure.rendering.Material;
 import swen.adventure.rendering.ObjMesh;
-import swen.adventure.rendering.maths.Vector4;
 
-import javax.swing.text.html.Option;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 25/09/15.
@@ -16,7 +14,7 @@ import java.util.Optional;
 public class MeshNode extends SceneNode {
 
     private GLMesh<Float> _mesh;
-    private Optional<Vector4> _colourOverride = Optional.empty();
+    private Material _material;
 
     public MeshNode(final String fileName, final TransformNode parent) {
         super("mesh" + fileName, parent, false); //MeshNodes of the same file share ids.
@@ -28,13 +26,14 @@ public class MeshNode extends SceneNode {
         }
     }
 
-    public void setColour(Vector4 colour) {
-        _colourOverride = Optional.of(colour);
+    public Material material() {
+        return _material;
     }
 
-    public Optional<Vector4> colour() {
-        return _colourOverride;
+    public void setMaterial(final Material material) {
+        _material = material;
     }
+
 
     public void render() {
         _mesh.render();
