@@ -12,8 +12,8 @@ public class ImageView extends UIComponent {
 
     private PImage image;
 
-    public ImageView(PGraphics g, PImage image, int x, int y, int width, int height) {
-        super(g, x, y, width, height);
+    public ImageView(PImage image, int x, int y, int width, int height) {
+        super(x, y, width, height);
 
         this.image = image;
     }

@@ -13,8 +13,8 @@ public class Inventory extends UIComponent {
     private int numItems;
     private int boxSize;
 
-    public Inventory(PApplet a, int numItems, int x, int y) {
-        super(a, x, y, numItems * BOX_SIZE, BOX_SIZE);
+    public Inventory(int numItems, int x, int y) {
+        super(x, y, numItems * BOX_SIZE, BOX_SIZE);
 
         this.numItems = numItems;
         boxSize = BOX_SIZE;

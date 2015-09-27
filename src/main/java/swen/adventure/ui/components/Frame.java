@@ -12,7 +12,7 @@ import java.util.List;
 public class Frame extends UIComponent {
 
     public Frame(PApplet p, int x, int y, int w, int h) {
-        super(p, x, y, w, h);
+        super(x, y, w, h);
     }
 
     @Override
