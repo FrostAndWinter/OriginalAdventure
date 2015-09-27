@@ -16,17 +16,17 @@ public class Dialog extends Panel {
 
     private List<DialogCloseListener> listeners;
 
-    public Dialog(PApplet a, String info, int type, int x, int y) {
-        super(a, x, y);
+    public Dialog(String info, int type, int x, int y) {
+        super(x, y);
 
         listeners = new ArrayList<>();
 
         switch (CONFIRM_DIALOG) {
             case CONFIRM_DIALOG:
-                TextBox t = new TextBox(a, info, 0, 0);
+                TextBox t = new TextBox(info, 0, 0);
                 super.addChild(t);
 
-                Button okay = new Button(applet, "Okay", 100, 100);
+                Button okay = new Button("Okay", 100, 100);
 
                 okay.addClickListener(new OnClickListener() {
                     @Override
