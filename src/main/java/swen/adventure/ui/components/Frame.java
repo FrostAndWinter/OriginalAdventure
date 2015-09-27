@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class Frame extends UIComponent {
 
-    public Frame(PApplet p, int x, int y, int w, int h) {
+    public Frame(int x, int y, int w, int h) {
         super(x, y, w, h);
     }
 
