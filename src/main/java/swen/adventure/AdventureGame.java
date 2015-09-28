@@ -17,8 +17,11 @@ public class AdventureGame {
 
     private KeyInput keyInput = new KeyInput();
 
-    public void setup() {
+    private int mouseSensitivity = 1;
+    private float viewAngleX;
+    private float viewAngleY;
 
+    public void setup() {
         _sceneGraph = new TransformNode("root", new Vector3(0.f, 0.f, -200.f), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
         TransformNode groundPlaneTransform = new TransformNode("groundPlaneTransform", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis((float)Math.PI/2.f, -1, 0, 0), new Vector3(250, 250, 1));
         MeshNode groundPlane = new MeshNode("Plane.obj", groundPlaneTransform);
@@ -57,6 +60,7 @@ public class AdventureGame {
 
         handleMovement();
 
+        player.parent().get().setRotation(Quaternion.makeWithAngleAndAxis(viewAngleX/500, 0, -1, 0).multiply(Quaternion.makeWithAngleAndAxis(viewAngleY / 500, -1, 0, 0)));;
         _glRenderer.render(_sceneGraph, (CameraNode) _sceneGraph.nodeWithID("playerCamera").get());
     }
 
@@ -99,5 +103,10 @@ public class AdventureGame {
         public boolean isKeyPressed(Character c) {
             return keyPressedMap.getOrDefault(Character.toUpperCase(c), false);
         }
+    }
+
+    public void onMouseDeltaChange(float deltaX, float deltaY) {
+        viewAngleX += deltaX/mouseSensitivity;
+        viewAngleY += deltaY/mouseSensitivity;
     }
 }

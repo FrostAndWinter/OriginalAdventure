@@ -297,19 +297,10 @@ public class AdventureGameLWJGL {
             double currentX = x.get();
             double currentY = y.get();
 
-            double deltaX = currentX - 400;
-            double deltaY = currentY - 300;
+            double deltaX = currentX - windowWidth/2;
+            double deltaY = currentY - windowHeight/2;
 
-            boolean shouldRotX = currentX != mousePrevX;
-            boolean shouldRotY = currentY != mousePrevY;
-
-            if (shouldRotX) {
-                System.out.println("Delta Y: " + deltaY);
-            }
-
-            if (shouldRotY) {
-                System.out.println("Delta X: " + deltaX);
-            }
+            _game.onMouseDeltaChange((float) deltaX, (float) deltaY);
 
             mousePrevX = currentX;
             mousePrevY = currentY;
