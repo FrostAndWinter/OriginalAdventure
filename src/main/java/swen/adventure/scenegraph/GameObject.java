@@ -1,14 +1,17 @@
 package swen.adventure.scenegraph;
 
-import swen.adventure.utils.BoundingBox;
 import swen.adventure.Event;
+import swen.adventure.utils.BoundingBox;
 
 import java.lang.reflect.Field;
+import java.util.Optional;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 15/09/15.
  */
 public class GameObject extends SceneNode {
+
+    private Optional<BoundingBox> _localSpaceBoundingBox = Optional.empty();
 
     public GameObject(String id, final TransformNode parent) {
         super(id, parent, true);
@@ -31,5 +34,23 @@ public class GameObject extends SceneNode {
         }
 
         throw new RuntimeException("Could not find an event of name " + eventName + " on " + this);
+    }
+
+    private boolean _isRunningBoundingBoxSearch = false;
+
+    @Override
+    public Optional<BoundingBox> boundingBox() {
+        if (_localSpaceBoundingBox.isPresent() || _isRunningBoundingBoxSearch) {
+            return _localSpaceBoundingBox;
+        } else {
+            _isRunningBoundingBoxSearch = true;
+            Optional<BoundingBox> box = this.parent().isPresent() ? this.parent().get().boundingBox() : Optional.empty();
+            _isRunningBoundingBoxSearch = false;
+            return box;
+        }
+    }
+
+    public void setBoundingBox(BoundingBox boundingBox) {
+        _localSpaceBoundingBox = Optional.of(boundingBox);
     }
 }

@@ -1,6 +1,7 @@
 package swen.adventure.scenegraph;
 
 import swen.adventure.rendering.maths.Matrix4;
+import swen.adventure.utils.BoundingBox;
 
 import java.util.*;
 
@@ -22,6 +23,9 @@ public abstract class SceneNode {
     public final String id;
     protected Map<String, SceneNode> _idsToNodesMap;
     protected Set<Light> _allLights; //FIXME maybe this should be in a separate SceneGraph wrapper class?
+
+    private Optional<BoundingBox> _worldSpaceBoundingBox = Optional.empty();
+    private boolean _needsRecalculateWorldSpaceBoundingBox = true;
 
     /**
      * Construct a new root SceneNode.
@@ -63,6 +67,44 @@ public abstract class SceneNode {
 
     public boolean isDynamic() {
         return _isDynamic;
+    }
+
+    /**
+     * Called on every SceneNode when their transformation matrices change.
+     */
+    public void transformDidChange() {
+        _needsRecalculateWorldSpaceBoundingBox = true;
+    }
+
+    /**
+     * Finds a bounding box by searching through its children.
+     * Prioritises GameObjects, and then MeshNodes.
+     * If this node has multiple GameObject or MeshNode children, then it uses the bounding box of the first one it finds.
+     * @return The bounding box of this object, if present.
+     */
+    public Optional<BoundingBox> boundingBox() {
+        Optional<BoundingBox> boundingBox = Optional.empty();
+
+        for (SceneNode node : _childNodes) {
+            if (node instanceof GameObject) {
+                boundingBox = node.boundingBox();
+                if (boundingBox.isPresent()) {
+                    return boundingBox;
+                }
+            } else if (!boundingBox.isPresent()) {
+                boundingBox = node.boundingBox();
+            }
+        }
+        return boundingBox;
+    }
+
+    public Optional<BoundingBox> worldSpaceBoundingBox() {
+        if (_needsRecalculateWorldSpaceBoundingBox) {
+            _worldSpaceBoundingBox = this.boundingBox()
+                    .map(boundingBox -> boundingBox.axisAlignedBoundingBoxInSpace(this.nodeToWorldSpaceTransform()));
+            _needsRecalculateWorldSpaceBoundingBox = false;
+        }
+        return _worldSpaceBoundingBox;
     }
 
     /**

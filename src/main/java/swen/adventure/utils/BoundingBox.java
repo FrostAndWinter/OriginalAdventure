@@ -99,4 +99,33 @@ public class BoundingBox {
                 ", maxPoint=" + maxPoint +
                 '}';
     }
+
+    public BoundingBox axisAlignedBoundingBoxInSpace(Matrix4 nodeToSpaceTransform) {
+
+        float minX = Float.MAX_VALUE, minY = Float.MAX_VALUE, minZ = Float.MAX_VALUE;
+        float maxX = Float.MIN_VALUE, maxY = Float.MIN_VALUE, maxZ = Float.MIN_VALUE;
+
+        //Compute all the vertices for the box.
+        for (int xToggle = 0; xToggle < 2; xToggle++) {
+            for (int yToggle = 0; yToggle < 2; yToggle++) {
+                for (int zToggle = 0; zToggle < 2; zToggle++) {
+                    float x = xToggle == 0 ? minPoint.x : maxPoint.x;
+                    float y = yToggle == 0 ? minPoint.y : maxPoint.y;
+                    float z = zToggle == 0 ? minPoint.z : maxPoint.z;
+                    Vector3 vertex = new Vector3(x, y, z);
+                    Vector3 transformedVertex = nodeToSpaceTransform.multiplyWithTranslation(vertex);
+
+                    if (transformedVertex.x < minX) { minX = transformedVertex.x; }
+                    if (transformedVertex.y < minY) { minY = transformedVertex.y; }
+                    if (transformedVertex.z < minZ) { minZ = transformedVertex.z; }
+                    if (transformedVertex.x > maxX) { maxX = transformedVertex.x; }
+                    if (transformedVertex.y > maxY) { maxY = transformedVertex.y; }
+                    if (transformedVertex.z > maxZ) { maxZ = transformedVertex.z; }
+                }
+            }
+        }
+
+        return new BoundingBox(new Vector3(minX, minY, minZ), new Vector3(maxX, maxY, maxZ));
+
+    }
 }

@@ -5,6 +5,7 @@ import swen.adventure.datastorage.WavefrontParser;
 import swen.adventure.rendering.maths.Vector;
 import swen.adventure.rendering.maths.Vector3;
 import swen.adventure.rendering.maths.Vector4;
+import swen.adventure.utils.BoundingBox;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -63,6 +64,8 @@ public class ObjMesh extends GLMesh<Float> {
     private boolean _hasFourComponentGeoVectors = false;
     private List<VertexData> _vertices = new ArrayList<>();
     private List<Integer> _triIndices = new ArrayList<>();
+
+    private final BoundingBox _boundingBox;
 
     public static ObjMesh loadMesh(String fileName) throws FileNotFoundException {
         File file = new File(Utilities.pathForResource(fileName, null));
@@ -159,8 +162,35 @@ public class ObjMesh extends GLMesh<Float> {
             namedVAOs.add(new NamedVertexArrayObject(VAOPositionsNormalsTexCoords, Arrays.asList(VertexGeometryAttributeIndex, VertexNormalAttributeIndex, TextureCoordinateAttributeIndex)));
         }
 
+        _boundingBox = this.computeBoundingBox();
+
         super.initialise(attributes, indexData, namedVAOs, renderCommands);
 
+    }
+
+    @Override
+    public BoundingBox boundingBox() {
+        return _boundingBox;
+    }
+
+    private BoundingBox computeBoundingBox() {
+        float minX = Float.MAX_VALUE, minY = Float.MAX_VALUE, minZ = Float.MAX_VALUE;
+        float maxX = Float.MIN_VALUE, maxY = Float.MIN_VALUE, maxZ = Float.MIN_VALUE;
+
+        for (VertexData vertex : _vertices) {
+            float[] position = vertex.vertexPosition.data();
+            float x = position[0];
+            float y = position[1];
+            float z = position[2];
+
+            if (x < minX) { minX = x; }
+            if (y < minY) { minY = y; }
+            if (z < minZ) { minZ = z; }
+            if (x > maxX) { maxX = x; }
+            if (y > maxY) { maxY = y; }
+            if (z > maxZ) { maxZ = z; }
+        }
+        return new BoundingBox(new Vector3(minX, minY, minZ), new Vector3(maxX, maxY, maxZ));
     }
 
     private void addVectorToList(Vector vector, List<Float> list) {

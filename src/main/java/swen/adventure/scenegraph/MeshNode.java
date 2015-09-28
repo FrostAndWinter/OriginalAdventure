@@ -3,10 +3,12 @@ package swen.adventure.scenegraph;
 import swen.adventure.rendering.GLMesh;
 import swen.adventure.rendering.Material;
 import swen.adventure.rendering.ObjMesh;
+import swen.adventure.utils.BoundingBox;
 
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 25/09/15.
@@ -15,6 +17,8 @@ public class MeshNode extends SceneNode {
 
     private GLMesh<Float> _mesh;
     private Material _material = Material.DefaultMaterial;
+
+    private BoundingBox _localSpaceBoundingBox;
 
     public MeshNode(final String fileName, final TransformNode parent) {
         this("mesh" + fileName, fileName, parent); //MeshNodes of the same file share ids.
@@ -25,6 +29,7 @@ public class MeshNode extends SceneNode {
 
         try {
             _mesh = MeshNode.loadMeshWithFileName(fileName);
+            _localSpaceBoundingBox = _mesh.boundingBox();
         } catch (FileNotFoundException e) {
             System.err.println("Could not load mesh file " + fileName + ": " + e);
         }
@@ -36,6 +41,11 @@ public class MeshNode extends SceneNode {
 
     public void setMaterial(final Material material) {
         _material = material;
+    }
+
+    @Override
+    public Optional<BoundingBox> boundingBox() {
+        return Optional.ofNullable(_localSpaceBoundingBox);
     }
 
     public void render() {

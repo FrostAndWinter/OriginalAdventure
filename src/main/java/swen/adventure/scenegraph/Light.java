@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 26/09/15.
  */
-public class Light extends SceneNode {
+public final class Light extends SceneNode {
 
     public enum LightType {
         Ambient,

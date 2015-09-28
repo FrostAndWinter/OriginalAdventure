@@ -34,17 +34,14 @@ public class TransformNode extends SceneNode {
         _scale = Objects.requireNonNull(scale);
     }
 
-    private void setNeedsRecalculateTransform() {
+    @Override
+    public void transformDidChange() {
         _needsRecalculateNodeWorldTransform = true;
         _needsRecalculateTransformWorldNodeTransform = true;
-        this.traverse((node) -> {
-            if (node instanceof TransformNode) {
-                ((TransformNode)node)._needsRecalculateTransformWorldNodeTransform = true;
-                ((TransformNode)node)._needsRecalculateNodeWorldTransform = true;
-            } else if (node instanceof CollisionNode) {
-                ((CollisionNode) node).transformDidChange();
-            }
-        });
+    }
+
+    private void setNeedsRecalculateTransform() {
+        this.traverse(SceneNode::transformDidChange);
     }
 
     private Matrix4 calculateNodeToWorldTransform() {

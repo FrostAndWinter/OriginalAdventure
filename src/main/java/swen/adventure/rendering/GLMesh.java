@@ -2,6 +2,7 @@ package swen.adventure.rendering;
 
 import org.lwjgl.BufferUtils;
 import swen.adventure.scenegraph.TransformNode;
+import swen.adventure.utils.BoundingBox;
 
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -352,5 +353,8 @@ public abstract class GLMesh<T> {
         glBindVertexArray(0);
     }
 
+    public BoundingBox boundingBox() {
+        throw new UnsupportedOperationException("Bounding box is not implemented on mesh of type " + this.getClass());
+    }
 
 }
