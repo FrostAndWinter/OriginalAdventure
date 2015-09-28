@@ -1,9 +1,9 @@
 #version 330
 
-in vec4 diffuseColour;
-in vec4 specularColour;
-in vec3 vertexNormal;
-in vec3 cameraSpacePosition;
+smooth in vec4 diffuseColour;
+smooth in vec4 specularColour;
+smooth in vec3 vertexNormal;
+smooth in vec3 cameraSpacePosition;
 
 out vec4 outputColor;
 
