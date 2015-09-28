@@ -45,7 +45,7 @@ public class ProgressBar extends UIComponent {
         g.rect(x * scaleX, y * scaleY, completed * scaleX, height * scaleY);
 
         // Draw the current bar value
-        g.textFont(font);
+        //g.textFont(font);
         g.color(255);
         g.fill(255);
         String countString = String.format("%d", count);
