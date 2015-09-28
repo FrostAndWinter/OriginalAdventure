@@ -1,10 +1,16 @@
 package swen.adventure;
 
+import processing.opengl.PGraphics2D;
 import swen.adventure.rendering.GLRenderer;
 import swen.adventure.rendering.Material;
 import swen.adventure.rendering.maths.Quaternion;
 import swen.adventure.rendering.maths.Vector3;
 import swen.adventure.scenegraph.*;
+import swen.adventure.ui.color.Color;
+import swen.adventure.ui.components.Frame;
+import swen.adventure.ui.components.Inventory;
+import swen.adventure.ui.components.Panel;
+import swen.adventure.ui.components.ProgressBar;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +18,12 @@ import java.util.Map;
 public class AdventureGame {
 
     private GLRenderer _glRenderer;
+    private PGraphics2D _pGraphics;
     private TransformNode _sceneGraph;
+
+    // Elements of the UI
+    private swen.adventure.ui.components.Frame _frame;
+
     private Player player;
 
     private KeyInput keyInput = new KeyInput();
@@ -21,7 +32,7 @@ public class AdventureGame {
     private float viewAngleX;
     private float viewAngleY;
 
-    public void setup() {
+    public void setup(int width, int height) {
         _sceneGraph = new TransformNode("root", new Vector3(0.f, 0.f, -200.f), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
         TransformNode groundPlaneTransform = new TransformNode("groundPlaneTransform", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis((float)Math.PI/2.f, -1, 0, 0), new Vector3(250, 250, 1));
         MeshNode groundPlane = new MeshNode("Plane.obj", groundPlaneTransform);
@@ -52,16 +63,60 @@ public class AdventureGame {
         Light.createDirectionalLight("directionalLight", _sceneGraph, new Vector3(0.7f, 0.3f, 0.1f), 7.f, new Vector3(0.4f, 0.2f, 0.6f));
         Light.createPointLight("pointLight", cameraTransform, new Vector3(0.4f, 0.5f, 0.8f), 9.f, Light.LightFalloff.Quadratic);
 
-        _glRenderer = new GLRenderer(800, 600);
+        _glRenderer = new GLRenderer(width, height);
+
+        this.setupUI(width, height);
+
+    }
+
+    private void setupUI(int width, int height) {
+
+        _pGraphics = new PGraphics2D();
+        _pGraphics.setPrimary(true);
+        _pGraphics.setSize(width, height);
+
+        // Set up the UI elements
+        _frame = new Frame(0, 0, width, height);
+
+        Panel panel = new Panel(0, 0, width, height);
+        panel.setColor(new Color(0, 0, 0, 0));
+
+        ProgressBar healthBar = new ProgressBar(100, 100, 30, 30);
+        panel.addChild(healthBar);
+
+        Inventory inventory = new Inventory(5, 275, 500);
+        inventory.setBoxSize(50);
+
+        panel.addChild(inventory);
+
+        _frame.addChild(panel);
+    }
+
+    public void setSize(int width, int height) {
+        _glRenderer.setSize(width, height);
+        _pGraphics.setSize(width, height);
+    }
+
+    public void setSizeInPixels(int width, int height) {
+        _pGraphics.setPixelDimensions(width, height);
     }
 
     public void update(long deltaMillis) {
         ((TransformNode) _sceneGraph.nodeWithID("ObjBoxTransform").get()).rotateY(0.005f);
 
-        handleMovement();
+        this.handleMovement();
 
         player.parent().get().setRotation(Quaternion.makeWithAngleAndAxis(viewAngleX/500, 0, -1, 0).multiply(Quaternion.makeWithAngleAndAxis(viewAngleY / 500, -1, 0, 0)));;
+
+        this.render();
+    }
+
+    private void render() {
         _glRenderer.render(_sceneGraph, (CameraNode) _sceneGraph.nodeWithID("playerCamera").get());
+
+        _pGraphics.beginDraw();
+        _frame.draw(_pGraphics);
+        _pGraphics.endDraw();
     }
 
     private void handleMovement() {
@@ -106,7 +161,7 @@ public class AdventureGame {
     }
 
     public void onMouseDeltaChange(float deltaX, float deltaY) {
-        viewAngleX += deltaX/mouseSensitivity;
-        viewAngleY += deltaY/mouseSensitivity;
+        viewAngleX = (viewAngleX + deltaX/mouseSensitivity) % ((float)Math.PI * 2);
+        viewAngleY = (viewAngleY + deltaY/mouseSensitivity) % ((float)Math.PI * 2);
     }
 }

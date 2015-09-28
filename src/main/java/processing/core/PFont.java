@@ -668,7 +668,7 @@ public class PFont implements PConstants {
 
   /**
    * Currently un-implemented for .vlw fonts,
-   * but honored for layout in case subclasses use it.
+   * but honored for layoutmanagers in case subclasses use it.
    */
   public float kern(char a, char b) {
     return 0;

@@ -1,6 +1,5 @@
 package swen.adventure.ui.components;
 
-import processing.core.PApplet;
 import processing.core.PGraphics;
 import swen.adventure.ui.color.Color;
 import swen.adventure.ui.layoutmanagers.LinearLayout;
@@ -8,7 +7,7 @@ import swen.adventure.ui.layoutmanagers.LinearLayout;
 /**
  * Created by danielbraithwt on 9/17/15.
  */
-public class Panel extends UIComponent {
+public class Panel extends swen.adventure.ui.components.UIComponent {
 
     private boolean dynamicSize;
     private Color color;
