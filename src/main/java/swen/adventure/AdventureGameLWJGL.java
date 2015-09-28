@@ -5,7 +5,13 @@ import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
 import processing.core.PFont;
+import processing.core.PGraphics;
 import processing.opengl.PGraphics2D;
+import swen.adventure.ui.color.Color;
+import swen.adventure.ui.components.Frame;
+import swen.adventure.ui.components.Inventory;
+import swen.adventure.ui.components.Panel;
+import swen.adventure.ui.components.ProgressBar;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +26,15 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class AdventureGameLWJGL {
+
+    private static final int VIRTUAL_UI_WIDTH = 800;
+    private static final int VIRTUAL_UI_HEIGHT = 600;
+
+    // Elements of the UI
+    private Frame f;
+    private Panel w;
+    private ProgressBar health;
+    private Inventory inventory;
 
     // We need to strongly reference callback instances.
     private GLFWErrorCallback _errorCallback;
@@ -51,6 +66,21 @@ public class AdventureGameLWJGL {
     }
 
     private void init() {
+        // Set up the UI elements
+        f = new Frame(0, 0, VIRTUAL_UI_WIDTH, VIRTUAL_UI_HEIGHT);
+
+        w = new Panel(0, 0, VIRTUAL_UI_WIDTH, VIRTUAL_UI_HEIGHT);
+        w.setColor(new Color(0, 0, 0, 0));
+
+        health = new ProgressBar(100, 100, 30, 30);
+        w.addChild(health);
+
+        inventory = new Inventory(5, 275, 500);
+        inventory.setBoxSize(50);
+        w.addChild(inventory);
+
+        f.addChild(w);
+
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
         glfwSetErrorCallback(_errorCallback = errorCallbackPrint(System.err));
@@ -84,6 +114,21 @@ public class AdventureGameLWJGL {
             public void invoke(long window, int key, int scancode, int action, int mods) {
                 if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
                     glfwSetWindowShouldClose(window, GL_TRUE); // We will detect this in our rendering loop
+
+                if (key == GLFW_KEY_1 && action == GLFW_RELEASE)
+                    inventory.setSelectedItem(0);
+
+                if (key == GLFW_KEY_2 && action == GLFW_RELEASE)
+                    inventory.setSelectedItem(1);
+
+                if (key == GLFW_KEY_3 && action == GLFW_RELEASE)
+                    inventory.setSelectedItem(2);
+
+                if (key == GLFW_KEY_4 && action == GLFW_RELEASE)
+                    inventory.setSelectedItem(3);
+
+                if (key == GLFW_KEY_5 && action == GLFW_RELEASE)
+                    inventory.setSelectedItem(4);
             }
         });
 
@@ -166,21 +211,26 @@ public class AdventureGameLWJGL {
             }
             glBindVertexArray(vao);
 
+            //
+
             _pGraphics.beginDraw();
-            _pGraphics.noStroke();
-            _pGraphics.fill(0, 255, 50, 255);
-
-            _pGraphics.fill(255, 0, 0, 255);
-            _pGraphics.rect(50, 50, 100, 100);
-
-            _pGraphics.noFill();
-            _pGraphics.strokeWeight(10.f);
-            _pGraphics.stroke(255);
 
             _pGraphics.textFont(font);
-            _pGraphics.text("Test", 100, 50);
-
-            _pGraphics.triangle(50, 50, 80, 200, 60, 400);
+            f.drawComponent(_pGraphics, 1, 1);
+//            _pGraphics.noStroke();
+//            _pGraphics.fill(0, 255, 50, 255);
+//
+//            _pGraphics.fill(255, 0, 0, 255);
+//            _pGraphics.rect(50, 50, 100, 100);
+//
+//            _pGraphics.noFill();
+//            _pGraphics.strokeWeight(10.f);
+//            _pGraphics.stroke(255);
+//
+//            _pGraphics.textFont(font, 16);
+//            _pGraphics.text("Test", 100, 50);
+//
+//            _pGraphics.triangle(50, 50, 80, 200, 60, 400);
             _pGraphics.endDraw();
 
             glBindVertexArray(0);
@@ -191,6 +241,10 @@ public class AdventureGameLWJGL {
             // invoked during this call.
             glfwPollEvents();
         }
+    }
+
+    private void drawUI(PGraphics g) {
+
     }
 
     public static void main(String[] args) {
