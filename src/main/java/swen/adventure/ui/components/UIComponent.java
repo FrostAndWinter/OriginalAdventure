@@ -1,7 +1,6 @@
 package swen.adventure.ui.components;
 
 import processing.core.PGraphics;
-
 import swen.adventure.ui.layoutmanagers.LayoutManager;
 
 import java.util.ArrayList;

@@ -27,8 +27,10 @@ package processing.core;/* -*- mode: java; c-basic-offset: 2; indent-tabs-mode: 
 
 import processing.opengl.PGL;
 import processing.opengl.PShader;
+import swen.adventure.Utilities;
 
 import java.awt.*;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -8131,7 +8133,19 @@ protected void defaultFontOrDeath(String method) {
  * prior to the specified method.
  */
 protected void defaultFontOrDeath(String method, float size) {
+
+  String fontPath = Utilities.pathForResource("AveriaSans-Regular-16", "vlw");
+  InputStream input = processing.core.PApplet.createInput(fontPath);
+  PFont font = null;
+  try {
+    font = new PFont(input);
+    this.textFont(font, size);
+  } catch (IOException e) {
+    e.printStackTrace();
     throw new RuntimeException("Use textFont() before " + method + "()");
+  }
+
+
 }
 
 

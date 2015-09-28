@@ -29,6 +29,8 @@ public class Material {
     public static final int NumFloats = 4 * 3; //3 vec4s.
     public static final int BufferSizeInBytes = 4 * NumFloats; //4 bytes per float
 
+    public static Material DefaultMaterial = new Material(Vector3.zero, new Vector3(0.5f, 0.5f, 0.5f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 0.5f);
+
     private Vector3 _ambientColour;
     private Vector3 _diffuseColour;
     private Vector3 _specularColour;

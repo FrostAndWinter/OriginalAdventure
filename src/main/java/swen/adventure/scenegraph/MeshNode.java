@@ -14,7 +14,7 @@ import java.util.Map;
 public class MeshNode extends SceneNode {
 
     private GLMesh<Float> _mesh;
-    private Material _material;
+    private Material _material = Material.DefaultMaterial;
 
     public MeshNode(final String fileName, final TransformNode parent) {
         this("mesh" + fileName, fileName, parent); //MeshNodes of the same file share ids.

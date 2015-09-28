@@ -30,6 +30,9 @@ import java.net.URL;
 import java.nio.*;
 import java.util.*;
 
+import static org.lwjgl.opengl.GL30.glBindVertexArray;
+import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+
 
 /**
  * OpenGL renderer.
@@ -43,6 +46,8 @@ public class PGraphicsOpenGL extends PGraphics {
 
   /** Font cache for texture objects. */
   protected WeakHashMap<PFont, FontTexture> fontMap;
+
+  protected int vertexArrayObject = -1;
 
   // ........................................................
 
@@ -1377,6 +1382,7 @@ public class PGraphicsOpenGL extends PGraphics {
       if (!initialized) {
         initPrimary();
       }
+      glBindVertexArray(this.vertexArrayObject);
     }
 
     // This has to go after the surface initialization, otherwise offscreen
@@ -1434,6 +1440,8 @@ public class PGraphicsOpenGL extends PGraphics {
     }
 
     drawing = false;
+
+    glBindVertexArray(0);
 
     report("bot endDraw()");
   }
@@ -6130,6 +6138,7 @@ public class PGraphicsOpenGL extends PGraphics {
       texture = new WeakReference<Texture>(null);
       ptexture = new WeakReference<Texture>(null);
     }
+    this.vertexArrayObject = glGenVertexArrays();
     initialized = true;
   }
 

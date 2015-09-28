@@ -4,20 +4,8 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
-import processing.core.PFont;
-import processing.core.PGraphics;
-import processing.opengl.PGraphics2D;
-
-import swen.adventure.ui.color.Color;
-import swen.adventure.ui.components.Frame;
-import swen.adventure.ui.components.Inventory;
-import swen.adventure.ui.components.Panel;
-import swen.adventure.ui.components.ProgressBar;
-
 import swen.adventure.utils.SharedLibraryLoader;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 
@@ -25,20 +13,12 @@ import static org.lwjgl.glfw.Callbacks.errorCallbackPrint;
 import static org.lwjgl.glfw.Callbacks.glfwSetCallback;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class AdventureGameLWJGL {
 
     private static final int DefaultWindowWidth = 800;
     private static final int DefaultWindowHeight = 600;
-
-    // Elements of the UI
-    private Frame f;
-    private Panel w;
-    private ProgressBar health;
-    private Inventory inventory;
 
     // We need to strongly reference callback instances.
     private GLFWErrorCallback _errorCallback;
@@ -56,12 +36,16 @@ public class AdventureGameLWJGL {
     double mousePrevX = 0;
     double mousePrevY = 0;
 
-    private PGraphics2D _pGraphics;
+    private long _timeLastUpdate;
+
     private AdventureGame _game;
 
     public void run() {
         try {
             init();
+
+            _timeLastUpdate = System.currentTimeMillis();
+
             loop();
 
             // Release window and window callbacks
@@ -93,6 +77,7 @@ public class AdventureGameLWJGL {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_SAMPLES, 8);
+        
 
         // setup the main window
         windowWidth = DefaultWindowWidth;
@@ -115,28 +100,8 @@ public class AdventureGameLWJGL {
                     _game.keyInput().releaseKey(keyChar);
                 }
 
-                if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE ) {
+                if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
                     glfwSetWindowShouldClose(window, GL_TRUE); // we will detect this in our rendering loop
-                }
-
-                if (key == GLFW_KEY_1 && action == GLFW_RELEASE) {
-                    inventory.setSelectedItem(0);
-                }
-
-                if (key == GLFW_KEY_2 && action == GLFW_RELEASE) {
-                    inventory.setSelectedItem(1);
-                }
-
-                if (key == GLFW_KEY_3 && action == GLFW_RELEASE) {
-                    inventory.setSelectedItem(2);
-                }
-
-                if (key == GLFW_KEY_4 && action == GLFW_RELEASE) {
-                    inventory.setSelectedItem(3);
-                }
-
-                if (key == GLFW_KEY_5 && action == GLFW_RELEASE) {
-                    inventory.setSelectedItem(4);
                 }
             }
         });
@@ -147,7 +112,7 @@ public class AdventureGameLWJGL {
                 windowWidth = width;
                 windowHeight = height;
 
-                _pGraphics.setSize(width, height);
+                _game.setSize(width, height);
             }
         });
 
@@ -155,7 +120,7 @@ public class AdventureGameLWJGL {
             @Override
             public void invoke(final long window, final int width, final int height) {
                 glViewport(0, 0, width, height);
-                _pGraphics.setPixelDimensions(width, height);
+                _game.setSizeInPixels(width, height);
             }
         });
 
@@ -164,8 +129,8 @@ public class AdventureGameLWJGL {
         // Center our window
         glfwSetWindowPos(
                 window,
-                (GLFWvidmode.width(vidmode) - windowWidth)/2,
-                (GLFWvidmode.height(vidmode) - windowHeight)/2
+                (GLFWvidmode.width(vidmode) - windowWidth) / 2,
+                (GLFWvidmode.height(vidmode) - windowHeight) / 2
         );
 
         // Make the OpenGL context current
@@ -176,29 +141,8 @@ public class AdventureGameLWJGL {
         // Make the window visible
         glfwShowWindow(window);
 
-        // Set up the UI elements
-        f = new Frame(0, 0, windowHeight, windowHeight);
-
-        w = new Panel(0, 0, windowWidth, windowHeight);
-        w.setColor(new Color(0, 0, 0, 0));
-
-        health = new ProgressBar(100, 100, 30, 30);
-        w.addChild(health);
-
-        inventory = new Inventory(5, 275, 500);
-        inventory.setBoxSize(50);
-        w.addChild(inventory);
-
-        f.addChild(w);
-
-        _pGraphics = new PGraphics2D();
-        _pGraphics.setPrimary(true);
-        _pGraphics.setSize(windowWidth, windowHeight);
-
         _game = new AdventureGame();
     }
-
-    private int vao = -1;
 
     private void loop() {
         // This line is critical for LWJGL's interoperation with GLFW's
@@ -214,16 +158,7 @@ public class AdventureGameLWJGL {
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-        String fontPath = Utilities.pathForResource("AveriaSans-Regular-16", "vlw");
-        InputStream input = processing.core.PApplet.createInput(fontPath);
-        PFont font = null;
-        try {
-            font = new PFont(input);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        _game.setup();
+        _game.setup(windowWidth, windowHeight);
 
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
@@ -232,36 +167,11 @@ public class AdventureGameLWJGL {
 
             handleMouseInput();
 
-            _game.update(16);
+            long currentTime = System.currentTimeMillis();
 
-            if (vao == -1) {
-                vao = glGenVertexArrays();
-            }
-            glBindVertexArray(vao);
+            _game.update(currentTime - _timeLastUpdate);
 
-            //
-
-            _pGraphics.beginDraw();
-
-            _pGraphics.textFont(font);
-            f.drawComponent(_pGraphics, 1, 1);
-//            _pGraphics.noStroke();
-//            _pGraphics.fill(0, 255, 50, 255);
-//
-//            _pGraphics.fill(255, 0, 0, 255);
-//            _pGraphics.rect(50, 50, 100, 100);
-//
-//            _pGraphics.noFill();
-//            _pGraphics.strokeWeight(10.f);
-//            _pGraphics.stroke(255);
-//
-//            _pGraphics.textFont(font, 16);
-//            _pGraphics.text("Test", 100, 50);
-//
-//            _pGraphics.triangle(50, 50, 80, 200, 60, 400);
-            _pGraphics.endDraw();
-
-            glBindVertexArray(0);
+            _timeLastUpdate = currentTime;
 
             glfwSwapBuffers(window); // swap the color buffers
 
@@ -270,12 +180,6 @@ public class AdventureGameLWJGL {
             glfwPollEvents();
         }
     }
-
-    private void drawUI(PGraphics g) {
-
-
-    }
-
     private void handleMouseInput() {
 
         if (!mouseLocked && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
