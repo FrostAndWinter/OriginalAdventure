@@ -1,4 +1,5 @@
 package swen.adventure;
+
 import swen.adventure.rendering.GLRenderer;
 import swen.adventure.rendering.Material;
 import swen.adventure.rendering.maths.Quaternion;
@@ -51,31 +52,15 @@ public class AdventureGame {
         _glRenderer = new GLRenderer(800, 600);
     }
 
-    boolean hasBeenCentred = false;
-
     public void update(long deltaMillis) {
+        ((TransformNode) _sceneGraph.nodeWithID("ObjBoxTransform").get()).rotateY(0.005f);
 
-        ((TransformNode)_sceneGraph.nodeWithID("ObjBoxTransform").get()).rotateY(0.005f);
+        handleMovement();
 
-//        float centreX = width/2;
-//        float centreY = height/2;
-//
-//        float yOffset = mouseY - centreY;
-//        float xOffset = mouseX - centreX;
-//
-//        // wait until the mouse has been centred by robot at least once
-//        // otherwise you start looking off in a direction offset by the window size
-//        if (yOffset == 0 && xOffset == 0) {
-//            hasBeenCentred = true;
-//        }
-//
-//        if (hasBeenCentred) {
-//            TransformNode playerTransform = player.parent().get();
-//
-//            playerTransform.rotateX(-yOffset/(width));
-//            playerTransform.rotateY(-xOffset/(height));
-//        }
+        _glRenderer.render(_sceneGraph, (CameraNode) _sceneGraph.nodeWithID("playerCamera").get());
+    }
 
+    private void handleMovement() {
         // handle the movement input from the player
         if (keyInput.isKeyPressed('w')) {
             player.move(new Vector3(0, 0, -20));
@@ -89,42 +74,30 @@ public class AdventureGame {
         if (keyInput.isKeyPressed('a')) {
             player.move(new Vector3(-20, 0, 0));
         }
-
-        _glRenderer.render(_sceneGraph, (CameraNode) _sceneGraph.nodeWithID("playerCamera").get());
-
     }
 
-    private static class KeyInput {
+    /**
+     * Returns the key input manager thing. This is temporary and will not be the way we actually do this.
+     *
+     * @return key manager thing.
+     */
+    public KeyInput keyInput() {
+        return keyInput;
+    }
+
+    public static class KeyInput {
         private Map<Character, Boolean> keyPressedMap = new HashMap<>();
 
         public void pressKey(Character key) {
-            keyPressedMap.put(key, true);
+            keyPressedMap.put(Character.toUpperCase(key), true);
         }
 
         public void releaseKey(Character key) {
-            keyPressedMap.put(key, false);
+            keyPressedMap.put(Character.toUpperCase(key), false);
         }
 
         public boolean isKeyPressed(Character c) {
-            return keyPressedMap.getOrDefault(c, false);
+            return keyPressedMap.getOrDefault(Character.toUpperCase(c), false);
         }
-
     }
-
-//    @Override
-//    public void mouseMoved(MouseEvent event) {
-//        super.mouseMoved(event);
-//    }
-//
-//    @Override
-//    public void keyPressed(processing.event.KeyEvent event) {
-//        super.keyPressed(event);
-//        keyInput.pressKey(event.getKey());
-//    }
-//
-//    @Override
-//    public void keyReleased(processing.event.KeyEvent event) {
-//        super.keyReleased(event);
-//        keyInput.releaseKey(event.getKey());
-//    }
 }

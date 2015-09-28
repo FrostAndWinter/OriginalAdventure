@@ -106,23 +106,38 @@ public class AdventureGameLWJGL {
         glfwSetKeyCallback(window, _keyCallback = new GLFWKeyCallback() {
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
-                if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
-                    glfwSetWindowShouldClose(window, GL_TRUE); // We will detect this in our rendering loop
 
-                if (key == GLFW_KEY_1 && action == GLFW_RELEASE)
+                // pass off alphabetic key input to the game
+                char keyChar = (char) key;
+                if (action == GLFW_PRESS) {
+                    _game.keyInput().pressKey(keyChar);
+                } else if (action == GLFW_RELEASE) {
+                    _game.keyInput().releaseKey(keyChar);
+                }
+
+                if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE ) {
+                    glfwSetWindowShouldClose(window, GL_TRUE); // we will detect this in our rendering loop
+                }
+
+                if (key == GLFW_KEY_1 && action == GLFW_RELEASE) {
                     inventory.setSelectedItem(0);
+                }
 
-                if (key == GLFW_KEY_2 && action == GLFW_RELEASE)
+                if (key == GLFW_KEY_2 && action == GLFW_RELEASE) {
                     inventory.setSelectedItem(1);
+                }
 
-                if (key == GLFW_KEY_3 && action == GLFW_RELEASE)
+                if (key == GLFW_KEY_3 && action == GLFW_RELEASE) {
                     inventory.setSelectedItem(2);
+                }
 
-                if (key == GLFW_KEY_4 && action == GLFW_RELEASE)
+                if (key == GLFW_KEY_4 && action == GLFW_RELEASE) {
                     inventory.setSelectedItem(3);
+                }
 
-                if (key == GLFW_KEY_5 && action == GLFW_RELEASE)
+                if (key == GLFW_KEY_5 && action == GLFW_RELEASE) {
                     inventory.setSelectedItem(4);
+                }
             }
         });
 
