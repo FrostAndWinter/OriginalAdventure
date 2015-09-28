@@ -1,5 +1,6 @@
 package swen.adventure;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
@@ -18,6 +19,7 @@ import swen.adventure.utils.SharedLibraryLoader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
 
 import static org.lwjgl.glfw.Callbacks.errorCallbackPrint;
 import static org.lwjgl.glfw.Callbacks.glfwSetCallback;
@@ -49,6 +51,10 @@ public class AdventureGameLWJGL {
 
     private int windowWidth;
     private int windowHeight;
+
+    boolean mouseLocked;
+    double mousePrevX = 0;
+    double mousePrevY = 0;
 
     private PGraphics2D _pGraphics;
     private AdventureGame _game;
@@ -209,6 +215,8 @@ public class AdventureGameLWJGL {
         while (glfwWindowShouldClose(window) == GL_FALSE ) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
+            handleMouseInput();
+
             _game.update(16);
 
             if (vao == -1) {
@@ -250,6 +258,49 @@ public class AdventureGameLWJGL {
 
     private void drawUI(PGraphics g) {
 
+
+    }
+
+    private void handleMouseInput() {
+
+        if (!mouseLocked && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
+            // hide mouse cursor and move cursor to centre of window
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            glfwSetCursorPos(window, windowWidth / 2, windowHeight / 2);
+
+            mouseLocked = true;
+        }
+
+        if (mouseLocked) {
+            DoubleBuffer x = BufferUtils.createDoubleBuffer(1);
+            DoubleBuffer y = BufferUtils.createDoubleBuffer(1);
+
+            glfwGetCursorPos(window, x, y);
+            x.rewind();
+            y.rewind();
+
+            double currentX = x.get();
+            double currentY = y.get();
+
+            double deltaX = currentX - 400;
+            double deltaY = currentY - 300;
+
+            boolean shouldRotX = currentX != mousePrevX;
+            boolean shouldRotY = currentY != mousePrevY;
+
+            if (shouldRotX) {
+                System.out.println("Delta Y: " + deltaY);
+            }
+
+            if (shouldRotY) {
+                System.out.println("Delta X: " + deltaX);
+            }
+
+            mousePrevX = currentX;
+            mousePrevY = currentY;
+
+            glfwSetCursorPos(window, windowWidth / 2, windowHeight / 2);
+        }
     }
 
     public static void main(String[] args) {
