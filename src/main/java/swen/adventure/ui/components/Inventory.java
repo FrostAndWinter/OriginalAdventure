@@ -68,9 +68,16 @@ public class Inventory extends UIComponent {
         int currentX = x;
         int currentY = y;
 
-        g.fill(34, 50, 90);
         for (int i = 0; i < numItems; i++) {
+            g.fill(34, 50, 90);
             g.rect(currentX * scaleX, currentY * scaleY, boxSize * scaleX, boxSize * scaleY);
+
+            // If the item is selected
+            if (i == selectedItem) {
+                g.fill(255, 0, 0);
+                g.rect(currentX * scaleX + 10, currentY * scaleY + 10, boxSize * scaleX - 20, boxSize * scaleY - 20);
+            }
+
             currentX += boxSize;
         }
     }
