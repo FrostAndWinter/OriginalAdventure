@@ -17,7 +17,11 @@ public class MeshNode extends SceneNode {
     private Material _material;
 
     public MeshNode(final String fileName, final TransformNode parent) {
-        super("mesh" + fileName, parent, false); //MeshNodes of the same file share ids.
+        this("mesh" + fileName, fileName, parent); //MeshNodes of the same file share ids.
+    }
+
+    public MeshNode(String id, final String fileName, final TransformNode parent) {
+        super(id, parent, false); //TODO discuss why mesh nodes need to have the same id
 
         try {
             _mesh = MeshNode.loadMeshWithFileName(fileName);
@@ -33,7 +37,6 @@ public class MeshNode extends SceneNode {
     public void setMaterial(final Material material) {
         _material = material;
     }
-
 
     public void render() {
         _mesh.render();

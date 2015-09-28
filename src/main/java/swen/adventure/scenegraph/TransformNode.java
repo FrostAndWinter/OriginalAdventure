@@ -41,8 +41,8 @@ public class TransformNode extends SceneNode {
             if (node instanceof TransformNode) {
                 ((TransformNode)node)._needsRecalculateTransformWorldNodeTransform = true;
                 ((TransformNode)node)._needsRecalculateNodeWorldTransform = true;
-            } else if (node instanceof GameObject) {
-                ((GameObject)node).transformDidChange();
+            } else if (node instanceof CollisionNode) {
+                ((CollisionNode) node).transformDidChange();
             }
         });
     }

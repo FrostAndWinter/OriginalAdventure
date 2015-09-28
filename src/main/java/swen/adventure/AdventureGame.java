@@ -5,6 +5,7 @@ import swen.adventure.rendering.Material;
 import swen.adventure.rendering.maths.Quaternion;
 import swen.adventure.rendering.maths.Vector3;
 import swen.adventure.scenegraph.*;
+import swen.adventure.utils.BoundingBox;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,9 +40,18 @@ public class AdventureGame {
         MeshNode zAxis = new MeshNode("box.obj", zAxisTransform);
         zAxis.setMaterial(new Material(Vector3.zero, new Vector3(1.f, 1.f, 0.f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 0.01f));
 
+        TransformNode cubeTransform = new TransformNode("cubeTransform", _sceneGraph, false, new Vector3(0, 50, 0), Quaternion.makeWithAngleAndAxis(0.0f, 0.f, 0.0f, 0.f), new Vector3(100, 100, 100));
+        MeshNode cubeMesh = new MeshNode("cubeMesh", "box.obj", cubeTransform);
+        cubeMesh.setMaterial(new Material(Vector3.zero, new Vector3(1.f, 1.f, 1.f), new Vector3(0.5f, 0.5f, 0.5f), 0f, 0.05f));
+        new CollisionNode("cubeCollision", cubeTransform, true, new BoundingBox(Vector3.zero, new Vector3(1, 1, 1)));
+
         TransformNode playerTransform = new TransformNode("playerTransform", _sceneGraph, true, new Vector3(0, 20, 200), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
         TransformNode cameraTransform = new TransformNode("cameraTransform", playerTransform, true, new Vector3(0, 0, 0), new Quaternion(), new Vector3(1, 1, 1));
+        TransformNode playerTableTransform = new TransformNode("playerTableTransform", playerTransform, true, new Vector3(0, 0, -100), new Quaternion(), new Vector3(1, 1, 1));
+        MeshNode playerMesh = new MeshNode("Table.obj", playerTableTransform);
+        playerMesh.setMaterial(new Material(Vector3.zero, new Vector3(1.f, 1.f, 1.f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 0.01f));
         new CameraNode("playerCamera", cameraTransform);
+        new CollisionNode("playerCollision", playerTableTransform, true, new BoundingBox(new Vector3(0, 0, 0), new Vector3(100, 100, 100)));
         player = new Player("player", playerTransform);
 
         TransformNode tableTransform = new TransformNode("ObjBoxTransform", _sceneGraph, true, new Vector3(20f, 5.f, -5.f), new Quaternion(), new Vector3(3.f, 3.f, 3.f));
@@ -60,7 +70,19 @@ public class AdventureGame {
 
         handleMovement();
 
-        player.parent().get().setRotation(Quaternion.makeWithAngleAndAxis(viewAngleX/500, 0, -1, 0).multiply(Quaternion.makeWithAngleAndAxis(viewAngleY / 500, -1, 0, 0)));;
+        // change player's rotation according to mouse delta
+        player.parent().get().setRotation(Quaternion.makeWithAngleAndAxis(viewAngleX / 500, 0, -1, 0).multiply(Quaternion.makeWithAngleAndAxis(viewAngleY / 500, -1, 0, 0)));;
+
+        // make the cube turn red when player is near it
+        CollisionNode playerCollision = ((CollisionNode) _sceneGraph.nodeWithID("playerCollision").get());
+        CollisionNode cubeCollision = ((CollisionNode) _sceneGraph.nodeWithID("cubeCollision").get());
+        MeshNode cubeMesh = ((MeshNode) _sceneGraph.nodeWithID("cubeMesh").get());
+        if (playerCollision.boundingBox().intersectsWith(cubeCollision.boundingBox())) {
+            cubeMesh.setMaterial(new Material(Vector3.zero, new Vector3(1.f, 0.f, 0.f), new Vector3(0.5f, 0.5f, 0.5f), 0f, 0.05f));
+        } else {
+            cubeMesh.setMaterial(new Material(Vector3.zero, new Vector3(1.f, 1.f, 1.f), new Vector3(0.5f, 0.5f, 0.5f), 0f, 0.05f));
+        }
+
         _glRenderer.render(_sceneGraph, (CameraNode) _sceneGraph.nodeWithID("playerCamera").get());
     }
 

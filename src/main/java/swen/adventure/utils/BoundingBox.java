@@ -79,18 +79,24 @@ public class BoundingBox {
     }
 
     public boolean intersectsWith(BoundingBox otherBox) {
-
-        //For an AABB defined by M,N against one defined by O,P they do not intersect if (Mx>Px) or (Ox>Nx) or (My>Py) or (Oy>Ny) or (Mz>Pz) or (Oz>Nz).
-        return (this.maxPoint.x > otherBox.minPoint.x ||
+        return !(this.maxPoint.x < otherBox.minPoint.x ||
                 this.minPoint.x > otherBox.maxPoint.x ||
-                this.maxPoint.y > otherBox.minPoint.y ||
+                this.maxPoint.y < otherBox.minPoint.y ||
                 this.minPoint.y > otherBox.maxPoint.y ||
-                this.maxPoint.z > otherBox.minPoint.z ||
+                this.maxPoint.z < otherBox.minPoint.z ||
                 this.minPoint.z > otherBox.maxPoint.z);
     }
     
 
     public BoundingBox transformByMatrix(Matrix4 matrix) {
-        return new BoundingBox(matrix.multiply(this.minPoint), matrix.multiply(this.maxPoint));
+        return new BoundingBox(matrix.multiplyWithTranslation(this.minPoint), matrix.multiplyWithTranslation(this.maxPoint));
+    }
+
+    @Override
+    public String toString() {
+        return "BoundingBox{" +
+                "minPoint=" + minPoint +
+                ", maxPoint=" + maxPoint +
+                '}';
     }
 }
