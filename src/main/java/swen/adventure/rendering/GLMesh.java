@@ -1,7 +1,9 @@
 package swen.adventure.rendering;
 
+import org.lwjgl.BufferUtils;
 import swen.adventure.scenegraph.TransformNode;
 
+import java.nio.ByteBuffer;
 import java.util.*;
 
 import static org.lwjgl.opengl.GL11.glDrawArrays;
@@ -46,7 +48,7 @@ public abstract class GLMesh<T> {
 
         /**
          * Constructs a new indexed command. The _startIndex, _elementCount, _indexDataType, and _primitiveRestart fields need to be filled in before use.
-         * @param primitiveType Either GL_UNSIGNED_BYTE or GL_UNSIGNED_SHORT
+         * @param primitiveType GL_UNSIGNED_BYTE, GL_UNSIGNED_SHORT, or GL_UNSIGNED_INT
          * @param primitiveRestart
          */
         public RenderCommand(int primitiveType, int primitiveRestart) {
@@ -131,19 +133,19 @@ public abstract class GLMesh<T> {
                 return this.numberOfComponents * this.attributeType.sizeInBytes;
             }
 
-            public void fillBoundBufferObject(int offset) {
-                this.attributeType.writeToBuffer(GL_ARRAY_BUFFER, this.data, offset, this.attributeType);
+            public void fillBoundBufferObject(ByteBuffer buffer, int offset, int stride) {
+                this.attributeType.writeToBuffer(buffer, this.data, this.numberOfComponents, offset, stride, this.attributeType);
             }
 
-            public void setupAttributeArray( int offset)  {
-                glEnableVertexAttribArray(this.attributeIndex); //TODO This should really be interleaved data (see Tut 13 - Purloined Primitives in the Modern Graphics Programming Book).
+            public void setupAttributeArray(int offset, int stride)  {
+                glEnableVertexAttribArray(this.attributeIndex);
                 if (this.isIntegral)  {
                     glVertexAttribIPointer(this.attributeIndex, this.numberOfComponents, this.attributeType.glType,
-                            0, offset);
+                            stride, offset);
                 } else {
                     glVertexAttribPointer(this.attributeIndex, this.numberOfComponents,
                             this.attributeType.glType, this.attributeType.isNormalised,
-                            0, offset);
+                            stride, offset);
                 }
             }
 
@@ -162,9 +164,11 @@ public abstract class GLMesh<T> {
             return data.size() * attributeType.sizeInBytes;
         }
 
-        public void fillBoundBufferObject( int offset) {
-            this.attributeType.writeToBuffer(GL_ELEMENT_ARRAY_BUFFER, this.data, offset, this.attributeType);
-
+        public void fillBoundBufferObject(int offset) {
+            ByteBuffer buffer = BufferUtils.createByteBuffer(this.sizeInBytes());
+            this.attributeType.writeToBuffer(buffer, this.data, this.data.size(), 0, 0, this.attributeType);
+            buffer.clear();
+            glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, this.sizeInBytes(), buffer);
         }
     }
 
@@ -192,28 +196,31 @@ public abstract class GLMesh<T> {
         _primitives = primitives;
 
         //Figure out how big of a buffer object for the attribute data we need.
-        int attributeBufferSize = 0;
         int[] attribStartLocs = new int[attributes.size()];
+        int attributeStartLocation = 0;
 
-
-        int numberOfComponents = 0;
+        int numVertices = 0;
         for(int i = 0; i < attributes.size(); i++) {
-            attributeBufferSize = attributeBufferSize % 16 != 0 ?
-                    (attributeBufferSize + (16 - attributeBufferSize % 16)) : attributeBufferSize; //Make sure that the buffer is a workable number of bytes.
+            //Make sure that the buffer is a workable number of bytes (multiple of size of Vector4).
+            attributeStartLocation = attributeStartLocation % 16 != 0 ?
+                    (attributeStartLocation + (16 - attributeStartLocation % 16)) : attributeStartLocation;
 
-            attribStartLocs[i] = attributeBufferSize;
+            attribStartLocs[i] = attributeStartLocation;
 
             Attribute attribute = attributes.get(i);
-            attributeBufferSize += attribute.sizeInBytes();
+            attributeStartLocation += attribute.sizePerElement();
 
-            if (numberOfComponents != 0) {
-                if(numberOfComponents != attribute.numberOfComponents)
-                    throw new RuntimeException("Some of the attribute arrays have different element counts.");
+            if (numVertices != 0) {
+                if(numVertices != attribute.data.size() / attribute.numberOfComponents)
+                    throw new RuntimeException("Some of the attribute arrays have different numbers of vertices.");
             } else {
-                numberOfComponents = attribute.numberOfComponents;
+                numVertices = attribute.data.size() / attribute.numberOfComponents;
             }
         }
-
+        attributeStartLocation = attributeStartLocation % 16 != 0 ?
+                (attributeStartLocation + (16 - attributeStartLocation % 16)) : attributeStartLocation;
+        int attributeBufferSize = attributeStartLocation * numVertices;
+        int stride = attributeStartLocation;
 
         //Create the "Everything" VAO.
         _vertexArrayObjectRef = glGenVertexArrays();
@@ -224,11 +231,21 @@ public abstract class GLMesh<T> {
         glBindBuffer(GL_ARRAY_BUFFER, _attributeArrraysBufferRef);
         glBufferData(GL_ARRAY_BUFFER, attributeBufferSize, GL_STATIC_DRAW);
 
+        ByteBuffer attributesBuffer = BufferUtils.createByteBuffer(attributeBufferSize);
+
         //Fill in our data and set up the attribute arrays.
         for(int i = 0; i < attributes.size(); i++) {
             Attribute attribute = attributes.get(i);
-            attribute.fillBoundBufferObject(attribStartLocs[i]);
-            attribute.setupAttributeArray(attribStartLocs[i]);
+            attribute.fillBoundBufferObject(attributesBuffer, attribStartLocs[i], stride);
+        }
+
+        attributesBuffer.clear();
+        glBufferSubData(GL_ARRAY_BUFFER, 0, attributeBufferSize, attributesBuffer);
+
+        //Fill in our data and set up the attribute arrays.
+        for(int i = 0; i < attributes.size(); i++) {
+            Attribute attribute = attributes.get(i);
+            attribute.setupAttributeArray(attribStartLocs[i], stride);
         }
 
         //Fill the named VAOs.
@@ -248,7 +265,7 @@ public abstract class GLMesh<T> {
                 }
 
                 Attribute attribute = attributes.get(attributeOffset);
-                attribute.setupAttributeArray(attribStartLocs[attributeOffset]);
+                attribute.setupAttributeArray(attribStartLocs[attributeOffset], stride);
             }
 
             _namedVAOs.put(namedVao.name, vao);
