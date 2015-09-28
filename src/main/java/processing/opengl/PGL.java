@@ -3010,9 +3010,7 @@ public abstract class PGL {
   public abstract int createShader(int type);
   public abstract void shaderSource(int shader, String source);
   public abstract void compileShader(int shader);
-  public abstract void releaseShaderCompiler();
   public abstract void deleteShader(int shader);
-  public abstract void shaderBinary(int count, ByteBuffer shaders, int binaryFormat, ByteBuffer binary, int length);
   public abstract int createProgram();
   public abstract void attachShader(int program, int shader);
   public abstract void detachShader(int program, int shader);
@@ -3049,7 +3047,6 @@ public abstract class PGL {
   public abstract void getAttachedShaders(int program, int maxCount, IntBuffer count, IntBuffer shaders);
   public abstract String getShaderInfoLog(int shader);
   public abstract String getShaderSource(int shader);
-  public abstract void getShaderPrecisionFormat(int shaderType, int precisionType, IntBuffer range, IntBuffer precision);
   public abstract void getVertexAttribfv(int index, int pname, FloatBuffer params);
   public abstract void getVertexAttribiv(int index, int pname, IntBuffer params);
   public abstract void getVertexAttribPointerv(int index, int pname, ByteBuffer data);
