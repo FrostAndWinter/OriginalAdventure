@@ -1,17 +1,19 @@
 package swen.adventure;
 
-import org.lwjgl.Sys;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
 import processing.core.PFont;
 import processing.core.PGraphics;
 import processing.opengl.PGraphics2D;
+
 import swen.adventure.ui.color.Color;
 import swen.adventure.ui.components.Frame;
 import swen.adventure.ui.components.Inventory;
 import swen.adventure.ui.components.Panel;
 import swen.adventure.ui.components.ProgressBar;
+
+import swen.adventure.utils.SharedLibraryLoader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,8 +29,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class AdventureGameLWJGL {
 
-    private static final int VIRTUAL_UI_WIDTH = 800;
-    private static final int VIRTUAL_UI_HEIGHT = 600;
+    private static final int DefaultWindowWidth = 800;
+    private static final int DefaultWindowHeight = 600;
 
     // Elements of the UI
     private Frame f;
@@ -45,12 +47,13 @@ public class AdventureGameLWJGL {
     // The window handle
     private long window;
 
+    private int windowWidth;
+    private int windowHeight;
+
     private PGraphics2D _pGraphics;
     private AdventureGame _game;
 
     public void run() {
-        System.out.println("Hello LWJGL " + Sys.getVersion() + "!");
-
         try {
             init();
             loop();
@@ -66,21 +69,6 @@ public class AdventureGameLWJGL {
     }
 
     private void init() {
-        // Set up the UI elements
-        f = new Frame(0, 0, VIRTUAL_UI_WIDTH, VIRTUAL_UI_HEIGHT);
-
-        w = new Panel(0, 0, VIRTUAL_UI_WIDTH, VIRTUAL_UI_HEIGHT);
-        w.setColor(new Color(0, 0, 0, 0));
-
-        health = new ProgressBar(100, 100, 30, 30);
-        w.addChild(health);
-
-        inventory = new Inventory(5, 275, 500);
-        inventory.setBoxSize(50);
-        w.addChild(inventory);
-
-        f.addChild(w);
-
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
         glfwSetErrorCallback(_errorCallback = errorCallbackPrint(System.err));
@@ -100,11 +88,11 @@ public class AdventureGameLWJGL {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_SAMPLES, 8);
 
-        int WIDTH = 800;
-        int HEIGHT = 600;
+        // setup the main window
+        windowWidth = DefaultWindowWidth;
+        windowHeight = DefaultWindowHeight;
 
-        // Create the window
-        window = glfwCreateWindow(WIDTH, HEIGHT, "Hello World!", NULL, NULL);
+        window = glfwCreateWindow(windowWidth, windowHeight, "Hello World!", NULL, NULL);
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 
@@ -135,8 +123,10 @@ public class AdventureGameLWJGL {
         glfwSetCallback(window, _resizeCallback = new GLFWWindowSizeCallback() {
             @Override
             public void invoke(final long window, final int width, final int height) {
-                _pGraphics.setSize(width, height);
+                windowWidth = width;
+                windowHeight = height;
 
+                _pGraphics.setSize(width, height);
             }
         });
 
@@ -153,8 +143,8 @@ public class AdventureGameLWJGL {
         // Center our window
         glfwSetWindowPos(
                 window,
-                (GLFWvidmode.width(vidmode) - WIDTH) / 2,
-                (GLFWvidmode.height(vidmode) - HEIGHT) / 2
+                (GLFWvidmode.width(vidmode) - windowWidth)/2,
+                (GLFWvidmode.height(vidmode) - windowHeight)/2
         );
 
         // Make the OpenGL context current
@@ -165,9 +155,24 @@ public class AdventureGameLWJGL {
         // Make the window visible
         glfwShowWindow(window);
 
+        // Set up the UI elements
+        f = new Frame(0, 0, windowHeight, windowHeight);
+
+        w = new Panel(0, 0, windowWidth, windowHeight);
+        w.setColor(new Color(0, 0, 0, 0));
+
+        health = new ProgressBar(100, 100, 30, 30);
+        w.addChild(health);
+
+        inventory = new Inventory(5, 275, 500);
+        inventory.setBoxSize(50);
+        w.addChild(inventory);
+
+        f.addChild(w);
+
         _pGraphics = new PGraphics2D();
         _pGraphics.setPrimary(true);
-        _pGraphics.setSize(WIDTH, HEIGHT);
+        _pGraphics.setSize(windowWidth, windowHeight);
 
         _game = new AdventureGame();
     }
