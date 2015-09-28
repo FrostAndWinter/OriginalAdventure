@@ -1,5 +1,6 @@
 package swen.adventure.rendering;
 
+import org.lwjgl.BufferUtils;
 import swen.adventure.scenegraph.TransformNode;
 
 import java.nio.ByteBuffer;
@@ -137,7 +138,7 @@ public abstract class GLMesh<T> {
             }
 
             public void setupAttributeArray(int offset, int stride)  {
-                glEnableVertexAttribArray(this.attributeIndex); //TODO This should really be interleaved data (see Tut 13 - Purloined Primitives in the Modern Graphics Programming Book).
+                glEnableVertexAttribArray(this.attributeIndex);
                 if (this.isIntegral)  {
                     glVertexAttribIPointer(this.attributeIndex, this.numberOfComponents, this.attributeType.glType,
                             stride, offset);
@@ -164,7 +165,7 @@ public abstract class GLMesh<T> {
         }
 
         public void fillBoundBufferObject(int offset) {
-            ByteBuffer buffer = ByteBuffer.allocateDirect(this.sizeInBytes());
+            ByteBuffer buffer = BufferUtils.createByteBuffer(this.sizeInBytes());
             this.attributeType.writeToBuffer(buffer, this.data, this.data.size(), 0, 0, this.attributeType);
             buffer.clear();
             glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, this.sizeInBytes(), buffer);
@@ -230,7 +231,7 @@ public abstract class GLMesh<T> {
         glBindBuffer(GL_ARRAY_BUFFER, _attributeArrraysBufferRef);
         glBufferData(GL_ARRAY_BUFFER, attributeBufferSize, GL_STATIC_DRAW);
 
-        ByteBuffer attributesBuffer = ByteBuffer.allocateDirect(attributeBufferSize);
+        ByteBuffer attributesBuffer = BufferUtils.createByteBuffer(attributeBufferSize);
 
         //Fill in our data and set up the attribute arrays.
         for(int i = 0; i < attributes.size(); i++) {
