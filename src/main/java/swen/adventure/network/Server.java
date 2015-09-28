@@ -42,12 +42,12 @@ public interface Server {
      * @param message contents to be sent
      * @return returns true if the message was successfully sent, otherwise false
      */
-    boolean send(int id, String message); // FIXME: replace String with an encapsulate data-type
+    boolean send(String id, String message); // FIXME: replace String with an encapsulate data-type
 
     /**
      * List of Ids of connected clients
      *
      * @return list of ids to connected clients
      */
-    List<Integer> getClientIds();
+    List<String> getClientIds();
 }

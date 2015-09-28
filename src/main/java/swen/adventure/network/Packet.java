@@ -45,6 +45,16 @@ public class Packet {
     private final byte[] payload;
 
     /**
+     * Create a simple network packet with only an operation
+     *
+     * @param op Operation the the packet represents
+     */
+    public Packet(Operation op) {
+        this.op = op;
+        payload = new byte[0];
+    }
+
+    /**
      * Create a packet to be sent over the network
      *
      * The maximum length of the pay load is 65535 bytes due to the implementation of the header

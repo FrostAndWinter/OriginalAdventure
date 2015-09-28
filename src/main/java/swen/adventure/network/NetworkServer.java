@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
@@ -11,7 +12,7 @@ import java.util.stream.Collectors;
  * Created by David Barnett, Student ID 3003123764, on 17/09/15.
  */
 public class NetworkServer implements Server, Session.SessionStrategy {
-    private final Map<Integer, Session> clients;
+    private final Map<String, Session> clients;
     private final Queue<String> queue;
     private ServerSocket serverSocket;
     private Thread acceptThread;
@@ -21,7 +22,7 @@ public class NetworkServer implements Server, Session.SessionStrategy {
      *
      */
     public NetworkServer() {
-        clients = new HashMap<>();
+        clients = new ConcurrentHashMap<>();
         queue = new ConcurrentLinkedQueue<>();
     }
 
@@ -60,7 +61,7 @@ public class NetworkServer implements Server, Session.SessionStrategy {
     }
 
     @Override
-    public boolean send(int id, String message) {
+    public boolean send(String id, String message) {
         if (!this.isRunning()) {
             throw new RuntimeException("Cannot send with a server which is not running");
         }
@@ -83,7 +84,7 @@ public class NetworkServer implements Server, Session.SessionStrategy {
     }
 
     @Override
-    public List<Integer> getClientIds() {
+    public List<String> getClientIds() {
         if (!this.isRunning()) {
             throw new RuntimeException("Cannot get ids with a server which is not running");
         }
@@ -117,37 +118,50 @@ public class NetworkServer implements Server, Session.SessionStrategy {
 
     @Override
     public void received(Session from, Packet packet) {
+        try {
         switch (packet.getOperation()) {
+            case CLIENT_CONNECT:
+                String id = new String(packet.getPayload());
+                if (clients.containsKey(id)) {
+                    from.send(new Packet(Packet.Operation.CLIENT_DISCONNECT));
+                    break;
+                }
+                clients.put(id, from);
+                System.out.println("Client connectd id:" + id);
+                break;
+
             case CLIENT_DATA:
                 queue.add(new String(packet.getPayload()));
                 break;
             case PING:
-                try {
+
                     from.send(new Packet(Packet.Operation.PONG, packet.getPayload()));
-                } catch (IOException ex) { ex.printStackTrace(); }
+
                 break;
             default:
                 System.out.println("Unimplemented Server operation: " + packet.getOperation());
                 break;
         }
+        } catch (IOException ex) { ex.printStackTrace(); }
     }
 
     @Override
     public void connected(Session session) {
-
+        //
     }
 
     @Override
     public void disconnected(Session session) {
         // Remove disconnected session from clients list
-        Integer id = null;
-        for (Integer i : clients.keySet()) {
+        String id = null;
+        for (String i : clients.keySet()) {
             if (clients.get(i).equals(session)) {
                 id = i;
                 break;
             }
         }
         if (id != null) {
+            System.out.println("Client disconnected id:" + id);
             clients.remove(id);
         }
 
@@ -158,16 +172,13 @@ public class NetworkServer implements Server, Session.SessionStrategy {
      * loop to accept clients connecting to server then moving the client to separate threads
      */
     private void acceptLoop() {
-        int idCount = 0;
         while (!serverSocket.isClosed()) {
             try {
                 Socket accepted = serverSocket.accept();
                 System.out.println("Server accepted client on port: " + accepted.getPort());
 
-                int id = idCount++;
                 Session session = new Session(accepted, this);
-                new Thread(session, this.getClass().getSimpleName() + "Thread#" + id).start();
-                clients.put(id, session);
+                new Thread(session, this.getClass().getSimpleName() + "Thread#" + accepted.getPort()).start();
 
             } catch (IOException ex) {
                 System.out.println("Server accept Error: " + ex);
@@ -180,7 +191,7 @@ public class NetworkServer implements Server, Session.SessionStrategy {
     public static void main(String[] args) {
         try {
             Server srv = new NetworkServer();
-            NetworkClient cli = new NetworkClient();
+            NetworkClient cli = new NetworkClient("JohnDoe");
 
             srv.start(1025);
             cli.connect("localhost", 1025);
@@ -191,20 +202,16 @@ public class NetworkServer implements Server, Session.SessionStrategy {
                 // emulate game-loop
                 Optional<String> res = srv.poll();
                 if (res.isPresent()) {
-                    System.out.println("Polled: " + res.get().length());
-                    System.out.println("Ping: " + cli.getPing() + "ms");
+                    System.out.println("srv Polled: " + res.get());
                 }
 
-                if (i < 100) {
-                    cli.send(cli.toString() + cli.hashCode());
-                    i++;
-                } else if (i == 100) {
-                    cli.disconnect();
-                    i++;
-                } else {
-                    i = 0;
-                    cli = new NetworkClient();
-                    cli.connect("localhost", 1025);
+
+                cli = new NetworkClient("JohnDoe" + i++);
+                cli.connect("localhost", 1025);
+
+
+                for (String id : srv.getClientIds()) {
+                    srv.send(id, "Hello " + id);
                 }
 
                 try {
