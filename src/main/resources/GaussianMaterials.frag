@@ -1,7 +1,5 @@
 #version 330
 
-smooth in vec4 diffuseColour;
-smooth in vec4 specularColour;
 smooth in vec3 vertexNormal;
 smooth in vec3 cameraSpacePosition;
 
@@ -25,9 +23,14 @@ uniform Light {
 	PerLightData lights[MaxLights];
 } lighting;
 
+uniform Material {
+   vec4 ambientColour; //of which xyz are the colour and w is a 0/1 as to whether ambient self-illumination is enabled.
+   vec4 diffuseColour; //r,g,b,a
+   vec4 specularColour; //of which xyz are the colour and w is the specularity.
+} material;
+
 uniform float maxIntensity;
 uniform float gamma;
-uniform float specularity;
 
 float ComputeAttenuation(in vec3 objectPosition,
 	in vec3 lightPosition,
@@ -69,20 +72,24 @@ vec3 ComputeLighting(in PerLightData lightData) {
 
 	vec3 halfAngle = normalize(lightDirection + viewDirection);
 	float angleNormalHalf = acos(dot(halfAngle, surfaceNormal));
-	float exponent = angleNormalHalf / specularity;
+	float exponent = angleNormalHalf / material.specularColour.w;
 	exponent = -(exponent * exponent);
 	float gaussianTerm = exp(exponent);
 
 	gaussianTerm = cosAngIncidence != 0.0f ? gaussianTerm : 0.0;
 
-	vec3 lighting = diffuseColour.xyz * lightIntensity * cosAngIncidence;
-	lighting += specularColour.xyz * lightIntensity * gaussianTerm;
+	vec3 lighting = material.diffuseColour.xyz * lightIntensity * cosAngIncidence;
+	lighting += material.specularColour.xyz * lightIntensity * gaussianTerm;
 
 	return lighting;
 }
 
 void main() {
-	vec3 totalLighting = diffuseColour.xyz * lighting.ambientIntensity.xyz;
+	vec3 totalLighting = material.diffuseColour.xyz * lighting.ambientIntensity.xyz;
+
+	if (material.ambientColour.w > 0.9f) { // ~= 1
+	    totalLighting += material.ambientColour.xyz;
+	}
 
 	for (int light = 0; light < lighting.numDynamicLights; light++) {
 		totalLighting += ComputeLighting(lighting.lights[light]);
@@ -91,5 +98,5 @@ void main() {
 	totalLighting = totalLighting / maxIntensity;
 
 	vec3 gammaVector = vec3(1.f / gamma);
-	outputColor = vec4(pow(totalLighting, gammaVector), diffuseColour.w);
+	outputColor = vec4(pow(totalLighting, gammaVector), material.diffuseColour.w);
 }

@@ -13,12 +13,12 @@ public class Panel extends UIComponent {
     private boolean dynamicSize;
     private Color color;
 
-    public Panel(PApplet p, int x, int y, int width, int height) {
-        super(p, x, y, width, height);
+    public Panel(int x, int y, int width, int height) {
+        super(x, y, width, height);
     }
 
-    public Panel(PApplet p, int x, int y) {
-        super(p, x, y, 0, 0);
+    public Panel(int x, int y) {
+        super(x, y, 0, 0);
 
         dynamicSize = true;
 

@@ -14,13 +14,11 @@ public class ProgressBar extends UIComponent {
 
     private PFont font;
 
-    public ProgressBar(PApplet a, int maxValue, int startingVal, int x, int y) {
-        super(a, x, y, 200, 25);
+    public ProgressBar(int maxValue, int startingVal, int x, int y) {
+        super(x, y, 200, 25);
 
         this.count = startingVal;
         this.maxValue = maxValue;
-
-        this.font = g.createFont("Arial", 16);
     }
 
     public int changeProgress(int delta) {
@@ -47,7 +45,7 @@ public class ProgressBar extends UIComponent {
         g.rect(x * scaleX, y * scaleY, completed * scaleX, height * scaleY);
 
         // Draw the current bar value
-        g.textFont(font);
+        //g.textFont(font);
         g.color(255);
         g.fill(255);
         String countString = String.format("%d", count);

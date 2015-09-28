@@ -21,8 +21,7 @@ public abstract class UIComponent {
     protected int width;
     protected int height;
 
-    public UIComponent(PGraphics g, int x, int y, int w, int h) {
-        graphics = g;
+    public UIComponent(int x, int y, int w, int h) {
         children = new ArrayList<>();
 
         this.x = x;

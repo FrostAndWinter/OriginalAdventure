@@ -13,8 +13,7 @@ public class Vector3 implements Vector {
 
 
     public final float[] v;
-    public final float x, y, z; //I'd rather duplicate the data than use a getter since it's guaranteed not to change.
-
+    public final float x, y, z; //I'd rather duplicate the data than use a getter since it's guaranteed not to change
 
     public Vector3(float x, float y, float z) {
         this(new float[]{ x, y, z });
@@ -27,6 +26,9 @@ public class Vector3 implements Vector {
         this.y = values[1];
         this.z = values[2];
     }
+
+    public static final Vector3 zero = new Vector3(0.f, 0.f, 0.f);
+    public static final Vector3 one = new Vector3(1.f, 1.f, 1.f);
 
     public Vector3 negate() {
         return new Vector3(-this.v[0], -this.v[1], -this.v[2] );

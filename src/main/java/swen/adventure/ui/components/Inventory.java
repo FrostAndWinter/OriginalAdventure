@@ -4,24 +4,48 @@ import processing.core.PApplet;
 import processing.core.PGraphics;
 import swen.adventure.ui.layoutmanagers.LayoutManager;
 
+import java.util.Objects;
+
 /**
  * Created by danielbraithwt on 9/18/15.
  */
 public class Inventory extends UIComponent {
     private static final int BOX_SIZE = 30;
 
+    private Object[] items;
+
     private int numItems;
     private int boxSize;
 
-    public Inventory(PApplet a, int numItems, int x, int y) {
-        super(a, x, y, numItems * BOX_SIZE, BOX_SIZE);
+    private int selectedItem = 0;
+
+    public Inventory(int numItems, int x, int y) {
+        super(x, y, numItems * BOX_SIZE, BOX_SIZE);
 
         this.numItems = numItems;
         boxSize = BOX_SIZE;
+
+        items = new Object[numItems];
     }
 
     public void setBoxSize(int boxSize) {
         this.boxSize = boxSize;
+    }
+
+    public void setSelectedItem(int s) {
+        selectedItem = s;
+    }
+
+    public int getSelectedItem() {
+        return selectedItem;
+    }
+
+    public void setItemAt(int index, Object o) {
+        items[index] = o;
+    }
+
+    public Object getItemAt(int index) {
+        return items[index];
     }
 
     @Override

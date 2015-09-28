@@ -10,7 +10,7 @@ import static org.lwjgl.opengl.GL30.GL_HALF_FLOAT;
  * Created by Thomas Roughton, Student ID 300313924, on 20/09/15.
  */
 public enum AttributeType {
-    
+
     Float(false, GL_FLOAT, 4),
     Half(false, GL_HALF_FLOAT, 2),
     Int(false, GL_INT, 4),
@@ -65,19 +65,19 @@ public enum AttributeType {
     }
 
     private void writeToByteBuffer(ByteBuffer buffer, List<Byte> dataArray, int componentsPerStride, int offset, int stride) {
-            int component = 0;
-            int strideIndex = 0;
+        int component = 0;
+        int strideIndex = 0;
 
-            for (Byte element : dataArray) {
-                int index = offset + component + stride * strideIndex;
-                buffer.put(index, element);
+        for (Byte element : dataArray) {
+            int index = offset + component + stride * strideIndex;
+            buffer.put(index, element);
 
-                component++;
-                if (component == componentsPerStride) {
-                    component = 0;
-                    strideIndex++;
-                }
+            component++;
+            if (component == componentsPerStride) {
+                component = 0;
+                strideIndex++;
             }
+        }
     }
 
     private void writeToIntBuffer(ByteBuffer buffer, List<Integer> dataArray, int componentsPerStride, int offset, int stride) {
