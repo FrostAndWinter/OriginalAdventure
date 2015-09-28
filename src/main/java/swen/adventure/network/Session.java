@@ -24,6 +24,8 @@ class Session implements Runnable { // FIXME
         this.socket = socket;
         this.strategy = strategy;
         outputStream = socket.getOutputStream();
+
+        strategy.connected(this);
     }
 
     public void send(Packet msg) throws IOException {
@@ -48,6 +50,7 @@ class Session implements Runnable { // FIXME
             System.out.println(strategy + "@" + socket.getLocalSocketAddress() + " input stream error: " + ex);
             return;
         }
+
 
         System.out.println(strategy + "@" + socket.getLocalSocketAddress() + " started loop");
         while (!socket.isClosed() && socket.isConnected()) {
@@ -81,6 +84,8 @@ class Session implements Runnable { // FIXME
                 // muffu muffu~
             }
         }
+        strategy.disconnected(this);
+
     }
 
     @Override
@@ -104,6 +109,22 @@ class Session implements Runnable { // FIXME
     }
 
     public interface SessionStrategy {
+
+        /**
+         * Called after session established connection and
+         * before the message receive loop.
+         *
+         * @param session The session that has been established
+         */
+        void connected(Session session);
+
+        /**
+         * The session has closed.
+         * Network connections is closed
+         *
+         * @param session the closed session
+         */
+        void disconnected(Session session);
 
         /**
          * Packet is received from the session

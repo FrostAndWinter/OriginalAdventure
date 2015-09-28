@@ -13,7 +13,7 @@ public class NetworkClient implements Client, Session.SessionStrategy {
 
     private final Queue<String> queue;
     private Session session;
-
+    private double ping = -1;
 
     public NetworkClient() {
         queue = new ConcurrentLinkedQueue<>();
@@ -31,6 +31,13 @@ public class NetworkClient implements Client, Session.SessionStrategy {
         if (!isConnected()) {
             throw new RuntimeException("Cannot disconnect a client that is not connected");
         }
+
+        try {
+            session.send(new Packet(Packet.Operation.CLIENT_DISCONNECT, new byte[0]));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         try {
             session.close();
         } catch (IOException ex) {
@@ -58,6 +65,14 @@ public class NetworkClient implements Client, Session.SessionStrategy {
             throw new RuntimeException("Cannot send with client that is not connected");
         }
 
+        // FIXME: Ping example
+        try {
+            String nano = Long.toString(System.nanoTime(), 16);
+            session.send(new Packet(Packet.Operation.PING, nano.getBytes()));
+        } catch(IOException ex) {
+            ex.printStackTrace();
+        }
+
         try {
             session.send(new Packet(Packet.Operation.CLIENT_DATA, message.getBytes()));
             return true;
@@ -76,10 +91,44 @@ public class NetworkClient implements Client, Session.SessionStrategy {
             case SERVER_KILL:
                 disconnect();
                 break;
+            case PING:
+                try {
+                    from.send(new Packet(Packet.Operation.PONG, packet.getPayload()));
+                } catch (IOException ex) { ex.printStackTrace(); }
+                break;
+            case PONG:
+                ping = (System.nanoTime() - Long.parseLong(new String(packet.getPayload()), 16)) / 1000000.0;
+                break;
             default:
-                System.out.println("Unimplemented operation: " + packet.getOperation());
+                System.out.println("Unimplemented Client operation: " + packet.getOperation());
                 break;
         }
+
+    }
+
+    @Override
+    public void connected(Session session) {
+        try {
+            session.send(new Packet(Packet.Operation.CLIENT_CONNECT, "id:PlayerJohnDoe".getBytes()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    @Override
+    public void disconnected(Session session) {
+
+    }
+
+    /**
+     * Get the result of the last round-trip ping to the client
+     *
+     * @return ping in milliseconds
+     */
+    public double getPing() {
+        return ping;
     }
 
     @Override

@@ -14,7 +14,6 @@ public class NetworkServer implements Server, Session.SessionStrategy {
     private final Map<Integer, Session> clients;
     private final Queue<String> queue;
     private ServerSocket serverSocket;
-
     private Thread acceptThread;
 
     /**
@@ -122,10 +121,37 @@ public class NetworkServer implements Server, Session.SessionStrategy {
             case CLIENT_DATA:
                 queue.add(new String(packet.getPayload()));
                 break;
+            case PING:
+                try {
+                    from.send(new Packet(Packet.Operation.PONG, packet.getPayload()));
+                } catch (IOException ex) { ex.printStackTrace(); }
+                break;
             default:
-                System.out.println("Unimplemented operation: " + packet.getOperation());
+                System.out.println("Unimplemented Server operation: " + packet.getOperation());
                 break;
         }
+    }
+
+    @Override
+    public void connected(Session session) {
+
+    }
+
+    @Override
+    public void disconnected(Session session) {
+        // Remove disconnected session from clients list
+        Integer id = null;
+        for (Integer i : clients.keySet()) {
+            if (clients.get(i).equals(session)) {
+                id = i;
+                break;
+            }
+        }
+        if (id != null) {
+            clients.remove(id);
+        }
+
+        // TODO: inform other users of this disconnect
     }
 
     /**
@@ -154,19 +180,32 @@ public class NetworkServer implements Server, Session.SessionStrategy {
     public static void main(String[] args) {
         try {
             Server srv = new NetworkServer();
-            Client cli = new NetworkClient();
+            NetworkClient cli = new NetworkClient();
 
             srv.start(1025);
             cli.connect("localhost", 1025);
+            int i = 0;
+
 
             while(true) {
                 // emulate game-loop
                 Optional<String> res = srv.poll();
                 if (res.isPresent()) {
-                    System.out.println("Polled: " + res.get());
+                    System.out.println("Polled: " + res.get().length());
+                    System.out.println("Ping: " + cli.getPing() + "ms");
                 }
 
-                cli.send("Hello!");
+                if (i < 100) {
+                    cli.send(cli.toString() + cli.hashCode());
+                    i++;
+                } else if (i == 100) {
+                    cli.disconnect();
+                    i++;
+                } else {
+                    i = 0;
+                    cli = new NetworkClient();
+                    cli.connect("localhost", 1025);
+                }
 
                 try {
                     // Kill server after 10sec to test shutdown
