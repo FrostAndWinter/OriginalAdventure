@@ -1,7 +1,7 @@
 #version 330
 
-in vec3 vertexNormal;
-in vec3 cameraSpacePosition;
+smooth in vec3 vertexNormal;
+smooth in vec3 cameraSpacePosition;
 
 out vec4 outputColor;
 
