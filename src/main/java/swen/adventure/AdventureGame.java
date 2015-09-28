@@ -86,19 +86,21 @@ public class AdventureGame {
         _glRenderer.render(_sceneGraph, (CameraNode) _sceneGraph.nodeWithID("playerCamera").get());
     }
 
+    float playerSpeed = 3.0f;
+
     private void handleMovement() {
         // handle the movement input from the player
         if (keyInput.isKeyPressed('w')) {
-            player.move(new Vector3(0, 0, -20));
+            player.move(new Vector3(0, 0, -playerSpeed));
         }
         if (keyInput.isKeyPressed('d')) {
-            player.move(new Vector3(20, 0, 0));
+            player.move(new Vector3(playerSpeed, 0, 0));
         }
         if (keyInput.isKeyPressed('s')) {
-            player.move(new Vector3(0, 0, 20));
+            player.move(new Vector3(0, 0, playerSpeed));
         }
         if (keyInput.isKeyPressed('a')) {
-            player.move(new Vector3(-20, 0, 0));
+            player.move(new Vector3(-playerSpeed, 0, 0));
         }
     }
 
