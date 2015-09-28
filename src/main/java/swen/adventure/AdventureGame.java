@@ -102,6 +102,12 @@ public class AdventureGame {
         if (keyInput.isKeyPressed('a')) {
             player.move(new Vector3(-playerSpeed, 0, 0));
         }
+        if (keyInput.isKeyPressed('q')) {
+            player.move(new Vector3(0, playerSpeed, 0));
+        }
+        if (keyInput.isKeyPressed('e')) {
+            player.move(new Vector3(0, -playerSpeed, 0));
+        }
     }
 
     /**

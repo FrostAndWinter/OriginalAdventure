@@ -14,7 +14,8 @@ public class Player extends GameObject {
     public void move(Vector3 vector) {
         TransformNode transformNode = parent().get();
         Vector3 translation = transformNode.rotation().rotateVector3(vector);
-        Vector3 lateralTranslation = new Vector3(translation.x, 0, translation.z).normalise().multiplyScalar(vector.length());
+        Vector3 lateralTranslation = new Vector3(translation.x, translation.y, translation.z).normalise().multiplyScalar(vector.length());
+
         this.parent().get().translateBy(lateralTranslation);
     }
 
