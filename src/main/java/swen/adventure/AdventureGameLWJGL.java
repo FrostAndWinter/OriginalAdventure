@@ -248,6 +248,7 @@ public class AdventureGameLWJGL {
     }
 
     public static void main(String[] args) {
+        SharedLibraryLoader.load();
         new AdventureGameLWJGL().run();
     }
 
