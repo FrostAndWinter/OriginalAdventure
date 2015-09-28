@@ -12,10 +12,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class NetworkClient implements Client, Session.SessionStrategy {
 
     private final Queue<String> queue;
+    private final String id;
     private Session session;
     private double ping = -1;
 
-    public NetworkClient() {
+    public NetworkClient(String id) {
+        this.id = id;
         queue = new ConcurrentLinkedQueue<>();
     }
 
@@ -51,7 +53,12 @@ public class NetworkClient implements Client, Session.SessionStrategy {
             throw new RuntimeException("Cannot poll a client that is not connected");
         }
 
-        return null;
+        String event = queue.poll();
+        if (event != null) {
+            return Optional.of(event);
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -84,17 +91,17 @@ public class NetworkClient implements Client, Session.SessionStrategy {
 
     @Override
     public void received(Session from, Packet packet) {
+        try {
         switch (packet.getOperation()) {
             case SERVER_DATA:
                 queue.add(new String(packet.getPayload()));
+                from.send(new Packet(Packet.Operation.CLIENT_DATA, packet.getPayload()));
                 break;
             case SERVER_KILL:
                 disconnect();
                 break;
             case PING:
-                try {
-                    from.send(new Packet(Packet.Operation.PONG, packet.getPayload()));
-                } catch (IOException ex) { ex.printStackTrace(); }
+                from.send(new Packet(Packet.Operation.PONG, packet.getPayload()));
                 break;
             case PONG:
                 ping = (System.nanoTime() - Long.parseLong(new String(packet.getPayload()), 16)) / 1000000.0;
@@ -103,18 +110,17 @@ public class NetworkClient implements Client, Session.SessionStrategy {
                 System.out.println("Unimplemented Client operation: " + packet.getOperation());
                 break;
         }
+        } catch (IOException ex) { ex.printStackTrace(); }
 
     }
 
     @Override
     public void connected(Session session) {
         try {
-            session.send(new Packet(Packet.Operation.CLIENT_CONNECT, "id:PlayerJohnDoe".getBytes()));
+            session.send(new Packet(Packet.Operation.CLIENT_CONNECT, id.getBytes()));
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
     @Override
