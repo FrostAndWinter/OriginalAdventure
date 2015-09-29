@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 /**
  * Created by David Barnett, Student ID 3003123764, on 17/09/15.
  */
-public class NetworkServer implements Server, Session.SessionStrategy {
+public class NetworkServer implements Server<String, String>, Session.SessionStrategy {
     private final Map<String, Session> clients;
     private final Queue<String> queue;
     private ServerSocket serverSocket;
@@ -190,13 +190,11 @@ public class NetworkServer implements Server, Session.SessionStrategy {
     // Example usage & live testing
     public static void main(String[] args) {
         try {
-            Server srv = new NetworkServer();
+            Server<String, String> srv = new NetworkServer();
             NetworkClient cli = new NetworkClient("JohnDoe");
-
+            int i = 0;
             srv.start(1025);
             cli.connect("localhost", 1025);
-            int i = 0;
-
 
             while(true) {
                 // emulate game-loop
@@ -205,13 +203,8 @@ public class NetworkServer implements Server, Session.SessionStrategy {
                     System.out.println("srv Polled: " + res.get());
                 }
 
-
-                cli = new NetworkClient("JohnDoe" + i++);
-                cli.connect("localhost", 1025);
-
-
                 for (String id : srv.getClientIds()) {
-                    srv.send(id, "Hello " + id);
+                    srv.send(id, new String(new byte[4096]));
                 }
 
                 try {

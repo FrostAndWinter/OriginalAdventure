@@ -8,7 +8,13 @@ import java.util.Optional;
 /**
  * Created by David Barnett, Student ID 3003123764, on 17/09/15.
  */
-public interface Server {
+
+/**
+ *
+ * @param <I> type used to identify client
+ * @param <M> type used to send messages between clients and server
+ */
+public interface Server<I, M> {
 
     /**
      * Start the server accepting clients and messages
@@ -26,7 +32,7 @@ public interface Server {
      * @return The value is present when the server has messages queued from the clients to be processed. Otherwise
      * empty.
      */
-     Optional<String> poll(); // FIXME: replace String with an encapsulated data-type
+     Optional<M> poll(); // FIXME: replace String with an encapsulated data-type
 
     /**
      * Check if the server is running
@@ -42,12 +48,12 @@ public interface Server {
      * @param message contents to be sent
      * @return returns true if the message was successfully sent, otherwise false
      */
-    boolean send(String id, String message); // FIXME: replace String with an encapsulate data-type
+    boolean send(I id, M message); // FIXME: replace String with an encapsulate data-type
 
     /**
      * List of Ids of connected clients
      *
      * @return list of ids to connected clients
      */
-    List<String> getClientIds();
+    List<I> getClientIds();
 }

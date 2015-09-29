@@ -43,9 +43,10 @@ class Session implements Runnable { // FIXME
     public void run() {
         InputStream input;
         byte[] buffer;
+        Packet.Builder builder = new Packet.Builder();
         try {
             input = socket.getInputStream();
-            buffer = new byte[socket.getReceiveBufferSize()];
+            buffer = new byte[1024];
         } catch (IOException ex) {
             System.out.println(strategy + "@" + socket.getLocalSocketAddress() + " input stream error: " + ex);
             return;
@@ -63,10 +64,10 @@ class Session implements Runnable { // FIXME
 
                 // TODO: Make sure packet boundaries are correct
                 byte[] recv = Arrays.copyOf(buffer, len);
-
-                Optional<Packet> packet = Packet.fromBytes(recv);
-                if (packet.isPresent()) {
-                    strategy.received(this, packet.get());
+                builder.append(recv);
+                if (builder.isReady()) {
+                    strategy.received(this, builder.build());
+                    builder = new Packet.Builder().append(builder.overflow());
                 }
 
 
