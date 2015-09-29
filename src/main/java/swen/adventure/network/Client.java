@@ -45,4 +45,11 @@ public interface Client {
      * @return returns true if the message was successfully sent, otherwise false
      */
     boolean send(String message);
+
+    /**
+     * Get ping in milliseconds
+     *
+     * @return round trip to server & back
+     */
+    double getPing();
 }
