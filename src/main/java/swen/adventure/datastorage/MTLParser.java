@@ -45,5 +45,7 @@ public class MTLParser {
 
         String materialName = null;
         Vector3 ambientColour, diffuseColour, specularColour;
+
+        return materialMap;
     }
 }
