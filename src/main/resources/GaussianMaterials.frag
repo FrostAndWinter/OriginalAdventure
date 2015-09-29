@@ -30,7 +30,6 @@ uniform Material {
 } material;
 
 uniform float maxIntensity;
-uniform float gamma;
 
 float ComputeAttenuation(in vec3 objectPosition,
 	in vec3 lightPosition,
@@ -85,6 +84,11 @@ vec3 ComputeLighting(in PerLightData lightData) {
 }
 
 void main() {
+
+	if (material.diffuseColour.w < 0.001f) {
+	    discard;
+	}
+
 	vec3 totalLighting = material.diffuseColour.xyz * lighting.ambientIntensity.xyz;
 
 	if (material.ambientColour.w > 0.9f) { // ~= 1
@@ -97,6 +101,5 @@ void main() {
 
 	totalLighting = totalLighting / maxIntensity;
 
-	vec3 gammaVector = vec3(1.f / gamma);
-	outputColor = vec4(pow(totalLighting, gammaVector), material.diffuseColour.w);
+	outputColor = vec4(totalLighting, material.diffuseColour.w);
 }

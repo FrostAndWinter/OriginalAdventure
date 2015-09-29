@@ -4,6 +4,7 @@ import org.lwjgl.BufferUtils;
 import swen.adventure.rendering.maths.Vector3;
 
 import java.nio.FloatBuffer;
+import java.util.Optional;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 27/09/15.
@@ -37,6 +38,11 @@ public class Material {
     private float _transparency;
     private float _specularity;
     private boolean _useAmbient = true;
+
+    private Optional<Texture> _diffuseMap = Optional.empty();
+    private Optional<Texture> _ambientMap = Optional.empty();
+    private Optional<Texture> _specularColourMap = Optional.empty();
+    private Optional<Texture> _specularityMap = Optional.empty();
 
     public Material(Vector3 ambientColour, Vector3 diffuseColour, Vector3 specularColour, float transparency, float specularity) {
         _ambientColour = ambientColour;
@@ -105,6 +111,22 @@ public class Material {
         _specularity = specularity;
     }
 
+    public void setDiffuseMap(final Texture diffuseMap) {
+        _diffuseMap = Optional.of(diffuseMap);
+    }
+
+    public void setAmbientMap(final Texture ambientMap) {
+        _ambientMap = Optional.of(ambientMap);
+    }
+
+    public void setSpecularColourMap(final Texture specularColourMap) {
+        _specularColourMap = Optional.of(specularColourMap);
+    }
+
+    public void setSpecularityMap(final Texture specularityMap) {
+        _specularityMap = Optional.of(specularityMap);
+    }
+
     public FloatBuffer toFloatBuffer() {
         FloatBuffer buffer = BufferUtils.createFloatBuffer(NumFloats);
 
@@ -129,5 +151,7 @@ public class Material {
     public static float phongSpecularToGaussian(float phongSpecular) {
         return 1.f/phongSpecular;
     }
+
+
 
 }

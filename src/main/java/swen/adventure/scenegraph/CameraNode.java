@@ -6,8 +6,7 @@ package swen.adventure.scenegraph;
 public class CameraNode extends SceneNode {
 
     private float _fieldOfView = (float)Math.PI/3.f;
-    private float _gamma = 2.2f;
-    private float _hdrMaxIntensity = 100.f;
+    private float _hdrMaxIntensity = 12.f;
 
     public CameraNode(String id, TransformNode parent) {
         super(id, parent, false);
@@ -19,14 +18,6 @@ public class CameraNode extends SceneNode {
 
     public void setFieldOfView(final float fieldOfView) {
         _fieldOfView = fieldOfView;
-    }
-
-    public float gamma() {
-        return _gamma;
-    }
-
-    public void setGamma(final float gamma) {
-        _gamma = gamma;
     }
 
     public float hdrMaxIntensity() {
