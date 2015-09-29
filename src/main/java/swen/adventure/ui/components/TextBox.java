@@ -13,7 +13,6 @@ public class TextBox extends UIComponent {
 
 
     private String text;
-    private PFont font;
     private int padding;
 
     public TextBox(String text, int x, int y) {
@@ -22,6 +21,10 @@ public class TextBox extends UIComponent {
         this.text = text;
 
         padding = DEFAULT_PADDING;
+    }
+
+    public void setText(String t) {
+        text = t;
     }
 
     public void setPadding(int p) {
@@ -36,9 +39,7 @@ public class TextBox extends UIComponent {
         width = padding + stringWidth;
         height = padding + stringHeight;
 
-        g.fill(0);
-        g.textFont(font);
-
+        g.fill(255);
         g.text(text.toCharArray(), 0, text.length(), (x + padding/2) * scaleX, (y + stringHeight + padding/2) * scaleY);
     }
 
@@ -49,13 +50,11 @@ public class TextBox extends UIComponent {
 
     @Override
     public int getWidth(PGraphics g) {
-        g.textFont(font);
         return padding + (int) g.textWidth(text);
     }
 
     @Override
     public int getHeight(PGraphics g) {
-        g.textFont(font);
         return padding + (int) (g.textAscent() + g.textDescent());
     }
 
