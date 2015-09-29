@@ -25,7 +25,6 @@ public class GaussianPerObjectMaterialShader extends ShaderProgram {
     private final int _normalModelToCameraMatrixUniformRef;
 
     private final int _maxIntensityUniformRef;
-    private final int _gammaUniformRef;
 
     private static final int LightBlockIndex = 0;
     private static final int MaterialBlockIndex = 1;
@@ -60,7 +59,6 @@ public class GaussianPerObjectMaterialShader extends ShaderProgram {
         _normalModelToCameraMatrixUniformRef = glGetUniformLocation(this.glProgramRef(), "normalModelToCameraMatrixUniform");
 
         _maxIntensityUniformRef = glGetUniformLocation(this.glProgramRef(), "maxIntensity");
-        _gammaUniformRef = glGetUniformLocation(this.glProgramRef(), "gamma");
 
         //Setup the uniform buffers
         int lightBlock = glGetUniformBlockIndex(this.glProgramRef(), "Light");
@@ -114,7 +112,4 @@ public class GaussianPerObjectMaterialShader extends ShaderProgram {
         glUniform1f(_maxIntensityUniformRef, maxIntensity);
     }
 
-    public void setGamma(float gamma) {
-        glUniform1f(_gammaUniformRef, gamma);
-    }
 }

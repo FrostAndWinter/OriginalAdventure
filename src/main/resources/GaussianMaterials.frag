@@ -30,7 +30,6 @@ uniform Material {
 } material;
 
 uniform float maxIntensity;
-uniform float gamma;
 
 float ComputeAttenuation(in vec3 objectPosition,
 	in vec3 lightPosition,
@@ -102,6 +101,5 @@ void main() {
 
 	totalLighting = totalLighting / maxIntensity;
 
-	vec3 gammaVector = vec3(1.f / gamma);
-	outputColor = vec4(pow(totalLighting, gammaVector), material.diffuseColour.w);
+	outputColor = vec4(totalLighting, material.diffuseColour.w);
 }

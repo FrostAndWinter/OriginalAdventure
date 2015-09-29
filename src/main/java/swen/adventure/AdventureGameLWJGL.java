@@ -77,7 +77,7 @@ public class AdventureGameLWJGL {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_SAMPLES, 8);
-        
+        glfwWindowHint(GLFW_SRGB_CAPABLE, GL_TRUE);
 
         // setup the main window
         windowWidth = DefaultWindowWidth;

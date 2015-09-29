@@ -9,7 +9,8 @@ import swen.adventure.scenegraph.MeshNode;
 import swen.adventure.scenegraph.SceneNode;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL32.GL_DEPTH_CLAMP;
+import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.GL32.*;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 19/09/15.
@@ -56,10 +57,10 @@ public class GLRenderer {
 
 
     public void render(SceneNode sceneGraph, CameraNode cameraNode) {
+        glEnable(GL_FRAMEBUFFER_SRGB);
         _defaultShader.useProgram();
 
-        _defaultShader.setGamma(2.2f);
-        _defaultShader.setMaxIntensity(12.f);
+        _defaultShader.setMaxIntensity(cameraNode.hdrMaxIntensity());
         _defaultShader.setLightData(Light.toLightBlock(sceneGraph.allLights(), cameraNode.worldToNodeSpaceTransform()));
 
         Matrix4 worldToCameraMatrix = cameraNode.worldToNodeSpaceTransform();
@@ -81,5 +82,7 @@ public class GLRenderer {
         });
 
         _defaultShader.endUseProgram();
+
+        glDisable(GL_FRAMEBUFFER_SRGB);
     }
 }
