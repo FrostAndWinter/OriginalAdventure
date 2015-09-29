@@ -76,35 +76,6 @@ class Packet {
         this.payload = payload;
     }
 
-    public static Optional<Packet> fromBytes(byte[] raw) {
-        ByteArrayInputStream bytes = new ByteArrayInputStream(raw);
-        try {
-            byte[] buffer = new byte[4];
-            bytes.read(buffer, 0, 1);
-            Operation op = Operation.fromByte(buffer[0]);
-
-            // Use only two
-            int length = bytes.read() << 24;
-            length += bytes.read() << 16;
-            length += bytes.read() << 8;
-            length += bytes.read();
-
-            if (bytes.available() < length) {
-                System.err.println("Packet:FromByte: Advertised packet length (" + bytes.available() + ") does not match payload length " + length );
-                return Optional.empty();
-            }
-
-            buffer = new byte[length];
-            bytes.read(buffer);
-            // TODO: Convert to Event
-
-            return Optional.of(new Packet(op, buffer));
-        } catch (IOException ex) {
-
-        }
-        return Optional.empty();
-    }
-
     public byte[] toBytes() {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         try {
