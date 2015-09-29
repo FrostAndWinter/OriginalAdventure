@@ -1,14 +1,19 @@
 package swen.adventure.network;
 
 
+import org.lwjgl.Sys;
+
 import java.io.*;
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Created by David Barnett, Student ID 3003123764, on 19/09/15.
  */
-public class Packet {
+class Packet {
 
     public enum Operation {
         // FIXME: awful names
@@ -61,42 +66,14 @@ public class Packet {
      * It is advised to use have the payload smaller than the maximum to keep in bounds of TCP send/recieve
      * buffers
      *
+     * Note: Ownership of the payload data belongs to the packet
+     *
      * @param op Operation the the packet represents
      * @param payload raw data to be sent
      */
     public Packet(Operation op, byte[] payload) {
         this.op = op;
-        if (payload.length > 65535) {
-            throw new RuntimeException("Payload is too large");
-        }
-        this.payload = Arrays.copyOf(payload, payload.length);
-    }
-
-    public static Optional<Packet> fromBytes(byte[] raw) {
-        ByteArrayInputStream bytes = new ByteArrayInputStream(raw);
-        try {
-            byte[] buffer = new byte[4];
-            bytes.read(buffer, 0, 1);
-            Operation op = Operation.fromByte(buffer[0]);
-
-            // Use only two
-            int length = bytes.read() << 8;
-            length += bytes.read();
-
-            if (bytes.available() < length) {
-                System.err.println("Packet:FromByte: Advertised packet length (" + bytes.available() + ") does not match payload length " + length );
-                return Optional.empty();
-            }
-
-            buffer = new byte[length];
-            bytes.read(buffer);
-            // TODO: Convert to Event
-
-            return Optional.of(new Packet(op, buffer));
-        } catch (IOException ex) {
-
-        }
-        return Optional.empty();
+        this.payload = payload;
     }
 
     public byte[] toBytes() {
@@ -104,8 +81,13 @@ public class Packet {
         try {
             bytes.write(new byte[]{op.toByte()});
 
-            bytes.write((payload.length >> 8) & 255);
-            bytes.write(payload.length & 255);
+            // Ensure we use 4 bytes to represent an int & in correct order that BigInt will read it in
+            byte[] lengthBytes = new byte[4];
+            byte[] b = BigInteger.valueOf(payload.length).toByteArray();
+            for (int i = 1; i <= b.length; i++ ) {
+                lengthBytes[lengthBytes.length - i] = b[b.length - i];
+            }
+            bytes.write(lengthBytes);
             bytes.write(payload);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -119,5 +101,61 @@ public class Packet {
 
     public Operation getOperation() {
         return op;
+    }
+
+    static class Builder {
+        int lengthCounter = 0;
+        byte[] lengthBytes = new byte[4];
+        byte[] payload = null;
+        final List<Byte> overflow = new ArrayList<>();
+
+        Optional<Operation> op = Optional.empty();
+        int length = 0;
+        int processed = 0;
+
+        Builder append(List<Byte> data) {
+            data.forEach(this::append);
+            return this;
+        }
+
+        Builder append(byte[] data) {
+            for (byte b : data) {
+                append(b);
+            }
+            return this;
+        }
+
+        void append(byte b) {
+            if (!op.isPresent()) {
+                // Got OP code
+                op = Optional.of(Operation.fromByte(b));
+            } else if (lengthCounter < 4) {
+                lengthBytes[lengthCounter] = b;
+
+                lengthCounter++;
+                if (lengthCounter == 4) {
+                    // BigInt for the rescue
+                    length = new BigInteger(lengthBytes).intValue();
+                    payload = new byte[length];
+                }
+            } else if (processed < length) {
+                payload[processed++] = b;
+            } else {
+                overflow.add(b);
+            }
+        }
+
+        List<Byte> overflow() {
+           return overflow;
+        }
+
+        boolean isReady() {
+            return lengthCounter == 4 && processed == length && op.isPresent();
+        }
+
+        Packet build() {
+            return new Packet(op.get(), payload);
+        }
+
     }
 }
