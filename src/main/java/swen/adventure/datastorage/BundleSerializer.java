@@ -33,6 +33,14 @@ public class BundleSerializer {
         return new String(os.toByteArray(), StandardCharsets.UTF_8);
     }
 
+    public void toXmlFile(BundleObject bundleObject, File file) throws FileNotFoundException {
+        String xml = toXml(bundleObject);
+        try (PrintStream ps = new PrintStream(file)) {
+            ps.println(xml);
+            ps.flush();
+        }
+    }
+
     public BundleObject fromXml(String xml) {
         InputStream is = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8));
         return fromXml(is);
