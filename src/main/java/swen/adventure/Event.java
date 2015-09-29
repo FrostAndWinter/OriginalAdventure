@@ -10,11 +10,11 @@ import java.util.Map;
  */
 
 /**
- * This swen.adventure.Event class is based on the command pattern, and the way it works is basically as follows:
+ * This Event class is based on the command pattern, and the way it works is basically as follows:
  ​
  On any object, you can add an event property. For instance, a door might have the property
 
- public final swen.adventure.Event<Door> eventDoorOpened = new swen.adventure.Event<Door>(this);
+ public final Event<Door> eventDoorOpened = new Event<Door>(this);
  ​
  Then, any other object that cares about the door opening can subscribe to that event. If, say, an alarm should go off when a particular door is opened, you'd write something like this
  ​

@@ -3,14 +3,14 @@ package swen.adventure.scenegraph;
 /**
  * Created by josephbennett on 19/09/15
  */
-public class CameraNode extends GameObject {
+public class CameraNode extends SceneNode {
 
     private float _fieldOfView = (float)Math.PI/3.f;
     private float _gamma = 2.2f;
     private float _hdrMaxIntensity = 100.f;
 
     public CameraNode(String id, TransformNode parent) {
-        super(id, parent);
+        super(id, parent, false);
     }
 
     public float fieldOfView() {

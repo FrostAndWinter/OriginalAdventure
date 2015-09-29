@@ -1,8 +1,10 @@
 package swen.adventure.scenegraph;
 
+import swen.adventure.Event;
 import swen.adventure.rendering.maths.Matrix4;
 import swen.adventure.utils.BoundingBox;
 
+import java.lang.reflect.Field;
 import java.util.*;
 
 /**
@@ -23,9 +25,7 @@ public abstract class SceneNode {
     public final String id;
     protected Map<String, SceneNode> _idsToNodesMap;
     protected Set<Light> _allLights; //FIXME maybe this should be in a separate SceneGraph wrapper class?
-
-    private Optional<BoundingBox> _worldSpaceBoundingBox = Optional.empty();
-    private boolean _needsRecalculateWorldSpaceBoundingBox = true;
+    protected Set<CollisionNode> _allCollidables;
 
     /**
      * Construct a new root SceneNode.
@@ -33,6 +33,7 @@ public abstract class SceneNode {
     public SceneNode(String id) {
         _idsToNodesMap = new HashMap<>();
         _allLights = new HashSet<>();
+        _allCollidables = new HashSet<>();
 
         this.id = id;
         _idsToNodesMap.put(id, this);
@@ -50,6 +51,7 @@ public abstract class SceneNode {
         //Get a reference to the id-node dictionary, and pass along a reference to the lights set.
         _idsToNodesMap = parent._idsToNodesMap;
         _allLights = parent._allLights;
+        _allCollidables = parent._allCollidables;
 
         this.id = id;
         _idsToNodesMap.put(id, this);
@@ -58,11 +60,23 @@ public abstract class SceneNode {
 
         if (this instanceof Light) {
             _allLights.add((Light)this);
+        } else if (this instanceof CollisionNode) {
+            _allCollidables.add((CollisionNode)this);
         }
     }
 
     public Optional<TransformNode> parent() {
         return _parent;
+    }
+
+    public Set<SceneNode> siblings() {
+        if (_parent.isPresent()) {
+            Set<SceneNode> children = _parent.get()._childNodes;
+            Set<SceneNode> siblings = new HashSet<>(children);
+            siblings.remove(this);
+            return siblings;
+        }
+        return Collections.emptySet();
     }
 
     public boolean isDynamic() {
@@ -72,39 +86,25 @@ public abstract class SceneNode {
     /**
      * Called on every SceneNode when their transformation matrices change.
      */
-    public void transformDidChange() {
-        _needsRecalculateWorldSpaceBoundingBox = true;
-    }
+    public void transformDidChange() {}
 
     /**
-     * Finds a bounding box by searching through its children.
-     * Prioritises GameObjects, and then MeshNodes.
-     * If this node has multiple GameObject or MeshNode children, then it uses the bounding box of the first one it finds.
-     * @return The bounding box of this object, if present.
+     * Given an event name in UpperCamelCase, finds and returns the event instance associated with that name on this object.
+     * The field is expected to be named in the form event{eventName}.
+     * @param eventName The name of the event e.g. DoorOpened.
+     * @return The event for that name on this object.
+     * @throws RuntimeException if the event does not exist on this object.
      */
-    public Optional<BoundingBox> boundingBox() {
-        Optional<BoundingBox> boundingBox = Optional.empty();
-
-        for (SceneNode node : _childNodes) {
-            if (node instanceof GameObject) {
-                boundingBox = node.boundingBox();
-                if (boundingBox.isPresent()) {
-                    return boundingBox;
-                }
-            } else if (!boundingBox.isPresent()) {
-                boundingBox = node.boundingBox();
-            }
+    public Event<? extends GameObject> eventWithName(String eventName) {
+        try {
+            Field field = this.getClass().getField("event" + eventName);
+            return (Event<? extends GameObject>) field.get(this);
+        } catch (IllegalAccessException e) {
+            System.err.println("Error accessing event with name " + eventName + ": " + e);
+        } catch (NoSuchFieldException e) {
         }
-        return boundingBox;
-    }
 
-    public Optional<BoundingBox> worldSpaceBoundingBox() {
-        if (_needsRecalculateWorldSpaceBoundingBox) {
-            _worldSpaceBoundingBox = this.boundingBox()
-                    .map(boundingBox -> boundingBox.axisAlignedBoundingBoxInSpace(this.nodeToWorldSpaceTransform()));
-            _needsRecalculateWorldSpaceBoundingBox = false;
-        }
-        return _worldSpaceBoundingBox;
+        throw new RuntimeException("Could not find an event of name " + eventName + " on " + this);
     }
 
     /**

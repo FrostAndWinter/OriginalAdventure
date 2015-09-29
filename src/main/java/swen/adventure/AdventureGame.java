@@ -13,6 +13,7 @@ import swen.adventure.ui.components.Panel;
 import swen.adventure.ui.components.ProgressBar;
 import swen.adventure.utils.BoundingBox;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,17 +59,32 @@ public class AdventureGame {
         playerMesh.setMaterial(new Material(Vector3.zero, new Vector3(1.f, 1.f, 1.f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 0.01f));
         new CameraNode("playerCamera", cameraTransform);
         player = new Player("player", playerTransform);
-        player.setBoundingBox(new BoundingBox(new Vector3(-50, -50, -50), new Vector3(50, 50, 50)));
+        player.collisionNode().setBoundingBox(new BoundingBox(new Vector3(-20, -20, -10), new Vector3(20, 20, 10)));
 
         TransformNode tableTransform = new TransformNode("ObjBoxTransform", _sceneGraph, true, new Vector3(20f, 5.f, -5.f), new Quaternion(), new Vector3(3.f, 3.f, 3.f));
         MeshNode table = new MeshNode("tableMesh", "Table.obj", tableTransform);
         table.setMaterial(new Material(Vector3.zero, new Vector3(0.8f, 0.3f, 0.4f), new Vector3(0.7f, 0.6f, 0.6f), 0.f, 0.2f));
+        new GameObject("tableGameObject", tableTransform);
+
+
+        TransformNode tableBounding = new TransformNode("tableBounding", _sceneGraph, true, new Vector3(0, 0, 0), new Quaternion(), new Vector3(1, 1, 1));
+        new MeshNode("box.obj", tableBounding);
+
+        TransformNode playerBounding = new TransformNode("playerBounding", _sceneGraph, true, new Vector3(0, 0, 0), new Quaternion(), new Vector3(1, 1, 1));
+        new MeshNode("box.obj", playerBounding);
 
         Light.createAmbientLight("ambientLight", _sceneGraph, new Vector3(0.3f, 0.5f, 0.4f), 3.f);
         Light.createDirectionalLight("directionalLight", _sceneGraph, new Vector3(0.7f, 0.3f, 0.1f), 7.f, new Vector3(0.4f, 0.2f, 0.6f));
         Light.createPointLight("pointLight", cameraTransform, new Vector3(0.4f, 0.5f, 0.8f), 9.f, Light.LightFalloff.Quadratic);
 
         _glRenderer = new GLRenderer(width, height);
+
+        keyInput.eventMoveForwardKeyPressed.addAction(player, Player.actionPlayerMoveForward);
+        keyInput.eventMoveBackwardKeyPressed.addAction(player, Player.actionPlayerMoveBackward);
+        keyInput.eventMoveLeftKeyPressed.addAction(player, Player.actionPlayerMoveLeft);
+        keyInput.eventMoveRightKeyPressed.addAction(player, Player.actionPlayerMoveRight);
+
+
 
         this.setupUI(width, height);
     }
@@ -91,6 +107,8 @@ public class AdventureGame {
         Inventory inventory = new Inventory(5, 275, 500);
         inventory.setBoxSize(50);
 
+        player.getInventory().eventItemSelected.addAction(inventory, Inventory.actionSelectItem);
+
         panel.addChild(inventory);
 
         _frame.addChild(panel);
@@ -106,24 +124,30 @@ public class AdventureGame {
     }
 
     public void update(long deltaMillis) {
-        ((TransformNode) _sceneGraph.nodeWithID("ObjBoxTransform").get()).rotateY(0.005f);
+        keyInput.handleInput();
+       ((TransformNode) _sceneGraph.nodeWithID("ObjBoxTransform").get()).rotateY(0.005f);
 
-        this.handleMovement();
 
-        // change player's rotation according to mouse delta
-        player.parent().get().setRotation(Quaternion.makeWithAngleAndAxis(viewAngleX / 500, 0, -1, 0).multiply(Quaternion.makeWithAngleAndAxis(viewAngleY / 500, -1, 0, 0)));
+//        TransformNode transformNode = ((TransformNode) _sceneGraph.nodeWithID("playerTableTransform").get());
+//        TransformNode tableTransform = (TransformNode) _sceneGraph.nodeWithID("ObjBoxTransform").get();
+//        MeshNode tableMesh = ((MeshNode) _sceneGraph.nodeWithID("tableMesh").get());
+//
+//        if (transformNode.worldSpaceBoundingBox().get().intersectsWith(tableTransform.worldSpaceBoundingBox().get())) {
+//            tableMesh.setMaterial(new Material(Vector3.zero, new Vector3(1.f, 0.f, 0.f), new Vector3(0.5f, 0.5f, 0.5f), 0f, 0.05f));
+//        } else {
+//            tableMesh.setMaterial(new Material(Vector3.zero, new Vector3(1.f, 1.f, 1.f), new Vector3(0.5f, 0.5f, 0.5f), 0f, 0.05f));
+//        }
 
-        // make the cube turn red when player is near it
+//        BoundingBox tableBoundingBox = tableTransform.worldSpaceBoundingBox().get();
+//        TransformNode tableBoundingTransform = (TransformNode) _sceneGraph.nodeWithID("tableBounding").get();
+//        tableBoundingTransform.setTranslation(tableBoundingBox.centre());
+//        tableBoundingTransform.setScale(new Vector3(tableBoundingBox.width(), tableBoundingBox.height(), tableBoundingBox.depth()));
+//
+//        BoundingBox playerBoundingBox = transformNode.worldSpaceBoundingBox().get();
+//        TransformNode playerBoundingBoxTransform = (TransformNode) _sceneGraph.nodeWithID("playerBounding").get();
+//        playerBoundingBoxTransform.setTranslation(playerBoundingBox.centre());
+//        playerBoundingBoxTransform.setScale(new Vector3(playerBoundingBox.width(), playerBoundingBox.height(), playerBoundingBox.depth()));
 
-        Player player = ((Player) _sceneGraph.nodeWithID("player").get());
-        TransformNode tableTransform = (TransformNode) _sceneGraph.nodeWithID("ObjBoxTransform").get();
-        MeshNode tableMesh = ((MeshNode) _sceneGraph.nodeWithID("tableMesh").get());
-
-        if (player.worldSpaceBoundingBox().get().intersectsWith(tableTransform.worldSpaceBoundingBox().get())) {
-            tableMesh.setMaterial(new Material(Vector3.zero, new Vector3(1.f, 0.f, 0.f), new Vector3(0.5f, 0.5f, 0.5f), 0f, 0.05f));
-        } else {
-            tableMesh.setMaterial(new Material(Vector3.zero, new Vector3(1.f, 1.f, 1.f), new Vector3(0.5f, 0.5f, 0.5f), 0f, 0.05f));
-        }
 
         player.parent().get().setRotation(Quaternion.makeWithAngleAndAxis(viewAngleX/500, 0, -1, 0).multiply(Quaternion.makeWithAngleAndAxis(viewAngleY / 500, -1, 0, 0)));;
 
@@ -138,30 +162,6 @@ public class AdventureGame {
         _pGraphics.endDraw();
     }
 
-    float playerSpeed = 3.0f;
-
-    private void handleMovement() {
-        // handle the movement input from the player
-        if (keyInput.isKeyPressed('w')) {
-            player.move(new Vector3(0, 0, -playerSpeed));
-        }
-        if (keyInput.isKeyPressed('d')) {
-            player.move(new Vector3(playerSpeed, 0, 0));
-        }
-        if (keyInput.isKeyPressed('s')) {
-            player.move(new Vector3(0, 0, playerSpeed));
-        }
-        if (keyInput.isKeyPressed('a')) {
-            player.move(new Vector3(-playerSpeed, 0, 0));
-        }
-        if (keyInput.isKeyPressed('q')) {
-            player.move(new Vector3(0, playerSpeed, 0));
-        }
-        if (keyInput.isKeyPressed('e')) {
-            player.move(new Vector3(0, -playerSpeed, 0));
-        }
-    }
-
     /**
      * Returns the key input manager thing. This is temporary and will not be the way we actually do this.
      *
@@ -173,18 +173,36 @@ public class AdventureGame {
 
     public static class KeyInput {
         private Map<Character, Boolean> keyPressedMap = new HashMap<>();
+        private Map<Character, Event<KeyInput>> keyMappings = new HashMap<>();
+
+        public KeyInput() {
+            keyMappings.put('w', this.eventMoveForwardKeyPressed);
+            keyMappings.put('s', this.eventMoveBackwardKeyPressed);
+            keyMappings.put('a', this.eventMoveLeftKeyPressed);
+            keyMappings.put('d', this.eventMoveRightKeyPressed);
+        }
 
         public void pressKey(Character key) {
-            keyPressedMap.put(Character.toUpperCase(key), true);
+            keyPressedMap.put(Character.toLowerCase(key), true);
         }
 
         public void releaseKey(Character key) {
-            keyPressedMap.put(Character.toUpperCase(key), false);
+            keyPressedMap.put(Character.toLowerCase(key), false);
         }
 
-        public boolean isKeyPressed(Character c) {
-            return keyPressedMap.getOrDefault(Character.toUpperCase(c), false);
+        public void handleInput() {
+            keyPressedMap.entrySet()
+                    .stream()
+                    .filter(Map.Entry::getValue)
+                    .map((entry) -> keyMappings.get(entry.getKey()))
+                    .filter(event -> event != null)
+                    .forEach(keyInputEvent -> keyInputEvent.trigger(this, Collections.emptyMap()));
         }
+
+        public final Event<KeyInput> eventMoveForwardKeyPressed = new Event<>("eventMoveForwardKeyPressed", this);
+        public final Event<KeyInput> eventMoveBackwardKeyPressed = new Event<>("eventMoveBackwardKeyPressed", this);
+        public final Event<KeyInput> eventMoveRightKeyPressed = new Event<>("eventMoveRightKeyPressed", this);
+        public final Event<KeyInput> eventMoveLeftKeyPressed = new Event<>("eventMoveLeftKeyPressed", this);
     }
 
     public void onMouseDeltaChange(float deltaX, float deltaY) {

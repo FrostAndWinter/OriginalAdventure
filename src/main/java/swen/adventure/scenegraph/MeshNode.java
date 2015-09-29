@@ -43,7 +43,6 @@ public class MeshNode extends SceneNode {
         _material = material;
     }
 
-    @Override
     public Optional<BoundingBox> boundingBox() {
         return Optional.ofNullable(_localSpaceBoundingBox);
     }

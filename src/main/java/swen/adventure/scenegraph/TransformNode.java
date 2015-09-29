@@ -36,6 +36,7 @@ public class TransformNode extends SceneNode {
 
     @Override
     public void transformDidChange() {
+        super.transformDidChange();
         _needsRecalculateNodeWorldTransform = true;
         _needsRecalculateTransformWorldNodeTransform = true;
     }
@@ -131,6 +132,10 @@ public class TransformNode extends SceneNode {
 
     public void scaleBy(float scale) {
         this.setScale(_scale.multiplyScalar(scale));
+    }
+
+    public Vector3 translation() {
+        return _translation;
     }
 
     public Quaternion rotation() {

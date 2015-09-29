@@ -2,8 +2,10 @@ package swen.adventure.ui.components;
 
 import processing.core.PApplet;
 import processing.core.PGraphics;
+import swen.adventure.Action;
 import swen.adventure.ui.layoutmanagers.LayoutManager;
 
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -27,6 +29,12 @@ public class Inventory extends UIComponent {
 
         items = new Object[numItems];
     }
+
+    public static final Action<swen.adventure.scenegraph.Inventory, Void, Inventory> actionSelectItem =
+            (playerInventory, triggeringObject, inventoryView, data) -> {
+        Integer item = (Integer) data.get("item");
+        inventoryView.setSelectedItem(item);
+    };
 
     public void setBoxSize(int boxSize) {
         this.boxSize = boxSize;
