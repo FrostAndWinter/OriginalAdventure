@@ -85,6 +85,11 @@ vec3 ComputeLighting(in PerLightData lightData) {
 }
 
 void main() {
+
+	if (material.diffuseColour.w < 0.001f) {
+	    discard;
+	}
+
 	vec3 totalLighting = material.diffuseColour.xyz * lighting.ambientIntensity.xyz;
 
 	if (material.ambientColour.w > 0.9f) { // ~= 1
