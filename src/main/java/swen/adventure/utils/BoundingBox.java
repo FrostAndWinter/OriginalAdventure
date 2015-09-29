@@ -103,7 +103,7 @@ public class BoundingBox {
     public BoundingBox axisAlignedBoundingBoxInSpace(Matrix4 nodeToSpaceTransform) {
 
         float minX = Float.MAX_VALUE, minY = Float.MAX_VALUE, minZ = Float.MAX_VALUE;
-        float maxX = Float.MIN_VALUE, maxY = Float.MIN_VALUE, maxZ = Float.MIN_VALUE;
+        float maxX = -Float.MAX_VALUE, maxY = -Float.MAX_VALUE, maxZ = -Float.MAX_VALUE;
 
         //Compute all the vertices for the box.
         for (int xToggle = 0; xToggle < 2; xToggle++) {

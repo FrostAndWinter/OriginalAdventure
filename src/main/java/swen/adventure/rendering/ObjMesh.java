@@ -175,7 +175,7 @@ public class ObjMesh extends GLMesh<Float> {
 
     private BoundingBox computeBoundingBox() {
         float minX = Float.MAX_VALUE, minY = Float.MAX_VALUE, minZ = Float.MAX_VALUE;
-        float maxX = Float.MIN_VALUE, maxY = Float.MIN_VALUE, maxZ = Float.MIN_VALUE;
+        float maxX = -Float.MAX_VALUE, maxY = -Float.MAX_VALUE, maxZ = -Float.MAX_VALUE;
 
         for (VertexData vertex : _vertices) {
             float[] position = vertex.vertexPosition.data();
