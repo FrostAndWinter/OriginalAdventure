@@ -1,6 +1,7 @@
 package swen.adventure.rendering;
 
 import org.lwjgl.BufferUtils;
+import swen.adventure.rendering.shaders.MaterialShader;
 import swen.adventure.scenegraph.TransformNode;
 import swen.adventure.utils.BoundingBox;
 
@@ -28,16 +29,20 @@ public abstract class GLMesh<T> {
         private int _indexDataType; //only applies if isIndexedCommand is true
         private int _primitiveRestart; //only applies if isIndexedCommand is true
 
+        private Material _material;
+
         /**
          * Constructs a new non-indexed command.
          * @param primitiveType Either GL_UNSIGNED_BYTE or GL_UNSIGNED_SHORT
          * @param startIndex The start index for drawing the array.
+         * @param material The material to use when performing this render command.
          */
-        public RenderCommand(int primitiveType, int startIndex, int elementCount) {
+        public RenderCommand(int primitiveType, int startIndex, int elementCount, Material material) {
             this.isIndexedCommand = false;
             this.primitiveType = primitiveType;
-            this._startIndex = startIndex;
-            this._elementCount = elementCount;
+            _startIndex = startIndex;
+            _elementCount = elementCount;
+            _material = material;
 
             if (this._startIndex < 0) {
                 throw new RuntimeException("The array start index must be 0 or greater");
@@ -51,21 +56,34 @@ public abstract class GLMesh<T> {
          * Constructs a new indexed command. The _startIndex, _elementCount, _indexDataType, and _primitiveRestart fields need to be filled in before use.
          * @param primitiveType GL_UNSIGNED_BYTE, GL_UNSIGNED_SHORT, or GL_UNSIGNED_INT
          * @param primitiveRestart
+         * @param material The material to use when performing this render command.
          */
-        public RenderCommand(int primitiveType, int primitiveRestart) {
+        public RenderCommand(int primitiveType, int primitiveRestart, Material material) {
 
             this.primitiveType = primitiveType;
             this.isIndexedCommand = true;
             _primitiveRestart = primitiveRestart;
+            _material = material;
         }
 
+        /**
+         * Binds this command's material to the shader, and then renders the primitive.
+         * @param shader The MaterialShader to set the material on.
+         */
+        public void render(MaterialShader shader) {
+            shader.setMaterial(_material.toFloatBuffer());
+            this.render();
+        }
+
+        /**
+         * Renders these primitives using the currently bound material.
+         */
         public void render() {
             if (this.isIndexedCommand) {
                 glDrawElements(primitiveType, _elementCount, _indexDataType, _startIndex);
             } else {
                 glDrawArrays(primitiveType, _startIndex, _elementCount);
             }
-
         }
 
         public void setStartIndex(final int startIndex) {
@@ -305,7 +323,7 @@ public abstract class GLMesh<T> {
             //Fill in indexed rendering commands.
             int currentIndexed = 0;
             for (RenderCommand primitive : _primitives) {
-                if(primitive.isIndexedCommand) {
+                if (primitive.isIndexedCommand) {
                     primitive.setStartIndex(indexStartLocs[currentIndexed]);
                     primitive.setElementCount(indexData.get(currentIndexed).data.size());
                     primitive.setIndexDataType(indexData.get(currentIndexed).attributeType.glType);
@@ -323,6 +341,9 @@ public abstract class GLMesh<T> {
 
     }
 
+    /**
+     * Renders using the currently bound material.
+     */
     public void render() {
         if (_vertexArrayObjectRef == 0) {
             return;
@@ -332,6 +353,24 @@ public abstract class GLMesh<T> {
 
         for (RenderCommand primitive : _primitives) {
             primitive.render();
+        }
+
+        glBindVertexArray(0);
+    }
+
+    /**
+     * Renders using each primitive's own material.
+     * @param shader The shader on which to set the materials.
+     */
+    public void render(MaterialShader shader) {
+        if (_vertexArrayObjectRef == 0) {
+            return;
+        }
+
+        glBindVertexArray(_vertexArrayObjectRef);
+
+        for (RenderCommand primitive : _primitives) {
+            primitive.render(shader);
         }
 
         glBindVertexArray(0);

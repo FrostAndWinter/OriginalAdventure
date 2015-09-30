@@ -1,6 +1,7 @@
 package swen.adventure;
 
 import processing.opengl.PGraphics2D;
+import swen.adventure.datastorage.MTLParser;
 import swen.adventure.rendering.GLRenderer;
 import swen.adventure.rendering.Material;
 import swen.adventure.rendering.maths.Quaternion;
@@ -13,6 +14,8 @@ import swen.adventure.ui.components.Panel;
 import swen.adventure.ui.components.ProgressBar;
 import swen.adventure.utils.BoundingBox;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,40 +41,33 @@ public class AdventureGame {
         _sceneGraph = new TransformNode("root", new Vector3(0.f, 0.f, 0.f), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
         TransformNode groundPlaneTransform = new TransformNode("groundPlaneTransform", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis((float)Math.PI/2.f, -1, 0, 0), new Vector3(250, 250, 1));
         MeshNode groundPlane = new MeshNode("Plane.obj", groundPlaneTransform);
-        groundPlane.setMaterial(new Material(Vector3.zero, new Vector3(0.1f, 0.8f, 0.3f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 0.8f));
+        groundPlane.setMaterialOverride(new Material(Vector3.zero, new Vector3(0.1f, 0.8f, 0.3f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 0.8f));
 
         TransformNode yAxisTransform = new TransformNode("yAxis", _sceneGraph, false, new Vector3(0, 0, 0), new Quaternion(), new Vector3(2, 1000, 2));
         MeshNode yAxis = new MeshNode("box.obj", yAxisTransform);
-        yAxis.setMaterial(new Material(Vector3.zero, new Vector3(0.f, 1.f, 0.f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 0.01f));
+        yAxis.setMaterialOverride(new Material(Vector3.zero, new Vector3(0.f, 1.f, 0.f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 0.01f));
 
         TransformNode xAxisTransform = new TransformNode("xAxis", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis(0.0f, 0.f, 0.0f, 0.f), new Vector3(1000, 2, 2));
         MeshNode xAxis = new MeshNode("box.obj", xAxisTransform);
-        xAxis.setMaterial(new Material(Vector3.zero, new Vector3(0.f, 0.f, 1.f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 0.01f));
+        xAxis.setMaterialOverride(new Material(Vector3.zero, new Vector3(0.f, 0.f, 1.f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 0.01f));
 
         TransformNode zAxisTransform = new TransformNode("zAxis", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis(0.0f, 0.f, 0.0f, 0.f), new Vector3(2, 2, 1000));
         MeshNode zAxis = new MeshNode("box.obj", zAxisTransform);
-        zAxis.setMaterial(new Material(Vector3.zero, new Vector3(1.f, 1.f, 0.f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 0.01f));
+        zAxis.setMaterialOverride(new Material(Vector3.zero, new Vector3(1.f, 1.f, 0.f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 0.01f));
 
         TransformNode playerTransform = new TransformNode("playerTransform", _sceneGraph, true, new Vector3(0, 20, 200), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
         TransformNode cameraTransform = new TransformNode("cameraTransform", playerTransform, true, new Vector3(0, 0, 0), new Quaternion(), new Vector3(1, 1, 1));
         TransformNode playerTableTransform = new TransformNode("playerTableTransform", playerTransform, true, new Vector3(0, 0, -100), new Quaternion(), new Vector3(1, 1, 1));
         MeshNode playerMesh = new MeshNode("Table.obj", playerTableTransform);
-        playerMesh.setMaterial(new Material(Vector3.zero, new Vector3(1.f, 1.f, 1.f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 0.01f));
+        playerMesh.setMaterialOverride(new Material(Vector3.zero, new Vector3(1.f, 1.f, 1.f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 0.01f));
         new CameraNode("playerCamera", cameraTransform);
         player = new Player("player", playerTransform);
         player.collisionNode().setBoundingBox(new BoundingBox(new Vector3(-20, -20, -10), new Vector3(20, 20, 10)));
 
         TransformNode tableTransform = new TransformNode("ObjBoxTransform", _sceneGraph, true, new Vector3(20f, 5.f, -5.f), new Quaternion(), new Vector3(3.f, 3.f, 3.f));
         MeshNode table = new MeshNode("tableMesh", "Table.obj", tableTransform);
-        table.setMaterial(new Material(Vector3.zero, new Vector3(0.8f, 0.3f, 0.4f), new Vector3(0.7f, 0.6f, 0.6f), 0.f, 0.2f));
+        table.setMaterialOverride(new Material(Vector3.zero, new Vector3(0.8f, 0.3f, 0.4f), new Vector3(0.7f, 0.6f, 0.6f), 0.f, 0.2f));
         new GameObject("tableGameObject", tableTransform);
-
-
-        TransformNode tableBounding = new TransformNode("tableBounding", _sceneGraph, true, new Vector3(0, 0, 0), new Quaternion(), new Vector3(1, 1, 1));
-        new MeshNode("box.obj", tableBounding);
-
-        TransformNode playerBounding = new TransformNode("playerBounding", _sceneGraph, true, new Vector3(0, 0, 0), new Quaternion(), new Vector3(1, 1, 1));
-        new MeshNode("box.obj", playerBounding);
 
         Light.createAmbientLight("ambientLight", _sceneGraph, new Vector3(0.3f, 0.5f, 0.4f), 3.f);
         Light.createDirectionalLight("directionalLight", _sceneGraph, new Vector3(0.7f, 0.3f, 0.1f), 7.f, new Vector3(0.4f, 0.2f, 0.6f));
@@ -87,6 +83,15 @@ public class AdventureGame {
 
 
         this.setupUI(width, height);
+
+        File file = new File(Utilities.pathForResource("rocket", "mtl"));
+        Map<String, Material> result = null;
+        try {
+            result = MTLParser.parse(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        System.out.println(result);
     }
 
     private void setupUI(int width, int height) {
@@ -125,28 +130,7 @@ public class AdventureGame {
 
     public void update(long deltaMillis) {
         keyInput.handleInput();
-       ((TransformNode) _sceneGraph.nodeWithID("ObjBoxTransform").get()).rotateY(0.005f);
-
-
-//        TransformNode transformNode = ((TransformNode) _sceneGraph.nodeWithID("playerTableTransform").get());
-//        TransformNode tableTransform = (TransformNode) _sceneGraph.nodeWithID("ObjBoxTransform").get();
-//        MeshNode tableMesh = ((MeshNode) _sceneGraph.nodeWithID("tableMesh").get());
-//
-//        if (transformNode.worldSpaceBoundingBox().get().intersectsWith(tableTransform.worldSpaceBoundingBox().get())) {
-//            tableMesh.setMaterial(new Material(Vector3.zero, new Vector3(1.f, 0.f, 0.f), new Vector3(0.5f, 0.5f, 0.5f), 0f, 0.05f));
-//        } else {
-//            tableMesh.setMaterial(new Material(Vector3.zero, new Vector3(1.f, 1.f, 1.f), new Vector3(0.5f, 0.5f, 0.5f), 0f, 0.05f));
-//        }
-
-//        BoundingBox tableBoundingBox = tableTransform.worldSpaceBoundingBox().get();
-//        TransformNode tableBoundingTransform = (TransformNode) _sceneGraph.nodeWithID("tableBounding").get();
-//        tableBoundingTransform.setTranslation(tableBoundingBox.centre());
-//        tableBoundingTransform.setScale(new Vector3(tableBoundingBox.width(), tableBoundingBox.height(), tableBoundingBox.depth()));
-//
-//        BoundingBox playerBoundingBox = transformNode.worldSpaceBoundingBox().get();
-//        TransformNode playerBoundingBoxTransform = (TransformNode) _sceneGraph.nodeWithID("playerBounding").get();
-//        playerBoundingBoxTransform.setTranslation(playerBoundingBox.centre());
-//        playerBoundingBoxTransform.setScale(new Vector3(playerBoundingBox.width(), playerBoundingBox.height(), playerBoundingBox.depth()));
+//       ((TransformNode) _sceneGraph.nodeWithID("ObjBoxTransform").get()).rotateY(0.005f);
 
 
         player.parent().get().setRotation(Quaternion.makeWithAngleAndAxis(viewAngleX/500, 0, -1, 0).multiply(Quaternion.makeWithAngleAndAxis(viewAngleY / 500, -1, 0, 0)));;

@@ -63,7 +63,7 @@ public class ObjMesh extends GLMesh<Float> {
     private boolean _hasTextureCoordinates = false;
     private boolean _hasFourComponentGeoVectors = false;
     private List<VertexData> _vertices = new ArrayList<>();
-    private List<Integer> _triIndices = new ArrayList<>();
+    private Map<Material, List<Integer>> _triIndices = new HashMap<>();
 
     private final BoundingBox _boundingBox;
 
@@ -77,8 +77,8 @@ public class ObjMesh extends GLMesh<Float> {
         Set<VertexData> vertexData = new LinkedHashSet<>(); //We use a LinkedHashSet to try and maintain ordering where possible (keep vertices in the same faces close together in memory).
         Map<WavefrontParser.IndexData, VertexData> objIndicesToVertices = new HashMap<>();
 
-        for (List<WavefrontParser.IndexData> indices : parsedFile.polygonFaces) {
-            for (WavefrontParser.IndexData indexData : indices) {
+        for (WavefrontParser.PolygonFace polygonFace : parsedFile.polygonFaces) {
+            for (WavefrontParser.IndexData indexData : polygonFace.indices) {
                 Vector geometricVertex = parsedFile.geometricVertices.get(indexData.vertexIndex - 1);
                 Optional<Vector3> textureCoordinate = indexData.textureCoordinateIndex.isPresent() ? Optional.of(parsedFile.textureVertices.get(indexData.textureCoordinateIndex.get() - 1)) : Optional.empty();
                 Optional<Vector3> vertexNormal = indexData.normalIndex.isPresent() ? Optional.of(parsedFile.vertexNormals.get(indexData.normalIndex.get() - 1)) : Optional.empty();
@@ -96,17 +96,17 @@ public class ObjMesh extends GLMesh<Float> {
 
         _vertices = vertexData.stream().collect(Collectors.toList());
 
-        for (List<WavefrontParser.IndexData> indices : parsedFile.polygonFaces) {
-            List<Integer> vertexIndices = indices.stream().map((data) -> {
+        for (WavefrontParser.PolygonFace polygonFace : parsedFile.polygonFaces) {
+            List<Integer> vertexIndices = polygonFace.indices.stream().map((data) -> {
                 VertexData vertex = objIndicesToVertices.get(data);
                 return _vertices.indexOf(vertex);
             }).collect(Collectors.toList());
 
             if (vertexIndices.size() == 4) {
-                _triIndices.addAll(Arrays.asList(vertexIndices.get(0), vertexIndices.get(1), vertexIndices.get(3))); //convert to triangles
-                _triIndices.addAll(Arrays.asList(vertexIndices.get(1), vertexIndices.get(2), vertexIndices.get(3)));
+                this.addIndices(polygonFace.material, Arrays.asList(vertexIndices.get(0), vertexIndices.get(1), vertexIndices.get(3))); //convert to triangles
+                this.addIndices(polygonFace.material, Arrays.asList(vertexIndices.get(1), vertexIndices.get(2), vertexIndices.get(3)));
             } else {
-                _triIndices.addAll(vertexIndices);
+                this.addIndices(polygonFace.material, vertexIndices);
             }
         }
 
@@ -145,9 +145,9 @@ public class ObjMesh extends GLMesh<Float> {
         List<RenderCommand> renderCommands = new ArrayList<>();
         List<IndexData<?>> indexData = new ArrayList<>();
 
-        if (!_triIndices.isEmpty()) {
-            renderCommands.add(new RenderCommand(GL_TRIANGLES, -1));
-            indexData.add(new IndexData<>(_triIndices, AttributeType.UInt));
+        for (Map.Entry<Material, List<Integer>> entry : _triIndices.entrySet()) {
+            renderCommands.add(new RenderCommand(GL_TRIANGLES, -1, entry.getKey()));
+            indexData.add(new IndexData<>(entry.getValue(), AttributeType.UInt));
         }
 
         List<NamedVertexArrayObject> namedVAOs = new ArrayList<>();
@@ -165,7 +165,15 @@ public class ObjMesh extends GLMesh<Float> {
         _boundingBox = this.computeBoundingBox();
 
         super.initialise(attributes, indexData, namedVAOs, renderCommands);
+    }
 
+    private void addIndices(Material material, List<Integer> indices) {
+        List<Integer> indicesForMaterial = _triIndices.get(material);
+        if (indicesForMaterial == null) {
+            indicesForMaterial = new ArrayList<>();
+            _triIndices.put(material, indicesForMaterial);
+        }
+        indicesForMaterial.addAll(indices);
     }
 
     @Override

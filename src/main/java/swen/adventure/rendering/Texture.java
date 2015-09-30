@@ -2,10 +2,14 @@ package swen.adventure.rendering;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
+import org.lwjgl.stb.STBImageResize;
 import swen.adventure.Utilities;
 
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.IntBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,10 +65,14 @@ public class Texture {
             IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
             IntBuffer numPixelComponentsBuffer = BufferUtils.createIntBuffer(1);
 
-            ByteBuffer image = STBImage.stbi_load(resourcePath, widthBuffer, heightBuffer, numPixelComponentsBuffer, 0);
+            ByteBuffer fileNameBuffer = BufferUtils.createByteBuffer(resourcePath.length() * 8);
+            fileNameBuffer.put(resourcePath.getBytes(StandardCharsets.UTF_8));
+            fileNameBuffer.flip();
+
+            ByteBuffer image = STBImage.stbi_load(fileNameBuffer, widthBuffer, heightBuffer, numPixelComponentsBuffer, 0);
 
             if (image == null) {
-                throw new RuntimeException("Error loading image with name " + fileName);
+                throw new RuntimeException("Error loading image with name " + fileName + ": " + STBImage.stbi_failure_reason());
             }
             texture = new Texture(image, widthBuffer.get(), heightBuffer.get(), numPixelComponentsBuffer.get());
             _textureCache.put(fileName, texture);

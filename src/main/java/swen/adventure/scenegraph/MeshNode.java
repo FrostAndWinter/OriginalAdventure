@@ -3,6 +3,7 @@ package swen.adventure.scenegraph;
 import swen.adventure.rendering.GLMesh;
 import swen.adventure.rendering.Material;
 import swen.adventure.rendering.ObjMesh;
+import swen.adventure.rendering.shaders.MaterialShader;
 import swen.adventure.utils.BoundingBox;
 
 import java.io.FileNotFoundException;
@@ -16,7 +17,7 @@ import java.util.Optional;
 public class MeshNode extends SceneNode {
 
     private GLMesh<Float> _mesh;
-    private Material _material = Material.DefaultMaterial;
+    private Optional<Material> _materialOverride = Optional.empty();
 
     private BoundingBox _localSpaceBoundingBox;
 
@@ -35,18 +36,34 @@ public class MeshNode extends SceneNode {
         }
     }
 
-    public Material material() {
-        return _material;
+    public Optional<Material> materialOverride() {
+        return _materialOverride;
     }
 
-    public void setMaterial(final Material material) {
-        _material = material;
+    public void setMaterialOverride(final Material materialOverride) {
+        _materialOverride = Optional.of(materialOverride);
     }
 
     public Optional<BoundingBox> boundingBox() {
         return Optional.ofNullable(_localSpaceBoundingBox);
     }
 
+    /**
+     * Renders the mesh, applying its own material to the shader. If a material override is set, then that override is used.
+     * @param shader The Material Shader on which to set the materials.
+     */
+    public void render(MaterialShader shader) {
+        if (_materialOverride.isPresent()) {
+            shader.setMaterial(_materialOverride.get().toFloatBuffer());
+            _mesh.render();
+        } else {
+            _mesh.render(shader);
+        }
+    }
+
+    /**
+     * Renders the mesh using the currently bound shader and materials.
+     */
     public void render() {
         _mesh.render();
     }

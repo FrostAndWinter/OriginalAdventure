@@ -19,7 +19,7 @@ import static org.lwjgl.opengl.GL31.*;
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 26/09/15.
  */
-public class GaussianPerObjectMaterialShader extends ShaderProgram {
+public class GaussianPerObjectMaterialShader extends ShaderProgram implements MaterialShader {
     private final int _modelToCameraMatrixUniformRef;
     private final int _cameraToClipMatrixUniformRef;
     private final int _normalModelToCameraMatrixUniformRef;

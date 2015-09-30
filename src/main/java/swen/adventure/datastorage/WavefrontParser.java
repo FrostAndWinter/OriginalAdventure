@@ -1,15 +1,14 @@
 package swen.adventure.datastorage;
 
+import swen.adventure.Utilities;
+import swen.adventure.rendering.Material;
 import swen.adventure.rendering.maths.Vector;
 import swen.adventure.rendering.maths.Vector3;
 import swen.adventure.rendering.maths.Vector4;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -35,10 +34,11 @@ public class WavefrontParser {
     private static final Pattern TEXTURE_VERTEX_PAT = Pattern.compile("vt");
     private static final Pattern VERTEX_NORMAL_PAT = Pattern.compile("vn");
     private static final Pattern PARAMETER_SPACE_VERTEX_PAT = Pattern.compile("vp");
+    private static final Pattern MATERIAL_LIBRARY_PAT = Pattern.compile("mtllib");
+    private static final Pattern MATERIAL_PAT = Pattern.compile("usemtl");
     private static final Pattern POLYGONAL_FACE_PAT = Pattern.compile("f");
     private static final Pattern POLYGONAL_FACE_VERTEX_PATTERN = Pattern.compile("\\d+(/(\\d+)?)*");
    // private static final Pattern POLYGONAL_FACE_PAT = Pattern.compile("f\\s+(\\d+(/(\\d+)?(/\\d+)?)?\\s*){3,}");
-
 
     private static final Pattern FORWARD_SLASH_PATTERN = Pattern.compile("/");
 
@@ -47,7 +47,10 @@ public class WavefrontParser {
     private final List<Vector> geometricVertices = new ArrayList<>();
     private final List<Vector3> textureVertices = new ArrayList<>();
     private final List<Vector3> vertexNormals = new ArrayList<>();
-    private final List<List<IndexData>> polygonFaces = new ArrayList<>();
+    private final List<PolygonFace> polygonFaces = new ArrayList<>();
+    private final Map<String, Material> materials = new HashMap<>();
+
+    private Material _currentMaterial = Material.DefaultMaterial;
 
     public static Result parse(File file) throws FileNotFoundException {
         InputStream is = new FileInputStream(file);
@@ -70,22 +73,28 @@ public class WavefrontParser {
     }
 
     private void parse(){
-        while(hasNext()){
+        while (hasNext()){
 
-            if(hasNext(GEOMETRIC_VERTEX_PAT)) {
+            if (hasNext(GEOMETRIC_VERTEX_PAT)) {
                 parseGeometricVertex();
 
-            } else if(hasNext(TEXTURE_VERTEX_PAT)) {
+            } else if (hasNext(TEXTURE_VERTEX_PAT)) {
                 parseTextureVertex();
 
-            } else if(hasNext(VERTEX_NORMAL_PAT)) {
+            } else if (hasNext(VERTEX_NORMAL_PAT)) {
                 parseVertexNormal();
 
-            } else if(hasNext(PARAMETER_SPACE_VERTEX_PAT)) {
+            } else if (hasNext(PARAMETER_SPACE_VERTEX_PAT)) {
                 parseParameterSpaceVertex();
 
-            } else if(hasNext(POLYGONAL_FACE_PAT)) {
+            } else if (hasNext(POLYGONAL_FACE_PAT)) {
                 parsePolygonFace();
+
+            } else if (hasNext(MATERIAL_LIBRARY_PAT)) {
+                parseMaterialLibrary();
+
+            } else if (hasNext(MATERIAL_PAT)) {
+                parseMaterial();
 
             } else {
                 scanner.nextLine();
@@ -122,6 +131,28 @@ public class WavefrontParser {
         throw new UnsupportedOperationException("Parameter space vertices haven't been implemented yet");
     }
 
+    private void parseMaterialLibrary() {
+        ensuredGobble(MATERIAL_LIBRARY_PAT, "A material library starts with a mtllib command.");
+        String libraryName = scanner.next();
+        String fileName = Utilities.pathForResource(libraryName, null);
+        Map<String, Material> libraryMaterials = null;
+        try {
+            libraryMaterials = MTLParser.parse(new File(fileName));
+            this.materials.putAll(libraryMaterials);
+        } catch (FileNotFoundException e) {
+            fail("Invalid material library name caused a FileNotFoundException: " + e);
+        }
+    }
+
+    private void parseMaterial() {
+        ensuredGobble(MATERIAL_PAT, "A material usage definition starts with 'usemtl'.");
+        Material material = this.materials.get(scanner.next());
+        if (material == null) {
+            fail("Material was not defined before it was used.");
+        }
+        _currentMaterial = material;
+    }
+
     private void parsePolygonFace() {
         ensuredGobble(POLYGONAL_FACE_PAT, "Polygons faces should start with 'f'");
         List<IndexData> vertexIndices = new ArrayList<>();
@@ -130,10 +161,10 @@ public class WavefrontParser {
             String vertexToken = scanner.next();
             vertexIndices.add(parsePolygonVertex(vertexToken)); //we've parsed the string in a separate scanner, so move on.
         }
-        polygonFaces.add(vertexIndices);
+        polygonFaces.add(new PolygonFace(vertexIndices, _currentMaterial));
     }
 
-    private IndexData parsePolygonVertex(String vertex) { //TODO This works, but is hopelessly inefficient.
+    private IndexData parsePolygonVertex(String vertex) {
 
         String[] components = vertex.split("/", -1); //the -1 means to include empty strings.
 
@@ -193,14 +224,24 @@ public class WavefrontParser {
         throw new RuntimeException(msg + "...");
     }
 
+    public static class PolygonFace {
+        public final List<IndexData> indices;
+        public final Material material;
+
+        public PolygonFace(final List<IndexData> indices, final Material material) {
+            this.indices = indices;
+            this.material = material;
+        }
+    }
+
     // this class is temporary
     public static class Result {
         public final List<Vector> geometricVertices;
         public final List<Vector3> textureVertices;
         public final List<Vector3> vertexNormals;
-        public final List<List<IndexData>> polygonFaces;
+        public final List<PolygonFace> polygonFaces;
 
-        public Result(List<Vector> geometricVertices, List<Vector3> textureVertices, List<Vector3> vertexNormals, List<List<IndexData>> polygonFaces) {
+        public Result(List<Vector> geometricVertices, List<Vector3> textureVertices, List<Vector3> vertexNormals, List<PolygonFace> polygonFaces) {
             this.geometricVertices = geometricVertices;
             this.textureVertices = textureVertices;
             this.vertexNormals = vertexNormals;

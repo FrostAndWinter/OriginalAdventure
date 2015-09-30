@@ -75,9 +75,7 @@ public class GLRenderer {
                 _defaultShader.setModelToCameraMatrix(nodeToCameraSpaceTransform);
                 _defaultShader.setNormalModelToCameraMatrix(normalModelToCameraSpaceTransform);
 
-                _defaultShader.setMaterial(meshNode.material().toFloatBuffer());
-
-                meshNode.render();
+                meshNode.render(_defaultShader);
             }
         });
 

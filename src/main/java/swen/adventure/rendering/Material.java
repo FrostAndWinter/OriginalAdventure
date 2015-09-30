@@ -30,7 +30,7 @@ public class Material {
     public static final int NumFloats = 4 * 3; //3 vec4s.
     public static final int BufferSizeInBytes = 4 * NumFloats; //4 bytes per float
 
-    public static Material DefaultMaterial = new Material(Vector3.zero, new Vector3(0.5f, 0.5f, 0.5f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 0.5f);
+    public static Material DefaultMaterial = new Material();
 
     private Vector3 _ambientColour;
     private Vector3 _diffuseColour;
@@ -44,6 +44,8 @@ public class Material {
     private Optional<Texture> _specularColourMap = Optional.empty();
     private Optional<Texture> _specularityMap = Optional.empty();
 
+    private FloatBuffer _bufferRepresentation = null;
+
     public Material(Vector3 ambientColour, Vector3 diffuseColour, Vector3 specularColour, float transparency, float specularity) {
         _ambientColour = ambientColour;
         _diffuseColour = diffuseColour;
@@ -52,7 +54,12 @@ public class Material {
         _specularity = specularity;
     }
 
+    public Material() {
+        this(Vector3.zero, Vector3.one, Vector3.one, 0.f, 0.5f);
+    }
+
     public void setUseAmbient(boolean useAmbient) {
+        _bufferRepresentation = null;
         _useAmbient = useAmbient;
     }
 
@@ -63,6 +70,7 @@ public class Material {
 
     /** Set the ambient colour for the material. Without illumination it will 'glow' with this colour. */
     public void setAmbientColour(final Vector3 ambientColour) {
+        _bufferRepresentation = null;
         _ambientColour = ambientColour;
     }
 
@@ -73,6 +81,7 @@ public class Material {
 
     /** Set the colour of the material's diffuse reflection – this is the main factor for the material's appearance. */
     public void setDiffuseColour(final Vector3 diffuseColour) {
+        _bufferRepresentation = null;
         _diffuseColour = diffuseColour;
     }
 
@@ -85,6 +94,7 @@ public class Material {
     /** Set the colour of specular reflections. For most materials, this will be white.
      *  However, metals have a specular colour closer to their diffuse colour, and there are certain other exceptions. */
     public void setSpecularColour(final Vector3 specularColour) {
+        _bufferRepresentation = null;
         _specularColour = specularColour;
     }
 
@@ -96,6 +106,7 @@ public class Material {
 
     /** Transparency controls the output alpha of the material, where a transparency of 0 is fully opaque and a transparency of 1 is fully transparent. */
     public void setTransparency(final float transparency) {
+        _bufferRepresentation = null;
         _transparency = transparency;
     }
 
@@ -108,39 +119,49 @@ public class Material {
 
     /** Set the gaussian specularity of the material in the range [0, 1], where 0 is perfectly smooth and 1 is very rough. */
     public void setSpecularity(final float specularity) {
+        _bufferRepresentation = null;
         _specularity = specularity;
     }
 
     public void setDiffuseMap(final Texture diffuseMap) {
+        _bufferRepresentation = null;
         _diffuseMap = Optional.of(diffuseMap);
     }
 
     public void setAmbientMap(final Texture ambientMap) {
+        _bufferRepresentation = null;
         _ambientMap = Optional.of(ambientMap);
     }
 
     public void setSpecularColourMap(final Texture specularColourMap) {
+        _bufferRepresentation = null;
         _specularColourMap = Optional.of(specularColourMap);
     }
 
     public void setSpecularityMap(final Texture specularityMap) {
+        _bufferRepresentation = null; //TODO instead of regenerating the buffer after every change, we should probably just modify the data directly to represent the change.
         _specularityMap = Optional.of(specularityMap);
     }
 
     public FloatBuffer toFloatBuffer() {
-        FloatBuffer buffer = BufferUtils.createFloatBuffer(NumFloats);
 
-        buffer.put(_ambientColour.v);
-        buffer.put(_useAmbient ? 1.f : 0.f);
+        if (_bufferRepresentation == null) {
+            FloatBuffer buffer = BufferUtils.createFloatBuffer(NumFloats);
 
-        buffer.put(_diffuseColour.v);
-        buffer.put(1.f - _transparency); //convert transparency to alpha
+            buffer.put(_ambientColour.v);
+            buffer.put(_useAmbient ? 1.f : 0.f);
 
-        buffer.put(_specularColour.v);
-        buffer.put(_specularity);
+            buffer.put(_diffuseColour.v);
+            buffer.put(1.f - _transparency); //convert transparency to alpha
 
-        buffer.flip();
-        return buffer;
+            buffer.put(_specularColour.v);
+            buffer.put(_specularity);
+
+            buffer.flip();
+            _bufferRepresentation = buffer;
+        }
+
+        return _bufferRepresentation; //FIXME be careful that the buffer doesn't get its position/mark etc. changed.
     }
 
     /**
