@@ -26,16 +26,6 @@ public class GLRenderer {
     public GLRenderer(int width, int height) {
         _defaultShader = new GaussianPerObjectMaterialShader();
 
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
-        glFrontFace(GL_CCW);
-
-        glEnable(GL_DEPTH_TEST);
-        glDepthMask(true);
-        glDepthFunc(GL_LEQUAL);
-        glDepthRange(0.0f, 1.0f);
-        glEnable(GL_DEPTH_CLAMP);
-
         this.setSize(width, height);
     }
 
@@ -57,8 +47,35 @@ public class GLRenderer {
     }
 
 
-    public void render(SceneNode sceneGraph, CameraNode cameraNode) {
+    /**
+     * Setup GL state for rendering.
+     */
+    private void preRender() {
         glEnable(GL_FRAMEBUFFER_SRGB);
+
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glFrontFace(GL_CCW);
+
+        glEnable(GL_DEPTH_TEST);
+        glDepthMask(true);
+        glDepthFunc(GL_LEQUAL);
+        glDepthRange(0.0f, 1.0f);
+        glEnable(GL_DEPTH_CLAMP);
+    }
+
+    /**
+     * Revert changed GL state.
+     */
+    private void postRender() {
+        glDisable(GL_FRAMEBUFFER_SRGB);
+        glDisable(GL_CULL_FACE);
+        glDisable(GL_DEPTH_TEST);
+    }
+
+    public void render(SceneNode sceneGraph, CameraNode cameraNode) {
+        this.preRender();
+
         _defaultShader.useProgram();
 
         _defaultShader.setMaxIntensity(cameraNode.hdrMaxIntensity());
@@ -82,6 +99,6 @@ public class GLRenderer {
 
         _defaultShader.endUseProgram();
 
-        glDisable(GL_FRAMEBUFFER_SRGB);
+        this.postRender();
     }
 }

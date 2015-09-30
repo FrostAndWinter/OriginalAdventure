@@ -39,9 +39,12 @@ public class AdventureGame {
 
     public void setup(int width, int height) {
         _sceneGraph = new TransformNode("root", new Vector3(0.f, 0.f, 0.f), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
-        TransformNode groundPlaneTransform = new TransformNode("groundPlaneTransform", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis((float)Math.PI/2.f, -1, 0, 0), new Vector3(250, 250, 1));
+        TransformNode groundPlaneTransform = new TransformNode("groundPlaneTransform", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis((float)Math.PI/2.f, -1, 0, 0), new Vector3(25000, 25000, 1));
         MeshNode groundPlane = new MeshNode("Plane.obj", groundPlaneTransform);
-        groundPlane.setMaterialOverride(new Material(Vector3.zero, new Vector3(0.1f, 0.8f, 0.3f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 0.8f));
+        groundPlane.setMaterialOverride(new Material(Vector3.zero, new Vector3(0.1f, 0.8f, 0.3f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 1.f));
+
+        TransformNode texturePlaneTransform = new TransformNode("texturePlaneTransform", _sceneGraph, false, new Vector3(0, 60, 0), Quaternion.makeWithAngleAndAxis(0.f, 1, 0, 0), new Vector3(60, 60, 1));
+        new MeshNode("Plane.obj", texturePlaneTransform);
 
         TransformNode yAxisTransform = new TransformNode("yAxis", _sceneGraph, false, new Vector3(0, 0, 0), new Quaternion(), new Vector3(2, 1000, 2));
         MeshNode yAxis = new MeshNode("box.obj", yAxisTransform);
@@ -57,9 +60,8 @@ public class AdventureGame {
 
         TransformNode playerTransform = new TransformNode("playerTransform", _sceneGraph, true, new Vector3(0, 20, 200), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
         TransformNode cameraTransform = new TransformNode("cameraTransform", playerTransform, true, new Vector3(0, 0, 0), new Quaternion(), new Vector3(1, 1, 1));
-        TransformNode playerTableTransform = new TransformNode("playerTableTransform", playerTransform, true, new Vector3(0, 0, -100), new Quaternion(), new Vector3(1, 1, 1));
-        MeshNode playerMesh = new MeshNode("Table.obj", playerTableTransform);
-        playerMesh.setMaterialOverride(new Material(Vector3.zero, new Vector3(1.f, 1.f, 1.f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 0.01f));
+        TransformNode playerTableTransform = new TransformNode("playerTableTransform", playerTransform, true, new Vector3(0, 0, -100), new Quaternion(), new Vector3(0.05f, 0.05f, 0.05f));
+        MeshNode playerMesh = new MeshNode("rocket.obj", playerTableTransform);
         new CameraNode("playerCamera", cameraTransform);
         player = new Player("player", playerTransform);
         player.collisionNode().setBoundingBox(new BoundingBox(new Vector3(-20, -20, -10), new Vector3(20, 20, 10)));

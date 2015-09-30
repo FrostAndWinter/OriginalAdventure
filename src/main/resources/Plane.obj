@@ -1,3 +1,4 @@
+mtllib rocket.mtl
 # Vertex list
 
 v -1 -1 0
@@ -6,7 +7,13 @@ v 1 1 0
 v 1 -1 0
 vn 0 0 1
 
+vt 0 0
+vt 0 1
+vt 1 1
+vt 1 0
+
 # Point/Line/Face list
 
-f 3//1 2//1 1//1
-f 1//1 4//1 3//1
+usemtl Default
+f 3/3/1 2/2/1 1/1/1
+f 1/1/1 4/4/1 3/3/1

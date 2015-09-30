@@ -3,6 +3,7 @@ package swen.adventure.rendering;
 import org.lwjgl.BufferUtils;
 import swen.adventure.rendering.maths.Vector3;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.Optional;
 
@@ -25,12 +26,23 @@ public class Material {
 //        //Packed into a single vec4
 //        Vector3 specularColour;
 //        float specularity;
+//
+//        boolean useAmbientMap;
+//        boolean useDiffuseMap;
+//        boolean useSpecularColourMap;
+//        boolean useSpecularityMap;
 //    }
 
     public static final int NumFloats = 4 * 3; //3 vec4s.
-    public static final int BufferSizeInBytes = 4 * NumFloats; //4 bytes per float
+    public static final int NumBooleans = 4;
+    public static final int BufferSizeInBytes = 4 * NumFloats + 4 * NumBooleans; //4 bytes per float and per boolean.
 
     public static Material DefaultMaterial = new Material();
+
+    private static final Sampler ambientMapSampler = new Sampler(TextureUnit.AmbientColourUnit);
+    private static final Sampler diffuseMapSampler = new Sampler(TextureUnit.DiffuseColourUnit);
+    private static final Sampler specularColourMapSampler = new Sampler(TextureUnit.SpecularColourUnit);
+    private static final Sampler specularityMapSampler = new Sampler(TextureUnit.SpecularityUnit);
 
     private Vector3 _ambientColour;
     private Vector3 _diffuseColour;
@@ -44,7 +56,7 @@ public class Material {
     private Optional<Texture> _specularColourMap = Optional.empty();
     private Optional<Texture> _specularityMap = Optional.empty();
 
-    private FloatBuffer _bufferRepresentation = null;
+    private ByteBuffer _bufferRepresentation = null;
 
     public Material(Vector3 ambientColour, Vector3 diffuseColour, Vector3 specularColour, float transparency, float specularity) {
         _ambientColour = ambientColour;
@@ -143,25 +155,60 @@ public class Material {
         _specularityMap = Optional.of(specularityMap);
     }
 
-    public FloatBuffer toFloatBuffer() {
+    public ByteBuffer toBuffer() {
 
         if (_bufferRepresentation == null) {
-            FloatBuffer buffer = BufferUtils.createFloatBuffer(NumFloats);
+            ByteBuffer buffer = BufferUtils.createByteBuffer(BufferSizeInBytes);
+            FloatBuffer floatBuffer = buffer.asFloatBuffer();
 
-            buffer.put(_ambientColour.v);
-            buffer.put(_useAmbient ? 1.f : 0.f);
+            floatBuffer.put(_ambientColour.v);
+            floatBuffer.put(_useAmbient ? 1.f : 0.f);
 
-            buffer.put(_diffuseColour.v);
-            buffer.put(1.f - _transparency); //convert transparency to alpha
+            floatBuffer.put(_diffuseColour.v);
+            floatBuffer.put(1.f - _transparency); //convert transparency to alpha
 
-            buffer.put(_specularColour.v);
-            buffer.put(_specularity);
+            floatBuffer.put(_specularColour.v);
+            floatBuffer.put(_specularity);
+
+            buffer.position(NumFloats * 4);
+            buffer.putInt(_ambientMap.isPresent() ? 1 : 0);
+            buffer.putInt(_diffuseMap.isPresent() ? 1 : 0);
+            buffer.putInt(_specularColourMap.isPresent() ? 1 : 0);
+            buffer.putInt(_specularityMap.isPresent() ? 1 : 0);
 
             buffer.flip();
             _bufferRepresentation = buffer;
         }
 
         return _bufferRepresentation; //FIXME be careful that the buffer doesn't get its position/mark etc. changed.
+    }
+
+    public static void bindSamplers() {
+        Material.ambientMapSampler.bindToTextureUnit();
+        Material.diffuseMapSampler.bindToTextureUnit();
+        Material.specularColourMapSampler.bindToTextureUnit();
+        Material.specularityMapSampler.bindToTextureUnit();
+    }
+
+    public static void unbindSamplers() {
+        Material.ambientMapSampler.unbindSampler();
+        Material.diffuseMapSampler.unbindSampler();
+        Material.specularColourMapSampler.unbindSampler();
+        Material.specularityMapSampler.unbindSampler();
+    }
+
+    public void bindTextures() {
+        _diffuseMap.ifPresent(texture -> texture.bindToTextureUnit(TextureUnit.DiffuseColourUnit));
+        _ambientMap.ifPresent(texture -> texture.bindToTextureUnit(TextureUnit.AmbientColourUnit));
+        _specularColourMap.ifPresent(texture -> texture.bindToTextureUnit(TextureUnit.SpecularColourUnit));
+        _specularityMap.ifPresent(texture -> texture.bindToTextureUnit(TextureUnit.SpecularityUnit));
+    }
+
+    public static void unbindTextures() {
+        Texture.unbindTexture(TextureUnit.AmbientColourUnit);
+        Texture.unbindTexture(TextureUnit.DiffuseColourUnit);
+        Texture.unbindTexture(TextureUnit.SpecularityUnit);
+        Texture.unbindTexture(TextureUnit.SpecularColourUnit);
     }
 
     /**

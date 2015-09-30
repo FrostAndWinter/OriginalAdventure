@@ -3,6 +3,7 @@ package swen.adventure.rendering.shaders;
 import swen.adventure.Utilities;
 import swen.adventure.rendering.Material;
 import swen.adventure.rendering.ShaderProgram;
+import swen.adventure.rendering.TextureUnit;
 import swen.adventure.rendering.maths.Matrix3;
 import swen.adventure.rendering.maths.Matrix4;
 import swen.adventure.scenegraph.Light;
@@ -32,6 +33,11 @@ public class GaussianPerObjectMaterialShader extends ShaderProgram implements Ma
     private final int _lightUniformBufferRef;
     private final int _materialUniformBufferRef;
 
+    private final int _ambientColourSamplerRef;
+    private final int _diffuseColourSamplerRef;
+    private final int _specularColourSamplerRef;
+    private final int _specularitySamplerRef;
+
     private static String vertexShaderText() {
         try {
             return Utilities.readFile(Utilities.pathForResource("VertexShaderMaterial", "vert"));
@@ -59,6 +65,19 @@ public class GaussianPerObjectMaterialShader extends ShaderProgram implements Ma
         _normalModelToCameraMatrixUniformRef = glGetUniformLocation(this.glProgramRef(), "normalModelToCameraMatrixUniform");
 
         _maxIntensityUniformRef = glGetUniformLocation(this.glProgramRef(), "maxIntensity");
+
+        _ambientColourSamplerRef = glGetUniformLocation(this.glProgramRef(), "ambientColourSampler");
+        _diffuseColourSamplerRef = glGetUniformLocation(this.glProgramRef(), "diffuseColourSampler");
+        _specularColourSamplerRef = glGetUniformLocation(this.glProgramRef(), "specularColourSampler");
+        _specularitySamplerRef = glGetUniformLocation(this.glProgramRef(), "specularitySampler");
+
+        //Bind the sampler references to texture unit indices
+        this.useProgram();
+        glUniform1i(_ambientColourSamplerRef, TextureUnit.AmbientColourUnit.glUnit);
+        glUniform1i(_diffuseColourSamplerRef, TextureUnit.DiffuseColourUnit.glUnit);
+        glUniform1i(_specularColourSamplerRef, TextureUnit.SpecularColourUnit.glUnit);
+        glUniform1i(_specularitySamplerRef, TextureUnit.SpecularityUnit.glUnit);
+        this.endUseProgram();
 
         //Setup the uniform buffers
         int lightBlock = glGetUniformBlockIndex(this.glProgramRef(), "Light");
@@ -90,7 +109,7 @@ public class GaussianPerObjectMaterialShader extends ShaderProgram implements Ma
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
     }
 
-    public void setMaterial(FloatBuffer materialData) {
+    public void setMaterial(ByteBuffer materialData) {
         glBindBuffer(GL_UNIFORM_BUFFER, _materialUniformBufferRef);
         glBufferSubData(GL_UNIFORM_BUFFER, 0, materialData);
         glBindBuffer(GL_UNIFORM_BUFFER, 0);

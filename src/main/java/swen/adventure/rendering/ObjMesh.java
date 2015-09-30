@@ -167,11 +167,35 @@ public class ObjMesh extends GLMesh<Float> {
         super.initialise(attributes, indexData, namedVAOs, renderCommands);
     }
 
+    /** Adds the indices to the list of vertices for a particular material, correcting the winding order if necessary. */
     private void addIndices(Material material, List<Integer> indices) {
+        assert indices.size() == 3;
+
         List<Integer> indicesForMaterial = _triIndices.get(material);
         if (indicesForMaterial == null) {
             indicesForMaterial = new ArrayList<>();
             _triIndices.put(material, indicesForMaterial);
+        }
+
+        if (_hasNormals) {
+            //Check that the winding order of the vertices is counter-clockwise.
+            VertexData vertexA = _vertices.get(indices.get(0));
+            VertexData vertexB = _vertices.get(indices.get(1));
+            VertexData vertexC = _vertices.get(indices.get(2));
+
+            Vector3 averageNormal = vertexA.vertexNormal.get().add(vertexB.vertexNormal.get()).add(vertexC.vertexNormal.get()).divideScalar(3.f);
+            Vector3 aToB = new Vector3(vertexB.vertexPosition.data()).subtract(new Vector3(vertexA.vertexPosition.data()));
+            Vector3 bToC = new Vector3(vertexC.vertexPosition.data()).subtract(new Vector3(vertexB.vertexPosition.data()));
+
+            Vector3 crossProduct = aToB.crossProduct(bToC);
+            float dot = crossProduct.dotProduct(averageNormal);
+
+            if (dot < 0.f) { //The winding order is wrong.
+                indicesForMaterial.add(indices.get(2));
+                indicesForMaterial.add(indices.get(1));
+                indicesForMaterial.add(indices.get(0));
+                return;
+            }
         }
         indicesForMaterial.addAll(indices);
     }

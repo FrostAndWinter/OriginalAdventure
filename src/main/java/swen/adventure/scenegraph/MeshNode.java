@@ -54,7 +54,7 @@ public class MeshNode extends SceneNode {
      */
     public void render(MaterialShader shader) {
         if (_materialOverride.isPresent()) {
-            shader.setMaterial(_materialOverride.get().toFloatBuffer());
+            shader.setMaterial(_materialOverride.get().toBuffer());
             _mesh.render();
         } else {
             _mesh.render(shader);

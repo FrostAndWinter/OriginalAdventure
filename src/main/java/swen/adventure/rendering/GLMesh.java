@@ -71,8 +71,14 @@ public abstract class GLMesh<T> {
          * @param shader The MaterialShader to set the material on.
          */
         public void render(MaterialShader shader) {
-            shader.setMaterial(_material.toFloatBuffer());
+            shader.setMaterial(_material.toBuffer());
+            _material.bindTextures();
+            Material.bindSamplers();
+
             this.render();
+
+            Material.unbindSamplers();
+            Material.unbindTextures();
         }
 
         /**

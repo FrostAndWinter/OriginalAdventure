@@ -66,7 +66,7 @@ public class MTLParser {
 
                 } else if (MTLParser.gobble(scanner, PatternIlluminationMode)) {
                     if (!scanner.hasNextInt()) { MTLParser.fail(scanner, "Illumination mode requires an integer value."); }
-                    material.setUseAmbient(scanner.nextInt() > 0);
+                    material.setUseAmbient(scanner.nextInt() > 1);
 
                 } else if (MTLParser.gobble(scanner, PatternAmbientMap)) {
                     material.setAmbientMap(MTLParser.parseTexture(scanner));
