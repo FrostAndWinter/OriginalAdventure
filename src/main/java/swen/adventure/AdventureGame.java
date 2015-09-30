@@ -80,18 +80,7 @@ public class AdventureGame {
         keyInput.eventMoveLeftKeyPressed.addAction(player, Player.actionPlayerMoveLeft);
         keyInput.eventMoveRightKeyPressed.addAction(player, Player.actionPlayerMoveRight);
 
-
-
         this.setupUI(width, height);
-
-        File file = new File(Utilities.pathForResource("rocket", "mtl"));
-        Map<String, Material> result = null;
-        try {
-            result = MTLParser.parse(file);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        System.out.println(result);
     }
 
     private void setupUI(int width, int height) {

@@ -1,5 +1,6 @@
 package swen.adventure.rendering;
 
+import org.lwjgl.LWJGLUtil;
 import swen.adventure.rendering.maths.Matrix3;
 import swen.adventure.rendering.maths.Matrix4;
 import swen.adventure.rendering.shaders.GaussianPerObjectMaterialShader;
