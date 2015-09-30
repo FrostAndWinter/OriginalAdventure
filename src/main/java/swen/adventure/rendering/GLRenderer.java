@@ -19,9 +19,8 @@ import static org.lwjgl.opengl.GL32.*;
 public class GLRenderer {
 
     private GaussianPerObjectMaterialShader _defaultShader;
-    private int _vertexArrayRef;
-
-    private Matrix4 _perspectiveMatrix;
+    private int _width, _height;
+    private float _currentFOV = (float)Math.PI/3.f;
 
     public GLRenderer(int width, int height) {
         _defaultShader = new GaussianPerObjectMaterialShader();
@@ -29,23 +28,25 @@ public class GLRenderer {
         this.setSize(width, height);
     }
 
-    public Matrix4 perspectiveMatrix(int width, int height) {
-        float cameraFOV = (float)Math.PI/3.f;
+    public Matrix4 perspectiveMatrix(int width, int height, float fieldOfView) {;
         float cameraNear = 1.f;
         float cameraFar = 10000.f;
         float cameraAspect = width / (float) height;
 
-        return Matrix4.makePerspective(cameraFOV, cameraAspect, cameraNear, cameraFar);
+        return Matrix4.makePerspective(fieldOfView, cameraAspect, cameraNear, cameraFar);
     }
 
-    public void setSize(int width, int height) {
-        _perspectiveMatrix = this.perspectiveMatrix(width, height);
+    private void setProjectionMatrix() {
 
         _defaultShader.useProgram();
-        _defaultShader.setCameraToClipMatrix(_perspectiveMatrix);
+        _defaultShader.setCameraToClipMatrix(this.perspectiveMatrix(_width, _height, _currentFOV));
         _defaultShader.endUseProgram();
     }
 
+    public void setSize(int width, int height) {
+        _width = width; _height = height;
+        this.setProjectionMatrix();
+    }
 
     /**
      * Setup GL state for rendering.
@@ -74,6 +75,12 @@ public class GLRenderer {
     }
 
     public void render(SceneNode sceneGraph, CameraNode cameraNode) {
+
+        if (cameraNode.fieldOfView() != _currentFOV) {
+            _currentFOV = cameraNode.fieldOfView();
+            this.setProjectionMatrix();
+        }
+
         this.preRender();
 
         _defaultShader.useProgram();

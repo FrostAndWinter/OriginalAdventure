@@ -33,7 +33,8 @@ public class Utilities {
             e.printStackTrace();
         }
         String pathString = new File(path).getPath().replaceFirst("classes" + File.separator + "main", "resources" + File.separator + "main");
-        return pathString + File.separator + resourceName + (extension == null ? "" : "." + extension);
+        pathString = pathString + File.separator + resourceName + (extension == null ? "" : "." + extension);
+        return pathString.replaceAll("[\\r\\n]", ""); //remove any newline characters.
     }
 
     public static List<String> readLinesFromFile(String filePath) throws IOException {

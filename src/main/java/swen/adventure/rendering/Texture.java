@@ -13,7 +13,9 @@ import java.nio.IntBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -30,6 +32,7 @@ public class Texture {
     private static Map<String, Texture> _textureCache = new HashMap<>();
 
     public final ByteBuffer textureData;
+    private final List<ByteBuffer> _mipMappedData = new ArrayList<>();
     public final int width;
     public final int height;
     public final int numPixelComponents;
@@ -42,6 +45,17 @@ public class Texture {
         this.height = height;
         this.numPixelComponents = numPixelComponents;
         this.glTextureRef = this.initOpenGL();
+
+        int bytesPerPixel = textureData.limit()/(width * height);
+        for (int w = width, h = height; w > 1 || h > 1; ) {
+            w /= 2; h /= 2;
+
+            ByteBuffer outputBuffer = BufferUtils.createByteBuffer(w * h * bytesPerPixel);
+            STBImageResize.stbir_resize_uint8_srgb(textureData , width , height , 0,
+                    outputBuffer, w, h, 0,
+                    numPixelComponents, numPixelComponents == 4 ? 3 : 0, 0);
+            _mipMappedData.add(outputBuffer);
+        }
     }
 
     /**
@@ -51,10 +65,17 @@ public class Texture {
         int textureRef = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, textureRef);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, this.width, this.height, 0, GL_RGB, GL_UNSIGNED_BYTE, this.textureData);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8_ALPHA8, this.width, this.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, this.textureData);
+
+        int mipmapLevel = 0;
+        for(; mipmapLevel < _mipMappedData.size(); mipmapLevel++) {
+
+            glTexImage2D(GL_TEXTURE_2D, mipmapLevel + 1, GL_RGB8, this.width / (1 << mipmapLevel), this.height / (1 << mipmapLevel), 0,
+                    GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, _mipMappedData.get(mipmapLevel));
+        }
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0); //TODO generate mip-maps for the textures dynamically and bind them here.
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, mipmapLevel);
 
         glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -91,7 +112,7 @@ public class Texture {
 
                 STBImage.stbi_set_flip_vertically_on_load(1);
 
-                ByteBuffer image = STBImage.stbi_load_from_memory(encodedImageDataBuffer, widthBuffer, heightBuffer, numPixelComponentsBuffer, 0);
+                ByteBuffer image = STBImage.stbi_load_from_memory(encodedImageDataBuffer, widthBuffer, heightBuffer, numPixelComponentsBuffer, 4);
 
                 if (image == null) {
                     throw new RuntimeException("Error loading image with name " + fileName + ": " + STBImage.stbi_failure_reason());

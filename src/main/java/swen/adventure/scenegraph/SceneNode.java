@@ -24,7 +24,7 @@ public abstract class SceneNode {
 
     public final String id;
     protected Map<String, SceneNode> _idsToNodesMap;
-    protected Set<Light> _allLights; //FIXME maybe this should be in a separate SceneGraph wrapper class?
+    protected Set<Light> _allLights;
     protected Set<CollisionNode> _allCollidables;
 
     /**
@@ -95,13 +95,14 @@ public abstract class SceneNode {
      * @return The event for that name on this object.
      * @throws RuntimeException if the event does not exist on this object.
      */
+    @SuppressWarnings("unchecked")
     public Event<? extends GameObject> eventWithName(String eventName) {
         try {
             Field field = this.getClass().getField("event" + eventName);
             return (Event<? extends GameObject>) field.get(this);
         } catch (IllegalAccessException e) {
             System.err.println("Error accessing event with name " + eventName + ": " + e);
-        } catch (NoSuchFieldException e) {
+        } catch (NoSuchFieldException ignored) {
         }
 
         throw new RuntimeException("Could not find an event of name " + eventName + " on " + this);
@@ -123,7 +124,7 @@ public abstract class SceneNode {
     }
 
     /**
-     * Recursively applies a function to every node and then its children.
+     * Recursively applies a function to this node and then its children.
      * @param traversalFunction The function to apply to each node.
      */
     public void traverse(NodeTraversalFunction traversalFunction) {

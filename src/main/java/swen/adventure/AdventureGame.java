@@ -43,8 +43,8 @@ public class AdventureGame {
         MeshNode groundPlane = new MeshNode("Plane.obj", groundPlaneTransform);
         groundPlane.setMaterialOverride(new Material(Vector3.zero, new Vector3(0.1f, 0.8f, 0.3f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 1.f));
 
-        TransformNode texturePlaneTransform = new TransformNode("texturePlaneTransform", _sceneGraph, false, new Vector3(0, 60, 0), Quaternion.makeWithAngleAndAxis(0.f, 1, 0, 0), new Vector3(60, 60, 1));
-        new MeshNode("Plane.obj", texturePlaneTransform);
+        TransformNode keyTransform = new TransformNode("textureKeyTransform", _sceneGraph, false, new Vector3(0, 60, 40), Quaternion.makeWithAngleAndAxis(0.f, 1, 0, 0), new Vector3(20, 20, 20));
+        new MeshNode("Key_B_02.obj", keyTransform);
 
         TransformNode yAxisTransform = new TransformNode("yAxis", _sceneGraph, false, new Vector3(0, 0, 0), new Quaternion(), new Vector3(2, 1000, 2));
         MeshNode yAxis = new MeshNode("box.obj", yAxisTransform);
