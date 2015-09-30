@@ -23,7 +23,7 @@ public interface Action<E, T, L> {
         String fieldName = "action" + name;
 
         try {
-            Field field = Actions.class.getDeclaredField(name);
+            Field field = Actions.class.getDeclaredField(fieldName);
             //field.setAccessible(true);
             return (Action<?, ?, L>) field.get(Actions.class);
         } catch (IllegalAccessException e) {
@@ -32,11 +32,12 @@ public interface Action<E, T, L> {
         }
 
         try {
-            Field field = listeningObject.getClass().getField(name);
+            Field field = listeningObject.getClass().getField(fieldName);
             return (Action<?, ?, L>) field.get(listeningObject);
         } catch (IllegalAccessException e) {
             System.err.println("Error accessing action with name " + name + ": " + e);
         } catch (NoSuchFieldException ignored) {
+
         }
 
         try {

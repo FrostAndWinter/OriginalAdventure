@@ -35,8 +35,8 @@ public class EventConnectionParser {
         return connections;
     }
 
-    private static EventConnection parseLine(String line) {
-        line = line.replaceAll("\\s+", "");
+    public static EventConnection parseLine(String line) {
+        line = line.replaceAll("\\s+", ""); // remove whitespace
         String[] components = line.split(";");
 
         String eventName = components[0];
@@ -51,7 +51,7 @@ public class EventConnectionParser {
     }
 
     @SuppressWarnings("unchecked")
-    public void setupConnections(List<EventConnection> connections, SceneNode sceneGraph) {
+    public static void setupConnections(List<EventConnection> connections, SceneNode sceneGraph) {
         for (EventConnection connection : connections) {
             for (String objectName : connection.objectNames) {
                 SceneNode targetObject = sceneGraph.nodeWithID(objectName).get();
