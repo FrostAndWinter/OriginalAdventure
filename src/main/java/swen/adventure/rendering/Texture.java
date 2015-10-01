@@ -1,6 +1,7 @@
 package swen.adventure.rendering;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.LWJGLUtil;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.stb.STBImageResize;
 import swen.adventure.Utilities;
@@ -44,18 +45,23 @@ public class Texture {
         this.width = width;
         this.height = height;
         this.numPixelComponents = numPixelComponents;
-        this.glTextureRef = this.initOpenGL();
 
         int bytesPerPixel = textureData.limit()/(width * height);
         for (int w = width, h = height; w > 1 || h > 1; ) {
             w /= 2; h /= 2;
 
             ByteBuffer outputBuffer = BufferUtils.createByteBuffer(w * h * bytesPerPixel);
-            STBImageResize.stbir_resize_uint8_srgb(textureData , width , height , 0,
+            int success = STBImageResize.stbir_resize_uint8_srgb(textureData , width , height , 0,
                     outputBuffer, w, h, 0,
                     numPixelComponents, numPixelComponents == 4 ? 3 : 0, 0);
+
+            if (success == 0) {
+                System.err.printf("Error generating mip-map with dimensions %d, %d.\n", w, h);
+            }
             _mipMappedData.add(outputBuffer);
         }
+
+        this.glTextureRef = this.initOpenGL();
     }
 
     /**
@@ -70,8 +76,8 @@ public class Texture {
         int mipmapLevel = 0;
         for(; mipmapLevel < _mipMappedData.size(); mipmapLevel++) {
 
-            glTexImage2D(GL_TEXTURE_2D, mipmapLevel + 1, GL_RGB8, this.width / (1 << mipmapLevel), this.height / (1 << mipmapLevel), 0,
-                    GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, _mipMappedData.get(mipmapLevel));
+            glTexImage2D(GL_TEXTURE_2D, mipmapLevel + 1, GL_SRGB8_ALPHA8, this.width / (2 << mipmapLevel), this.height / (2 << mipmapLevel), 0,
+                    GL_RGBA, GL_UNSIGNED_BYTE, _mipMappedData.get(mipmapLevel));
         }
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
