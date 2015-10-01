@@ -4,6 +4,7 @@ import processing.opengl.PGraphics2D;
 import swen.adventure.datastorage.MTLParser;
 import swen.adventure.rendering.GLRenderer;
 import swen.adventure.rendering.Material;
+import swen.adventure.rendering.PickerRenderer;
 import swen.adventure.rendering.maths.Quaternion;
 import swen.adventure.rendering.maths.Vector3;
 import swen.adventure.scenegraph.*;
@@ -23,6 +24,7 @@ import java.util.Map;
 public class AdventureGame {
 
     private GLRenderer _glRenderer;
+    private PickerRenderer _pickerRenderer;
     private PGraphics2D _pGraphics;
     private TransformNode _sceneGraph;
 
@@ -76,6 +78,7 @@ public class AdventureGame {
         Light.createPointLight("pointLight", cameraTransform, new Vector3(0.4f, 0.5f, 0.8f), 9.f, Light.LightFalloff.Quadratic);
 
         _glRenderer = new GLRenderer(width, height);
+        _pickerRenderer = new PickerRenderer();
 
         keyInput.eventMoveForwardKeyPressed.addAction(player, Player.actionPlayerMoveForward);
         keyInput.eventMoveBackwardKeyPressed.addAction(player, Player.actionPlayerMoveBackward);
@@ -121,8 +124,6 @@ public class AdventureGame {
 
     public void update(long deltaMillis) {
         keyInput.handleInput();
-//       ((TransformNode) _sceneGraph.nodeWithID("ObjBoxTransform").get()).rotateY(0.005f);
-
 
         player.parent().get().setRotation(Quaternion.makeWithAngleAndAxis(viewAngleX/500, 0, -1, 0).multiply(Quaternion.makeWithAngleAndAxis(viewAngleY / 500, -1, 0, 0)));;
 
@@ -130,7 +131,11 @@ public class AdventureGame {
     }
 
     private void render() {
-        _glRenderer.render(_sceneGraph, (CameraNode) _sceneGraph.nodeWithID("playerCamera").get());
+        CameraNode camera = (CameraNode) _sceneGraph.nodeWithID("playerCamera").get();
+        _pickerRenderer.render(_sceneGraph, camera);
+        _glRenderer.render(_sceneGraph, camera);
+
+        System.out.println(_pickerRenderer.selectedNode().map(node -> node.id));
 
         _pGraphics.beginDraw();
         _frame.draw(_pGraphics);
