@@ -22,7 +22,7 @@ public class PickerRenderer {
 
     private PickerShader _pickerShader;
     private int _width, _height;
-    private float _currentFOV = 0.0001f;
+    private float _currentFOV = 0.0001f; //Set an extremely narrow field of view, since we're basically only interested in the centre pixel.
 
     private WeakReference<MeshNode>[] _idsToNodes = (WeakReference<MeshNode>[]) new WeakReference[0xFFFFFF];
 

@@ -1,12 +1,14 @@
 package swen.adventure.game.scenenodes;
 
 import swen.adventure.engine.Action;
+import swen.adventure.engine.KeyInput;
 import swen.adventure.engine.scenegraph.CollisionNode;
 import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.TransformNode;
 import swen.adventure.game.AdventureGame;
 import swen.adventure.engine.Event;
 import swen.adventure.engine.rendering.maths.Vector3;
+import swen.adventure.game.AdventureGameKeyInput;
 
 import java.util.Collections;
 
@@ -19,16 +21,16 @@ public class Player extends GameObject {
 
     private Inventory _inventory = new Inventory(id + "Inventory", parent().get());
 
-    public static final Action<AdventureGame.KeyInput, AdventureGame.KeyInput, Player> actionPlayerMoveForward =
+    public static final Action<KeyInput, KeyInput, Player> actionPlayerMoveForward =
             (eventObject, triggeringObject, player, data) -> player.move(new Vector3(0, 0, -player._playerSpeed));
 
-    public static final Action<AdventureGame.KeyInput, AdventureGame.KeyInput, Player> actionPlayerMoveBackward =
+    public static final Action<KeyInput, KeyInput, Player> actionPlayerMoveBackward =
             (eventObject, triggeringObject, player, data) -> player.move(new Vector3(0, 0, player._playerSpeed));
 
-    public static final Action<AdventureGame.KeyInput, AdventureGame.KeyInput, Player> actionPlayerMoveLeft =
+    public static final Action<KeyInput, KeyInput, Player> actionPlayerMoveLeft =
             (eventObject, triggeringObject, player, data) -> player.move(new Vector3(-player._playerSpeed, 0, 0));
 
-    public static final Action<AdventureGame.KeyInput, AdventureGame.KeyInput, Player> actionPlayerMoveRight=
+    public static final Action<KeyInput, KeyInput, Player> actionPlayerMoveRight=
             (eventObject, triggeringObject, player, data) -> player.move(new Vector3(player._playerSpeed, 0, 0));
 
     public final Event<Player> eventPlayerMoved = new Event<>("eventPlayerMoved", this);

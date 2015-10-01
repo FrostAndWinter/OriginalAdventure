@@ -15,36 +15,41 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class AdventureGameLWJGL {
+public class GameDelegate {
 
     private static final int DefaultWindowWidth = 800;
     private static final int DefaultWindowHeight = 600;
 
     // We need to strongly reference callback instances.
-    private GLFWErrorCallback _errorCallback;
-    private GLFWKeyCallback _keyCallback;
-    private GLFWWindowSizeCallback _resizeCallback;
-    private GLFWFramebufferSizeCallback _framebufferSizeCallback;
+    private static GLFWErrorCallback _errorCallback;
+    private static GLFWKeyCallback _keyCallback;
+    private static GLFWWindowSizeCallback _resizeCallback;
+    private static GLFWFramebufferSizeCallback _framebufferSizeCallback;
 
-    // The window handle
-    private long window;
+    // The _window handle
+    private static long _window;
 
-    private int windowWidth;
-    private int windowHeight;
+    private static int _windowWidth;
+    private static int _windowHeight;
 
-    boolean mouseLocked;
-    double mousePrevX = 0;
-    double mousePrevY = 0;
+    private static boolean _mouseLocked;
+    private static double _mousePrevX = 0;
+    private static double _mousePrevY = 0;
 
-    private long _timeLastUpdate;
+    private static long _timeLastUpdate;
 
-    private GameInterface _game;
+    private static Game _game = null;
 
-    public AdventureGameLWJGL(GameInterface game) {
-        _game = game;
+    /** This constructor should never be used; the class is static only. */
+    private GameDelegate() {
     }
 
-    public void run() {
+    public static void setGame(Game game) {
+        _game = game;
+        run();
+    }
+
+    private static void run() {
         try {
             init();
 
@@ -52,8 +57,8 @@ public class AdventureGameLWJGL {
 
             loop();
 
-            // Release window and window callbacks
-            glfwDestroyWindow(window);
+            // Release _window and _window callbacks
+            glfwDestroyWindow(_window);
             _keyCallback.release();
         } finally {
             // Terminate GLFW and release the GLFWerrorfun
@@ -62,7 +67,7 @@ public class AdventureGameLWJGL {
         }
     }
 
-    private void init() {
+    private static void init() {
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
         glfwSetErrorCallback(_errorCallback = errorCallbackPrint(System.err));
@@ -71,10 +76,10 @@ public class AdventureGameLWJGL {
         if ( glfwInit() != GL11.GL_TRUE )
             throw new IllegalStateException("Unable to initialize GLFW");
 
-        // Configure our window
-        glfwDefaultWindowHints(); // optional, the current window hints are already the default
-        glfwWindowHint(GLFW_VISIBLE, GL_FALSE); // the window will stay hidden after creation
-        glfwWindowHint(GLFW_RESIZABLE, GL_TRUE); // the window will be resizable
+        // Configure our _window
+        glfwDefaultWindowHints(); // optional, the current _window hints are already the default
+        glfwWindowHint(GLFW_VISIBLE, GL_FALSE); // the _window will stay hidden after creation
+        glfwWindowHint(GLFW_RESIZABLE, GL_TRUE); // the _window will be resizable
 
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -83,18 +88,18 @@ public class AdventureGameLWJGL {
         glfwWindowHint(GLFW_SAMPLES, 8);
         glfwWindowHint(GLFW_SRGB_CAPABLE, GL_TRUE);
 
-        // setup the main window
-        windowWidth = DefaultWindowWidth;
-        windowHeight = DefaultWindowHeight;
+        // setup the main _window
+        _windowWidth = DefaultWindowWidth;
+        _windowHeight = DefaultWindowHeight;
 
-        window = glfwCreateWindow(windowWidth, windowHeight, "Hello World!", NULL, NULL);
-        if ( window == NULL )
-            throw new RuntimeException("Failed to create the GLFW window");
+        _window = glfwCreateWindow(_windowWidth, _windowHeight, "Hello World!", NULL, NULL);
+        if ( _window == NULL )
+            throw new RuntimeException("Failed to create the GLFW _window");
 
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
-        glfwSetKeyCallback(window, _keyCallback = new GLFWKeyCallback() {
+        glfwSetKeyCallback(_window, _keyCallback = new GLFWKeyCallback() {
             @Override
-            public void invoke(long window, int key, int scancode, int action, int mods) {
+            public void invoke(long _window, int key, int scancode, int action, int mods) {
 
                 // pass off alphabetic key input to the game
                 char keyChar = (char) key;
@@ -105,24 +110,24 @@ public class AdventureGameLWJGL {
                 }
 
                 if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
-                    glfwSetWindowShouldClose(window, GL_TRUE); // we will detect this in our rendering loop
+                    glfwSetWindowShouldClose(_window, GL_TRUE); // we will detect this in our rendering loop
                 }
             }
         });
 
-        glfwSetCallback(window, _resizeCallback = new GLFWWindowSizeCallback() {
+        glfwSetCallback(_window, _resizeCallback = new GLFWWindowSizeCallback() {
             @Override
-            public void invoke(final long window, final int width, final int height) {
-                windowWidth = width;
-                windowHeight = height;
+            public void invoke(final long _window, final int width, final int height) {
+                _windowWidth = width;
+                _windowHeight = height;
 
                 _game.setSize(width, height);
             }
         });
 
-        glfwSetCallback(window, _framebufferSizeCallback = new GLFWFramebufferSizeCallback() {
+        glfwSetCallback(_window, _framebufferSizeCallback = new GLFWFramebufferSizeCallback() {
             @Override
-            public void invoke(final long window, final int width, final int height) {
+            public void invoke(final long _window, final int width, final int height) {
                 glViewport(0, 0, width, height);
                 _game.setSizeInPixels(width, height);
             }
@@ -130,25 +135,23 @@ public class AdventureGameLWJGL {
 
         // Get the resolution of the primary monitor
         ByteBuffer vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-        // Center our window
+        // Center our _window
         glfwSetWindowPos(
-                window,
-                (GLFWvidmode.width(vidmode) - windowWidth) / 2,
-                (GLFWvidmode.height(vidmode) - windowHeight) / 2
+                _window,
+                (GLFWvidmode.width(vidmode) - _windowWidth) / 2,
+                (GLFWvidmode.height(vidmode) - _windowHeight) / 2
         );
 
         // Make the OpenGL context current
-        glfwMakeContextCurrent(window);
+        glfwMakeContextCurrent(_window);
         // Enable v-sync
         glfwSwapInterval(1);
 
-        // Make the window visible
-        glfwShowWindow(window);
-
-        _game = new AdventureGame();
+        // Make the _window visible
+        glfwShowWindow(_window);
     }
 
-    private void loop() {
+    private static void loop() {
         // This line is critical for LWJGL's interoperation with GLFW's
         // OpenGL context, or any context that is managed externally.
         // LWJGL detects the context that is current in the current thread,
@@ -162,11 +165,11 @@ public class AdventureGameLWJGL {
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-        _game.setup(windowWidth, windowHeight);
+        _game.setup(_windowWidth, _windowHeight);
 
         // Run the rendering loop until the user has attempted to close
-        // the window or has pressed the ESCAPE key.
-        while (glfwWindowShouldClose(window) == GL_FALSE ) {
+        // the _window or has pressed the ESCAPE key.
+        while (glfwWindowShouldClose(_window) == GL_FALSE ) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
             handleMouseInput();
@@ -177,49 +180,44 @@ public class AdventureGameLWJGL {
 
             _timeLastUpdate = currentTime;
 
-            glfwSwapBuffers(window); // swap the color buffers
+            glfwSwapBuffers(_window); // swap the color buffers
 
-            // Poll for window events. The key callback above will only be
+            // Poll for _window events. The key callback above will only be
             // invoked during this call.
             glfwPollEvents();
         }
     }
-    private void handleMouseInput() {
+    private static void handleMouseInput() {
 
-        if (!mouseLocked && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
-            // hide mouse cursor and move cursor to centre of window
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-            glfwSetCursorPos(window, windowWidth / 2, windowHeight / 2);
+        if (!_mouseLocked && glfwGetMouseButton(_window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
+            // hide mouse cursor and move cursor to centre of _window
+            glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            glfwSetCursorPos(_window, _windowWidth / 2, _windowHeight / 2);
 
-            mouseLocked = true;
+            _mouseLocked = true;
         }
 
-        if (mouseLocked) {
+        if (_mouseLocked) {
             DoubleBuffer x = BufferUtils.createDoubleBuffer(1);
             DoubleBuffer y = BufferUtils.createDoubleBuffer(1);
 
-            glfwGetCursorPos(window, x, y);
+            glfwGetCursorPos(_window, x, y);
             x.rewind();
             y.rewind();
 
             double currentX = x.get();
             double currentY = y.get();
 
-            double deltaX = currentX - windowWidth/2;
-            double deltaY = currentY - windowHeight/2;
+            double deltaX = currentX - _windowWidth/2;
+            double deltaY = currentY - _windowHeight/2;
 
             _game.onMouseDeltaChange((float) deltaX, (float) deltaY);
 
-            mousePrevX = currentX;
-            mousePrevY = currentY;
+            _mousePrevX = currentX;
+            _mousePrevY = currentY;
 
-            glfwSetCursorPos(window, windowWidth / 2, windowHeight / 2);
+            glfwSetCursorPos(_window, _windowWidth / 2, _windowHeight / 2);
         }
-    }
-
-    public static void main(String[] args) {
-        SharedLibraryLoader.load();
-        new AdventureGameLWJGL().run();
     }
 
 }

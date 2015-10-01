@@ -1,7 +1,8 @@
 package swen.adventure.game;
 
 import processing.opengl.PGraphics2D;
-import swen.adventure.engine.Event;
+import swen.adventure.engine.Game;
+import swen.adventure.engine.GameDelegate;
 import swen.adventure.engine.KeyInput;
 import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.rendering.Material;
@@ -11,6 +12,7 @@ import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
 import swen.adventure.engine.ui.color.Color;
 import swen.adventure.engine.ui.components.Frame;
+import swen.adventure.engine.utils.SharedLibraryLoader;
 import swen.adventure.game.ui.components.Inventory;
 import swen.adventure.engine.ui.components.Panel;
 import swen.adventure.engine.ui.components.ProgressBar;
@@ -19,7 +21,7 @@ import swen.adventure.game.scenenodes.Player;
 
 import java.util.Optional;
 
-public class AdventureGame implements swen.adventure.engine.GameInterface {
+public class AdventureGame implements Game {
 
     private GLRenderer _glRenderer;
     private PickerRenderer _pickerRenderer;
@@ -31,11 +33,11 @@ public class AdventureGame implements swen.adventure.engine.GameInterface {
 
     private Player player;
 
-    private KeyInput keyInput = new KeyInput();
+    private AdventureGameKeyInput _keyInput = new AdventureGameKeyInput();
 
-    private float mouseSensitivity = 1;
-    private float viewAngleX;
-    private float viewAngleY;
+    private float _mouseSensitivity = 1;
+    private float _viewAngleX;
+    private float _viewAngleY;
 
     @Override
     public void setup(int width, int height) {
@@ -79,10 +81,10 @@ public class AdventureGame implements swen.adventure.engine.GameInterface {
         _glRenderer = new GLRenderer(width, height);
         _pickerRenderer = new PickerRenderer();
 
-        keyInput.eventMoveForwardKeyPressed.addAction(player, Player.actionPlayerMoveForward);
-        keyInput.eventMoveBackwardKeyPressed.addAction(player, Player.actionPlayerMoveBackward);
-        keyInput.eventMoveLeftKeyPressed.addAction(player, Player.actionPlayerMoveLeft);
-        keyInput.eventMoveRightKeyPressed.addAction(player, Player.actionPlayerMoveRight);
+        _keyInput.eventMoveForwardKeyPressed.addAction(player, Player.actionPlayerMoveForward);
+        _keyInput.eventMoveBackwardKeyPressed.addAction(player, Player.actionPlayerMoveBackward);
+        _keyInput.eventMoveLeftKeyPressed.addAction(player, Player.actionPlayerMoveLeft);
+        _keyInput.eventMoveRightKeyPressed.addAction(player, Player.actionPlayerMoveRight);
 
         this.setupUI(width, height);
     }
@@ -125,9 +127,9 @@ public class AdventureGame implements swen.adventure.engine.GameInterface {
 
     @Override
     public void update(long deltaMillis) {
-        keyInput.handleInput();
+        _keyInput.handleInput();
 
-        player.parent().get().setRotation(Quaternion.makeWithAngleAndAxis(viewAngleX / 500, 0, -1, 0).multiply(Quaternion.makeWithAngleAndAxis(viewAngleY / 500, -1, 0, 0)));
+        player.parent().get().setRotation(Quaternion.makeWithAngleAndAxis(_viewAngleX / 500, 0, -1, 0).multiply(Quaternion.makeWithAngleAndAxis(_viewAngleY / 500, -1, 0, 0)));
         ;
 
         this.render();
@@ -163,12 +165,17 @@ public class AdventureGame implements swen.adventure.engine.GameInterface {
      */
     @Override
     public KeyInput keyInput() {
-        return keyInput;
+        return _keyInput;
     }
 
     @Override
     public void onMouseDeltaChange(float deltaX, float deltaY) {
-        viewAngleX = (viewAngleX + deltaX / mouseSensitivity);
-        viewAngleY = (viewAngleY + deltaY / mouseSensitivity);
+        _viewAngleX = (_viewAngleX + deltaX / _mouseSensitivity);
+        _viewAngleY = (_viewAngleY + deltaY / _mouseSensitivity);
+    }
+
+    public static void main(String[] args) {
+        SharedLibraryLoader.load();
+        GameDelegate.setGame(new AdventureGame());
     }
 }

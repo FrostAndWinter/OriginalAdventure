@@ -19,7 +19,6 @@ public class Sampler {
 
         glBindSampler(textureUnit.glUnit, this.glSamplerRef);
 
-
         glSamplerParameteri(this.glSamplerRef, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glSamplerParameteri(this.glSamplerRef, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glSamplerParameteri(this.glSamplerRef, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
