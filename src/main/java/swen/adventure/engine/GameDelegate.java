@@ -4,6 +4,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
+import swen.adventure.engine.animation.AnimationSystem;
 import swen.adventure.engine.utils.SharedLibraryLoader;
 
 import java.nio.ByteBuffer;
@@ -173,6 +174,8 @@ public class GameDelegate {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
             handleMouseInput();
+
+            AnimationSystem.update();
 
             long currentTime = System.currentTimeMillis();
 

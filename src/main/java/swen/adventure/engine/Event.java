@@ -1,5 +1,6 @@
 package swen.adventure.engine;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,11 +35,11 @@ import java.util.Map;
 public class Event<E> {
 
     private class ActionData<L> {
-        public final L listener;
+        public final WeakReference<L> listener;
         public final Action<E, ?, L> action;
 
         public ActionData(L listener, Action<E, ?, L> action) {
-            this.listener = listener;
+            this.listener = new WeakReference<>(listener);
             this.action = action;
         }
 
@@ -60,11 +61,6 @@ public class Event<E> {
             return result;
         }
     }
-
-    /**
-     * Special event that can be observed to see when any action is executed. Useful for networking code that needs to pass off any actions to the network.
-     */
-    public static final Event<Class<Event>> eventEventTriggered = new Event<>("EventTriggered", Event.class);
 
     private List<ActionData<?>> _actions = new ArrayList<>();
     private final E _eventObject;
@@ -90,10 +86,7 @@ public class Event<E> {
      */
     public <B> void trigger(final B triggeringObject, final Map<String, Object> data) {
         for (ActionData actionData : _actions) {
-            actionData.action.execute(_eventObject, triggeringObject, actionData.listener, data);
-        }
-        if (triggeringObject != this) {
-            Event.eventEventTriggered.trigger(this, Collections.emptyMap());
+            actionData.action.execute(_eventObject, triggeringObject, actionData.listener.get(), data);
         }
     }
 }
