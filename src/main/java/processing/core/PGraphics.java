@@ -27,7 +27,7 @@ package processing.core;/* -*- mode: java; c-basic-offset: 2; indent-tabs-mode: 
 
 import processing.opengl.PGL;
 import processing.opengl.PShader;
-import swen.adventure.Utilities;
+import swen.adventure.engine.Utilities;
 
 import java.awt.*;
 import java.io.IOException;

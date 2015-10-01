@@ -1,6 +1,6 @@
 package swen.adventure.engine.scenegraph;
 
-import swen.adventure.engine.utils.BoundingBox;
+import swen.adventure.engine.rendering.maths.BoundingBox;
 
 import java.util.Optional;
 

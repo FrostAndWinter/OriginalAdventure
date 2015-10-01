@@ -3,7 +3,7 @@ package swen.adventure.engine.rendering;
 import org.lwjgl.BufferUtils;
 import swen.adventure.engine.rendering.shaders.MaterialShader;
 import swen.adventure.engine.scenegraph.TransformNode;
-import swen.adventure.engine.utils.BoundingBox;
+import swen.adventure.engine.rendering.maths.BoundingBox;
 
 import java.nio.ByteBuffer;
 import java.util.*;

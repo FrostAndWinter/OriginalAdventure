@@ -38,7 +38,11 @@ public class AdventureGameLWJGL {
 
     private long _timeLastUpdate;
 
-    private AdventureGame _game;
+    private GameInterface _game;
+
+    public AdventureGameLWJGL(GameInterface game) {
+        _game = game;
+    }
 
     public void run() {
         try {

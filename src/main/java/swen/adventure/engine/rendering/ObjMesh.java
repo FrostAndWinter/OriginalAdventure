@@ -5,7 +5,7 @@ import swen.adventure.engine.datastorage.WavefrontParser;
 import swen.adventure.engine.rendering.maths.Vector;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.rendering.maths.Vector4;
-import swen.adventure.engine.utils.BoundingBox;
+import swen.adventure.engine.rendering.maths.BoundingBox;
 
 import java.io.File;
 import java.io.FileNotFoundException;

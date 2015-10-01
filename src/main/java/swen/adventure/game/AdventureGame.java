@@ -2,6 +2,7 @@ package swen.adventure.game;
 
 import processing.opengl.PGraphics2D;
 import swen.adventure.engine.Event;
+import swen.adventure.engine.KeyInput;
 import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.rendering.Material;
 import swen.adventure.engine.rendering.PickerRenderer;
@@ -10,17 +11,15 @@ import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
 import swen.adventure.engine.ui.color.Color;
 import swen.adventure.engine.ui.components.Frame;
-import swen.adventure.engine.ui.components.Inventory;
+import swen.adventure.game.ui.components.Inventory;
 import swen.adventure.engine.ui.components.Panel;
 import swen.adventure.engine.ui.components.ProgressBar;
-import swen.adventure.engine.utils.BoundingBox;
+import swen.adventure.engine.rendering.maths.BoundingBox;
+import swen.adventure.game.scenenodes.Player;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
-public class AdventureGame {
+public class AdventureGame implements swen.adventure.engine.GameInterface {
 
     private GLRenderer _glRenderer;
     private PickerRenderer _pickerRenderer;
@@ -38,6 +37,7 @@ public class AdventureGame {
     private float viewAngleX;
     private float viewAngleY;
 
+    @Override
     public void setup(int width, int height) {
         _sceneGraph = new TransformNode("root", new Vector3(0.f, 0.f, 0.f), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
         TransformNode groundPlaneTransform = new TransformNode("groundPlaneTransform", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis((float) Math.PI / 2.f, -1, 0, 0), new Vector3(25000, 25000, 1));
@@ -112,15 +112,18 @@ public class AdventureGame {
         _frame.addChild(panel);
     }
 
+    @Override
     public void setSize(int width, int height) {
         _glRenderer.setSize(width, height);
         _pGraphics.setSize(width, height);
     }
 
+    @Override
     public void setSizeInPixels(int width, int height) {
         _pGraphics.setPixelDimensions(width, height);
     }
 
+    @Override
     public void update(long deltaMillis) {
         keyInput.handleInput();
 
@@ -158,44 +161,12 @@ public class AdventureGame {
      *
      * @return key manager thing.
      */
+    @Override
     public KeyInput keyInput() {
         return keyInput;
     }
 
-    public static class KeyInput {
-        private Map<Character, Boolean> keyPressedMap = new HashMap<>();
-        private Map<Character, Event<KeyInput>> keyMappings = new HashMap<>();
-
-        public KeyInput() {
-            keyMappings.put('w', this.eventMoveForwardKeyPressed);
-            keyMappings.put('s', this.eventMoveBackwardKeyPressed);
-            keyMappings.put('a', this.eventMoveLeftKeyPressed);
-            keyMappings.put('d', this.eventMoveRightKeyPressed);
-        }
-
-        public void pressKey(Character key) {
-            keyPressedMap.put(Character.toLowerCase(key), true);
-        }
-
-        public void releaseKey(Character key) {
-            keyPressedMap.put(Character.toLowerCase(key), false);
-        }
-
-        public void handleInput() {
-            keyPressedMap.entrySet()
-                    .stream()
-                    .filter(Map.Entry::getValue)
-                    .map((entry) -> keyMappings.get(entry.getKey()))
-                    .filter(event -> event != null)
-                    .forEach(keyInputEvent -> keyInputEvent.trigger(this, Collections.emptyMap()));
-        }
-
-        public final Event<KeyInput> eventMoveForwardKeyPressed = new Event<>("eventMoveForwardKeyPressed", this);
-        public final Event<KeyInput> eventMoveBackwardKeyPressed = new Event<>("eventMoveBackwardKeyPressed", this);
-        public final Event<KeyInput> eventMoveRightKeyPressed = new Event<>("eventMoveRightKeyPressed", this);
-        public final Event<KeyInput> eventMoveLeftKeyPressed = new Event<>("eventMoveLeftKeyPressed", this);
-    }
-
+    @Override
     public void onMouseDeltaChange(float deltaX, float deltaY) {
         viewAngleX = (viewAngleX + deltaX / mouseSensitivity);
         viewAngleY = (viewAngleY + deltaY / mouseSensitivity);

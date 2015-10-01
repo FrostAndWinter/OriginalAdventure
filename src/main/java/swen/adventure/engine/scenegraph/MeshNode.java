@@ -4,7 +4,7 @@ import swen.adventure.engine.rendering.GLMesh;
 import swen.adventure.engine.rendering.Material;
 import swen.adventure.engine.rendering.ObjMesh;
 import swen.adventure.engine.rendering.shaders.MaterialShader;
-import swen.adventure.engine.utils.BoundingBox;
+import swen.adventure.engine.rendering.maths.BoundingBox;
 
 import java.io.FileNotFoundException;
 import java.util.HashMap;
