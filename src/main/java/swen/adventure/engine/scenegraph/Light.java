@@ -86,17 +86,22 @@ public final class Light extends SceneNode {
     }
 
     public float intensity() {
-        return _on ? _intensity : 0f;
+        return _intensity;
     }
 
     public void setIntensity(float intensity) {
         _intensity = intensity;
     }
 
-    public void toggleLight() {
-        _on = !_on;
+
+    /** Returns whether the light is currently contributing to the scene. */
+    public boolean isOn() {
+        return _on;
     }
 
+    public void setOn(boolean isOn) {
+        _on = isOn;
+    }
 
     /** @return this light's colour multiplied by its intensity. */
     public Vector3 colourVector() {
@@ -147,7 +152,7 @@ public final class Light extends SceneNode {
      * @param worldToCameraMatrix A transformation to convert a world position to a camera space position.
      * @return A byte buffer representing the GL uniform block.
      */
-    public static ByteBuffer toLightBlock(Set<Light> lights, Matrix4 worldToCameraMatrix) {
+    public static ByteBuffer toLightBlock(List<Light> lights, Matrix4 worldToCameraMatrix) {
         Vector3 ambientIntensity = lights.stream()
                 .filter((light) -> light.type == LightType.Ambient)
                 .map(Light::colourVector)

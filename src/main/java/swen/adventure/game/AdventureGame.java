@@ -42,12 +42,6 @@ public class AdventureGame implements Game {
     private float _viewAngleX;
     private float _viewAngleY;
 
-    private Door door;
-
-    private Button redButton;
-    private Button blueButton;
-    private Button greenButton;
-
     @Override
     public void setup(int width, int height) {
         _sceneGraph = new TransformNode("root", new Vector3(0.f, 0.f, 0.f), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
@@ -97,24 +91,36 @@ public class AdventureGame implements Game {
         //bluePointLight.toggleLight();
 
 
-         door = new Door("houseDoor", _sceneGraph);
+        final Door door = new Door("houseDoor", _sceneGraph);
 
         TransformNode redLightButtonTransform = new TransformNode("redButtonTransform", _sceneGraph, true, new Vector3(50, 0, 100), new Quaternion(), new Vector3(20, 20, 20));
-        redButton = new Button("redLightButton", redLightButtonTransform);
+        final Button redButton = new Button("redLightButton", redLightButtonTransform);
+        redButton.mesh().setMaterialOverride(new Material(new Vector3(2.f, 0.f, 0.f), new Vector3(3.f, 0.f, 0.f), Vector3.zero, 0.f, 1.f));
         redButton.eventButtonPressed.addAction(redButton, (eventObject, triggeringObject, listener, data) -> {
-            redPointLight.toggleLight();
+            redPointLight.setOn(!redPointLight.isOn());
+            redButton.mesh().materialOverride().ifPresent(material -> {
+                material.setAmbientColour(redPointLight.isOn() ? new Vector3(5.f, 0.f, 0.f) : new Vector3(1.f, 0.f, 0.f));
+            });
         });
 
         TransformNode blueLightButtonTransform = new TransformNode("blueButtonTransform", _sceneGraph, true, new Vector3(100, 0, 100), new Quaternion(), new Vector3(20, 20, 20));
-        blueButton = new Button("blueLightButton", blueLightButtonTransform);
+        final Button blueButton = new Button("blueLightButton", blueLightButtonTransform);
+        blueButton.mesh().setMaterialOverride(new Material(new Vector3(0.f, 0.f, 2.f), new Vector3(0.f, 0.f, 3.f), Vector3.zero, 0.f, 1.f));
         blueButton.eventButtonPressed.addAction(blueButton, (eventObject, triggeringObject, listener, data) -> {
-            bluePointLight.toggleLight();
+            bluePointLight.setOn(!bluePointLight.isOn());
+            blueButton.mesh().materialOverride().ifPresent(material -> {
+                material.setAmbientColour(bluePointLight.isOn() ? new Vector3(0.f, 0.f, 5.f) : new Vector3(0.f, 0.f, 1.f));
+            });
         });
 
         TransformNode greenLightButtonTransform = new TransformNode("blueButtonTransform", _sceneGraph, true, new Vector3(150, 0, 100), new Quaternion(), new Vector3(20, 20, 20));
-        greenButton = new Button("greenLightButton", greenLightButtonTransform);
+        final Button greenButton = new Button("greenLightButton", greenLightButtonTransform);
+        greenButton.mesh().setMaterialOverride(new Material(new Vector3(0.f, 2.f, 0.f), new Vector3(0.f, 3.f, 0.f), Vector3.zero, 0.f, 1.f));
         greenButton.eventButtonPressed.addAction(greenButton, (eventObject, triggeringObject, listener, data) -> {
-            greenPointLight.toggleLight();
+            greenPointLight.setOn(!greenPointLight.isOn());
+            greenButton.mesh().materialOverride().ifPresent(material -> {
+                material.setAmbientColour(greenPointLight.isOn() ? new Vector3(0.f, 5.f, 0.f) : new Vector3(0.f, 1.f, 0.f));
+            });
         });
 
         _glRenderer = new GLRenderer(width, height);
@@ -132,7 +138,7 @@ public class AdventureGame implements Game {
 
     private static final Action<MouseInput, MouseInput, AdventureGame> clickAction = (eventObject, triggeringObject, listener, data) -> {
            listener._pickerRenderer.selectedNode()
-                   .ifPresent(meshNode -> meshNode.eventMeshClicked.trigger(triggeringObject, Collections.emptyMap()));
+                   .ifPresent(meshNode -> meshNode.eventMeshClicked.trigger(listener.player, Collections.emptyMap()));
     };
 
     private void setupUI(int width, int height) {

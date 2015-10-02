@@ -22,8 +22,8 @@ public class Door extends GameObject {
 
     private boolean open = false;
 
-    public final static Action<MeshNode, MouseInput, Door> actionToggleDoor =
-            (eventObject, triggeringObject, door, data) -> door.toggle();
+    public final static Action<MeshNode, Player, Door> actionToggleDoor =
+            (eventObject, player, door, data) -> door.toggle();
 
     private AnimableProperty doorRotationProgress = new AnimableProperty(0);
 
