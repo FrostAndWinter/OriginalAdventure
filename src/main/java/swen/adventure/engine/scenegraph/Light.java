@@ -1,6 +1,7 @@
 package swen.adventure.engine.scenegraph;
 
 import org.lwjgl.BufferUtils;
+import swen.adventure.engine.Action;
 import swen.adventure.engine.rendering.maths.Matrix4;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.rendering.maths.Vector4;
@@ -49,6 +50,7 @@ public final class Light extends SceneNode {
     /** The light's colour as a unit vector. */
     public final Vector3 colour;
     private float _intensity;
+    private boolean _on;
     public final Optional<Vector3> direction;
     public final LightFalloff falloff;
 
@@ -61,6 +63,7 @@ public final class Light extends SceneNode {
 
         this.type = type;
         _intensity = intensity * colourMagnitude;
+        _on = true;
         this.colour = colour.normalise();
         this.direction = direction.map(Vector3::normalise);
         this.falloff = falloff;
@@ -88,6 +91,16 @@ public final class Light extends SceneNode {
 
     public void setIntensity(float intensity) {
         _intensity = intensity;
+    }
+
+
+    /** Returns whether the light is currently contributing to the scene. */
+    public boolean isOn() {
+        return _on;
+    }
+
+    public void setOn(boolean isOn) {
+        _on = isOn;
     }
 
     /** @return this light's colour multiplied by its intensity. */
@@ -122,7 +135,12 @@ public final class Light extends SceneNode {
             buffer.putFloat(positionInCameraSpace.v[i]);
         }
         for (int i = 0; i < 3; i++) {
-            buffer.putFloat(intensity.v[i]);
+
+            if (_on) {
+                buffer.putFloat(intensity.v[i]);
+            } else {
+                buffer.putFloat(0);
+            }
         }
 
         buffer.putFloat(this.falloff.glValue);
@@ -134,7 +152,7 @@ public final class Light extends SceneNode {
      * @param worldToCameraMatrix A transformation to convert a world position to a camera space position.
      * @return A byte buffer representing the GL uniform block.
      */
-    public static ByteBuffer toLightBlock(Set<Light> lights, Matrix4 worldToCameraMatrix) {
+    public static ByteBuffer toLightBlock(List<Light> lights, Matrix4 worldToCameraMatrix) {
         Vector3 ambientIntensity = lights.stream()
                 .filter((light) -> light.type == LightType.Ambient)
                 .map(Light::colourVector)

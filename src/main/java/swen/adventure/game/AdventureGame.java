@@ -1,5 +1,6 @@
 package swen.adventure.game;
 
+import org.lwjgl.Sys;
 import processing.opengl.PGraphics2D;
 import swen.adventure.engine.*;
 import swen.adventure.engine.rendering.GLRenderer;
@@ -11,6 +12,7 @@ import swen.adventure.engine.scenegraph.*;
 import swen.adventure.engine.ui.color.Color;
 import swen.adventure.engine.ui.components.Frame;
 import swen.adventure.engine.utils.SharedLibraryLoader;
+import swen.adventure.game.scenenodes.Button;
 import swen.adventure.game.scenenodes.Door;
 import swen.adventure.game.ui.components.Inventory;
 import swen.adventure.engine.ui.components.Panel;
@@ -39,8 +41,6 @@ public class AdventureGame implements Game {
     private float _mouseSensitivity = 1;
     private float _viewAngleX;
     private float _viewAngleY;
-
-    private Door door;
 
     @Override
     public void setup(int width, int height) {
@@ -77,11 +77,51 @@ public class AdventureGame implements Game {
 //        table.setMaterialOverride(new Material(Vector3.zero, new Vector3(0.8f, 0.3f, 0.4f), new Vector3(0.7f, 0.6f, 0.6f), 0.f, 0.2f));
 //        new GameObject("tableGameObject", tableTransform);
 
-        Light.createAmbientLight("ambientLight", _sceneGraph, new Vector3(0.3f, 0.5f, 0.4f), 3.f);
-        Light.createDirectionalLight("directionalLight", _sceneGraph, new Vector3(0.7f, 0.3f, 0.1f), 7.f, new Vector3(0.4f, 0.2f, 0.6f));
-        Light.createPointLight("pointLight", cameraTransform, new Vector3(0.4f, 0.5f, 0.8f), 9.f, Light.LightFalloff.Quadratic);
+        Light.createAmbientLight("ambientLight", _sceneGraph, new Vector3(0.3f, 0.5f, 0.4f), 1.5f);
+        //Light.createDirectionalLight("directionalLight", _sceneGraph, new Vector3(0.7f, 0.3f, 0.1f), 7.f, new Vector3(0.4f, 0.2f, 0.6f));
+        //Light.createPointLight("pointLight", cameraTransform, new Vector3(0.4f, 0.5f, 0.8f), 9.f, Light.LightFalloff.Quadratic);
 
-         door = new Door("houseDoor", _sceneGraph);
+        Light redPointLight = Light.createPointLight("redPointLight", _sceneGraph, new Vector3(1f, 0f, 0f), 15f, Light.LightFalloff.Linear);
+        //redPointLight.toggleLight();
+
+        Light greenPointLight = Light.createPointLight("greenPointLight", _sceneGraph, new Vector3(0f, 1f, 0f), 15f, Light.LightFalloff.Linear);
+        //greenPointLight.toggleLight();
+
+        Light bluePointLight = Light.createPointLight("bluePointLight", _sceneGraph, new Vector3(0f, 0f, 1f), 15f, Light.LightFalloff.Linear);
+        //bluePointLight.toggleLight();
+
+
+        final Door door = new Door("houseDoor", _sceneGraph);
+
+        TransformNode redLightButtonTransform = new TransformNode("redButtonTransform", _sceneGraph, true, new Vector3(50, 0, 100), new Quaternion(), new Vector3(20, 20, 20));
+        final Button redButton = new Button("redLightButton", redLightButtonTransform);
+        redButton.mesh().setMaterialOverride(new Material(new Vector3(2.f, 0.f, 0.f), new Vector3(3.f, 0.f, 0.f), Vector3.zero, 0.f, 1.f));
+        redButton.eventButtonPressed.addAction(redButton, (eventObject, triggeringObject, listener, data) -> {
+            redPointLight.setOn(!redPointLight.isOn());
+            redButton.mesh().materialOverride().ifPresent(material -> {
+                material.setAmbientColour(redPointLight.isOn() ? new Vector3(5.f, 0.f, 0.f) : new Vector3(1.f, 0.f, 0.f));
+            });
+        });
+
+        TransformNode blueLightButtonTransform = new TransformNode("blueButtonTransform", _sceneGraph, true, new Vector3(100, 0, 100), new Quaternion(), new Vector3(20, 20, 20));
+        final Button blueButton = new Button("blueLightButton", blueLightButtonTransform);
+        blueButton.mesh().setMaterialOverride(new Material(new Vector3(0.f, 0.f, 2.f), new Vector3(0.f, 0.f, 3.f), Vector3.zero, 0.f, 1.f));
+        blueButton.eventButtonPressed.addAction(blueButton, (eventObject, triggeringObject, listener, data) -> {
+            bluePointLight.setOn(!bluePointLight.isOn());
+            blueButton.mesh().materialOverride().ifPresent(material -> {
+                material.setAmbientColour(bluePointLight.isOn() ? new Vector3(0.f, 0.f, 5.f) : new Vector3(0.f, 0.f, 1.f));
+            });
+        });
+
+        TransformNode greenLightButtonTransform = new TransformNode("blueButtonTransform", _sceneGraph, true, new Vector3(150, 0, 100), new Quaternion(), new Vector3(20, 20, 20));
+        final Button greenButton = new Button("greenLightButton", greenLightButtonTransform);
+        greenButton.mesh().setMaterialOverride(new Material(new Vector3(0.f, 2.f, 0.f), new Vector3(0.f, 3.f, 0.f), Vector3.zero, 0.f, 1.f));
+        greenButton.eventButtonPressed.addAction(greenButton, (eventObject, triggeringObject, listener, data) -> {
+            greenPointLight.setOn(!greenPointLight.isOn());
+            greenButton.mesh().materialOverride().ifPresent(material -> {
+                material.setAmbientColour(greenPointLight.isOn() ? new Vector3(0.f, 5.f, 0.f) : new Vector3(0.f, 1.f, 0.f));
+            });
+        });
 
         _glRenderer = new GLRenderer(width, height);
         _pickerRenderer = new PickerRenderer();
@@ -98,7 +138,7 @@ public class AdventureGame implements Game {
 
     private static final Action<MouseInput, MouseInput, AdventureGame> clickAction = (eventObject, triggeringObject, listener, data) -> {
            listener._pickerRenderer.selectedNode()
-                   .ifPresent(meshNode -> meshNode.eventMeshClicked.trigger(triggeringObject, Collections.emptyMap()));
+                   .ifPresent(meshNode -> meshNode.eventMeshClicked.trigger(listener.player, Collections.emptyMap()));
     };
 
     private void setupUI(int width, int height) {

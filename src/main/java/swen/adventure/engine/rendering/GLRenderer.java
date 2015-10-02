@@ -8,7 +8,11 @@ import swen.adventure.engine.scenegraph.Light;
 import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.SceneNode;
 
+<<<<<<< HEAD
+import java.util.stream.Collectors;
+=======
 import java.util.Set;
+>>>>>>> master
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.*;
@@ -87,7 +91,11 @@ public class GLRenderer {
         _defaultShader.useProgram();
 
         _defaultShader.setMaxIntensity(cameraNode.hdrMaxIntensity());
+<<<<<<< HEAD
+        _defaultShader.setLightData(Light.toLightBlock(sceneGraph.allLights().stream().filter(Light::isOn).collect(Collectors.toList()), cameraNode.worldToNodeSpaceTransform()));
+=======
         _defaultShader.setLightData(Light.toLightBlock(lights, cameraNode.worldToNodeSpaceTransform()));
+>>>>>>> master
 
         Matrix4 worldToCameraMatrix = cameraNode.worldToNodeSpaceTransform();
 
