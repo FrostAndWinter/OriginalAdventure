@@ -146,6 +146,41 @@ public class Quaternion {
         return new Quaternion(this.x * cosHalfAngle + this.y * sinHalfAngle, -this.x * sinHalfAngle + this.y * cosHalfAngle, this.z * cosHalfAngle + this.w * sinHalfAngle, -this.z * sinHalfAngle + this.w * cosHalfAngle);
     }
 
+    public Quaternion slerpTo(Quaternion other, float t) {
+        // Calculate angle between them.
+        double cosHalfTheta = this.w * other.w + this.x * other.x + this.y * other.y + this.z * other.z;
+
+        // if this == other or this == -other then theta = 0 and we can return this
+        if (Math.abs(cosHalfTheta) >= 1.0){
+            return this;
+        }
+
+        // Calculate temporary values.
+        double halfTheta = Math.acos(cosHalfTheta);
+        double sinHalfTheta = Math.sqrt(1.0 - cosHalfTheta * cosHalfTheta);
+
+        double x, y, z, w;
+
+        // if theta = 180 degrees then result is not fully defined
+        // we could rotate around any axis normal to qa or qb
+        if (Math.abs(sinHalfTheta) < 0.001){
+            w = (this.w * 0.5 + other.w * 0.5);
+            x = (this.x * 0.5 + other.x * 0.5);
+            y = (this.y * 0.5 + other.y * 0.5);
+            z = (this.z * 0.5 + other.z * 0.5);
+        } else {
+            double ratioA = Math.sin((1 - t) * halfTheta) / sinHalfTheta;
+            double ratioB = Math.sin(t * halfTheta) / sinHalfTheta;
+
+            //calculate Quaternion.
+            w = (this.w * ratioA + other.w * ratioB);
+            x = (this.x * ratioA + other.x * ratioB);
+            y = (this.y * ratioA + other.y * ratioB);
+            z = (this.z * ratioA + other.z * ratioB);
+        }
+        return new Quaternion((float)x, (float)y, (float)z, (float)w);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
