@@ -55,4 +55,12 @@ public interface Server<I, M> {
      * @return list of ids to connected clients
      */
     List<I> getClientIds();
+
+    /**
+     * Try to send message to all connected clients
+     *
+     * @param message contents to be sent
+     * @param exclude client IDs that will not be sent the message
+     */
+    void sendAll(M message, I... exclude);
 }

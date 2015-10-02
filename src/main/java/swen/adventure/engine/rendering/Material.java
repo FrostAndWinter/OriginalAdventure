@@ -39,10 +39,13 @@ public class Material {
 
     public static Material DefaultMaterial = new Material();
 
-    private static final Sampler ambientMapSampler = new Sampler(TextureUnit.AmbientColourUnit);
-    private static final Sampler diffuseMapSampler = new Sampler(TextureUnit.DiffuseColourUnit);
-    private static final Sampler specularColourMapSampler = new Sampler(TextureUnit.SpecularColourUnit);
-    private static final Sampler specularityMapSampler = new Sampler(TextureUnit.SpecularityUnit);
+    // Samplers are lazily loaded in bindSamplers
+    // This is because some computers do not support glGenSamplers, if this is called statically
+    // it makes the Material class fail to load and crashes in other parts of the program
+    private static Sampler ambientMapSampler;
+    private static Sampler diffuseMapSampler;
+    private static Sampler specularColourMapSampler;
+    private static Sampler specularityMapSampler;
 
     private Vector3 _ambientColour;
     private Vector3 _diffuseColour;
@@ -184,17 +187,41 @@ public class Material {
     }
 
     public static void bindSamplers() {
-        Material.ambientMapSampler.bindToTextureUnit();
-        Material.diffuseMapSampler.bindToTextureUnit();
-        Material.specularColourMapSampler.bindToTextureUnit();
-        Material.specularityMapSampler.bindToTextureUnit();
+        try {
+            if (ambientMapSampler == null) {
+                ambientMapSampler = new Sampler(TextureUnit.AmbientColourUnit);
+            }
+            Material.ambientMapSampler.bindToTextureUnit();
+            if (diffuseMapSampler == null) {
+                diffuseMapSampler = new Sampler(TextureUnit.DiffuseColourUnit);
+            }
+            Material.diffuseMapSampler.bindToTextureUnit();
+            if (specularColourMapSampler == null) {
+                specularColourMapSampler = new Sampler(TextureUnit.SpecularColourUnit);
+            }
+            Material.specularColourMapSampler.bindToTextureUnit();
+            if (specularityMapSampler == null) {
+                specularityMapSampler = new Sampler(TextureUnit.SpecularityUnit);
+            }
+            Material.specularityMapSampler.bindToTextureUnit();
+        } catch (IllegalStateException ex) {
+
+        }
     }
 
     public static void unbindSamplers() {
-        Material.ambientMapSampler.unbindSampler();
-        Material.diffuseMapSampler.unbindSampler();
-        Material.specularColourMapSampler.unbindSampler();
-        Material.specularityMapSampler.unbindSampler();
+        if (ambientMapSampler != null) {
+            Material.ambientMapSampler.unbindSampler();
+        }
+        if (diffuseMapSampler != null) {
+            Material.diffuseMapSampler.unbindSampler();
+        }
+        if (specularColourMapSampler != null) {
+            Material.specularColourMapSampler.unbindSampler();
+        }
+        if (specularityMapSampler != null) {
+            Material.specularityMapSampler.unbindSampler();
+        }
     }
 
     public void bindTextures() {

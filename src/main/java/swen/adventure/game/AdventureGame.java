@@ -190,7 +190,7 @@ public class AdventureGame implements Game {
     private void render() {
         CameraNode camera = (CameraNode) _sceneGraph.nodeWithID("playerCamera").get();
         _pickerRenderer.render(_sceneGraph, camera);
-        _glRenderer.render(_sceneGraph, camera);
+        _glRenderer.render(_sceneGraph, _sceneGraph.allLights(), camera);
 
         _pGraphics.beginDraw();
         _frame.draw(_pGraphics);

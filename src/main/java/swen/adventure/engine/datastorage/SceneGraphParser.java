@@ -48,15 +48,18 @@ public class SceneGraphParser {
 
     private static SceneNode parseNode(Node xmlNode, Optional<TransformNode> parent) {
         String name = xmlNode.getNodeName();
-        if(name.equals(TRANSFORM_NODE_TAG))
-            return parseTransformNode(xmlNode, parent);
-        else if(name.equals(GAME_OBJECT_TAG)) {
-            if(!parent.isPresent())
-                fail("A GameObject should always have a transform node as a parent.");
+        switch (name) {
+            case TRANSFORM_NODE_TAG:
+                return parseTransformNode(xmlNode, parent);
+            case GAME_OBJECT_TAG:
+                if (!parent.isPresent())
+                    fail("A GameObject should always have a transform node as a parent.");
 
-            return parseGameObject(xmlNode, parent.get());
-        } else
-            fail("Unrecognised node: " + name);
+                return parseGameObject(xmlNode, parent.get());
+            default:
+                fail("Unrecognised node: " + name);
+                break;
+        }
 
         return null; // dead code
     }

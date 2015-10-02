@@ -34,7 +34,7 @@ public class BundleSerializerTest {
 
         isXmlCorrect(
                 "<BundleObject><property name=\"id\"><value type=\"java.lang.Integer\">25</value></property>" +
-                        "<property name=\"nest\"><value type=\"swen.adventure.datastorage.BundleObject\">" +
+                        "<property name=\"nest\"><value type=\"swen.adventure.engine.datastorage.BundleObject\">" +
                         "<BundleObject><property name=\"key\"><value type=\"java.lang.Float\">3.0</value></property>" +
                         "</BundleObject></value></property></BundleObject>",
                 xml);

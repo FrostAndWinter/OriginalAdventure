@@ -11,9 +11,9 @@ import java.util.stream.Collectors;
 /**
  * Created by David Barnett, Student ID 3003123764, on 17/09/15.
  */
-public class NetworkServer implements Server<String, String>, Session.SessionStrategy {
+public class NetworkServer implements Server<String, EventBox>, Session.SessionStrategy {
     private final Map<String, Session> clients;
-    private final Queue<String> queue;
+    private final Queue<EventBox> queue;
     private ServerSocket serverSocket;
     private Thread acceptThread;
 
@@ -61,7 +61,7 @@ public class NetworkServer implements Server<String, String>, Session.SessionStr
     }
 
     @Override
-    public boolean send(String id, String message) {
+    public boolean send(String id, EventBox message) {
         if (!this.isRunning()) {
             throw new RuntimeException("Cannot send with a server which is not running");
         }
@@ -81,6 +81,12 @@ public class NetworkServer implements Server<String, String>, Session.SessionStr
             System.out.println("Server: Failed to send to " + id + ": " + ex);
             return false;
         }
+    }
+
+    @Override
+    public void sendAll(EventBox message, String... exclude) {
+        List<String> ex = Arrays.asList(exclude);
+        this.getClientIds().stream().filter(id -> !ex.contains(id)).forEach(id -> send(id, message));
     }
 
     @Override
@@ -104,11 +110,11 @@ public class NetworkServer implements Server<String, String>, Session.SessionStr
      * @see Server
      */
     @Override
-    public synchronized Optional<String> poll() {
+    public synchronized Optional<EventBox> poll() {
         if (!this.isRunning()) {
             throw new RuntimeException("Cannot poll a server which is not running");
         }
-        String event = queue.poll();
+        EventBox event = queue.poll();
         if (event != null) {
             return Optional.of(event);
         } else {
@@ -131,7 +137,7 @@ public class NetworkServer implements Server<String, String>, Session.SessionStr
                 break;
 
             case CLIENT_DATA:
-                queue.add(new String(packet.getPayload()));
+                queue.add(EventBox.fromBytes(packet.getPayload()));
                 break;
             case PING:
 
@@ -190,7 +196,7 @@ public class NetworkServer implements Server<String, String>, Session.SessionStr
     // Example usage & live testing
     public static void main(String[] args) {
         try {
-            Server<String, String> srv = new NetworkServer();
+            Server<String, EventBox> srv = new NetworkServer();
             NetworkClient cli = new NetworkClient("JohnDoe");
             int i = 0;
             srv.start(1025);
@@ -198,14 +204,12 @@ public class NetworkServer implements Server<String, String>, Session.SessionStr
 
             while(true) {
                 // emulate game-loop
-                Optional<String> res = srv.poll();
+                Optional<EventBox> res = srv.poll();
                 if (res.isPresent()) {
                     System.out.println("srv Polled: " + res.get());
                 }
 
-                for (String id : srv.getClientIds()) {
-                    srv.send(id, new String(new byte[4096]));
-                }
+                srv.sendAll(new EventBox("hey", "it's", "cool", "guy", Collections.EMPTY_MAP));
 
                 try {
                     // Kill server after 10sec to test shutdown
