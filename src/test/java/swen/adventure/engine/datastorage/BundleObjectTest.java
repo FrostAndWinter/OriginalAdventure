@@ -2,12 +2,16 @@ package swen.adventure.engine.datastorage;
 
 import org.junit.Test;
 
+import java.io.File;
+
 import static org.junit.Assert.*;
 
 /**
  * Created by Liam O'Neill, Student ID 300312734, on 16/09/15.
  */
 public class BundleObjectTest {
+
+    private static String TEMP_DIR  = "/tmp/";
 
     private final BundleObject bundle = new BundleObject();
 
@@ -109,6 +113,21 @@ public class BundleObjectTest {
         bundle.put("name", 5);
         BundleObject other = new BundleObject();
         assertNotEquals(bundle, other);
+    }
+
+    @Test
+    public void testSavingToDisk() throws Exception {
+        BundleObject bundle = new BundleObject();
+        bundle
+                .put("playerName", "Daniel")
+                .put("age", 2)
+                .put("id", "747fc88");
+
+        BundleSerializer serializer = new BundleSerializer();
+        File file = new File(TEMP_DIR + "test.xml");
+        serializer.toXmlFile(bundle, file);
+        BundleObject loaded = serializer.fromXml(file);
+        assertEquals(bundle, loaded);
     }
 
     private static void testEquals(BundleObject bundleObject1, BundleObject bundleObject2) throws Exception {
