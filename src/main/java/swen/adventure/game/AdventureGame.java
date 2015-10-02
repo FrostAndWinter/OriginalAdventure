@@ -83,17 +83,17 @@ public class AdventureGame implements Game {
 //        table.setMaterialOverride(new Material(Vector3.zero, new Vector3(0.8f, 0.3f, 0.4f), new Vector3(0.7f, 0.6f, 0.6f), 0.f, 0.2f));
 //        new GameObject("tableGameObject", tableTransform);
 
-        //Light.createAmbientLight("ambientLight", _sceneGraph, new Vector3(0.3f, 0.5f, 0.4f), 3.f);
+        Light.createAmbientLight("ambientLight", _sceneGraph, new Vector3(0.3f, 0.5f, 0.4f), 1.5f);
         //Light.createDirectionalLight("directionalLight", _sceneGraph, new Vector3(0.7f, 0.3f, 0.1f), 7.f, new Vector3(0.4f, 0.2f, 0.6f));
         //Light.createPointLight("pointLight", cameraTransform, new Vector3(0.4f, 0.5f, 0.8f), 9.f, Light.LightFalloff.Quadratic);
 
-        Light redPointLight = Light.createPointLight("redPointLight", cameraTransform, new Vector3(1f, 0f, 0f), 9.f, Light.LightFalloff.Linear);
+        Light redPointLight = Light.createPointLight("redPointLight", _sceneGraph, new Vector3(1f, 0f, 0f), 15f, Light.LightFalloff.Linear);
         //redPointLight.toggleLight();
 
-        Light greenPointLight = Light.createPointLight("greenPointLight", cameraTransform, new Vector3(0f, 1f, 0f), 9.f, Light.LightFalloff.Linear);
+        Light greenPointLight = Light.createPointLight("greenPointLight", _sceneGraph, new Vector3(0f, 1f, 0f), 15f, Light.LightFalloff.Linear);
         //greenPointLight.toggleLight();
 
-        Light bluePointLight = Light.createPointLight("bluePointLight", cameraTransform, new Vector3(0f, 0f, 1f), 9.f, Light.LightFalloff.Linear);
+        Light bluePointLight = Light.createPointLight("bluePointLight", _sceneGraph, new Vector3(0f, 0f, 1f), 15f, Light.LightFalloff.Linear);
         //bluePointLight.toggleLight();
 
 
@@ -103,21 +103,18 @@ public class AdventureGame implements Game {
         redButton = new Button("redLightButton", redLightButtonTransform);
         redButton.eventButtonPressed.addAction(redButton, (eventObject, triggeringObject, listener, data) -> {
             redPointLight.toggleLight();
-            System.out.println(redPointLight.intensity());
         });
 
         TransformNode blueLightButtonTransform = new TransformNode("blueButtonTransform", _sceneGraph, true, new Vector3(100, 0, 100), new Quaternion(), new Vector3(20, 20, 20));
         blueButton = new Button("blueLightButton", blueLightButtonTransform);
         blueButton.eventButtonPressed.addAction(blueButton, (eventObject, triggeringObject, listener, data) -> {
             bluePointLight.toggleLight();
-            System.out.println(bluePointLight.intensity());
         });
 
         TransformNode greenLightButtonTransform = new TransformNode("blueButtonTransform", _sceneGraph, true, new Vector3(150, 0, 100), new Quaternion(), new Vector3(20, 20, 20));
         greenButton = new Button("greenLightButton", greenLightButtonTransform);
         greenButton.eventButtonPressed.addAction(greenButton, (eventObject, triggeringObject, listener, data) -> {
             greenPointLight.toggleLight();
-            System.out.println(greenPointLight.intensity());
         });
 
         _glRenderer = new GLRenderer(width, height);

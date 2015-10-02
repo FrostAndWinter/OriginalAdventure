@@ -54,9 +54,6 @@ public final class Light extends SceneNode {
     public final Optional<Vector3> direction;
     public final LightFalloff falloff;
 
-    public static final Action<Void, Void, Light> toggleLight =
-            (eventObject, triggeringObject, light, data) -> light.toggleLight();
-
     private Light(final String id, final TransformNode parent, final boolean isDynamic,
                   final LightType type, final Vector3 colour, final float intensity,
                   final Optional<Vector3> direction, final LightFalloff falloff) {
@@ -133,7 +130,12 @@ public final class Light extends SceneNode {
             buffer.putFloat(positionInCameraSpace.v[i]);
         }
         for (int i = 0; i < 3; i++) {
-            buffer.putFloat(intensity.v[i]);
+
+            if (_on) {
+                buffer.putFloat(intensity.v[i]);
+            } else {
+                buffer.putFloat(0);
+            }
         }
 
         buffer.putFloat(this.falloff.glValue);
