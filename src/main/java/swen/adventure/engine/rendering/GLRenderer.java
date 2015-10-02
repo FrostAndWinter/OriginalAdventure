@@ -8,6 +8,8 @@ import swen.adventure.engine.scenegraph.Light;
 import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.SceneNode;
 
+import java.util.Set;
+
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL32.*;
@@ -73,7 +75,7 @@ public class GLRenderer {
         glDisable(GL_DEPTH_TEST);
     }
 
-    public void render(SceneNode sceneGraph, CameraNode cameraNode) {
+    public void render(SceneNode sceneGraph, Set<Light> lights, CameraNode cameraNode) {
 
         if (cameraNode.fieldOfView() != _currentFOV) {
             _currentFOV = cameraNode.fieldOfView();
@@ -85,7 +87,7 @@ public class GLRenderer {
         _defaultShader.useProgram();
 
         _defaultShader.setMaxIntensity(cameraNode.hdrMaxIntensity());
-        _defaultShader.setLightData(Light.toLightBlock(sceneGraph.allLights(), cameraNode.worldToNodeSpaceTransform()));
+        _defaultShader.setLightData(Light.toLightBlock(lights, cameraNode.worldToNodeSpaceTransform()));
 
         Matrix4 worldToCameraMatrix = cameraNode.worldToNodeSpaceTransform();
 
