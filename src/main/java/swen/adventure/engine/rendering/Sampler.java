@@ -2,6 +2,7 @@ package swen.adventure.engine.rendering;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.*;
+import static org.lwjgl.opengl.EXTTextureFilterAnisotropic.*;
 import static org.lwjgl.opengl.GL33.*;
 
 /**
@@ -19,10 +20,11 @@ public class Sampler {
 
         glBindSampler(textureUnit.glUnit, this.glSamplerRef);
 
-        glSamplerParameteri(this.glSamplerRef, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glSamplerParameteri(this.glSamplerRef, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glSamplerParameteri(this.glSamplerRef, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glSamplerParameteri(this.glSamplerRef, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glSamplerParameteri(this.glSamplerRef, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glSamplerParameteri(this.glSamplerRef, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glSamplerParameterf(this.glSamplerRef, GL_TEXTURE_MAX_ANISOTROPY_EXT, 4.0f);
     }
 
     public void bindToTextureUnit() {
