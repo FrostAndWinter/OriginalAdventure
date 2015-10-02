@@ -5,7 +5,9 @@ import swen.adventure.engine.Utilities;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -73,7 +75,7 @@ public class BundleSerializer {
             if(class0 == BundleObject.class)
                 instance = readBundleObject(value);
             else if(class0 == BundleArray.class)
-                instance = null;
+                instance = readBundleArray(value);
             else
                 instance = PARSER_MANAGER.convertFromString(value.getTextContent(), class0);
 
@@ -83,16 +85,30 @@ public class BundleSerializer {
         }
     }
 
-    private static void writeBundleObject(Node parent, Document doc, BundleObject bundleObject){
-        Element root = doc.createElement("BundleObject");
+    private static BundleArray readBundleArray(Node node) {
+        NodeList nList = node.getChildNodes();
+        List<Property> storedValues = new ArrayList<>();
+        for (int i = 0; i < nList.getLength(); i++) {
+            Property property = loadProperty(nList.item(i));
+            storedValues.add(property);
+        }
+        return new BundleArray(storedValues);
+    }
+
+    private static void writeBundleObject(Node parent, Document document, BundleObject bundleObject){
+        Element root = document.createElement("BundleObject");
         parent.appendChild(root);
 
         bundleObject.getProperties()
-                .forEach(property -> addProperty(property, doc, root));
+                .forEach(property -> addProperty(property, document, root));
     }
 
-    private static void writeBundleArray(Node parent, Document document, BundleArray value) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    private static void writeBundleArray(Node parent, Document document, BundleArray bundleArray) {
+        Element root = document.createElement("BundleArray");
+        parent.appendChild(root);
+
+        bundleArray.getProperties()
+                .forEach(property -> addProperty(property, document, root));
     }
 
     private static void addProperty(Property property, Document document, Element parent){
@@ -109,7 +125,8 @@ public class BundleSerializer {
         } else if(property.class0 == BundleArray.class) {
             writeBundleArray(valueElem, document, (BundleArray) property.value);
         } else {
-            Node valueText = document.createTextNode(PARSER_MANAGER.convertToString(property.value, (Class<Object>)property.class0));
+            @SuppressWarnings("unchecked")
+            Node valueText = document.createTextNode(PARSER_MANAGER.convertToString(property.value, (Class)property.class0));
             valueElem.appendChild(valueText);
         }
     }

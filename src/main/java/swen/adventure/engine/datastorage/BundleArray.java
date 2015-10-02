@@ -1,6 +1,7 @@
 package swen.adventure.engine.datastorage;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,7 +10,15 @@ import java.util.stream.Collectors;
  */
 public class BundleArray {
 
-    private final List<Property> storedValues = new ArrayList<>();
+    private final List<Property> storedValues;
+
+    public BundleArray(){
+        this.storedValues = new ArrayList<>();
+    }
+
+    BundleArray(List<Property> storedValues) {
+        this.storedValues = new ArrayList<>(storedValues);
+    }
 
     public BundleArray put(int value) { putValue(size(), value); return this; }
     public BundleArray put(int index, int value) { putValue(index, value); return this; }
@@ -77,5 +86,9 @@ public class BundleArray {
                 .map(Object::toString)
                 .collect(Collectors.toList());
         return "BundleArray{" + String.join(",", toStrings) + '}';
+    }
+
+    List<Property> getProperties() {
+        return Collections.unmodifiableList(storedValues);
     }
 }
