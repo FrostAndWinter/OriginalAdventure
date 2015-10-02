@@ -11,6 +11,7 @@ import swen.adventure.engine.scenegraph.*;
 import swen.adventure.engine.ui.color.Color;
 import swen.adventure.engine.ui.components.Frame;
 import swen.adventure.engine.utils.SharedLibraryLoader;
+import swen.adventure.game.scenenodes.Button;
 import swen.adventure.game.scenenodes.Door;
 import swen.adventure.game.ui.components.Inventory;
 import swen.adventure.engine.ui.components.Panel;
@@ -41,6 +42,8 @@ public class AdventureGame implements Game {
     private float _viewAngleY;
 
     private Door door;
+
+    private Button button;
 
     @Override
     public void setup(int width, int height) {
@@ -82,6 +85,10 @@ public class AdventureGame implements Game {
         Light.createPointLight("pointLight", cameraTransform, new Vector3(0.4f, 0.5f, 0.8f), 9.f, Light.LightFalloff.Quadratic);
 
          door = new Door("houseDoor", _sceneGraph);
+
+        button = new Button("testButton", _sceneGraph);
+
+        button.eventButtonPressed.addAction(button, (eventObject, triggeringObject, listener, data) -> System.out.println("Hello"));
 
         _glRenderer = new GLRenderer(width, height);
         _pickerRenderer = new PickerRenderer();
