@@ -70,7 +70,7 @@ public class AdventureGame implements Game {
         MeshNode playerMesh = new MeshNode("rocket.obj", playerTableTransform);
         new CameraNode("playerCamera", cameraTransform);
         player = new Player("player", playerTransform);
-        player.collisionNode().setBoundingBox(new BoundingBox(new Vector3(-20, -20, -10), new Vector3(20, 20, 10)));
+        player.collisionNode().setBoundingBox(new BoundingBox(new Vector3(-10, -20, -10), new Vector3(10, 20, 10)));
 
 //        TransformNode tableTransform = new TransformNode("ObjBoxTransform", _sceneGraph, true, new Vector3(20f, 5.f, -5.f), new Quaternion(), new Vector3(3.f, 3.f, 3.f));
 //        MeshNode table = new MeshNode("tableMesh", "Table.obj", tableTransform);
