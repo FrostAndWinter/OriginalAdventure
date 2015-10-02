@@ -6,6 +6,7 @@ import java.util.Map;
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 16/09/15.
  */
+@FunctionalInterface
 public interface Action<E, T, L> {
     void execute(E eventObject, T triggeringObject, L listener, Map<String, Object> data);
 
