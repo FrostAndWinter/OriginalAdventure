@@ -1,6 +1,7 @@
 package swen.adventure.engine.scenegraph;
 
 import org.lwjgl.BufferUtils;
+import swen.adventure.engine.Action;
 import swen.adventure.engine.rendering.maths.Matrix4;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.rendering.maths.Vector4;
@@ -49,8 +50,12 @@ public final class Light extends SceneNode {
     /** The light's colour as a unit vector. */
     public final Vector3 colour;
     private float _intensity;
+    private boolean _on;
     public final Optional<Vector3> direction;
     public final LightFalloff falloff;
+
+    public static final Action<Void, Void, Light> toggleLight =
+            (eventObject, triggeringObject, light, data) -> light.toggleLight();
 
     private Light(final String id, final TransformNode parent, final boolean isDynamic,
                   final LightType type, final Vector3 colour, final float intensity,
@@ -61,6 +66,7 @@ public final class Light extends SceneNode {
 
         this.type = type;
         _intensity = intensity * colourMagnitude;
+        _on = true;
         this.colour = colour.normalise();
         this.direction = direction.map(Vector3::normalise);
         this.falloff = falloff;
@@ -83,12 +89,17 @@ public final class Light extends SceneNode {
     }
 
     public float intensity() {
-        return _intensity;
+        return _on ? _intensity : 0f;
     }
 
     public void setIntensity(float intensity) {
         _intensity = intensity;
     }
+
+    public void toggleLight() {
+        _on = !_on;
+    }
+
 
     /** @return this light's colour multiplied by its intensity. */
     public Vector3 colourVector() {

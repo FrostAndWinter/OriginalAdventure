@@ -24,9 +24,9 @@ public class Button extends GameObject {
     public Button(String id, TransformNode parent) {
         super(id, parent);
 
-        TransformNode body = new TransformNode(id + "ButtonBody", parent, true, new Vector3(100, 100, 0), new Quaternion(), new Vector3(40, 40, 40));
-        MeshNode doorMesh = new MeshNode(id + "DoorMesh", "box.obj", body);
+        //TransformNode body = new TransformNode(id + "ButtonBody", parent, true, new Vector3(100, 100, 0), new Quaternion(), new Vector3(40, 40, 40));
+        MeshNode buttonMesh = new MeshNode(id + "ButtonMesh", "box.obj", parent);
 
-        doorMesh.eventMeshClicked.addAction(this, actionButtonPressed);
+        buttonMesh.eventMeshClicked.addAction(this, actionButtonPressed);
     }
 }
