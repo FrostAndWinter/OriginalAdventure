@@ -3,6 +3,7 @@ package swen.adventure.engine.rendering;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.stb.STBImageResize;
+import org.lwjgl.stb.STBImageWrite;
 import swen.adventure.engine.Utilities;
 
 import java.io.File;
@@ -46,13 +47,14 @@ public class Texture {
             w /= 2; h /= 2;
 
             ByteBuffer outputBuffer = BufferUtils.createByteBuffer(w * h * bytesPerPixel);
-            int success = STBImageResize.stbir_resize_uint8_srgb(textureData , width , height , 0,
+            int success = STBImageResize.stbir_resize_uint8_srgb_edgemode(textureData, width, height, 0,
                     outputBuffer, w, h, 0,
-                    numPixelComponents, numPixelComponents == 4 ? 3 : 0, 0);
+                    numPixelComponents, this.numPixelComponents == 4 ? 3 : STBImageResize.STBIR_ALPHA_CHANNEL_NONE, 0, STBImageResize.STBIR_EDGE_CLAMP);
 
             if (success == 0) {
                 System.err.printf("Error generating mip-map with dimensions %d, %d.\n", w, h);
             }
+
             _mipMappedData.add(outputBuffer);
         }
 
@@ -66,13 +68,13 @@ public class Texture {
         int textureRef = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, textureRef);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8_ALPHA8, this.width, this.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, this.textureData);
+        glTexImage2D(GL_TEXTURE_2D, 0, this.internalFormat(), this.width, this.height, 0, this.textureFormat(), GL_UNSIGNED_BYTE, this.textureData);
 
         int mipmapLevel = 0;
         for(; mipmapLevel < _mipMappedData.size(); mipmapLevel++) {
 
-            glTexImage2D(GL_TEXTURE_2D, mipmapLevel + 1, GL_SRGB8_ALPHA8, this.width / (2 << mipmapLevel), this.height / (2 << mipmapLevel), 0,
-                    GL_RGBA, GL_UNSIGNED_BYTE, _mipMappedData.get(mipmapLevel));
+            glTexImage2D(GL_TEXTURE_2D, mipmapLevel + 1, this.internalFormat(), this.width / (2 << mipmapLevel), this.height / (2 << mipmapLevel), 0,
+                    this.textureFormat(), GL_UNSIGNED_BYTE, _mipMappedData.get(mipmapLevel));
         }
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
@@ -81,6 +83,14 @@ public class Texture {
         glBindTexture(GL_TEXTURE_2D, 0);
 
         return textureRef;
+    }
+
+    private int textureFormat() {
+        return this.numPixelComponents == 3 ? GL_RGB : GL_RGBA;
+    }
+
+    private int internalFormat() {
+        return this.numPixelComponents == 3 ? GL_SRGB8 : GL_SRGB8_ALPHA8;
     }
 
     public void bindToTextureUnit(TextureUnit textureUnit) {
@@ -113,7 +123,7 @@ public class Texture {
 
                 STBImage.stbi_set_flip_vertically_on_load(1);
 
-                ByteBuffer image = STBImage.stbi_load_from_memory(encodedImageDataBuffer, widthBuffer, heightBuffer, numPixelComponentsBuffer, 4);
+                ByteBuffer image = STBImage.stbi_load_from_memory(encodedImageDataBuffer, widthBuffer, heightBuffer, numPixelComponentsBuffer, 0);
 
                 if (image == null) {
                     throw new RuntimeException("Error loading image with name " + fileName + ": " + STBImage.stbi_failure_reason());
