@@ -28,7 +28,7 @@ public class Animation {
 
     public Animation(AnimableProperty animableProperty, AnimationCurve curve, double duration, double delay, double toValue, boolean repeats) {
         _animableProperty = animableProperty;
-        _animableProperty.startAnimating(this);
+        _animableProperty.setAnimation(this);
 
         _initialValue = animableProperty.value();
 
@@ -104,8 +104,6 @@ public class Animation {
     public void destroy() {
         _complete = true;
         this.eventAnimationDidComplete.trigger(this, Collections.emptyMap());
-
-        AnimationSystem.removeAnimation(this);
     }
 
 }

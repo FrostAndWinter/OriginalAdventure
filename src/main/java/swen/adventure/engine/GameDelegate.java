@@ -24,6 +24,7 @@ public class GameDelegate {
     // We need to strongly reference callback instances.
     private static GLFWErrorCallback _errorCallback;
     private static GLFWKeyCallback _keyCallback;
+    private static GLFWMouseButtonCallback _mouseButtonCallback;
     private static GLFWWindowSizeCallback _resizeCallback;
     private static GLFWFramebufferSizeCallback _framebufferSizeCallback;
 
@@ -131,6 +132,30 @@ public class GameDelegate {
             public void invoke(final long _window, final int width, final int height) {
                 glViewport(0, 0, width, height);
                 _game.setSizeInPixels(width, height);
+            }
+        });
+
+        glfwSetCallback(_window, _mouseButtonCallback = new GLFWMouseButtonCallback() {
+            @Override
+            public void invoke(long window, int button, int action, int mods) {
+                MouseInput.Button buttonEnum = null;
+
+                switch(button) {
+                    case GLFW_MOUSE_BUTTON_LEFT:
+                        buttonEnum = MouseInput.Button.Left;
+                        break;
+                    case GLFW_MOUSE_BUTTON_RIGHT:
+                        buttonEnum = MouseInput.Button.Right;
+                        break;
+                }
+
+                if (buttonEnum != null) {
+                    if (action == GLFW_PRESS) {
+                        _game.mouseInput().pressButton(buttonEnum);
+                    } else if (action == GLFW_RELEASE) {
+                        _game.mouseInput().releaseButton(buttonEnum);
+                    }
+                }
             }
         });
 

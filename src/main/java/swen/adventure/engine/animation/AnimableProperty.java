@@ -1,7 +1,9 @@
 package swen.adventure.engine.animation;
 
 import swen.adventure.engine.Action;
+import swen.adventure.engine.Event;
 
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -12,10 +14,12 @@ public class AnimableProperty {
 
     private Optional<Animation> _currentAnimation = Optional.empty();
 
+    public final Event<AnimableProperty> eventValueChanged = new Event<>("eventValueChanged", this);
+
     public static final Action<Animation, Animation, AnimableProperty> actionAnimationDidFinish = (animation, triggeringObject, animatableProperty, data) -> {
         animatableProperty._currentAnimation.ifPresent(propertyAnimation -> {
             if (propertyAnimation.equals(animation)) {
-                animatableProperty.startAnimating(null);
+                animatableProperty.setAnimation(null);
             }
         });
     };
@@ -28,9 +32,11 @@ public class AnimableProperty {
      * Assigns an animation to this object, setting up listeners for its completion.
      * @param animation The animation which is attached to this property.
      */
-    protected void startAnimating(Animation animation) {
-        if (_currentAnimation.isPresent()) {
-            _currentAnimation.get().destroy();
+    protected void setAnimation(Animation animation) {
+        if (_currentAnimation.isPresent() && animation != _currentAnimation.get()) {
+            Animation currentAnimation = _currentAnimation.get();
+            _currentAnimation = Optional.empty();
+            currentAnimation.destroy();
         }
 
         _currentAnimation = Optional.ofNullable(animation);
@@ -41,6 +47,7 @@ public class AnimableProperty {
 
     protected void setValueFromAnimation(float value) {
         _value = value;
+        eventValueChanged.trigger(_currentAnimation.get(), Collections.emptyMap());
     }
 
     public void setValue(float value) {

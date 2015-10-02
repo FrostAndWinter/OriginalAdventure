@@ -26,7 +26,11 @@ public class CollisionNode extends SceneNode {
     }
 
     public boolean isCollidingWith(CollisionNode node) {
-        return this.worldSpaceBoundingBox().get().intersectsWith(node.worldSpaceBoundingBox().get());
+        if (this.worldSpaceBoundingBox().isPresent() && node.worldSpaceBoundingBox().isPresent()) {
+            return this.worldSpaceBoundingBox().get().intersectsWith(node.worldSpaceBoundingBox().get());
+        } else {
+            return false;
+        }
     }
 
     public Optional<BoundingBox> worldSpaceBoundingBox() {
@@ -52,7 +56,7 @@ public class CollisionNode extends SceneNode {
         if (!_localSpaceBoundingBox.isPresent()) {
             for (SceneNode sibling : this.siblings()) {
                 if (sibling instanceof MeshNode) {
-                    _localSpaceBoundingBox = ((MeshNode) sibling).boundingBox();
+                    _localSpaceBoundingBox = Optional.ofNullable(((MeshNode) sibling).boundingBox());
                     break;
                 }
             }

@@ -1,5 +1,6 @@
 package swen.adventure.engine.scenegraph;
 
+import swen.adventure.engine.Event;
 import swen.adventure.engine.rendering.GLMesh;
 import swen.adventure.engine.rendering.Material;
 import swen.adventure.engine.rendering.ObjMesh;
@@ -20,6 +21,8 @@ public class MeshNode extends SceneNode {
     private Optional<Material> _materialOverride = Optional.empty();
 
     private BoundingBox _localSpaceBoundingBox;
+
+    public final Event<MeshNode> eventMeshClicked = new Event<>("eventMeshClicked", this);
 
     public MeshNode(final String fileName, final TransformNode parent) {
         this("mesh" + fileName, fileName, parent); //MeshNodes of the same file share ids.
@@ -44,8 +47,8 @@ public class MeshNode extends SceneNode {
         _materialOverride = Optional.of(materialOverride);
     }
 
-    public Optional<BoundingBox> boundingBox() {
-        return Optional.ofNullable(_localSpaceBoundingBox);
+    public BoundingBox boundingBox() {
+        return _localSpaceBoundingBox;
     }
 
     /**

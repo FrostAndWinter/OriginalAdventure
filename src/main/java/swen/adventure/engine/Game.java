@@ -14,5 +14,7 @@ public interface Game {
 
     KeyInput keyInput();
 
+    MouseInput mouseInput();
+
     void onMouseDeltaChange(float deltaX, float deltaY);
 }

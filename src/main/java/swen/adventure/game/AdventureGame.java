@@ -1,9 +1,7 @@
 package swen.adventure.game;
 
 import processing.opengl.PGraphics2D;
-import swen.adventure.engine.Game;
-import swen.adventure.engine.GameDelegate;
-import swen.adventure.engine.KeyInput;
+import swen.adventure.engine.*;
 import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.rendering.Material;
 import swen.adventure.engine.rendering.PickerRenderer;
@@ -13,13 +11,15 @@ import swen.adventure.engine.scenegraph.*;
 import swen.adventure.engine.ui.color.Color;
 import swen.adventure.engine.ui.components.Frame;
 import swen.adventure.engine.utils.SharedLibraryLoader;
+import swen.adventure.game.scenenodes.Door;
 import swen.adventure.game.ui.components.Inventory;
 import swen.adventure.engine.ui.components.Panel;
 import swen.adventure.engine.ui.components.ProgressBar;
 import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.game.scenenodes.Player;
 
-import java.util.Optional;
+import java.util.Collections;
+import java.util.Map;
 
 public class AdventureGame implements Game {
 
@@ -34,10 +34,13 @@ public class AdventureGame implements Game {
     private Player player;
 
     private AdventureGameKeyInput _keyInput = new AdventureGameKeyInput();
+    private MouseInput _mouseInput = new MouseInput();
 
     private float _mouseSensitivity = 1;
     private float _viewAngleX;
     private float _viewAngleY;
+
+    private Door door;
 
     @Override
     public void setup(int width, int height) {
@@ -69,14 +72,16 @@ public class AdventureGame implements Game {
         player = new Player("player", playerTransform);
         player.collisionNode().setBoundingBox(new BoundingBox(new Vector3(-20, -20, -10), new Vector3(20, 20, 10)));
 
-        TransformNode tableTransform = new TransformNode("ObjBoxTransform", _sceneGraph, true, new Vector3(20f, 5.f, -5.f), new Quaternion(), new Vector3(3.f, 3.f, 3.f));
-        MeshNode table = new MeshNode("tableMesh", "Table.obj", tableTransform);
-        table.setMaterialOverride(new Material(Vector3.zero, new Vector3(0.8f, 0.3f, 0.4f), new Vector3(0.7f, 0.6f, 0.6f), 0.f, 0.2f));
-        new GameObject("tableGameObject", tableTransform);
+//        TransformNode tableTransform = new TransformNode("ObjBoxTransform", _sceneGraph, true, new Vector3(20f, 5.f, -5.f), new Quaternion(), new Vector3(3.f, 3.f, 3.f));
+//        MeshNode table = new MeshNode("tableMesh", "Table.obj", tableTransform);
+//        table.setMaterialOverride(new Material(Vector3.zero, new Vector3(0.8f, 0.3f, 0.4f), new Vector3(0.7f, 0.6f, 0.6f), 0.f, 0.2f));
+//        new GameObject("tableGameObject", tableTransform);
 
         Light.createAmbientLight("ambientLight", _sceneGraph, new Vector3(0.3f, 0.5f, 0.4f), 3.f);
         Light.createDirectionalLight("directionalLight", _sceneGraph, new Vector3(0.7f, 0.3f, 0.1f), 7.f, new Vector3(0.4f, 0.2f, 0.6f));
         Light.createPointLight("pointLight", cameraTransform, new Vector3(0.4f, 0.5f, 0.8f), 9.f, Light.LightFalloff.Quadratic);
+
+         door = new Door("houseDoor", _sceneGraph);
 
         _glRenderer = new GLRenderer(width, height);
         _pickerRenderer = new PickerRenderer();
@@ -86,8 +91,15 @@ public class AdventureGame implements Game {
         _keyInput.eventMoveLeftKeyPressed.addAction(player, Player.actionPlayerMoveLeft);
         _keyInput.eventMoveRightKeyPressed.addAction(player, Player.actionPlayerMoveRight);
 
+        _mouseInput.eventMouseButtonPressed.addAction(this, AdventureGame.clickAction);
+
         this.setupUI(width, height);
     }
+
+    private static final Action<MouseInput, MouseInput, AdventureGame> clickAction = (eventObject, triggeringObject, listener, data) -> {
+           listener._pickerRenderer.selectedNode()
+                   .ifPresent(meshNode -> meshNode.eventMeshClicked.trigger(triggeringObject, Collections.emptyMap()));
+    };
 
     private void setupUI(int width, int height) {
 
@@ -128,9 +140,9 @@ public class AdventureGame implements Game {
     @Override
     public void update(long deltaMillis) {
         _keyInput.handleInput();
+        _mouseInput.handleInput();
 
         player.parent().get().setRotation(Quaternion.makeWithAngleAndAxis(_viewAngleX / 500, 0, -1, 0).multiply(Quaternion.makeWithAngleAndAxis(_viewAngleY / 500, -1, 0, 0)));
-        ;
 
         this.render();
     }
@@ -140,22 +152,9 @@ public class AdventureGame implements Game {
         _pickerRenderer.render(_sceneGraph, camera);
         _glRenderer.render(_sceneGraph, camera);
 
-        lookingAt().map(node -> node.parent().map(transformNode -> {
-            transformNode.translateBy(new Vector3(1.f, 0, 0.f));
-            return transformNode;
-        }));
-
-                _pGraphics.beginDraw();
+        _pGraphics.beginDraw();
         _frame.draw(_pGraphics);
         _pGraphics.endDraw();
-    }
-
-    private Optional<SceneNode> lookingAt() {
-        return _pickerRenderer
-                .selectedNode()
-                .flatMap(node -> node.siblings().stream()
-                        .filter(sibling -> sibling instanceof GameObject)
-                        .findFirst());
     }
 
     /**
@@ -166,6 +165,11 @@ public class AdventureGame implements Game {
     @Override
     public KeyInput keyInput() {
         return _keyInput;
+    }
+
+    @Override
+    public MouseInput mouseInput() {
+        return _mouseInput;
     }
 
     @Override

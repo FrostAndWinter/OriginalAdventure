@@ -158,7 +158,6 @@ public class Quaternion {
         if (Float.compare(that.z, z) != 0) return false;
         if (Float.compare(that.w, w) != 0) return false;
         return Arrays.equals(q, that.q);
-
     }
 
     @Override

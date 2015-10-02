@@ -104,7 +104,7 @@ public class PickerRenderer {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    public Optional<SceneNode> selectedNode() {
+    public Optional<MeshNode> selectedNode() {
         return Optional.ofNullable(_highlightedMesh);
     }
 
