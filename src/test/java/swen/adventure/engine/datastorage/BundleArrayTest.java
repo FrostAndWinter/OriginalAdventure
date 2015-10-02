@@ -45,10 +45,10 @@ public class BundleArrayTest {
 
     @Test
     public void testValidPutBundleObject() throws Exception {
-        BundleObject object = new BundleObject();
-        object.put("test0", 4);
-        array.put(object);
-        assertEquals(object, array.getBundleObject(0));
+        BundleObject bundleObject = new BundleObject();
+        bundleObject.put("test0", 4);
+        array.put(bundleObject);
+        assertEquals(bundleObject, array.getBundleObject(0));
     }
 
     @Test(expected = IllegalArgumentException.class)

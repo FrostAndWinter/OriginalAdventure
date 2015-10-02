@@ -18,7 +18,7 @@ import static org.junit.Assert.assertEquals;
 public class SceneGraphParserTest {
 
     private static final SceneGraphParser SCENE_GRAPH_PARSER = new SceneGraphParser();
-    private static final String DIRECTORY = "src/test/resources/swen/adventure/datastorage/";
+    private static final String DIRECTORY = "src/test/resources/swen/adventure/engine/datastorage/";
 
     @Test
     public void testSingleTransformNode() throws Exception {
