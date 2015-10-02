@@ -1,6 +1,7 @@
 #version 330
 
 smooth in vec3 vertexNormal;
+smooth in vec2 textureCoordinate;
 smooth in vec3 cameraSpacePosition;
 
 out vec4 outputColor;
@@ -27,10 +28,51 @@ uniform Material {
    vec4 ambientColour; //of which xyz are the colour and w is a 0/1 as to whether ambient self-illumination is enabled.
    vec4 diffuseColour; //r,g,b,a
    vec4 specularColour; //of which xyz are the colour and w is the specularity.
+   bool useAmbientMap;
+   bool useDiffuseMap;
+   bool useSpecularColourMap;
+   bool useSpecularityMap;
 } material;
 
+uniform sampler2D ambientColourSampler;
+uniform sampler2D diffuseColourSampler;
+uniform sampler2D specularColourSampler;
+uniform sampler2D specularitySampler;
+
 uniform float maxIntensity;
-uniform float gamma;
+
+vec4 diffuseColour() {
+    if (material.useDiffuseMap) {
+        return texture(diffuseColourSampler, textureCoordinate);
+    } else {
+        return material.diffuseColour;
+    }
+}
+
+vec4 ambientColour() {
+
+    if (material.useAmbientMap) {
+        return texture(ambientColourSampler, textureCoordinate);
+    } else {
+        return material.ambientColour;
+    }
+}
+
+vec4 specularColour() {
+    if (material.useSpecularColourMap) {
+        return texture(specularColourSampler, textureCoordinate);
+    } else {
+        return material.specularColour;
+    }
+}
+
+float specularity() {
+    if (material.useSpecularityMap) {
+        return 1.f/min(texture(specularitySampler, textureCoordinate).r, 1.f);
+    } else {
+        return material.specularColour.a;
+    }
+}
 
 float ComputeAttenuation(in vec3 objectPosition,
 	in vec3 lightPosition,
@@ -56,12 +98,12 @@ vec3 ComputeLighting(in PerLightData lightData) {
 	vec3 lightIntensity;
 	if (lightData.positionInCameraSpace.w < 0.0001) {
 		lightDirection = lightData.positionInCameraSpace.xyz;
-		lightIntensity = lightData.lightIntensity.xyz;
+		lightIntensity = lightData.lightIntensity.rgb;
 	}
 	else {
 		float attenuation = ComputeAttenuation(cameraSpacePosition,
 			lightData.positionInCameraSpace.xyz, lightData.lightIntensity.w, lightDirection);
-		lightIntensity = attenuation * lightData.lightIntensity.xyz;
+		lightIntensity = attenuation * lightData.lightIntensity.rgb;
 	}
 
 	vec3 surfaceNormal = normalize(vertexNormal);
@@ -72,23 +114,28 @@ vec3 ComputeLighting(in PerLightData lightData) {
 
 	vec3 halfAngle = normalize(lightDirection + viewDirection);
 	float angleNormalHalf = acos(dot(halfAngle, surfaceNormal));
-	float exponent = angleNormalHalf / material.specularColour.w;
+	float exponent = angleNormalHalf / specularity();
 	exponent = -(exponent * exponent);
 	float gaussianTerm = exp(exponent);
 
 	gaussianTerm = cosAngIncidence != 0.0f ? gaussianTerm : 0.0;
 
-	vec3 lighting = material.diffuseColour.xyz * lightIntensity * cosAngIncidence;
-	lighting += material.specularColour.xyz * lightIntensity * gaussianTerm;
+	vec3 lighting = diffuseColour().rgb * lightIntensity * cosAngIncidence;
+	lighting += specularColour().rgb * lightIntensity * gaussianTerm;
 
 	return lighting;
 }
 
 void main() {
-	vec3 totalLighting = material.diffuseColour.xyz * lighting.ambientIntensity.xyz;
 
-	if (material.ambientColour.w > 0.9f) { // ~= 1
-	    totalLighting += material.ambientColour.xyz;
+	if (material.diffuseColour.a < 0.001f) {
+	    discard;
+	}
+
+	vec3 totalLighting = diffuseColour().rgb * lighting.ambientIntensity.rgb;
+
+	if (material.ambientColour.a > 0.9f) { // ~= 1
+	    totalLighting += ambientColour().rgb;
 	}
 
 	for (int light = 0; light < lighting.numDynamicLights; light++) {
@@ -97,6 +144,5 @@ void main() {
 
 	totalLighting = totalLighting / maxIntensity;
 
-	vec3 gammaVector = vec3(1.f / gamma);
-	outputColor = vec4(pow(totalLighting, gammaVector), material.diffuseColour.w);
+	outputColor = vec4(totalLighting, material.diffuseColour.a);
 }

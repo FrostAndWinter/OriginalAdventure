@@ -24,7 +24,7 @@ package processing.opengl;/* -*- mode: java; c-basic-offset: 2; indent-tabs-mode
 
 import processing.core.PConstants;
 import processing.core.PGraphics;
-import swen.adventure.Utilities;
+import swen.adventure.engine.Utilities;
 
 import java.io.IOException;
 import java.net.URL;

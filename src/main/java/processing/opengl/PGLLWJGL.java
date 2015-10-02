@@ -3,7 +3,7 @@ package processing.opengl;
 import processing.opengl.glu.tessellator.GLU;
 import processing.opengl.glu.tessellator.GLUtessellatorCallback;
 import processing.opengl.glu.tessellator.GLUtessellatorImpl;
-import swen.adventure.Utilities;
+import swen.adventure.engine.Utilities;
 
 import java.awt.*;
 import java.awt.font.FontRenderContext;

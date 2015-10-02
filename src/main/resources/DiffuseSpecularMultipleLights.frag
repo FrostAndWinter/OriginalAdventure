@@ -26,7 +26,6 @@ uniform Light {
 } lighting;
 
 uniform float maxIntensity;
-uniform float gamma;
 uniform float specularity;
 
 float ComputeAttenuation(in vec3 objectPosition,
@@ -90,6 +89,5 @@ void main() {
 
 	totalLighting = totalLighting / maxIntensity;
 
-	vec3 gammaVector = vec3(1.f / gamma);
-	outputColor = vec4(pow(totalLighting, gammaVector), diffuseColour.w);
+	outputColor = vec4(totalLighting, diffuseColour.w);
 }

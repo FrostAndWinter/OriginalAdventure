@@ -27,7 +27,6 @@ vn 0 0 -1
 
 # Point/Line/Face list
 
-usemtl Default
 f 4//2 3//2 2//2 1//2
 f 2//4 6//4 5//4 1//4
 f 3//6 7//6 6//6 2//6
