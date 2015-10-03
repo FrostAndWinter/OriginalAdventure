@@ -22,13 +22,11 @@ public class WavefrontParserTest {
                 "vn 0.707 0.000 0.707\n";
 
         WavefrontParser.Result result = WavefrontParser.parse(input);
-        System.out.println(result);
     }
 
     @Test
     public void testLoadingTableFile() throws IOException {
         File file = new File(Utilities.pathForResource("Table", "obj"));
         WavefrontParser.Result result = WavefrontParser.parse(file);
-        System.out.println(result);
     }
 }

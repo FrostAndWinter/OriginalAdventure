@@ -2,6 +2,7 @@ package swen.adventure.engine.datastorage;
 
 import org.junit.Test;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
@@ -115,15 +116,18 @@ public class BundleArrayTest {
     }
 
     private static void putAllKeys(BundleArray array) {
-        array.put(1);
-        array.put(5f);
-        array.put(5L);
-        array.put("5");
         BundleArray otherArray = new BundleArray();
-        array.put(5);
-        array.put(otherArray);
+        otherArray.put(25);
+
         BundleObject otherObject = new BundleObject();
         otherObject.put("key", 5);
-        array.put(otherObject);
+
+        array
+                .put(1)
+                .put(2f)
+                .put(3L)
+                .put("5")
+                .put(otherArray)
+                .put(otherObject);
     }
 }

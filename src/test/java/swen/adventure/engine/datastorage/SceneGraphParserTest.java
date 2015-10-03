@@ -1,5 +1,6 @@
 package swen.adventure.engine.datastorage;
 
+import org.junit.Assume;
 import org.junit.Test;
 import swen.adventure.engine.Utilities;
 import swen.adventure.engine.rendering.maths.Quaternion;
@@ -11,6 +12,7 @@ import swen.adventure.engine.scenegraph.TransformNode;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeNoException;
 
 /**
  * Created by liam on 23/09/15.
@@ -79,7 +81,12 @@ public class SceneGraphParserTest {
     }
 
 
-    private static String readFile(String fileName) throws IOException {
-        return Utilities.readFile(DIRECTORY + fileName);
+    private static String readFile(String fileName) {
+        try {
+            return Utilities.readFile(DIRECTORY + fileName);
+        } catch (IOException e) {
+            assumeNoException(e);
+            return null; // dead code
+        }
     }
 }
