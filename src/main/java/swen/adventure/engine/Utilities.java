@@ -2,6 +2,7 @@ package swen.adventure.engine;
 
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+import swen.adventure.engine.scenegraph.SceneNode;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,6 +18,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,6 +54,14 @@ public class Utilities {
 
     public static InputStream fileToInputStream(File inputFile) throws FileNotFoundException {
         return new FileInputStream(inputFile);
+    }
+
+    public static float[] toPrimitiveArray(List<Float> list) {
+        float[] out = new float[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            out[i] = list.get(i);
+        }
+        return out;
     }
 
     public static Document loadExistingXmlDocument(String input){

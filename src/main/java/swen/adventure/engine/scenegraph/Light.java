@@ -2,7 +2,9 @@ package swen.adventure.engine.scenegraph;
 
 import org.lwjgl.BufferUtils;
 import swen.adventure.engine.Action;
+import swen.adventure.engine.datastorage.BundleObject;
 import swen.adventure.engine.rendering.maths.Matrix4;
+import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.rendering.maths.Vector4;
 
@@ -10,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -67,6 +70,37 @@ public final class Light extends SceneNode {
         this.colour = colour.normalise();
         this.direction = direction.map(Vector3::normalise);
         this.falloff = falloff;
+    }
+
+    @Override
+    public BundleObject toBundle() {
+        return super.toBundle()
+                .put("colour", colour)
+                .put("intensity", _intensity)
+                // convert the enum values to their names so the valueOf() method can return their instance
+                .put("type", type.toString())
+                .put("falloff", falloff.toString());
+    }
+
+    private static Light createSceneNodeFromBundle(BundleObject bundle,
+                                                           Function<String, TransformNode> findParentFunction) {
+        String parentId = bundle.getString("parentId");
+        TransformNode parent = findParentFunction.apply(parentId);
+
+        String id = bundle.getString("id");
+        float intensity = bundle.getFloat("intensity");
+        boolean isDynamic = bundle.getBoolean("isDynamic");
+        Vector3 colour = bundle.getVector3("colour");
+        LightType lightType = LightType.valueOf(bundle.getString("type"));
+        LightFalloff lightFalloff = LightFalloff.valueOf(bundle.getString("falloff"));
+
+        Optional<Vector3> direction;
+        if(bundle.hasProperty("direction"))
+            direction = Optional.of(bundle.getVector3("direction"));
+        else
+            direction = Optional.empty();
+
+        return new Light(id, parent, isDynamic, lightType, colour, intensity, direction, lightFalloff);
     }
 
     public static Light createAmbientLight(final String id, final TransformNode parent, final Vector3 colour, final float intensity) {

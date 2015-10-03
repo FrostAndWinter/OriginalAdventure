@@ -1,6 +1,8 @@
 package swen.adventure.engine.scenegraph;
 
 import swen.adventure.engine.Event;
+import swen.adventure.engine.datastorage.BundleObject;
+import swen.adventure.engine.datastorage.BundleSerializable;
 import swen.adventure.engine.rendering.maths.Matrix4;
 
 import java.lang.reflect.Field;
@@ -9,7 +11,7 @@ import java.util.*;
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 15/09/15.
  */
-public abstract class SceneNode {
+public abstract class SceneNode implements BundleSerializable {
 
     public interface NodeTraversalFunction {
         void visit(SceneNode node);
@@ -25,6 +27,20 @@ public abstract class SceneNode {
     protected Map<String, SceneNode> _idsToNodesMap;
     protected Set<Light> _allLights;
     protected Set<CollisionNode> _allCollidables;
+
+    @Override
+    public BundleObject toBundle() {
+        BundleObject out = new BundleObject();
+
+        out.put("id", id);
+
+        if(_parent.isPresent()) {
+            out.put("parentId", _parent.get().id);
+            out.put("isDynamic", _isDynamic);
+        }
+
+        return out;
+    }
 
     /**
      * Construct a new root SceneNode.
