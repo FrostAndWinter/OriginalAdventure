@@ -34,22 +34,30 @@ public class Texture {
     public final int height;
     public final int numPixelComponents;
 
+    public final boolean useSRGB;
+
     public final int glTextureRef;
 
-    public Texture(final ByteBuffer textureData, final int width, final int height, final int numPixelComponents) {
+    public Texture(final ByteBuffer textureData, final int width, final int height, final int numPixelComponents, boolean useSRGB) {
         this.textureData = textureData;
         this.width = width;
         this.height = height;
         this.numPixelComponents = numPixelComponents;
+
+        this.useSRGB = useSRGB;
 
         int bytesPerPixel = textureData.limit()/(width * height);
         for (int w = width, h = height; w > 1 || h > 1; ) {
             w /= 2; h /= 2;
 
             ByteBuffer outputBuffer = BufferUtils.createByteBuffer(w * h * bytesPerPixel);
-            int success = STBImageResize.stbir_resize_uint8_srgb_edgemode(textureData, width, height, 0,
+            int success = STBImageResize.stbir_resize_uint8_generic(textureData, width, height, 0,
                     outputBuffer, w, h, 0,
-                    numPixelComponents, this.numPixelComponents == 4 ? 3 : STBImageResize.STBIR_ALPHA_CHANNEL_NONE, 0, STBImageResize.STBIR_EDGE_CLAMP);
+                    numPixelComponents,
+                    this.numPixelComponents == 4 ? 3 : STBImageResize.STBIR_ALPHA_CHANNEL_NONE, 0,
+                    STBImageResize.STBIR_EDGE_CLAMP,
+                    STBImageResize.STBIR_FILTER_DEFAULT,
+                    useSRGB ? STBImageResize.STBIR_COLORSPACE_SRGB : STBImageResize.STBIR_COLORSPACE_LINEAR);
 
             if (success == 0) {
                 System.err.printf("Error generating mip-map with dimensions %d, %d.\n", w, h);
@@ -90,7 +98,11 @@ public class Texture {
     }
 
     private int internalFormat() {
-        return this.numPixelComponents == 3 ? GL_SRGB8 : GL_SRGB8_ALPHA8;
+        if (this.useSRGB) {
+            return this.numPixelComponents == 3 ? GL_SRGB8 : GL_SRGB8_ALPHA8;
+        } else {
+            return this.numPixelComponents == 3 ? GL_RGB8 : GL_RGBA8;
+        }
     }
 
     public void bindToTextureUnit(TextureUnit textureUnit) {
@@ -103,7 +115,7 @@ public class Texture {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    public static Texture loadTextureWithName(String fileName) {
+    public static Texture loadTextureWithName(String fileName, boolean useSRGB) {
 
         Texture texture = _textureCache.get(fileName);
 
@@ -129,7 +141,7 @@ public class Texture {
                     throw new RuntimeException("Error loading image with name " + fileName + ": " + STBImage.stbi_failure_reason());
                 }
 
-                texture = new Texture(image, widthBuffer.get(), heightBuffer.get(), numPixelComponentsBuffer.get());
+                texture = new Texture(image, widthBuffer.get(), heightBuffer.get(), numPixelComponentsBuffer.get(), useSRGB);
                 _textureCache.put(fileName, texture);
 
             } catch (IOException e) {

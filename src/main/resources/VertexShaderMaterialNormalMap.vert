@@ -25,9 +25,9 @@ void main() {
 	vertexNormal = normalModelToCameraMatrixUniform * normal;
 	textureCoordinate = texCoord.st;
 
-	cameraToTangentSpaceMatrix = mat3(
-        normalModelToCameraMatrixUniform * normalize(tangent),
-        normalModelToCameraMatrixUniform * normalize(bitangent),
-        vertexNormal
-	);
+	cameraToTangentSpaceMatrix = transpose(mat3(
+        normalize(nodeToCamera3x3MatrixUniform * tangent),
+        normalize(nodeToCamera3x3MatrixUniform * bitangent),
+        normalize(nodeToCamera3x3MatrixUniform * normal)
+	));
 }

@@ -55,6 +55,12 @@ public class ObjMesh extends GLMesh<Float> {
                                 vertexNormal.get().dotProduct(tangent)
                         ))).normalise()
                 ); //Make the tangent perpendicular to the normal.
+
+                if (_bitangent.get().dotProduct(
+                        this.vertexNormal.get().crossProduct(_tangent.get())
+                ) < 0.f) {
+                    _tangent = Optional.of(_tangent.get().multiplyScalar(-1.f));
+                }
             });
         }
 

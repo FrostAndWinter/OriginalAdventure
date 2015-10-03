@@ -70,19 +70,19 @@ public class MTLParser {
                     material.setUseAmbient(scanner.nextInt() > 1);
 
                 } else if (MTLParser.gobble(scanner, PatternAmbientMap)) {
-                    material.setAmbientMap(MTLParser.parseTexture(scanner));
+                    material.setAmbientMap(MTLParser.parseTexture(scanner, true));
 
                 } else if (MTLParser.gobble(scanner, PatternDiffuseMap)) {
-                    material.setDiffuseMap(MTLParser.parseTexture(scanner));
+                    material.setDiffuseMap(MTLParser.parseTexture(scanner, true));
 
                 } else if (MTLParser.gobble(scanner, PatternSpecularColourMap)) {
-                    material.setSpecularColourMap(MTLParser.parseTexture(scanner));
+                    material.setSpecularColourMap(MTLParser.parseTexture(scanner, true));
 
                 } else if (MTLParser.gobble(scanner, PatternSpecularityMap)) {
-                    material.setSpecularityMap(MTLParser.parseTexture(scanner));
+                    material.setSpecularityMap(MTLParser.parseTexture(scanner, false));
 
                 } else if (MTLParser.gobble(scanner, PatternBumpMap)) {
-                    material.setNormalMap(MTLParser.parseTexture(scanner));
+                    material.setNormalMap(MTLParser.parseTexture(scanner, false));
 
                 } else if (scanner.hasNextLine()) {
                     scanner.nextLine();
@@ -108,7 +108,7 @@ public class MTLParser {
         return new Vector3(vector);
     }
 
-    private static Texture parseTexture(Scanner scanner) {
+    private static Texture parseTexture(Scanner scanner, boolean useSRGB) {
         //scanner.useDelimiter(PatternWhitespaceExceptNewLine);
 
         List<String> args = new ArrayList<>();
@@ -118,7 +118,7 @@ public class MTLParser {
 
         //scanner.useDelimiter(PatternWhitespace);
 
-        return Texture.loadTextureWithName(args.get(args.size() - 1));
+        return Texture.loadTextureWithName(args.get(args.size() - 1), useSRGB);
     }
 
     private static boolean gobble(Scanner scanner, Pattern p) {
