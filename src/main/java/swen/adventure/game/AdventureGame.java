@@ -51,9 +51,6 @@ public class AdventureGame implements Game {
         MeshNode groundPlane = new MeshNode("Plane.obj", groundPlaneTransform);
         groundPlane.setMaterialOverride(new Material(Vector3.zero, new Vector3(0.1f, 0.8f, 0.3f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 1.f));
 
-        TransformNode keyTransform = new TransformNode("textureKeyTransform", _sceneGraph, false, new Vector3(0, 60, 40), Quaternion.makeWithAngleAndAxis(0.f, 1, 0, 0), new Vector3(20, 20, 20));
-        Key key = new Key("key", keyTransform);
-
         TransformNode yAxisTransform = new TransformNode("yAxis", _sceneGraph, false, new Vector3(0, 0, 0), new Quaternion(), new Vector3(2, 1000, 2));
         MeshNode yAxis = new MeshNode("box.obj", yAxisTransform);
         yAxis.setMaterialOverride(new Material(Vector3.zero, new Vector3(0.f, 1.f, 0.f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 0.01f));
@@ -84,13 +81,13 @@ public class AdventureGame implements Game {
         //Light.createPointLight("pointLight", cameraTransform, new Vector3(0.4f, 0.5f, 0.8f), 9.f, Light.LightFalloff.Quadratic);
 
         Light redPointLight = Light.createPointLight("redPointLight", _sceneGraph, new Vector3(1f, 0f, 0f), 15f, Light.LightFalloff.Linear);
-        //redPointLight.toggleLight();
+        redPointLight.setOn(false);
 
         Light greenPointLight = Light.createPointLight("greenPointLight", _sceneGraph, new Vector3(0f, 1f, 0f), 15f, Light.LightFalloff.Linear);
-        //greenPointLight.toggleLight();
+        greenPointLight.setOn(false);
 
         Light bluePointLight = Light.createPointLight("bluePointLight", _sceneGraph, new Vector3(0f, 0f, 1f), 15f, Light.LightFalloff.Linear);
-        //bluePointLight.toggleLight();
+        bluePointLight.setOn(false);
 
 
         final Door door = new Door("houseDoor", _sceneGraph);
@@ -124,6 +121,14 @@ public class AdventureGame implements Game {
                 material.setAmbientColour(greenPointLight.isOn() ? new Vector3(0.f, 5.f, 0.f) : new Vector3(0.f, 1.f, 0.f));
             });
         });
+
+        TransformNode keyTransform = new TransformNode("textureKeyTransform", _sceneGraph, false, new Vector3(0, 60, 40), Quaternion.makeWithAngleAndAxis(0.f, 1, 0, 0), new Vector3(20, 20, 20));
+        Key key = new Key("key", keyTransform);
+
+        Event[] signalEvents = new Event[] {redButton.eventButtonPressed, greenButton.eventButtonPressed, blueButton.eventButtonPressed};
+        Signal s = new Signal(new boolean[] {true, true, false}, signalEvents);
+        s.eventSignalTrue.addAction(s, (eventObject, triggeringObject, listener, data) -> key.setPickupable(true));
+        s.eventSignalFalse.addAction(s, (eventObject1, triggeringObject1, listener1, data1) -> key.setPickupable(false));
 
         _glRenderer = new GLRenderer(width, height);
         _pickerRenderer = new PickerRenderer();
