@@ -12,9 +12,11 @@ import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
 import swen.adventure.engine.ui.color.Color;
 import swen.adventure.engine.ui.components.Frame;
+import swen.adventure.engine.ui.components.Reticule;
 import swen.adventure.engine.utils.SharedLibraryLoader;
 import swen.adventure.game.scenenodes.Button;
 import swen.adventure.game.scenenodes.Door;
+import swen.adventure.game.scenenodes.Key;
 import swen.adventure.game.ui.components.Inventory;
 import swen.adventure.engine.ui.components.Panel;
 import swen.adventure.engine.ui.components.ProgressBar;
@@ -50,9 +52,6 @@ public class AdventureGame implements Game {
         MeshNode groundPlane = new MeshNode("Plane.obj", groundPlaneTransform);
         groundPlane.setMaterialOverride(new Material(Vector3.zero, new Vector3(0.1f, 0.8f, 0.3f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 1.f));
 
-        TransformNode keyTransform = new TransformNode("textureKeyTransform", _sceneGraph, false, new Vector3(0, 60, 40), Quaternion.makeWithAngleAndAxis(0.f, 1, 0, 0), new Vector3(20, 20, 20));
-        new MeshNode("Key_B_02.obj", keyTransform);
-
         TransformNode yAxisTransform = new TransformNode("yAxis", _sceneGraph, false, new Vector3(0, 0, 0), new Quaternion(), new Vector3(2, 1000, 2));
         MeshNode yAxis = new MeshNode("box.obj", yAxisTransform);
         yAxis.setMaterialOverride(new Material(Vector3.zero, new Vector3(0.f, 1.f, 0.f), new Vector3(0.5f, 0.5f, 0.5f), 0.f, 0.01f));
@@ -81,11 +80,14 @@ public class AdventureGame implements Game {
         Light.createAmbientLight("ambientLight", _sceneGraph, new Vector3(0.3f, 0.5f, 0.4f), 0.2f);
         Light.createDirectionalLight("directionalLight", _sceneGraph, new Vector3(0.7f, 0.7f, 0.7f), 5.f, new Vector3(0.4f, 0.2f, 0.6f));
 
-        Light redPointLight = Light.createPointLight("redPointLight", _sceneGraph, new Vector3(1f, 0f, 0f), 15f, Light.LightFalloff.Quadratic);
+        Light redPointLight = Light.createPointLight("redPointLight", _sceneGraph, new Vector3(1f, 0f, 0f), 15f, Light.LightFalloff.Linear);
+        redPointLight.setOn(false);
 
-        Light greenPointLight = Light.createPointLight("greenPointLight", _sceneGraph, new Vector3(0f, 1f, 0f), 15f, Light.LightFalloff.Quadratic);
+        Light greenPointLight = Light.createPointLight("greenPointLight", _sceneGraph, new Vector3(0f, 1f, 0f), 15f, Light.LightFalloff.Linear);
+        greenPointLight.setOn(false);
 
-        Light bluePointLight = Light.createPointLight("bluePointLight", _sceneGraph, new Vector3(0f, 0f, 1f), 15f, Light.LightFalloff.Quadratic);
+        Light bluePointLight = Light.createPointLight("bluePointLight", _sceneGraph, new Vector3(0f, 0f, 1f), 15f, Light.LightFalloff.Linear);
+        bluePointLight.setOn(false);
 
 
         final Door door = new Door("houseDoor", _sceneGraph);
@@ -119,6 +121,14 @@ public class AdventureGame implements Game {
                 material.setAmbientColour(greenPointLight.isOn() ? new Vector3(0.f, 5.f, 0.f) : new Vector3(0.f, 1.f, 0.f));
             });
         });
+
+        TransformNode keyTransform = new TransformNode("textureKeyTransform", _sceneGraph, false, new Vector3(0, 60, 40), Quaternion.makeWithAngleAndAxis(0.f, 1, 0, 0), new Vector3(20, 20, 20));
+        Key key = new Key("key", keyTransform);
+
+        Event[] signalEvents = new Event[] {redButton.eventButtonPressed, greenButton.eventButtonPressed, blueButton.eventButtonPressed};
+        Signal s = new Signal(new boolean[] {true, true, false}, signalEvents);
+        s.eventSignalTrue.addAction(s, (eventObject, triggeringObject, listener, data) -> key.setPickupable(true));
+        s.eventSignalFalse.addAction(s, (eventObject1, triggeringObject1, listener1, data1) -> key.setPickupable(false));
 
         _glRenderer = new GLRenderer(width, height);
         _pickerRenderer = new PickerRenderer();
@@ -159,6 +169,10 @@ public class AdventureGame implements Game {
         player.getInventory().eventItemSelected.addAction(inventory, Inventory.actionSelectItem);
 
         panel.addChild(inventory);
+
+        int size = 20;
+        Reticule reticule = new Reticule(width/2 - (size), height/2 - size, size);
+        panel.addChild(reticule);
 
         _frame.addChild(panel);
     }

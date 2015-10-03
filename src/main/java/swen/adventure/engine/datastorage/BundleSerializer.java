@@ -4,6 +4,8 @@ import org.w3c.dom.*;
 import swen.adventure.engine.Utilities;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,19 +19,34 @@ public class BundleSerializer {
 
     private static final ParserManager PARSER_MANAGER = new ParserManager();
 
-    public String toXml(BundleObject bundleObject) {
+    public String toXml(BundleSerializable bundleSerializable) {
+        BundleObject bundle = bundleSerializable.toBundle();
         Document document = Utilities.createDocument();
-        writeBundleObject(document, document, bundleObject);
+        writeBundleObject(document, document, bundle);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Utilities.writeOutDocument(document, os);
         return new String(os.toByteArray(), StandardCharsets.UTF_8);
     }
 
-    public void toXmlFile(BundleObject bundleObject, File file) throws FileNotFoundException {
-        String xml = toXml(bundleObject);
+    public void toXmlFile(BundleSerializable bundleSerializable, File file) throws FileNotFoundException {
+        String xml = toXml(bundleSerializable);
         try (PrintStream ps = new PrintStream(file)) {
             ps.println(xml);
             ps.flush();
+        }
+    }
+
+    public <T> T loadObjectFromBundle(File file, Class<T> class0) throws IOException {
+        BundleObject bundleObject = fromXml(file);
+        try {
+            Method factory = class0.getDeclaredMethod("createFromBundle", BundleObject.class);
+            factory.setAccessible(true);
+            Object result = factory.invoke(null, bundleObject);
+            return class0.cast(result);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException("Can't invoke static factory method \"createFromBundle\"", e);
+        } catch (ClassCastException e) {
+            throw new RuntimeException("Static factory method \"createFromBundle\" should return type " + class0.getSimpleName(), e);
         }
     }
 

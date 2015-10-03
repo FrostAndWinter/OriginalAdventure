@@ -1,6 +1,7 @@
 package swen.adventure.engine.scenegraph;
 
 import swen.adventure.engine.Event;
+import swen.adventure.engine.datastorage.BundleObject;
 import swen.adventure.engine.rendering.GLMesh;
 import swen.adventure.engine.rendering.Material;
 import swen.adventure.engine.rendering.ObjMesh;
@@ -11,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 25/09/15.
@@ -37,6 +39,21 @@ public class MeshNode extends SceneNode {
         } catch (FileNotFoundException e) {
             System.err.println("Could not load mesh file " + fileName + ": " + e);
         }
+    }
+
+    @Override
+    public BundleObject toBundle() {
+        String fileName = id.substring("mesh".length()); // the id must equal "mesh" + fileName
+        return super.toBundle()
+                .put("fileName", fileName);
+    }
+
+    private static MeshNode createSceneNodeFromBundle(BundleObject bundle, Function<String, TransformNode> findParentFunction) {
+        String id = bundle.getString("id");
+        String parentId = bundle.getString("parentId");
+        TransformNode parent = findParentFunction.apply(parentId);
+        String fileName = bundle.getString("fileName");
+        return new MeshNode(id, fileName, parent);
     }
 
     public Optional<Material> materialOverride() {

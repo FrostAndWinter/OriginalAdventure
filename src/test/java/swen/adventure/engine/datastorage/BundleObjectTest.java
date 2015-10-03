@@ -5,13 +5,12 @@ import org.junit.Test;
 import java.io.File;
 
 import static org.junit.Assert.*;
+import static swen.adventure.TestUtilities.createTestFile;
 
 /**
  * Created by Liam O'Neill, Student ID 300312734, on 16/09/15.
  */
 public class BundleObjectTest {
-
-    private static String TEMP_DIR  = "/tmp/";
 
     private final BundleObject bundle = new BundleObject();
 
@@ -124,7 +123,7 @@ public class BundleObjectTest {
                 .put("id", "747fc88");
 
         BundleSerializer serializer = new BundleSerializer();
-        File file = new File(TEMP_DIR + "test.xml");
+        File file = createTestFile("testSavingToDisk");
         serializer.toXmlFile(bundle, file);
         BundleObject loaded = serializer.fromXml(file);
         assertEquals(bundle, loaded);
@@ -136,16 +135,19 @@ public class BundleObjectTest {
     }
 
     private static void putAllKeys(BundleObject bundle) {
-        bundle.put("key1", 1);
-        bundle.put("key2", 5f);
-        bundle.put("key3", 5L);
-        bundle.put("key4", "5");
         BundleArray array = new BundleArray();
         array.put(5);
-        bundle.put("key5", array);
+
         BundleObject otherObject = new BundleObject();
         otherObject.put("key", 5);
-        bundle.put("key6", otherObject);
+
+        bundle
+                .put("key1", 1)
+                .put("key2", 5f)
+                .put("key3", 5L)
+                .put("key4", "5")
+                .put("key5", array)
+                .put("key6", otherObject);
     }
 
 }
