@@ -27,8 +27,10 @@ public class MTLParser {
     private static final Pattern PatternDiffuseMap = Pattern.compile("map_Kd");
     private static final Pattern PatternSpecularColourMap = Pattern.compile("map_Ks");
     private static final Pattern PatternSpecularityMap = Pattern.compile("map_Ns");
-    private static final Pattern PatternWhitespaceExceptNewLine = Pattern.compile("[^\\S\\r\\n]");
+    private static final Pattern PatternBumpMap = Pattern.compile("map_bump|bump");
+    private static final Pattern PatternWhitespaceExceptNewLine = Pattern.compile("[^\\S+\\r\\n]+");
     private static final Pattern PatternWhitespace = Pattern.compile("\\s+");
+    private static final Pattern PatternNewLine = Pattern.compile("[^.]+");
 
     public static Map<String, Material> parse(File file) throws FileNotFoundException{
         InputStream is = new FileInputStream(file);
@@ -79,6 +81,9 @@ public class MTLParser {
                 } else if (MTLParser.gobble(scanner, PatternSpecularityMap)) {
                     material.setSpecularityMap(MTLParser.parseTexture(scanner));
 
+                } else if (MTLParser.gobble(scanner, PatternBumpMap)) {
+                    material.setNormalMap(MTLParser.parseTexture(scanner));
+
                 } else if (scanner.hasNextLine()) {
                     scanner.nextLine();
                 }
@@ -104,14 +109,14 @@ public class MTLParser {
     }
 
     private static Texture parseTexture(Scanner scanner) {
-        scanner.useDelimiter(PatternWhitespaceExceptNewLine);
+        //scanner.useDelimiter(PatternWhitespaceExceptNewLine);
 
         List<String> args = new ArrayList<>();
-        while (scanner.hasNext() && !scanner.hasNext("\n")) {
-            args.add(scanner.next().replaceAll("\n", ""));
+        while (scanner.hasNext() && !scanner.hasNext(PatternNewLine)) {
+            args.add(scanner.next());
         }
 
-        scanner.useDelimiter(PatternWhitespace);
+        //scanner.useDelimiter(PatternWhitespace);
 
         return Texture.loadTextureWithName(args.get(args.size() - 1));
     }

@@ -200,6 +200,11 @@ public class Vector3 implements Vector {
     }
 
     @Override
+    public Vector3 asVector3() {
+        return this;
+    }
+
+    @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

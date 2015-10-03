@@ -55,9 +55,8 @@ public class GaussianPerObjectMaterialShader extends ShaderProgram implements Ma
         return null;
     }
 
-    public GaussianPerObjectMaterialShader() {
-        super(vertexShaderText(), fragmentShaderText());
-
+    public GaussianPerObjectMaterialShader(String vertexShaderText, String fragmentShaderText) {
+        super(vertexShaderText, fragmentShaderText);
         //Retrieve the uniforms
         _modelToCameraMatrixUniformRef = glGetUniformLocation(this.glProgramRef(), "modelToCameraMatrixUniform");
         _cameraToClipMatrixUniformRef = glGetUniformLocation(this.glProgramRef(), "cameraToClipMatrixUniform");
@@ -100,6 +99,10 @@ public class GaussianPerObjectMaterialShader extends ShaderProgram implements Ma
         glBindBufferRange(GL_UNIFORM_BUFFER, MaterialBlockIndex, _materialUniformBufferRef, 0, Material.BufferSizeInBytes);
 
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    }
+
+    public GaussianPerObjectMaterialShader() {
+        this(vertexShaderText(), fragmentShaderText());
     }
 
     public void setLightData(ByteBuffer lightData) {

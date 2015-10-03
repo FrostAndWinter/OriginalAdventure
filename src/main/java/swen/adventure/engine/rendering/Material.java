@@ -27,15 +27,15 @@ public class Material {
 //        Vector3 specularColour;
 //        float specularity;
 //
-//        boolean useAmbientMap;
-//        boolean useDiffuseMap;
-//        boolean useSpecularColourMap;
-//        boolean useSpecularityMap;
+//        boolean useAmbientMap; //packed in an integer as 1 << 0
+//        boolean useDiffuseMap; //packed in an integer as 1 << 1
+//        boolean useSpecularColourMap; //packed in an integer as 1 << 2
+//        boolean useSpecularityMap; //packed in an integer as 1 << 3
+//        boolean useNormalMap; //packed in an integer as 1 << 4
 //    }
 
     public static final int NumFloats = 4 * 3; //3 vec4s.
-    public static final int NumBooleans = 4;
-    public static final int BufferSizeInBytes = 4 * NumFloats + 4 * NumBooleans; //4 bytes per float and per boolean.
+    public static final int BufferSizeInBytes = 4 * NumFloats + 4; //4 bytes per float and one integer mask containing the boolean values.
 
     public static Material DefaultMaterial = new Material();
 
@@ -46,6 +46,7 @@ public class Material {
     private static Sampler diffuseMapSampler;
     private static Sampler specularColourMapSampler;
     private static Sampler specularityMapSampler;
+    private static Sampler normalMapSampler;
 
     private Vector3 _ambientColour;
     private Vector3 _diffuseColour;
@@ -58,6 +59,7 @@ public class Material {
     private Optional<Texture> _ambientMap = Optional.empty();
     private Optional<Texture> _specularColourMap = Optional.empty();
     private Optional<Texture> _specularityMap = Optional.empty();
+    private Optional<Texture> _normalMap = Optional.empty();
 
     private ByteBuffer _bufferRepresentation = null;
 
@@ -158,6 +160,21 @@ public class Material {
         _specularityMap = Optional.of(specularityMap);
     }
 
+    public void setNormalMap(final Texture normalMap) {
+        _bufferRepresentation = null;
+        _normalMap = Optional.of(normalMap);
+    }
+
+    private int packMapFlags() {
+        int result = 0;
+        if (_ambientMap.isPresent()) { result |= 1; }
+        if (_diffuseMap.isPresent()) { result |= 1 << 1; }
+        if (_specularColourMap.isPresent()) { result |= 1 << 2; }
+        if (_specularityMap.isPresent()) { result |= 1 << 3; }
+        if (_normalMap.isPresent()) { result |= 1 << 4; }
+        return result;
+    }
+
     public ByteBuffer toBuffer() {
 
         if (_bufferRepresentation == null) {
@@ -174,10 +191,8 @@ public class Material {
             floatBuffer.put(_specularity);
 
             buffer.position(NumFloats * 4);
-            buffer.putInt(_ambientMap.isPresent() ? 1 : 0);
-            buffer.putInt(_diffuseMap.isPresent() ? 1 : 0);
-            buffer.putInt(_specularColourMap.isPresent() ? 1 : 0);
-            buffer.putInt(_specularityMap.isPresent() ? 1 : 0);
+
+            buffer.putInt(this.packMapFlags());
 
             buffer.flip();
             _bufferRepresentation = buffer;
@@ -204,7 +219,11 @@ public class Material {
                 specularityMapSampler = new Sampler(TextureUnit.SpecularityUnit);
             }
             Material.specularityMapSampler.bindToTextureUnit();
-        } catch (IllegalStateException ex) {
+            if (normalMapSampler == null) {
+                normalMapSampler = new Sampler(TextureUnit.NormalMapUnit);
+            }
+            Material.normalMapSampler.bindToTextureUnit();
+        } catch (IllegalStateException ignored) {
 
         }
     }
@@ -222,6 +241,9 @@ public class Material {
         if (specularityMapSampler != null) {
             Material.specularityMapSampler.unbindSampler();
         }
+        if (normalMapSampler != null) {
+            Material.normalMapSampler.unbindSampler();
+        }
     }
 
     public void bindTextures() {
@@ -229,6 +251,7 @@ public class Material {
         _ambientMap.ifPresent(texture -> texture.bindToTextureUnit(TextureUnit.AmbientColourUnit));
         _specularColourMap.ifPresent(texture -> texture.bindToTextureUnit(TextureUnit.SpecularColourUnit));
         _specularityMap.ifPresent(texture -> texture.bindToTextureUnit(TextureUnit.SpecularityUnit));
+        _normalMap.ifPresent(texture -> texture.bindToTextureUnit(TextureUnit.NormalMapUnit));
     }
 
     public static void unbindTextures() {
@@ -236,6 +259,7 @@ public class Material {
         Texture.unbindTexture(TextureUnit.DiffuseColourUnit);
         Texture.unbindTexture(TextureUnit.SpecularityUnit);
         Texture.unbindTexture(TextureUnit.SpecularColourUnit);
+        Texture.unbindTexture(TextureUnit.NormalMapUnit);
     }
 
     /**

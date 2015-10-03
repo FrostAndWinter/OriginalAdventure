@@ -6,4 +6,5 @@ package swen.adventure.engine.rendering.maths;
 public interface Vector {
     int numberOfComponents();
     float[] data();
+    Vector3 asVector3();
 }
