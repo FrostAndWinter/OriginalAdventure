@@ -153,8 +153,6 @@ public class Texture {
 
             texture = new Texture(normalMap, widthBuffer.get(), heightBuffer.get(), numPixelComponentsBuffer.get(), false);
 
-            STBImageWrite.stbi_write_png("/Users/Thomas/Desktop/normalMap" + fileName + ".png", texture.width, texture.height, texture.numPixelComponents, normalMap, 0);
-
             _normalsCache.put(fileName, texture);
 
         }

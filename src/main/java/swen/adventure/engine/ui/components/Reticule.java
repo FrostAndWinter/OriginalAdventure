@@ -16,8 +16,8 @@ public class Reticule extends UIComponent {
         int radius = (int) (width * scaleX)/2;
 
         g.fill(255,255,255,100);
-        g.rect(x * scaleX - radius, y * scaleY - radius, width * scaleX, height * scaleY);
-        //g.ellipse(x * scaleX - radius, y * scaleY - radius, width * scaleX, height * scaleY);
+        //g.rect(x * scaleX - radius, y * scaleY - radius, width * scaleX, height * scaleY);
+        g.ellipse(x * scaleX - radius, y * scaleY - radius, width * scaleX, height * scaleY);
     }
 
     @Override

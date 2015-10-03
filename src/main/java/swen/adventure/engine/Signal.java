@@ -1,11 +1,6 @@
 package swen.adventure.engine;
 
-import org.lwjgl.Sys;
-import processing.core.PApplet;
-
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by danielbraithwt on 10/3/15.
@@ -28,11 +23,11 @@ public class Signal {
 
             final int currentId = i;
 
-            events[i].addAction(this, (Action) (eventObject, triggeringObject, listener, data) -> recivedEvent(currentId));
+            events[i].addAction(this, (Action) (eventObject, triggeringObject, listener, data) -> receivedEvent(currentId));
         }
     }
 
-    private void recivedEvent(int id) {
+    private void receivedEvent(int id) {
         _firedEvents[id] = !_firedEvents[id];
 
         for (boolean b : _firedEvents) {

@@ -831,7 +831,7 @@ public class PGLLWJGL extends PGL {
     }
 
     @Override
-    public void bufferSubData(int target, int offset, int size, Buffer data) {
+    public void bufferSubData(int target, int offset, int sizeInBytes, Buffer data) {
         //System.out.printf("bufferSubData(target = %d, offset = %d, size = %d, data = %s)\n", target, offset, size, data);
         if (data instanceof FloatBuffer) {
             glBufferSubData(target, offset, (FloatBuffer) data);

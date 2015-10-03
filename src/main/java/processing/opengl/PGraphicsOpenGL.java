@@ -1236,8 +1236,9 @@ public class PGraphicsOpenGL extends PGraphics {
 
     tessGeo.updatePolyIndicesBuffer();
     pgl.bindBuffer(PGL.ELEMENT_ARRAY_BUFFER, bufPolyIndex.glId);
-    pgl.bufferSubData(PGL.ELEMENT_ARRAY_BUFFER, 0,
-      tessGeo.polyIndexCount * PGL.SIZEOF_INDEX, tessGeo.polyIndicesBuffer);
+    pgl.bufferData(PGL.ELEMENT_ARRAY_BUFFER,
+            tessGeo.polyIndexCount * PGL.SIZEOF_INDEX, tessGeo.polyIndicesBuffer,
+            PGL.STATIC_DRAW);
   }
 
 

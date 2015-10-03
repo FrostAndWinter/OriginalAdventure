@@ -1,12 +1,10 @@
 package swen.adventure.game;
 
-import org.lwjgl.Sys;
 import processing.opengl.PGraphics2D;
 import swen.adventure.engine.*;
 import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.rendering.Material;
 import swen.adventure.engine.rendering.PickerRenderer;
-import swen.adventure.engine.rendering.Texture;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
@@ -24,7 +22,6 @@ import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.game.scenenodes.Player;
 
 import java.util.Collections;
-import java.util.Map;
 
 public class AdventureGame implements Game {
 
@@ -125,10 +122,17 @@ public class AdventureGame implements Game {
         TransformNode keyTransform = new TransformNode("textureKeyTransform", _sceneGraph, false, new Vector3(0, 60, 40), Quaternion.makeWithAngleAndAxis(0.f, 1, 0, 0), new Vector3(20, 20, 20));
         Key key = new Key("key", keyTransform);
 
-        Event[] signalEvents = new Event[] {redButton.eventButtonPressed, greenButton.eventButtonPressed, blueButton.eventButtonPressed};
-        Signal s = new Signal(new boolean[] {true, true, false}, signalEvents);
-        s.eventSignalTrue.addAction(s, (eventObject, triggeringObject, listener, data) -> key.setPickupable(true));
-        s.eventSignalFalse.addAction(s, (eventObject1, triggeringObject1, listener1, data1) -> key.setPickupable(false));
+        ConditionalEvent keyEnabledConditionalEvent = new ConditionalEvent(() ->
+            greenPointLight.isOn() && redPointLight.isOn() && !bluePointLight.isOn()
+        , redButton.eventButtonPressed, greenButton.eventButtonPressed, blueButton.eventButtonPressed);
+
+        keyEnabledConditionalEvent.eventAsserted.addAction(null, ((conditionalEvent, player, ignored, data) -> {
+            key.setInteractionEnabled(true);
+        }));
+
+        keyEnabledConditionalEvent.eventDeasserted.addAction(null, ((conditionalEvent, player, ignored, data) -> {
+            key.setInteractionEnabled(false);
+        }));
 
         _glRenderer = new GLRenderer(width, height);
         _pickerRenderer = new PickerRenderer();
