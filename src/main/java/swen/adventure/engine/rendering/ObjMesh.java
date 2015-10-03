@@ -1,5 +1,6 @@
 package swen.adventure.engine.rendering;
 
+import org.lwjgl.Sys;
 import swen.adventure.engine.Utilities;
 import swen.adventure.engine.datastorage.WavefrontParser;
 import swen.adventure.engine.rendering.maths.Vector;
@@ -45,7 +46,6 @@ public class ObjMesh extends GLMesh<Float> {
                 // Calculate handedness
                 float w = normal.crossProduct(tangent).dotProduct(bitangent) < 0.f ? -1.f : 1.f;
                 _tangent = Optional.of(new Vector4(tangent.x, tangent.y, tangent.z, w));
-
             });
         }
 
@@ -260,6 +260,11 @@ public class ObjMesh extends GLMesh<Float> {
             float t2 = uv3.y - uv1.y;
 
             float r = 1.f / (s1 * t2 - s2 * t1);
+
+            if (s1 * t2 - s2 * t1 == 0.f) {
+                System.err.println("Warning: vertices share the same position or texture coordinate and therefore have incorrect tangents.");
+                System.err.printf("Vertices are %s, %s, %s, and texture coordinates are %s, %s, %s.\n\n", pos1, pos2, pos3, uv1, uv2, uv3);
+            }
 
             Vector3 sDirection = new Vector3(
                     (t2 * x1 - t1 * x2) * r,

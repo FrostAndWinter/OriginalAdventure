@@ -4,6 +4,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.stb.STBImageResize;
 import org.lwjgl.stb.STBImageWrite;
+import swen.adventure.engine.TextureUtils;
 import swen.adventure.engine.Utilities;
 
 import java.io.File;
@@ -27,6 +28,7 @@ import static org.lwjgl.opengl.GL21.*;
 public class Texture {
 
     private static Map<String, Texture> _textureCache = new HashMap<>();
+    private static Map<String, Texture> _normalsCache = new HashMap<>();
 
     public final ByteBuffer textureData;
     private final List<ByteBuffer> _mipMappedData = new ArrayList<>();
@@ -115,38 +117,64 @@ public class Texture {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
+    private static ByteBuffer loadImageWithName(String fileName, IntBuffer widthBuffer, IntBuffer heightBuffer, IntBuffer numPixelComponentsBuffer) {
+        String resourcePath = Utilities.pathForResource(fileName, null);
+
+        try {
+            byte[] encodedImageData = Files.readAllBytes(new File(resourcePath).toPath()); //Read using Java APIs to work around STBImage limitations with Unicode paths on Windows.
+            ByteBuffer encodedImageDataBuffer = BufferUtils.createByteBuffer(encodedImageData.length);
+            encodedImageDataBuffer.put(encodedImageData);
+            encodedImageDataBuffer.flip();
+
+            STBImage.stbi_set_flip_vertically_on_load(1);
+
+            ByteBuffer image = STBImage.stbi_load_from_memory(encodedImageDataBuffer, widthBuffer, heightBuffer, numPixelComponentsBuffer, 0);
+
+            if (image == null) {
+                throw new RuntimeException("Error loading image with name " + fileName + ": " + STBImage.stbi_failure_reason());
+            }
+            return image;
+        } catch (IOException e) {
+            throw new RuntimeException("Error loading image with name " + fileName + ": " + e);
+        }
+    }
+
+    public static Texture loadNormalMapWithName(String fileName) {
+
+        Texture texture = _normalsCache.get(fileName);
+        if (texture == null) {
+
+            IntBuffer widthBuffer = BufferUtils.createIntBuffer(1);
+            IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
+            IntBuffer numPixelComponentsBuffer = BufferUtils.createIntBuffer(1);
+            ByteBuffer heightMap = Texture.loadImageWithName(fileName, widthBuffer, heightBuffer, numPixelComponentsBuffer);
+
+            ByteBuffer normalMap = TextureUtils.generateNormalMap(heightMap, widthBuffer.get(0), heightBuffer.get(0), numPixelComponentsBuffer.get(0), 1.0, false);
+
+            texture = new Texture(normalMap, widthBuffer.get(), heightBuffer.get(), numPixelComponentsBuffer.get(), false);
+
+            STBImageWrite.stbi_write_png("/Users/Thomas/Desktop/normalMap" + fileName + ".png", texture.width, texture.height, texture.numPixelComponents, normalMap, 0);
+
+            _normalsCache.put(fileName, texture);
+
+        }
+
+        return texture;
+    }
+
     public static Texture loadTextureWithName(String fileName, boolean useSRGB) {
 
         Texture texture = _textureCache.get(fileName);
 
         if (texture == null) {
-
-            String resourcePath = Utilities.pathForResource(fileName, null);
-
             IntBuffer widthBuffer = BufferUtils.createIntBuffer(1);
             IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
             IntBuffer numPixelComponentsBuffer = BufferUtils.createIntBuffer(1);
-
-            try {
-                byte[] encodedImageData = Files.readAllBytes(new File(resourcePath).toPath()); //Read using Java APIs to work around STBImage limitations with Unicode paths on Windows.
-                ByteBuffer encodedImageDataBuffer = BufferUtils.createByteBuffer(encodedImageData.length);
-                encodedImageDataBuffer.put(encodedImageData);
-                encodedImageDataBuffer.flip();
-
-                STBImage.stbi_set_flip_vertically_on_load(1);
-
-                ByteBuffer image = STBImage.stbi_load_from_memory(encodedImageDataBuffer, widthBuffer, heightBuffer, numPixelComponentsBuffer, 0);
-
-                if (image == null) {
-                    throw new RuntimeException("Error loading image with name " + fileName + ": " + STBImage.stbi_failure_reason());
-                }
+            ByteBuffer image = Texture.loadImageWithName(fileName, widthBuffer, heightBuffer, numPixelComponentsBuffer);
 
                 texture = new Texture(image, widthBuffer.get(), heightBuffer.get(), numPixelComponentsBuffer.get(), useSRGB);
                 _textureCache.put(fileName, texture);
 
-            } catch (IOException e) {
-                throw new RuntimeException("Error loading image with name " + fileName + ": " + e);
-            }
         }
 
         return texture;
