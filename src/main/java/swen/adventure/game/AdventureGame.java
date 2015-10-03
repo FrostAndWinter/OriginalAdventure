@@ -64,7 +64,6 @@ public class AdventureGame implements Game {
         TransformNode playerTransform = new TransformNode("playerTransform", _sceneGraph, true, new Vector3(0, 20, 200), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
         TransformNode cameraTransform = new TransformNode("cameraTransform", playerTransform, true, new Vector3(0, 0, 0), new Quaternion(), new Vector3(1, 1, 1));
         TransformNode playerTableTransform = new TransformNode("playerTableTransform", playerTransform, true, new Vector3(0, 0, -100), new Quaternion(), new Vector3(0.05f, 0.05f, 0.05f));
-        MeshNode playerMesh = new MeshNode("rocket.obj", playerTableTransform);
         new CameraNode("playerCamera", cameraTransform);
         player = new Player("player", playerTransform);
         player.collisionNode().setBoundingBox(new BoundingBox(new Vector3(-10, -20, -10), new Vector3(10, 20, 10)));
@@ -174,7 +173,7 @@ public class AdventureGame implements Game {
 
         panel.addChild(inventory);
 
-        int size = 20;
+        int size = 5;
         Reticule reticule = new Reticule(width/2 - (size), height/2 - size, size);
         panel.addChild(reticule);
 

@@ -1,5 +1,6 @@
 package swen.adventure.engine.ui.components;
 
+import processing.core.PConstants;
 import processing.core.PGraphics;
 import swen.adventure.engine.ui.layoutmanagers.LayoutManager;
 
@@ -17,6 +18,7 @@ public class Reticule extends UIComponent {
 
         g.fill(255,255,255,100);
         //g.rect(x * scaleX - radius, y * scaleY - radius, width * scaleX, height * scaleY);
+        g.ellipseMode(PConstants.CORNER);
         g.ellipse(x * scaleX - radius, y * scaleY - radius, width * scaleX, height * scaleY);
     }
 
