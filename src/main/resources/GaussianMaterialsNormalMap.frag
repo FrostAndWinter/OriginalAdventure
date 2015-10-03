@@ -129,7 +129,7 @@ vec3 ComputeLightingUsingNormalMap(in PerLightData lightData) {
 	vec3 lighting = diffuseColour().rgb * lightIntensity * cosAngIncidence;
 	lighting += specularColour().rgb * lightIntensity * gaussianTerm;
 
-	return vec3(abs(transpose(cameraToTangentSpaceMatrix)[0].z));
+	return lighting;
 }
 
 vec3 ComputeLighting(in PerLightData lightData) {
@@ -162,6 +162,7 @@ vec3 ComputeLighting(in PerLightData lightData) {
 	vec3 lighting = diffuseColour().rgb * lightIntensity * cosAngIncidence;
 	lighting += specularColour().rgb * lightIntensity * gaussianTerm;
 
+
 	return lighting;
 }
 
@@ -171,12 +172,11 @@ void main() {
 	    discard;
 	}
 
-vec3 totalLighting;
-//	vec3 totalLighting = diffuseColour().rgb * lighting.ambientIntensity.rgb;
-//
-//	if (material.ambientColour.a > 0.9f) { // ~= 1
-//	    totalLighting += ambientColour().rgb;
-//	}
+	vec3 totalLighting = diffuseColour().rgb * lighting.ambientIntensity.rgb;
+
+	if (material.ambientColour.a > 0.9f) { // ~= 1
+	    totalLighting += ambientColour().rgb;
+	}
 
 	bool useNormalMap = useNormalMap();
 
@@ -184,7 +184,7 @@ vec3 totalLighting;
 		totalLighting += useNormalMap ? ComputeLightingUsingNormalMap(lighting.lights[light]) : ComputeLighting(lighting.lights[light]);
 	}
 
-	totalLighting = totalLighting / 5; //maxIntensity;
+	totalLighting = totalLighting / maxIntensity;
 
 	outputColor = vec4(totalLighting, material.diffuseColour.a);
 }

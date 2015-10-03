@@ -24,7 +24,7 @@ public class ObjMesh extends GLMesh<Float> {
         final Optional<Vector3> vertexNormal;
         final Optional<Vector3> textureCoordinate;
 
-        private Optional<Vector3> _tangent = Optional.empty();
+        private Optional<Vector> _tangent = Optional.empty();
         private Optional<Vector3> _bitangent = Optional.empty();
 
         public VertexData(Vector vertexPosition, Optional<Vector3> vertexNormal, Optional<Vector3> textureCoordinate) {
@@ -33,39 +33,36 @@ public class ObjMesh extends GLMesh<Float> {
             this.textureCoordinate = textureCoordinate;
         }
 
-        public Optional<Vector3> bitangent() {
-            return _bitangent;
-        }
-
-        /**
-         * Adds the given bitangent to this vertex's bitangent data if it is present, or sets it otherwise.
-         * @param bitangent The bitangent to add (average with).
-         */
-        public void addBitangent(final Vector3 bitangent) {
-            _bitangent = Optional.of(_bitangent
-                    .orElse(Vector3.zero)
-                    .add(bitangent));
-        }
-
         public void orthogonaliseTangent() {
-            _tangent.ifPresent(tangent -> {
-                _tangent = Optional.of(
-                        (tangent.subtract(
-                        vertexNormal.get().multiplyScalar(
-                                vertexNormal.get().dotProduct(tangent)
-                        ))).normalise()
-                ); //Make the tangent perpendicular to the normal.
+            _tangent.ifPresent(t -> {
+                Vector3 tangent = (Vector3) t;
+                Vector3 normal = this.vertexNormal.get();
+                Vector3 bitangent = _bitangent.get();
 
-                if (_bitangent.get().dotProduct(
-                        this.vertexNormal.get().crossProduct(_tangent.get())
-                ) < 0.f) {
-                    _tangent = Optional.of(_tangent.get().multiplyScalar(-1.f));
-                }
+                // Gram-Schmidt orthogonalise
+                tangent = (tangent.subtract(normal.multiplyScalar(normal.dotProduct(tangent)))).normalise();
+
+                // Calculate handedness
+                float w = normal.crossProduct(tangent).dotProduct(bitangent) < 0.f ? -1.f : 1.f;
+                _tangent = Optional.of(new Vector4(tangent.x, tangent.y, tangent.z, w));
+
             });
         }
 
-        public Optional<Vector3> tangent() {
+        /** The tangent is a Vector3 during calculation, but a Vector4 (with w indicating handedness) after orthogonalisation. */
+        public Optional<Vector> tangent() {
             return _tangent;
+        }
+
+        /**
+         * Adds the given bitangent to this vertex's tangent data if it is present, or sets it otherwise.
+         * @param bitangent The bitangent to add (average with).
+         */
+        public void addBitangent(final Vector3 bitangent) {
+            _bitangent = Optional.of(
+                            _bitangent
+                            .orElse(Vector3.zero)
+                            .add(bitangent));
         }
 
         /**
@@ -76,7 +73,8 @@ public class ObjMesh extends GLMesh<Float> {
             _tangent = Optional.of(
                     _tangent
                     .orElse(Vector3.zero)
-                    .add(tangent));
+                    .asVector3()
+                            .add(tangent));
         }
 
         @Override
@@ -103,13 +101,12 @@ public class ObjMesh extends GLMesh<Float> {
     private static final int VertexNormalAttributeIndex = 2;
     private static final int TextureCoordinateAttributeIndex = 1;
     private static final int TangentAttributeIndex = 3;
-    private static final int BitangentAttributeIndex = 4;
 
     private static final String VAOPositions = "vaoPositions";
     private static final String VAOPositionsAndNormals = "vaoPositionsAndNormals";
     private static final String VAOPositionsAndTexCoords = "vaoPositionsAndTexCoords";
     private static final String VAOPositionsNormalsTexCoords = "vaoPositionsNormalsTexCoords";
-    private static final String VAOPositionsNormalsTexCoordsTangentsBitangents = "vaoPositionsNormalsTexCoordsTangentsBitangents";
+    private static final String VAOPositionsNormalsTexCoordsTangents = "vaoPositionsNormalsTexCoordsTangents";
 
     private boolean _hasNormals = false;
     private boolean _hasTextureCoordinates = false;
@@ -195,7 +192,6 @@ public class ObjMesh extends GLMesh<Float> {
             if (_hasNormals && _hasTextureCoordinates) {
                 vertex.orthogonaliseTangent();
                 this.addVectorToList(vertex.tangent().get(), tangents);
-                this.addVectorToList(vertex.bitangent().get(), bitangents);
             }
         }
 
@@ -208,8 +204,7 @@ public class ObjMesh extends GLMesh<Float> {
             attributes.add(new Attribute(TextureCoordinateAttributeIndex, 3, AttributeType.Float, false, textureCoordinates));
         }
         if (_hasNormals && _hasTextureCoordinates) {
-            attributes.add(new Attribute(TangentAttributeIndex, 3, AttributeType.Float, false, tangents));
-            attributes.add(new Attribute(BitangentAttributeIndex, 3, AttributeType.Float, false, bitangents));
+            attributes.add(new Attribute(TangentAttributeIndex, 4, AttributeType.Float, false, tangents));
         }
 
         List<RenderCommand> renderCommands = new ArrayList<>();
@@ -230,7 +225,7 @@ public class ObjMesh extends GLMesh<Float> {
         }
         if (_hasNormals && _hasTextureCoordinates) {
             namedVAOs.add(new NamedVertexArrayObject(VAOPositionsNormalsTexCoords, Arrays.asList(VertexGeometryAttributeIndex, VertexNormalAttributeIndex, TextureCoordinateAttributeIndex)));
-            namedVAOs.add(new NamedVertexArrayObject(VAOPositionsNormalsTexCoordsTangentsBitangents, Arrays.asList(VertexGeometryAttributeIndex, VertexNormalAttributeIndex, TextureCoordinateAttributeIndex, TangentAttributeIndex, BitangentAttributeIndex)));
+            namedVAOs.add(new NamedVertexArrayObject(VAOPositionsNormalsTexCoordsTangents, Arrays.asList(VertexGeometryAttributeIndex, VertexNormalAttributeIndex, TextureCoordinateAttributeIndex, TangentAttributeIndex)));
         }
 
         _boundingBox = this.computeBoundingBox();
@@ -241,6 +236,7 @@ public class ObjMesh extends GLMesh<Float> {
     /**
      * Computes the tangents and bitangents for the given attribute lists, and adds them as attributes to attributeListToAddTo.
      * Assumes that the indices are for triangles and have the correct winding order.
+     * Reference: http://www.terathon.com/code/tangent.html
      */
     private void computeTangentsAndBiTangents(List<VertexData> vertices, List<Integer> triangleIndices) {
         for (int i = 0; i < triangleIndices.size(); i+= 3) {
@@ -251,25 +247,33 @@ public class ObjMesh extends GLMesh<Float> {
             Vector3 pos1 = v1.vertexPosition.asVector3(), pos2 = v2.vertexPosition.asVector3(), pos3 = v3.vertexPosition.asVector3();
             Vector3 uv1 = v1.textureCoordinate.get(), uv2 = v2.textureCoordinate.get(), uv3 = v3.textureCoordinate.get();
 
-            Vector3 deltaPosition1 = pos2.subtract(pos1);
-            Vector3 deltaPosition2 = pos3.subtract(pos2);
+            float x1 = pos2.x - pos1.x;
+            float x2 = pos3.x - pos1.x;
+            float y1 = pos2.y - pos1.y;
+            float y2 = pos3.y - pos1.y;
+            float z1 = pos2.z - pos1.z;
+            float z2 = pos3.z - pos2.z;
 
-            Vector3 deltaUV1 = uv2.subtract(uv1);
-            Vector3 deltaUV2 = uv3.subtract(uv2);
+            float s1 = uv2.x - uv1.x;
+            float s2 = uv3.x - uv1.x;
+            float t1 = uv2.y - uv1.y;
+            float t2 = uv3.y - uv1.y;
 
-            float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
+            float r = 1.f / (s1 * t2 - s2 * t1);
 
-            Vector3 tangent = (deltaPosition1.multiplyScalar(deltaUV2.y)
-                    .subtract(
-                            deltaPosition2.multiplyScalar(deltaUV1.y)
-                    )).multiplyScalar(r);
-            Vector3 bitangent = (deltaPosition2.multiplyScalar(deltaUV1.x)
-                    .subtract(
-                            deltaPosition1.multiplyScalar(deltaUV2.x))
-            ).multiplyScalar(r);
+            Vector3 sDirection = new Vector3(
+                    (t2 * x1 - t1 * x2) * r,
+                    (t2 * y1 - t1 * y2) * r,
+                    (t2 * z1 - t1 * z2) * r
+            );
+            Vector3 tDirection = new Vector3(
+                    (s1 * x2 - s2 * x1) * r,
+                    (s1 * y2 - s2 * y1) * r,
+                    (s1 * z2 - s2 * z1) * r
+            );
 
-            v1.addTangent(tangent); v2.addTangent(tangent); v3.addTangent(tangent);
-            v1.addBitangent(bitangent); v2.addBitangent(bitangent); v3.addBitangent(bitangent);
+            v1.addTangent(sDirection); v2.addTangent(sDirection); v3.addTangent(sDirection);
+            v1.addBitangent(tDirection); v2.addBitangent(tDirection); v3.addBitangent(tDirection);
         }
     }
 

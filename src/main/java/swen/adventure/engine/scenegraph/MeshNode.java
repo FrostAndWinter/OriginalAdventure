@@ -56,10 +56,17 @@ public class MeshNode extends SceneNode {
      * @param shader The Material Shader on which to set the materials.
      */
     public void render(MaterialShader shader) {
-        if (_materialOverride.isPresent()) {
-            shader.setMaterial(_materialOverride.get().toBuffer());
+        _materialOverride.ifPresent(material -> {
+            shader.setMaterial(material.toBuffer());
+            material.bindTextures();
+            Material.bindSamplers();
+
             _mesh.render();
-        } else {
+
+            Material.unbindSamplers();
+            Material.unbindTextures();
+        });
+        if (!_materialOverride.isPresent()) {
             _mesh.render(shader);
         }
     }
