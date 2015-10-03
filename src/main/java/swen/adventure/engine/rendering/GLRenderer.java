@@ -2,6 +2,7 @@ package swen.adventure.engine.rendering;
 
 import swen.adventure.engine.rendering.maths.Matrix3;
 import swen.adventure.engine.rendering.maths.Matrix4;
+import swen.adventure.engine.rendering.shaders.GaussianMaterialsNormalMapsShader;
 import swen.adventure.engine.rendering.shaders.GaussianPerObjectMaterialShader;
 import swen.adventure.engine.scenegraph.CameraNode;
 import swen.adventure.engine.scenegraph.Light;
@@ -20,12 +21,12 @@ import static org.lwjgl.opengl.GL32.*;
  */
 public class GLRenderer {
 
-    private GaussianPerObjectMaterialShader _defaultShader;
+    private GaussianMaterialsNormalMapsShader _defaultShader;
     private int _width, _height;
     private float _currentFOV = (float)Math.PI/3.f;
 
     public GLRenderer(int width, int height) {
-        _defaultShader = new GaussianPerObjectMaterialShader();
+        _defaultShader = new GaussianMaterialsNormalMapsShader();
 
         this.setSize(width, height);
     }

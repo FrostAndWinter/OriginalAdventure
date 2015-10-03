@@ -256,6 +256,12 @@ public class Vector4 implements Vector {
     }
 
     @Override
+    public Vector3 asVector3() {
+        return new Vector3(this.x, this.y, this.z);
+    }
+
+
+    @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

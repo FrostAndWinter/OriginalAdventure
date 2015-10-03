@@ -1,6 +1,7 @@
 package swen.adventure.engine.scenegraph;
 
 import swen.adventure.engine.Event;
+import swen.adventure.engine.datastorage.BundleObject;
 import swen.adventure.engine.rendering.GLMesh;
 import swen.adventure.engine.rendering.Material;
 import swen.adventure.engine.rendering.ObjMesh;
@@ -11,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 25/09/15.
@@ -39,6 +41,21 @@ public class MeshNode extends SceneNode {
         }
     }
 
+    @Override
+    public BundleObject toBundle() {
+        String fileName = id.substring("mesh".length()); // the id must equal "mesh" + fileName
+        return super.toBundle()
+                .put("fileName", fileName);
+    }
+
+    private static MeshNode createSceneNodeFromBundle(BundleObject bundle, Function<String, TransformNode> findParentFunction) {
+        String id = bundle.getString("id");
+        String parentId = bundle.getString("parentId");
+        TransformNode parent = findParentFunction.apply(parentId);
+        String fileName = bundle.getString("fileName");
+        return new MeshNode(id, fileName, parent);
+    }
+
     public Optional<Material> materialOverride() {
         return _materialOverride;
     }
@@ -56,10 +73,17 @@ public class MeshNode extends SceneNode {
      * @param shader The Material Shader on which to set the materials.
      */
     public void render(MaterialShader shader) {
-        if (_materialOverride.isPresent()) {
-            shader.setMaterial(_materialOverride.get().toBuffer());
+        _materialOverride.ifPresent(material -> {
+            shader.setMaterial(material.toBuffer());
+            material.bindTextures();
+            Material.bindSamplers();
+
             _mesh.render();
-        } else {
+
+            Material.unbindSamplers();
+            Material.unbindTextures();
+        });
+        if (!_materialOverride.isPresent()) {
             _mesh.render(shader);
         }
     }

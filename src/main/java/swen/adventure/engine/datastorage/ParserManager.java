@@ -1,8 +1,7 @@
 package swen.adventure.engine.datastorage;
 
-import swen.adventure.engine.rendering.maths.Quaternion;
-import swen.adventure.engine.rendering.maths.Vector3;
-import swen.adventure.engine.rendering.maths.Vector4;
+import swen.adventure.engine.Utilities;
+import swen.adventure.engine.rendering.maths.*;
 
 import java.util.*;
 import java.util.function.Function;
@@ -42,6 +41,20 @@ class ParserManager {
                 s -> {
                     List<Float> xyzw = fromCsvString(s, Float.class);
                     return new Quaternion(xyzw.get(0), xyzw.get(1), xyzw.get(2), xyzw.get(3));
+                }), parsers);
+
+        addParser(Matrix3.class, new Parser<>(
+                m -> toCsvString(Arrays.asList(m)),
+                s -> {
+                    List<Float> entryValues = fromCsvString(s, Float.class);
+                    return new Matrix3(Utilities.toPrimitiveArray(entryValues));
+                }), parsers);
+
+        addParser(Matrix4.class, new Parser<>(
+                m -> toCsvString(Arrays.asList(m)),
+                s -> {
+                    List<Float> entryValues = fromCsvString(s, Float.class);
+                    return new Matrix4(Utilities.toPrimitiveArray(entryValues));
                 }), parsers);
 
         PARSERS = Collections.unmodifiableMap(parsers);

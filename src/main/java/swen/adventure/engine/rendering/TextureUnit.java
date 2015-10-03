@@ -7,7 +7,8 @@ public enum TextureUnit {
     AmbientColourUnit(0),
     DiffuseColourUnit(1),
     SpecularColourUnit(2),
-    SpecularityUnit(3);
+    SpecularityUnit(3),
+    NormalMapUnit(4);
 
     public final int glUnit;
 

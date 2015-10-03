@@ -7,6 +7,7 @@ import swen.adventure.engine.scenegraph.SceneNode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by josephbennett on 29/09/15
@@ -27,11 +28,9 @@ public class EventConnectionParser {
     }
 
     public static List<EventConnection> parseFile(List<String> lines) {
-        List<EventConnection> connections = new ArrayList<>();
-        for (String line : lines) {
-            connections.add(EventConnectionParser.parseLine(line));
-        }
-        return connections;
+        return lines.stream()
+                .map(EventConnectionParser::parseLine)
+                .collect(Collectors.toList());
     }
 
     public static EventConnection parseLine(String line) {

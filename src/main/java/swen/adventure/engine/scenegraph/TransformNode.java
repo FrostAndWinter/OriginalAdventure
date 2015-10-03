@@ -1,10 +1,13 @@
 package swen.adventure.engine.scenegraph;
 
+import swen.adventure.engine.datastorage.BundleObject;
+import swen.adventure.engine.datastorage.BundleSerializable;
 import swen.adventure.engine.rendering.maths.Matrix4;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 15/09/15.
@@ -159,6 +162,35 @@ public class TransformNode extends SceneNode {
             return false;
         return !(_worldToNodeTransform != null ? !_worldToNodeTransform.equals(that._worldToNodeTransform) : that._worldToNodeTransform != null);
 
+    }
+
+    @Override
+    public BundleObject toBundle() {
+        return super.toBundle()
+                .put("translation", _translation)
+                .put("rotation", _rotation)
+                .put("scale", _scale)
+                .put("needsRecalculateNodeWorldTransform", _needsRecalculateNodeWorldTransform)
+                .put("needsRecalculateTransformWorldNodeTransform", _needsRecalculateTransformWorldNodeTransform)
+                .put("nodeToWorldTransform", _nodeToWorldTransform)
+                .put("worldToNodeTransform", _worldToNodeTransform);
+    }
+
+    private static TransformNode createSceneNodeFromBundle(BundleObject bundle,
+                                                           Function<String, TransformNode> findParentFunction) {
+        String id = bundle.getString("id");
+        Vector3 translation = bundle.getVector3("translation");
+        Quaternion rotation = bundle.getQuaternion("rotation");
+        Vector3 scale = bundle.getVector3("scale");
+
+        if(bundle.hasProperty("parentId")) {
+            String parentId = bundle.getString("parentId");
+            TransformNode parent = findParentFunction.apply(parentId);
+            boolean isDynamic = bundle.getBoolean("isDynamic");
+            return new TransformNode(id, parent, isDynamic, translation, rotation, scale);
+        }
+
+        return new TransformNode(id, translation, rotation, scale);
     }
 
     @Override

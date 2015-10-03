@@ -27,8 +27,10 @@ public class MTLParser {
     private static final Pattern PatternDiffuseMap = Pattern.compile("map_Kd");
     private static final Pattern PatternSpecularColourMap = Pattern.compile("map_Ks");
     private static final Pattern PatternSpecularityMap = Pattern.compile("map_Ns");
-    private static final Pattern PatternWhitespaceExceptNewLine = Pattern.compile("[^\\S\\r\\n]");
+    private static final Pattern PatternBumpMap = Pattern.compile("map_bump|bump");
+    private static final Pattern PatternWhitespaceExceptNewLine = Pattern.compile("[^\\S+\\r\\n]+");
     private static final Pattern PatternWhitespace = Pattern.compile("\\s+");
+    private static final Pattern PatternNewLine = Pattern.compile("[^.]+");
 
     public static Map<String, Material> parse(File file) throws FileNotFoundException{
         InputStream is = new FileInputStream(file);
@@ -68,16 +70,19 @@ public class MTLParser {
                     material.setUseAmbient(scanner.nextInt() > 1);
 
                 } else if (MTLParser.gobble(scanner, PatternAmbientMap)) {
-                    material.setAmbientMap(MTLParser.parseTexture(scanner));
+                    material.setAmbientMap(MTLParser.parseTexture(scanner, true, false));
 
                 } else if (MTLParser.gobble(scanner, PatternDiffuseMap)) {
-                    material.setDiffuseMap(MTLParser.parseTexture(scanner));
+                    material.setDiffuseMap(MTLParser.parseTexture(scanner, true, false));
 
                 } else if (MTLParser.gobble(scanner, PatternSpecularColourMap)) {
-                    material.setSpecularColourMap(MTLParser.parseTexture(scanner));
+                    material.setSpecularColourMap(MTLParser.parseTexture(scanner, true, false));
 
                 } else if (MTLParser.gobble(scanner, PatternSpecularityMap)) {
-                    material.setSpecularityMap(MTLParser.parseTexture(scanner));
+                    material.setSpecularityMap(MTLParser.parseTexture(scanner, false, false));
+
+                } else if (MTLParser.gobble(scanner, PatternBumpMap)) {
+                    material.setNormalMap(MTLParser.parseTexture(scanner, false, true));
 
                 } else if (scanner.hasNextLine()) {
                     scanner.nextLine();
@@ -103,17 +108,18 @@ public class MTLParser {
         return new Vector3(vector);
     }
 
-    private static Texture parseTexture(Scanner scanner) {
-        scanner.useDelimiter(PatternWhitespaceExceptNewLine);
+    private static Texture parseTexture(Scanner scanner, boolean useSRGB, boolean isNormalMap) {
+        //scanner.useDelimiter(PatternWhitespaceExceptNewLine);
 
         List<String> args = new ArrayList<>();
-        while (scanner.hasNext() && !scanner.hasNext("\n")) {
-            args.add(scanner.next().replaceAll("\n", ""));
+        while (scanner.hasNext() && !scanner.hasNext(PatternNewLine)) {
+            args.add(scanner.next());
         }
 
-        scanner.useDelimiter(PatternWhitespace);
+        //scanner.useDelimiter(PatternWhitespace);
 
-        return Texture.loadTextureWithName(args.get(args.size() - 1));
+        String name = args.get(args.size() - 1);
+        return isNormalMap ? Texture.loadNormalMapWithName(name) : Texture.loadTextureWithName(name, useSRGB);
     }
 
     private static boolean gobble(Scanner scanner, Pattern p) {

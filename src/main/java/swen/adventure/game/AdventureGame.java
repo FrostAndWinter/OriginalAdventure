@@ -6,6 +6,7 @@ import swen.adventure.engine.*;
 import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.rendering.Material;
 import swen.adventure.engine.rendering.PickerRenderer;
+import swen.adventure.engine.rendering.Texture;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
@@ -76,9 +77,8 @@ public class AdventureGame implements Game {
 //        table.setMaterialOverride(new Material(Vector3.zero, new Vector3(0.8f, 0.3f, 0.4f), new Vector3(0.7f, 0.6f, 0.6f), 0.f, 0.2f));
 //        new GameObject("tableGameObject", tableTransform);
 
-        Light.createAmbientLight("ambientLight", _sceneGraph, new Vector3(0.3f, 0.5f, 0.4f), 1.5f);
-        //Light.createDirectionalLight("directionalLight", _sceneGraph, new Vector3(0.7f, 0.3f, 0.1f), 7.f, new Vector3(0.4f, 0.2f, 0.6f));
-        //Light.createPointLight("pointLight", cameraTransform, new Vector3(0.4f, 0.5f, 0.8f), 9.f, Light.LightFalloff.Quadratic);
+        Light.createAmbientLight("ambientLight", _sceneGraph, new Vector3(0.3f, 0.5f, 0.4f), 0.2f);
+        Light.createDirectionalLight("directionalLight", _sceneGraph, new Vector3(0.7f, 0.7f, 0.7f), 5.f, new Vector3(0.4f, 0.2f, 0.6f));
 
         Light redPointLight = Light.createPointLight("redPointLight", _sceneGraph, new Vector3(1f, 0f, 0f), 15f, Light.LightFalloff.Linear);
         redPointLight.setOn(false);
