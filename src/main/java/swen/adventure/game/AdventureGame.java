@@ -11,6 +11,7 @@ import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
 import swen.adventure.engine.ui.color.Color;
 import swen.adventure.engine.ui.components.Frame;
+import swen.adventure.engine.ui.components.Reticule;
 import swen.adventure.engine.utils.SharedLibraryLoader;
 import swen.adventure.game.scenenodes.Button;
 import swen.adventure.game.scenenodes.Door;
@@ -162,6 +163,10 @@ public class AdventureGame implements Game {
         player.getInventory().eventItemSelected.addAction(inventory, Inventory.actionSelectItem);
 
         panel.addChild(inventory);
+
+        int size = 20;
+        Reticule reticule = new Reticule(width/2 - (size), height/2 - size, size);
+        panel.addChild(reticule);
 
         _frame.addChild(panel);
     }
