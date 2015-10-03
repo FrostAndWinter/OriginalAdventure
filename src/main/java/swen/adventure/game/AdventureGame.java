@@ -79,14 +79,13 @@ public class AdventureGame implements Game {
 //        new GameObject("tableGameObject", tableTransform);
 
         Light.createAmbientLight("ambientLight", _sceneGraph, new Vector3(0.3f, 0.5f, 0.4f), 0.2f);
-//        Light.createDirectionalLight("directionalLight", _sceneGraph, new Vector3(0.7f, 0.3f, 0.1f), 7.f, new Vector3(0.4f, 0.2f, 0.6f));
-//        Light.createPointLight("pointLight", cameraTransform, new Vector3(0.4f, 0.5f, 0.8f), 9.f, Light.LightFalloff.Quadratic);
+        Light.createDirectionalLight("directionalLight", _sceneGraph, new Vector3(0.7f, 0.7f, 0.7f), 5.f, new Vector3(0.4f, 0.2f, 0.6f));
 
-        Light redPointLight = Light.createPointLight("redPointLight", _sceneGraph, new Vector3(1f, 0f, 0f), 15f, Light.LightFalloff.Linear);
+        Light redPointLight = Light.createPointLight("redPointLight", _sceneGraph, new Vector3(1f, 0f, 0f), 15f, Light.LightFalloff.Quadratic);
 
-        Light greenPointLight = Light.createPointLight("greenPointLight", _sceneGraph, new Vector3(0f, 1f, 0f), 15f, Light.LightFalloff.Linear);
+        Light greenPointLight = Light.createPointLight("greenPointLight", _sceneGraph, new Vector3(0f, 1f, 0f), 15f, Light.LightFalloff.Quadratic);
 
-        Light bluePointLight = Light.createPointLight("bluePointLight", _sceneGraph, new Vector3(0f, 0f, 1f), 15f, Light.LightFalloff.Linear);
+        Light bluePointLight = Light.createPointLight("bluePointLight", _sceneGraph, new Vector3(0f, 0f, 1f), 15f, Light.LightFalloff.Quadratic);
 
 
         final Door door = new Door("houseDoor", _sceneGraph);

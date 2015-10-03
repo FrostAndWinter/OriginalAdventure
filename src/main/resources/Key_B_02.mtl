@@ -13,4 +13,4 @@ illum 2
 Ns 27.8576
 map_Ka keyB_tx.bmp
 map_Kd keyB_tx.bmp
-map_bump keyB_tx.bmp
+bump keyB_tx.bmp

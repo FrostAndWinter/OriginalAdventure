@@ -149,7 +149,7 @@ public class Texture {
             IntBuffer numPixelComponentsBuffer = BufferUtils.createIntBuffer(1);
             ByteBuffer heightMap = Texture.loadImageWithName(fileName, widthBuffer, heightBuffer, numPixelComponentsBuffer);
 
-            ByteBuffer normalMap = TextureUtils.generateNormalMap(heightMap, widthBuffer.get(0), heightBuffer.get(0), numPixelComponentsBuffer.get(0), 1.0, false);
+            ByteBuffer normalMap = TextureUtils.generateNormalMap(heightMap, widthBuffer.get(0), heightBuffer.get(0), numPixelComponentsBuffer.get(0), 2.0, false);
 
             texture = new Texture(normalMap, widthBuffer.get(), heightBuffer.get(), numPixelComponentsBuffer.get(), false);
 
