@@ -61,7 +61,7 @@ public class Texture {
                     useSRGB ? STBImageResize.STBIR_COLORSPACE_SRGB : STBImageResize.STBIR_COLORSPACE_LINEAR);
 
 
-            STBImageWrite.stbi_write_png("/tmp/" + this.hashCode() + "" + w + ".png", w, h, this.numPixelComponents, outputBuffer, 0);
+           if (width == 1024 && height == 1024) STBImageWrite.stbi_write_png("/tmp/" + this.hashCode() + " w" + w + ".png", w, h, this.numPixelComponents, outputBuffer, 0);
 
             if (success == 0) {
                 System.err.printf("Error generating mip-map with dimensions %d, %d.\n", w, h);
@@ -141,7 +141,7 @@ public class Texture {
         }
     }
 
-    public static Texture loadNormalMapWithName(String directory, String fileName) {
+    public static Texture loadHeightMapWithName(String directory, String fileName) {
 
         Texture texture = _normalsCache.get(directory + fileName);
         if (texture == null) {

@@ -1,0 +1,19 @@
+newmtl HandleSG2
+illum 4
+Kd 0.00 0.00 0.00
+map_Kd oldmetal-1.png
+Ka 0.00 0.00 0.00
+Ks 0.1 0.1 0.1 0.1
+Ns 2
+Tf 1.00 1.00 1.00
+Ni 1.00
+
+newmtl metal_handleSG2
+illum 4
+Kd 0.00 0.00 0.00
+map_Kd oldmetal-2.png
+Ka 0.00 0.00 0.00
+Ks 0.3 0.3 0.3
+Ns 80
+Tf 1.00 1.00 1.00
+Ni 1.00

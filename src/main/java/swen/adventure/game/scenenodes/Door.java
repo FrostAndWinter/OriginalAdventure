@@ -7,6 +7,7 @@ import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.MeshNode;
+import swen.adventure.engine.scenegraph.SceneNode;
 import swen.adventure.engine.scenegraph.TransformNode;
 
 
@@ -16,7 +17,7 @@ public class Door extends GameObject {
 
     private boolean open = false;
 
-    public final static Action<MeshNode, Player, Door> actionToggleDoor =
+    public final static Action<SceneNode, ?, Door> actionToggleDoor =
             (eventObject, player, door, data) -> door.toggle();
 
     private AnimableProperty _doorRotationProgress = new AnimableProperty(0);
@@ -28,8 +29,6 @@ public class Door extends GameObject {
 
         TransformNode body = new TransformNode(id + "DoorBody", _hingeTransform, true, Vector3.zero, new Quaternion(), new Vector3(50, 100, 1));
         MeshNode doorMesh = new MeshNode(id + "DoorMesh", "box.obj", body);
-
-        doorMesh.eventMeshClicked.addAction(this, actionToggleDoor);
 
         _hingeTransform.translateBy(new Vector3(-doorMesh.boundingBox().width() * 50 / 2, 0.f, 0.f));
         body.translateBy(new Vector3(doorMesh.boundingBox().width()*50/2, 0.f, 0.f));

@@ -28,6 +28,7 @@ public class MTLParser {
     private static final Pattern PatternSpecularColourMap = Pattern.compile("map_Ks");
     private static final Pattern PatternSpecularityMap = Pattern.compile("map_Ns");
     private static final Pattern PatternBumpMap = Pattern.compile("map_bump|bump");
+    private static final Pattern PatternNormalMap = Pattern.compile("map_normal|normal");
     private static final Pattern PatternNewLine = Pattern.compile("[^.]+");
 
     public static Map<String, Material> parse(File file, String directory) throws FileNotFoundException{
@@ -82,6 +83,9 @@ public class MTLParser {
                 } else if (MTLParser.gobble(scanner, PatternBumpMap)) {
                     material.setNormalMap(MTLParser.parseTexture(scanner, directory, false, true));
 
+                } else if (MTLParser.gobble(scanner, PatternNormalMap)) {
+                    material.setNormalMap(MTLParser.parseTexture(scanner, directory, false, false));
+
                 } else if (scanner.hasNextLine()) {
                     scanner.nextLine();
                 }
@@ -106,7 +110,7 @@ public class MTLParser {
         return new Vector3(vector);
     }
 
-    private static Texture parseTexture(Scanner scanner, String baseDirectory, boolean useSRGB, boolean isNormalMap) {
+    private static Texture parseTexture(Scanner scanner, String baseDirectory, boolean useSRGB, boolean isHeightMap) {
 
         List<String> args = new ArrayList<>();
         while (scanner.hasNext() && !scanner.hasNext(PatternNewLine)) {
@@ -114,7 +118,7 @@ public class MTLParser {
         }
 
         String name = args.get(args.size() - 1);
-        return isNormalMap ? Texture.loadNormalMapWithName(baseDirectory, name) : Texture.loadTextureWithName(baseDirectory, name, useSRGB);
+        return isHeightMap ? Texture.loadHeightMapWithName(baseDirectory, name) : Texture.loadTextureWithName(baseDirectory, name, useSRGB);
     }
 
     private static boolean gobble(Scanner scanner, Pattern p) {

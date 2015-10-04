@@ -5,6 +5,7 @@ import swen.adventure.engine.*;
 import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.rendering.Material;
 import swen.adventure.engine.rendering.PickerRenderer;
+import swen.adventure.engine.rendering.Texture;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
@@ -47,7 +48,6 @@ public class AdventureGame implements Game {
         _sceneGraph = new TransformNode("root", new Vector3(0.f, 0.f, 0.f), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
         TransformNode groundPlaneTransform = new TransformNode("groundPlaneTransform", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis((float) Math.PI / 2.f, -1, 0, 0), new Vector3(25000, 25000, 1));
         MeshNode groundPlane = new MeshNode(null, "Plane.obj", groundPlaneTransform);
-        groundPlane.setMaterialOverride(new Material(Vector3.zero, new Vector3(0.1f, 0.8f, 0.3f), new Vector3(0.5f, 0.5f, 0.5f), 1.f, 1.f));
 
         TransformNode yAxisTransform = new TransformNode("yAxis", _sceneGraph, false, new Vector3(0, 0, 0), new Quaternion(), new Vector3(2, 1000, 2));
         MeshNode yAxis = new MeshNode(null, "box.obj", yAxisTransform);
@@ -133,6 +133,10 @@ public class AdventureGame implements Game {
 
         TransformNode chestTransform = new TransformNode("chestTransform", _sceneGraph, false, Vector3.one, new Quaternion(), new Vector3(10, 10, 10));
         new Chest("chest", chestTransform);
+
+        TransformNode leverTransform = new TransformNode("leverTransform", _sceneGraph, false, new Vector3(-40, 15, 20), Quaternion.makeWithAngleAndAxis((float) -Math.PI / 2, 0, 0, 1), new Vector3(0.3f, 0.3f, 0.3f));
+        new Lever("lever", leverTransform).eventLeverToggled.addAction(door, Door.actionToggleDoor);
+
 
         _glRenderer = new GLRenderer(width, height);
         _pickerRenderer = new PickerRenderer();

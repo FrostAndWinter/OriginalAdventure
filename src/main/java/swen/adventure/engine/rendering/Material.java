@@ -26,6 +26,10 @@ public class Material {
 //        //Packed into a single vec4
 //        Vector3 specularColour;
 //        float specularity;
+
+//        float textureScaleU;
+//        float textureScaleV;
+//
 //
 //        boolean useAmbientMap; //packed in an integer as 1 << 0
 //        boolean useDiffuseMap; //packed in an integer as 1 << 1
@@ -34,7 +38,7 @@ public class Material {
 //        boolean useNormalMap; //packed in an integer as 1 << 4
 //    }
 
-    public static final int NumFloats = 4 * 3; //3 vec4s.
+    public static final int NumFloats = 4 * 3 + 2; //3 vec4s and a vec2.
     public static final int BufferSizeInBytes = 4 * NumFloats + 4; //4 bytes per float and one integer mask containing the boolean values.
 
     public static Material DefaultMaterial = new Material();
@@ -55,6 +59,8 @@ public class Material {
     private float _specularity;
     private boolean _useAmbient = true;
 
+    private Vector3 _textureScale = Vector3.one;
+
     private Optional<Texture> _diffuseMap = Optional.empty();
     private Optional<Texture> _ambientMap = Optional.empty();
     private Optional<Texture> _specularColourMap = Optional.empty();
@@ -73,6 +79,14 @@ public class Material {
 
     public Material() {
         this(Vector3.zero, Vector3.one, Vector3.one, 1.f, 0.5f);
+    }
+
+    public void setTextureScale(Vector3 textureScale) {
+        _textureScale = textureScale;
+    }
+
+    public Vector3 textureScale() {
+        return _textureScale;
     }
 
     public void setUseAmbient(boolean useAmbient) {
@@ -189,6 +203,9 @@ public class Material {
 
             floatBuffer.put(_specularColour.v);
             floatBuffer.put(_specularity);
+
+            floatBuffer.put(_textureScale.x);
+            floatBuffer.put(_textureScale.y);
 
             buffer.position(NumFloats * 4);
 

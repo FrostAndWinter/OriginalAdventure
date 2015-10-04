@@ -1,0 +1,69 @@
+newmtl HandleSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd -o 0 -1 oldmetal-2.png
+Ni 1.00
+newmtl Pieces_1SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd -o 0 -1 clay-1.png
+Ni 1.00
+newmtl carpetSG
+illum 4
+Kd 0.42 0.01 0.01
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+newmtl corner_fullSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd -o 0 -1 stone-tile-3.png
+Ni 1.00
+newmtl crypt_topSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd -o 0 -1 marble-tile-1.png
+Ni 1.00
+newmtl jarSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd -o 0 -1 clay-2.png
+Ni 1.00
+newmtl metal_handleSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd -o 0 -1 oldmetal-2.png
+Ni 1.00
+newmtl wallSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd -o 0 -1 stone-tile-1.png
+Ni 1.00
+newmtl wallSG1
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd -o 0 -1 stone-tile-2.png
+Ni 1.00
+newmtl woodSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd -o 0 -1 wood-1.png
+Ni 1.00
