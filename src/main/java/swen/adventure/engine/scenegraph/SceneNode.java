@@ -164,4 +164,22 @@ public abstract class SceneNode implements BundleSerializable {
     public Matrix4 worldToNodeSpaceTransform() {
         return _parent.isPresent() ? _parent.get().worldToNodeSpaceTransform() : new Matrix4();
     }
+
+
+    /**
+     * Change this node's parent to the given parent.
+     *
+     * @param newParent the new parent
+     */
+    public void changeParentTo(TransformNode newParent) {
+        if (_parent.isPresent()) {
+            _parent.get()._childNodes.remove(this);
+        }
+
+        if (newParent != null) {
+            newParent._childNodes.add(this);
+        }
+
+        _parent = Optional.ofNullable(newParent);
+    }
 }

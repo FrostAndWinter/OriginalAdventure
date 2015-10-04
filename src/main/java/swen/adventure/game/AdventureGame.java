@@ -14,6 +14,10 @@ import swen.adventure.engine.ui.components.Reticule;
 import swen.adventure.engine.utils.SharedLibraryLoader;
 import swen.adventure.game.scenenodes.*;
 import swen.adventure.game.ui.components.Inventory;
+import swen.adventure.game.scenenodes.Button;
+import swen.adventure.game.scenenodes.Door;
+import swen.adventure.game.scenenodes.Key;
+import swen.adventure.game.ui.components.InventoryComponent;
 import swen.adventure.engine.ui.components.Panel;
 import swen.adventure.engine.ui.components.ProgressBar;
 import swen.adventure.engine.rendering.maths.BoundingBox;
@@ -167,12 +171,12 @@ public class AdventureGame implements Game {
         ProgressBar healthBar = new ProgressBar(100, 100, 30, 30);
         panel.addChild(healthBar);
 
-        Inventory inventory = new Inventory(5, 275, 500);
-        inventory.setBoxSize(50);
+        InventoryComponent inventoryComponent = new InventoryComponent(5, 275, 500);
+        inventoryComponent.setBoxSize(50);
 
-        player.getInventory().eventItemSelected.addAction(inventory, Inventory.actionSelectItem);
+        player.getInventory().eventItemSelected.addAction(inventoryComponent, InventoryComponent.actionSelectSlot);
 
-        panel.addChild(inventory);
+        panel.addChild(inventoryComponent);
 
         int size = 5;
         Reticule reticule = new Reticule(width/2 - (size), height/2 - size, size);
