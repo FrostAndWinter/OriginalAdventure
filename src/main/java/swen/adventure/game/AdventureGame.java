@@ -12,14 +12,11 @@ import swen.adventure.engine.ui.color.Color;
 import swen.adventure.engine.ui.components.Frame;
 import swen.adventure.engine.ui.components.Reticule;
 import swen.adventure.engine.utils.SharedLibraryLoader;
-import swen.adventure.game.scenenodes.Button;
-import swen.adventure.game.scenenodes.Door;
-import swen.adventure.game.scenenodes.Key;
+import swen.adventure.game.scenenodes.*;
 import swen.adventure.game.ui.components.Inventory;
 import swen.adventure.engine.ui.components.Panel;
 import swen.adventure.engine.ui.components.ProgressBar;
 import swen.adventure.engine.rendering.maths.BoundingBox;
-import swen.adventure.game.scenenodes.Player;
 
 import java.util.Collections;
 
@@ -130,6 +127,9 @@ public class AdventureGame implements Game {
         keyEnabledConditionalEvent.eventDeasserted.addAction(null, ((conditionalEvent, player, ignored, data) -> {
             key.setInteractionEnabled(false);
         }));
+
+        TransformNode chestTransform = new TransformNode("chestTransform", _sceneGraph, false, Vector3.one, new Quaternion(), new Vector3(10, 10, 10));
+        new Chest("chest", chestTransform);
 
         _glRenderer = new GLRenderer(width, height);
         _pickerRenderer = new PickerRenderer();

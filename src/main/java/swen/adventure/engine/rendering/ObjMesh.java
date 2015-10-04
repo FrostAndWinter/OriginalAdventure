@@ -173,7 +173,6 @@ public class ObjMesh extends GLMesh<Float> {
         List<Float> vertexNormals = new ArrayList<>();
         List<Float> textureCoordinates = new ArrayList<>();
         List<Float> tangents = new ArrayList<>();
-        List<Float> bitangents = new ArrayList<>();
 
         for (VertexData vertex : _vertices) {
             Vector geometricPosition = vertex.vertexPosition;
@@ -190,7 +189,9 @@ public class ObjMesh extends GLMesh<Float> {
             }
             if (_hasTextureCoordinates) {
                 this.addVectorToList(vertex.textureCoordinate.orElse(new Vector3(1.f, 0.f, 0.f)), textureCoordinates);
-                if (!vertex.textureCoordinate.isPresent()) { System.err.println("Warning: mesh with name " + fileName + " has missing texture coordinates for vertex at " + geometricPosition); }
+                if (!vertex.textureCoordinate.isPresent()) {
+                    System.err.println("Warning: mesh with name " + fileName + " has missing texture coordinates for vertex at " + geometricPosition);
+                }
             }
 
             if (_hasNormals && _hasTextureCoordinates) {
@@ -249,7 +250,7 @@ public class ObjMesh extends GLMesh<Float> {
             VertexData v1 = vertices.get(index1), v2 = vertices.get(index2), v3 = vertices.get(index3);
 
             Vector3 pos1 = v1.vertexPosition.asVector3(), pos2 = v2.vertexPosition.asVector3(), pos3 = v3.vertexPosition.asVector3();
-            Vector3 uv1 = v1.textureCoordinate.get(), uv2 = v2.textureCoordinate.get(), uv3 = v3.textureCoordinate.get();
+            Vector3 uv1 = v1.textureCoordinate.orElse(Vector3.zero), uv2 = v2.textureCoordinate.orElse(Vector3.zero), uv3 = v3.textureCoordinate.orElse(Vector3.zero);
 
             float x1 = pos2.x - pos1.x;
             float x2 = pos3.x - pos1.x;

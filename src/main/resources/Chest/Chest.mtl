@@ -1,0 +1,33 @@
+newmtl StandardSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd W_2_2.jpg
+Ni 1.00
+Ks 0.90 0.90 0.90
+Ns 18.00
+newmtl chrome08_210SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.69 0.69 0.69
+Ns 18.00
+newmtl chrome08_2101SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.69 0.69 0.69
+Ns 18.00
+newmtl golddSG
+illum 4
+Kd 0.34 0.22 0.07
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.89 0.75 0.46
+Ns 500.00

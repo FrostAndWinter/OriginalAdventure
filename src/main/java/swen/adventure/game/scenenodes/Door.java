@@ -12,9 +12,6 @@ import swen.adventure.engine.scenegraph.TransformNode;
 
 public class Door extends GameObject {
 
-    private final Quaternion doorOpenRotation = Quaternion.makeWithAngleAndAxis((float) (Math.PI/2), 0, 1, 0);
-    private final Quaternion doorClosedRotation = Quaternion.makeWithAngleAndAxis(0, 0, 1, 0);
-
     private TransformNode _hingeTransform;
 
     private boolean open = false;
