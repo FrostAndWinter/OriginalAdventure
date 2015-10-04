@@ -8,6 +8,7 @@ import swen.adventure.engine.Utilities;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.GameObject;
+import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.SceneNode;
 import swen.adventure.engine.scenegraph.TransformNode;
 
@@ -24,6 +25,10 @@ public class SceneGraphParser {
 
     private static final String TRANSFORM_NODE_TAG = "TransformNode";
     private static final String GAME_OBJECT_TAG = "GameObject";
+    private static final String MESH_NODE_TAG = "MeshNode";
+    private static final String AMBIENT_LIGHT_TAG = "AmbientLight";
+    private static final String DIRECTIONAL_LIGHT_TAG = "DirectionalLight";
+    private static final String POINT_LIGHT_TAG = "PointLight";
     private static final ParserManager PARSER_MANAGER = new ParserManager();
 
     public SceneNode parseSceneGraph(String input){
@@ -44,19 +49,18 @@ public class SceneGraphParser {
             fail("Unrecognised node: " + name);
         }
 
-        return parseNode(node, Optional.empty());
+        return parseNode(node, new TransformNode("root", Vector3.zero, new Quaternion(), Vector3.one)); //All scene graphs start with an identity root node.
     }
 
-    private static SceneNode parseNode(Node xmlNode, Optional<TransformNode> parent) {
+    private static SceneNode parseNode(Node xmlNode, TransformNode parent) {
         String name = xmlNode.getNodeName();
         switch (name) {
             case TRANSFORM_NODE_TAG:
                 return parseTransformNode(xmlNode, parent);
             case GAME_OBJECT_TAG:
-                if (!parent.isPresent())
-                    fail("A GameObject should always have a transform node as a parent.");
-
-                return parseGameObject(xmlNode, parent.get());
+                return parseGameObject(xmlNode, parent);
+            case MESH_NODE_TAG:
+                return parseMeshNode(xmlNode, parent);
             default:
                 fail("Unrecognised node: " + name);
                 break;
@@ -70,19 +74,24 @@ public class SceneGraphParser {
         return new GameObject(id, parent);
     }
 
-    private static TransformNode parseTransformNode(Node xmlNode, Optional<TransformNode> parent) {
+    private static MeshNode parseMeshNode(Node xmlNode, TransformNode parent) {
+        String id = getAttribute("id", xmlNode, Function.identity());
+        String directory = getAttribute("directory", xmlNode, Function.identity(), "");
+        String fileName = getAttribute("fileName", xmlNode, Function.identity());
+
+        MeshNode node = new MeshNode(id, directory, fileName, parent);
+
+        return node;
+    }
+
+    private static TransformNode parseTransformNode(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode, Function.identity());
         Vector3 translation = getAttribute("translation", xmlNode, PARSER_MANAGER.getFromStringFunction(Vector3.class), Vector3.zero);
         Quaternion rotation = getAttribute("rotation", xmlNode, PARSER_MANAGER.getFromStringFunction(Quaternion.class), new Quaternion());
         Vector3 scale = getAttribute("scale", xmlNode, PARSER_MANAGER.getFromStringFunction(Vector3.class), Vector3.one);
 
-        TransformNode node;
-        if(!parent.isPresent())
-            node = new TransformNode(id, translation, rotation, scale);
-        else {
-            boolean isDynamic = getAttribute("isDynamic", xmlNode, PARSER_MANAGER.getFromStringFunction(Boolean.class), false);
-            node = new TransformNode(id, parent.get(), isDynamic, translation, rotation, scale);
-        }
+        boolean isDynamic = getAttribute("isDynamic", xmlNode, PARSER_MANAGER.getFromStringFunction(Boolean.class), false);
+        TransformNode node = new TransformNode(id, parent, isDynamic, translation, rotation, scale);
 
         // now parse any children
         NodeList children = xmlNode.getChildNodes();
@@ -92,7 +101,7 @@ public class SceneGraphParser {
             if(value == null || value.trim().equals(""))
                 continue;
             
-            parseNode(child, Optional.of(node));
+            parseNode(child, node);
         }
 
         return node;

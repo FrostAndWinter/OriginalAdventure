@@ -83,7 +83,7 @@ public final class Light extends SceneNode {
     }
 
     private static Light createSceneNodeFromBundle(BundleObject bundle,
-                                                           Function<String, TransformNode> findParentFunction) {
+                                                           Function<String, TransformNode> findParentFunction) { //FIXME move out of the Light class.
         String parentId = bundle.getString("parentId");
         TransformNode parent = findParentFunction.apply(parentId);
 
