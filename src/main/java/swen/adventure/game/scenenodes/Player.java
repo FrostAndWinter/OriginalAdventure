@@ -2,6 +2,7 @@ package swen.adventure.game.scenenodes;
 
 import swen.adventure.engine.Action;
 import swen.adventure.engine.KeyInput;
+import swen.adventure.engine.datastorage.BundleObject;
 import swen.adventure.engine.scenegraph.CollisionNode;
 import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.TransformNode;
@@ -11,6 +12,7 @@ import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.game.AdventureGameKeyInput;
 
 import java.util.Collections;
+import java.util.function.Function;
 
 /**
  * Created by josephbennett on 19/09/15
@@ -72,5 +74,13 @@ public class Player extends GameObject {
         return _inventory;
     }
 
+    @SuppressWarnings("unused")
+    private static Player createNodeFromBundle(BundleObject bundle,
+                                                  Function<String, TransformNode> findParentFunction) {
+        String id = bundle.getString("id");
+        String parentId = bundle.getString("parentId");
+        TransformNode parent = findParentFunction.apply(parentId);
+        return new Player(id, parent);
+    }
 
 }

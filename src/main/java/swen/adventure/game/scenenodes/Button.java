@@ -1,15 +1,13 @@
 package swen.adventure.game.scenenodes;
 
-import swen.adventure.engine.Action;
 import swen.adventure.engine.Event;
-import swen.adventure.engine.MouseInput;
-import swen.adventure.engine.rendering.maths.Quaternion;
-import swen.adventure.engine.rendering.maths.Vector3;
+import swen.adventure.engine.datastorage.BundleObject;
 import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.TransformNode;
 
 import java.util.Collections;
+import java.util.function.Function;
 
 /**
  * Created by danielbraithwt on 10/2/15.
@@ -31,5 +29,14 @@ public class Button extends GameObject {
 
     public MeshNode mesh() {
         return _mesh;
+    }
+
+    @SuppressWarnings("unused")
+    private static Button createNodeFromBundle(BundleObject bundle,
+                                                   Function<String, TransformNode> findParentFunction) {
+        String id = bundle.getString("id");
+        String parentId = bundle.getString("parentId");
+        TransformNode parent = findParentFunction.apply(parentId);
+        return new Button(id, parent);
     }
 }

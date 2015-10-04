@@ -82,7 +82,8 @@ public final class Light extends SceneNode {
                 .put("falloff", falloff.toString());
     }
 
-    private static Light createSceneNodeFromBundle(BundleObject bundle,
+    @SuppressWarnings("unused")
+    private static Light createNodeFromBundle(BundleObject bundle,
                                                            Function<String, TransformNode> findParentFunction) {
         String parentId = bundle.getString("parentId");
         TransformNode parent = findParentFunction.apply(parentId);

@@ -176,7 +176,8 @@ public class TransformNode extends SceneNode {
                 .put("worldToNodeTransform", _worldToNodeTransform);
     }
 
-    private static TransformNode createSceneNodeFromBundle(BundleObject bundle,
+    @SuppressWarnings("unused")
+    private static TransformNode createNodeFromBundle(BundleObject bundle,
                                                            Function<String, TransformNode> findParentFunction) {
         String id = bundle.getString("id");
         Vector3 translation = bundle.getVector3("translation");

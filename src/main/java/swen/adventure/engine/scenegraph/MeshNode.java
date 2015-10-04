@@ -48,7 +48,8 @@ public class MeshNode extends SceneNode {
                 .put("fileName", fileName);
     }
 
-    private static MeshNode createSceneNodeFromBundle(BundleObject bundle, Function<String, TransformNode> findParentFunction) {
+    @SuppressWarnings("unused")
+    private static MeshNode createNodeFromBundle(BundleObject bundle, Function<String, TransformNode> findParentFunction) {
         String id = bundle.getString("id");
         String parentId = bundle.getString("parentId");
         TransformNode parent = findParentFunction.apply(parentId);

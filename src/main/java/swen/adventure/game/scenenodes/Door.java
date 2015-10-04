@@ -3,11 +3,14 @@ package swen.adventure.game.scenenodes;
 import swen.adventure.engine.Action;
 import swen.adventure.engine.animation.AnimableProperty;
 import swen.adventure.engine.animation.Animation;
+import swen.adventure.engine.datastorage.BundleObject;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.TransformNode;
+
+import java.util.function.Function;
 
 
 public class Door extends GameObject {
@@ -24,6 +27,7 @@ public class Door extends GameObject {
 
     private AnimableProperty _doorRotationProgress = new AnimableProperty(0);
 
+    // TODO this constructor assumes that the new door is in initial state i.e. open = false
     public Door(String id, TransformNode parent) {
         super(id, parent);
 
@@ -59,6 +63,15 @@ public class Door extends GameObject {
     public void close() {
         open = false;
         new Animation(_doorRotationProgress, Math.abs(0.5f - _doorRotationProgress.value()), 0.0f);
+    }
+
+    @SuppressWarnings("unused")
+    private static Door createNodeFromBundle(BundleObject bundle,
+                                               Function<String, TransformNode> findParentFunction) {
+        String id = bundle.getString("id");
+        String parentId = bundle.getString("parentId");
+        TransformNode parent = findParentFunction.apply(parentId);
+        return new Door(id, parent);
     }
 
 }

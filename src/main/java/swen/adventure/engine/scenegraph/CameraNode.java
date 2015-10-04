@@ -1,5 +1,9 @@
 package swen.adventure.engine.scenegraph;
 
+import swen.adventure.engine.datastorage.BundleObject;
+
+import java.util.function.Function;
+
 /**
  * Created by josephbennett on 19/09/15
  */
@@ -26,5 +30,21 @@ public class CameraNode extends SceneNode {
 
     public void setHDRMaxIntensity(final float hdrMaxIntensity) {
         _hdrMaxIntensity = hdrMaxIntensity;
+    }
+
+    /*@Override
+    public BundleObject toBundle() {
+        return super.toBundle()
+                .put("fieldOfView", _fieldOfView)
+                .put("hdrMaxIntensity", _hdrMaxIntensity);
+    }*/
+
+    @SuppressWarnings("unused")
+    private static CameraNode createNodeFromBundle(BundleObject bundle,
+                                                   Function<String, TransformNode> findParentFunction) {
+        String id = bundle.getString("id");
+        String parentId = bundle.getString("parentId");
+        TransformNode parent = findParentFunction.apply(parentId);
+        return new CameraNode(id, parent);
     }
 }

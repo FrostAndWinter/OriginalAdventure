@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Created by Liam O'Neill, Student ID 300312734, on 18/09/15.
@@ -39,7 +40,7 @@ public class BundleSerializer {
     public <T> T loadObjectFromBundle(File file, Class<T> class0) throws IOException {
         BundleObject bundleObject = fromXml(file);
         try {
-            Method factory = class0.getDeclaredMethod("createFromBundle", BundleObject.class);
+            Method factory = class0.getDeclaredMethod("createNodeFromBundle", BundleObject.class, Function.class);
             factory.setAccessible(true);
             Object result = factory.invoke(null, bundleObject);
             return class0.cast(result);
