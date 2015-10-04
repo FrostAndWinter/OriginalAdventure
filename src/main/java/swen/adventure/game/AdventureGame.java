@@ -2,6 +2,7 @@ package swen.adventure.game;
 
 import processing.opengl.PGraphics2D;
 import swen.adventure.engine.*;
+import swen.adventure.engine.datastorage.SceneGraphParser;
 import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.rendering.Material;
 import swen.adventure.engine.rendering.PickerRenderer;
@@ -22,6 +23,8 @@ import swen.adventure.engine.ui.components.Panel;
 import swen.adventure.engine.ui.components.ProgressBar;
 import swen.adventure.engine.rendering.maths.BoundingBox;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Collections;
 
 public class AdventureGame implements Game {
@@ -45,97 +48,105 @@ public class AdventureGame implements Game {
 
     @Override
     public void setup(int width, int height) {
-        _sceneGraph = new TransformNode("root", new Vector3(0.f, 0.f, 0.f), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
-        TransformNode groundPlaneTransform = new TransformNode("groundPlaneTransform", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis((float) Math.PI / 2.f, -1, 0, 0), new Vector3(25000, 25000, 1));
-        MeshNode groundPlane = new MeshNode(null, "Plane.obj", groundPlaneTransform);
 
-        TransformNode yAxisTransform = new TransformNode("yAxis", _sceneGraph, false, new Vector3(0, 0, 0), new Quaternion(), new Vector3(2, 1000, 2));
-        MeshNode yAxis = new MeshNode(null, "box.obj", yAxisTransform);
-        yAxis.setMaterialOverride(new Material(Vector3.zero, new Vector3(0.f, 1.f, 0.f), new Vector3(0.5f, 0.5f, 0.5f), 1.f, 0.01f));
+        try {
+            _sceneGraph = SceneGraphParser.parseSceneGraph(new File(Utilities.pathForResource("SceneGraph", "xml")));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
-        TransformNode xAxisTransform = new TransformNode("xAxis", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis(0.0f, 0.f, 0.0f, 0.f), new Vector3(1000, 2, 2));
-        MeshNode xAxis = new MeshNode(null, "box.obj", xAxisTransform);
-        xAxis.setMaterialOverride(new Material(Vector3.zero, new Vector3(0.f, 0.f, 1.f), new Vector3(0.5f, 0.5f, 0.5f), 1.f, 0.01f));
-
-        TransformNode zAxisTransform = new TransformNode("zAxis", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis(0.0f, 0.f, 0.0f, 0.f), new Vector3(2, 2, 1000));
-        MeshNode zAxis = new MeshNode(null, "box.obj", zAxisTransform);
-        zAxis.setMaterialOverride(new Material(Vector3.zero, new Vector3(1.f, 1.f, 0.f), new Vector3(0.5f, 0.5f, 0.5f), 1.f, 0.01f));
+        this.player = (Player)_sceneGraph.nodeWithID("player").get();
+//        _sceneGraph = new TransformNode("root", new Vector3(0.f, 0.f, 0.f), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
+//        TransformNode groundPlaneTransform = new TransformNode("groundPlaneTransform", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis((float) Math.PI / 2.f, -1, 0, 0), new Vector3(25000, 25000, 1));
+//        MeshNode groundPlane = new MeshNode(null, "Plane.obj", groundPlaneTransform);
 //
-        TransformNode playerTransform = new TransformNode("playerTransform", _sceneGraph, true, new Vector3(0, 20, 200), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
-        TransformNode cameraTransform = new TransformNode("cameraTransform", playerTransform, true, new Vector3(0, 0, 0), new Quaternion(), new Vector3(1, 1, 1));
-        new CameraNode("playerCamera", cameraTransform);
-        player = new Player("player", playerTransform);
-        player.collisionNode().setBoundingBox(new BoundingBox(new Vector3(-10, -20, -10), new Vector3(10, 20, 10)));
+//        TransformNode yAxisTransform = new TransformNode("yAxis", _sceneGraph, false, new Vector3(0, 0, 0), new Quaternion(), new Vector3(2, 1000, 2));
+//        MeshNode yAxis = new MeshNode(null, "box.obj", yAxisTransform);
+//        yAxis.setMaterialOverride(new Material(Vector3.zero, new Vector3(0.f, 1.f, 0.f), new Vector3(0.5f, 0.5f, 0.5f), 1.f, 0.01f));
+//
+//        TransformNode xAxisTransform = new TransformNode("xAxis", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis(0.0f, 0.f, 0.0f, 0.f), new Vector3(1000, 2, 2));
+//        MeshNode xAxis = new MeshNode(null, "box.obj", xAxisTransform);
+//        xAxis.setMaterialOverride(new Material(Vector3.zero, new Vector3(0.f, 0.f, 1.f), new Vector3(0.5f, 0.5f, 0.5f), 1.f, 0.01f));
+//
+//        TransformNode zAxisTransform = new TransformNode("zAxis", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis(0.0f, 0.f, 0.0f, 0.f), new Vector3(2, 2, 1000));
+//        MeshNode zAxis = new MeshNode(null, "box.obj", zAxisTransform);
+//        zAxis.setMaterialOverride(new Material(Vector3.zero, new Vector3(1.f, 1.f, 0.f), new Vector3(0.5f, 0.5f, 0.5f), 1.f, 0.01f));
+////
+//        TransformNode playerTransform = new TransformNode("playerTransform", _sceneGraph, true, new Vector3(0, 20, 200), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
+//        TransformNode cameraTransform = new TransformNode("cameraTransform", playerTransform, true, new Vector3(0, 0, 0), new Quaternion(), new Vector3(1, 1, 1));
+//        new CameraNode("playerCamera", cameraTransform);
+//        player = new Player("player", playerTransform);
+//        player.collisionNode().setBoundingBox(new BoundingBox(new Vector3(-10, -20, -10), new Vector3(10, 20, 10)));
+////
+////
+//        Light.createAmbientLight("ambientLight", _sceneGraph, new Vector3(0.3f, 0.5f, 0.4f), 0.2f);
+//        Light.createDirectionalLight("directionalLight", _sceneGraph, new Vector3(0.7f, 0.7f, 0.7f), 5.f, new Vector3(0.4f, 0.2f, 0.6f));
+//
+//        Light redPointLight = Light.createPointLight("redPointLight", _sceneGraph, new Vector3(1f, 0f, 0f), 15f, Light.LightFalloff.Linear);
+//        redPointLight.setOn(false);
+//
+//        Light greenPointLight = Light.createPointLight("greenPointLight", _sceneGraph, new Vector3(0f, 1f, 0f), 15f, Light.LightFalloff.Linear);
+//        greenPointLight.setOn(false);
+//
+//        Light bluePointLight = Light.createPointLight("bluePointLight", _sceneGraph, new Vector3(0f, 0f, 1f), 15f, Light.LightFalloff.Linear);
+//        bluePointLight.setOn(false);
 //
 //
-        Light.createAmbientLight("ambientLight", _sceneGraph, new Vector3(0.3f, 0.5f, 0.4f), 0.2f);
-        Light.createDirectionalLight("directionalLight", _sceneGraph, new Vector3(0.7f, 0.7f, 0.7f), 5.f, new Vector3(0.4f, 0.2f, 0.6f));
-
-        Light redPointLight = Light.createPointLight("redPointLight", _sceneGraph, new Vector3(1f, 0f, 0f), 15f, Light.LightFalloff.Linear);
-        redPointLight.setOn(false);
-
-        Light greenPointLight = Light.createPointLight("greenPointLight", _sceneGraph, new Vector3(0f, 1f, 0f), 15f, Light.LightFalloff.Linear);
-        greenPointLight.setOn(false);
-
-        Light bluePointLight = Light.createPointLight("bluePointLight", _sceneGraph, new Vector3(0f, 0f, 1f), 15f, Light.LightFalloff.Linear);
-        bluePointLight.setOn(false);
-
-
-        final Door door = new Door("houseDoor", _sceneGraph);
-
-        TransformNode redLightButtonTransform = new TransformNode("redButtonTransform", _sceneGraph, true, new Vector3(50, 0, 100), new Quaternion(), new Vector3(20, 20, 20));
-        final Button redButton = new Button("redLightButton", redLightButtonTransform);
-        redButton.mesh().setMaterialOverride(new Material(new Vector3(2.f, 0.f, 0.f), new Vector3(3.f, 0.f, 0.f), Vector3.zero, 1.f, 1.f));
-        redButton.eventButtonPressed.addAction(redButton, (eventObject, triggeringObject, listener, data) -> {
-            redPointLight.setOn(!redPointLight.isOn());
-            redButton.mesh().materialOverride().ifPresent(material -> {
-                material.setAmbientColour(redPointLight.isOn() ? new Vector3(5.f, 0.f, 0.f) : new Vector3(1.f, 0.f, 0.f));
-            });
-        });
-
-        TransformNode blueLightButtonTransform = new TransformNode("blueButtonTransform", _sceneGraph, true, new Vector3(100, 0, 100), new Quaternion(), new Vector3(20, 20, 20));
-        final Button blueButton = new Button("blueLightButton", blueLightButtonTransform);
-        blueButton.mesh().setMaterialOverride(new Material(new Vector3(0.f, 0.f, 2.f), new Vector3(0.f, 0.f, 3.f), Vector3.zero, 1.f, 1.f));
-        blueButton.eventButtonPressed.addAction(blueButton, (eventObject, triggeringObject, listener, data) -> {
-            bluePointLight.setOn(!bluePointLight.isOn());
-            blueButton.mesh().materialOverride().ifPresent(material -> {
-                material.setAmbientColour(bluePointLight.isOn() ? new Vector3(0.f, 0.f, 5.f) : new Vector3(0.f, 0.f, 1.f));
-            });
-        });
-
-        TransformNode greenLightButtonTransform = new TransformNode("blueButtonTransform", _sceneGraph, true, new Vector3(150, 0, 100), new Quaternion(), new Vector3(20, 20, 20));
-        final Button greenButton = new Button("greenLightButton", greenLightButtonTransform);
-        greenButton.mesh().setMaterialOverride(new Material(new Vector3(0.f, 2.f, 0.f), new Vector3(0.f, 3.f, 0.f), Vector3.zero, 1.f, 1.f));
-        greenButton.eventButtonPressed.addAction(greenButton, (eventObject, triggeringObject, listener, data) -> {
-            greenPointLight.setOn(!greenPointLight.isOn());
-            greenButton.mesh().materialOverride().ifPresent(material -> {
-                material.setAmbientColour(greenPointLight.isOn() ? new Vector3(0.f, 5.f, 0.f) : new Vector3(0.f, 1.f, 0.f));
-            });
-        });
-
-//        TransformNode castleTransform = new TransformNode("castleTransform", _sceneGraph, false, new Vector3(-100, 80, -100), new Quaternion(), new Vector3(0.05f, 0.05f, 0.05f));
-//        new MeshNode("Castle2", "castle01.obj", castleTransform);
-
-        TransformNode keyTransform = new TransformNode("textureKeyTransform", _sceneGraph, false, new Vector3(0, 60, 40), Quaternion.makeWithAngleAndAxis(0.f, 1, 0, 0), new Vector3(20, 20, 20));
-        Key key = new Key("key", keyTransform);
-
-        ConditionalEvent keyEnabledConditionalEvent = new ConditionalEvent(() ->
-            greenPointLight.isOn() && redPointLight.isOn() && !bluePointLight.isOn()
-        , redButton.eventButtonPressed, greenButton.eventButtonPressed, blueButton.eventButtonPressed);
-
-        keyEnabledConditionalEvent.eventAsserted.addAction(null, ((conditionalEvent, player, ignored, data) -> {
-            key.setInteractionEnabled(true);
-        }));
-
-        keyEnabledConditionalEvent.eventDeasserted.addAction(null, ((conditionalEvent, player, ignored, data) -> {
-            key.setInteractionEnabled(false);
-        }));
-
-        TransformNode chestTransform = new TransformNode("chestTransform", _sceneGraph, false, Vector3.one, new Quaternion(), new Vector3(10, 10, 10));
-        new Chest("chest", chestTransform);
-
-        TransformNode leverTransform = new TransformNode("leverTransform", _sceneGraph, false, new Vector3(-40, 15, 20), Quaternion.makeWithAngleAndAxis((float) -Math.PI / 2, 0, 0, 1), new Vector3(0.3f, 0.3f, 0.3f));
-        new Lever("lever", leverTransform).eventLeverToggled.addAction(door, Door.actionToggleDoor);
+//        final Door door = new Door("houseDoor", _sceneGraph);
+//
+//        TransformNode redLightButtonTransform = new TransformNode("redButtonTransform", _sceneGraph, true, new Vector3(50, 0, 100), new Quaternion(), new Vector3(20, 20, 20));
+//        final Button redButton = new Button("redLightButton", redLightButtonTransform);
+//        redButton.mesh().setMaterialOverride(new Material(new Vector3(2.f, 0.f, 0.f), new Vector3(3.f, 0.f, 0.f), Vector3.zero, 1.f, 1.f));
+//        redButton.eventButtonPressed.addAction(redButton, (eventObject, triggeringObject, listener, data) -> {
+//            redPointLight.setOn(!redPointLight.isOn());
+//            redButton.mesh().materialOverride().ifPresent(material -> {
+//                material.setAmbientColour(redPointLight.isOn() ? new Vector3(5.f, 0.f, 0.f) : new Vector3(1.f, 0.f, 0.f));
+//            });
+//        });
+//
+//        TransformNode blueLightButtonTransform = new TransformNode("blueButtonTransform", _sceneGraph, true, new Vector3(100, 0, 100), new Quaternion(), new Vector3(20, 20, 20));
+//        final Button blueButton = new Button("blueLightButton", blueLightButtonTransform);
+//        blueButton.mesh().setMaterialOverride(new Material(new Vector3(0.f, 0.f, 2.f), new Vector3(0.f, 0.f, 3.f), Vector3.zero, 1.f, 1.f));
+//        blueButton.eventButtonPressed.addAction(blueButton, (eventObject, triggeringObject, listener, data) -> {
+//            bluePointLight.setOn(!bluePointLight.isOn());
+//            blueButton.mesh().materialOverride().ifPresent(material -> {
+//                material.setAmbientColour(bluePointLight.isOn() ? new Vector3(0.f, 0.f, 5.f) : new Vector3(0.f, 0.f, 1.f));
+//            });
+//        });
+//
+//        TransformNode greenLightButtonTransform = new TransformNode("blueButtonTransform", _sceneGraph, true, new Vector3(150, 0, 100), new Quaternion(), new Vector3(20, 20, 20));
+//        final Button greenButton = new Button("greenLightButton", greenLightButtonTransform);
+//        greenButton.mesh().setMaterialOverride(new Material(new Vector3(0.f, 2.f, 0.f), new Vector3(0.f, 3.f, 0.f), Vector3.zero, 1.f, 1.f));
+//        greenButton.eventButtonPressed.addAction(greenButton, (eventObject, triggeringObject, listener, data) -> {
+//            greenPointLight.setOn(!greenPointLight.isOn());
+//            greenButton.mesh().materialOverride().ifPresent(material -> {
+//                material.setAmbientColour(greenPointLight.isOn() ? new Vector3(0.f, 5.f, 0.f) : new Vector3(0.f, 1.f, 0.f));
+//            });
+//        });
+//
+////        TransformNode castleTransform = new TransformNode("castleTransform", _sceneGraph, false, new Vector3(-100, 80, -100), new Quaternion(), new Vector3(0.05f, 0.05f, 0.05f));
+////        new MeshNode("Castle2", "castle01.obj", castleTransform);
+//
+//        TransformNode keyTransform = new TransformNode("textureKeyTransform", _sceneGraph, false, new Vector3(0, 60, 40), Quaternion.makeWithAngleAndAxis(0.f, 1, 0, 0), new Vector3(20, 20, 20));
+//        Key key = new Key("key", keyTransform);
+//
+//        ConditionalEvent keyEnabledConditionalEvent = new ConditionalEvent(() ->
+//            greenPointLight.isOn() && redPointLight.isOn() && !bluePointLight.isOn()
+//        , redButton.eventButtonPressed, greenButton.eventButtonPressed, blueButton.eventButtonPressed);
+//
+//        keyEnabledConditionalEvent.eventAsserted.addAction(null, ((conditionalEvent, player, ignored, data) -> {
+//            key.setInteractionEnabled(true);
+//        }));
+//
+//        keyEnabledConditionalEvent.eventDeasserted.addAction(null, ((conditionalEvent, player, ignored, data) -> {
+//            key.setInteractionEnabled(false);
+//        }));
+//
+//        TransformNode chestTransform = new TransformNode("chestTransform", _sceneGraph, false, Vector3.one, new Quaternion(), new Vector3(10, 10, 10));
+//        new Chest("chest", chestTransform);
+//
+//        TransformNode leverTransform = new TransformNode("leverTransform", _sceneGraph, false, new Vector3(-40, 15, 20), Quaternion.makeWithAngleAndAxis((float) -Math.PI / 2, 0, 0, 1), new Vector3(0.3f, 0.3f, 0.3f));
+//        new Lever("lever", leverTransform).eventLeverToggled.addAction(door, Door.actionToggleDoor);
 
 
         _glRenderer = new GLRenderer(width, height);

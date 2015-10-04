@@ -1,3 +1,13 @@
-<TransformNode id="groundPlaneTransform" rotation="-0.70710677 0.0 0.0 0.70710677" scale="25000 25000 1">
-    <MeshNode id="groundPlaneMesh" fileName="Plane.obj"/>
-</TransformNode>
+<root>
+    <TransformNode id="groundPlaneTransform" rotation="-0.70710677, 0.0, 0.0, 0.70710677" scale="25000, 25000, 1">
+        <MeshNode id="groundPlaneMesh" fileName="Plane.obj"/>
+    </TransformNode>
+    
+    <TransformNode id="playerTransform" translation="0, 20, 200" isDynamic="true">
+        <TransformNode id="cameraTransform">
+            <Camera id="playerCamera"/>
+        </TransformNode>
+        <Player id="player"/>
+    </TransformNode>
+    <AmbientLight id="ambientLight" colour="0.5, 0.5, 0.5" intensity = "0.2"/>
+</root>

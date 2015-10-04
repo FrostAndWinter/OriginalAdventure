@@ -32,25 +32,26 @@ public class SceneGraphParser {
 
     private static final ParserManager PARSER_MANAGER = new ParserManager();
 
-    public SceneNode parseSceneGraph(String input){
+    public static TransformNode parseSceneGraph(String input) {
         InputStream is = Utilities.stringToInputStream(input);
         return parseSceneNode(is);
     }
 
-    public SceneNode parseSceneGraph(File inputFile) throws FileNotFoundException {
+    public static TransformNode parseSceneGraph(File inputFile) throws FileNotFoundException {
         InputStream is = Utilities.fileToInputStream(inputFile);
         return parseSceneNode(is);
     }
 
-    private SceneNode parseSceneNode(InputStream is){
+    private static TransformNode parseSceneNode(InputStream is){
         Document doc = Utilities.loadExistingXmlDocument(is);
-        Node node = doc.getFirstChild();
-        String name = node.getNodeName();
-        if(!name.equals(TRANSFORM_NODE_TAG)) {
-            fail("Unrecognised node: " + name);
+        TransformNode rootNode = new TransformNode("root", Vector3.zero, new Quaternion(), Vector3.one); //All scene graphs start with an identity root node.
+
+        NodeList nodes = doc.getFirstChild().getChildNodes();
+        for (int i = 0; i < nodes.getLength(); i++) {
+            parseNode(nodes.item(i), rootNode);
         }
 
-        return parseNode(node, new TransformNode("root", Vector3.zero, new Quaternion(), Vector3.one)); //All scene graphs start with an identity root node.
+        return rootNode;
     }
 
     private static SceneNode parseNode(Node xmlNode, TransformNode parent) {
@@ -73,7 +74,7 @@ public class SceneGraphParser {
             case PLAYER_TAG:
                 return parsePlayerNode(xmlNode, parent);
             default:
-                fail("Unrecognised node: " + name);
+               // fail("Unrecognised node: " + name);
                 break;
         }
 
@@ -150,8 +151,6 @@ public class SceneGraphParser {
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
             String value = child.getNodeValue();
-            if(value == null || value.trim().equals(""))
-                continue;
             
             parseNode(child, node);
         }
