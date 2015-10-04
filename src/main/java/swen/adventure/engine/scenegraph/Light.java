@@ -36,6 +36,19 @@ public final class Light extends SceneNode {
         LightFalloff(float glValue) {
             this.glValue = glValue;
         }
+
+        public static LightFalloff fromString(String s) {
+            switch (s) {
+                case "None":
+                    return LightFalloff.None;
+                case "Linear":
+                    return LightFalloff.Linear;
+                case "Quadratic":
+                    return LightFalloff.Quadratic;
+                default:
+                    throw new RuntimeException(s + " is not a valid LightFalloff.");
+            }
+        }
     }
 
     private static final int MaxLights = 32;

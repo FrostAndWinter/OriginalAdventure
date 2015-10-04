@@ -62,6 +62,12 @@ public class SceneGraphParser {
                 return parseGameObject(xmlNode, parent);
             case MESH_NODE_TAG:
                 return parseMeshNode(xmlNode, parent);
+            case AMBIENT_LIGHT_TAG:
+                return parseAmbientLight(xmlNode, parent);
+            case DIRECTIONAL_LIGHT_TAG:
+                return parseDirectionalLight(xmlNode, parent);
+            case POINT_LIGHT_TAG:
+                return parsePointLight(xmlNode, parent);
             case CAMERA_TAG:
                 return parseCameraNode(xmlNode, parent);
             case PLAYER_TAG:
@@ -96,6 +102,39 @@ public class SceneGraphParser {
         String id = getAttribute("id", xmlNode, Function.identity());
         return new Player(id, parent);
     }
+
+    private static Light parseAmbientLight(Node xmlNode, TransformNode parent) {
+        String id = getAttribute("id", xmlNode, Function.identity());
+        Vector3 colour = getAttribute("colour", xmlNode, PARSER_MANAGER.getFromStringFunction(Vector3.class), Vector3.one);
+        float intensity = getAttribute("intensity", xmlNode, Float::parseFloat, 1.f);
+
+        Light node = Light.createAmbientLight(id, parent, colour, intensity);
+
+        return node;
+    }
+
+    private static Light parseDirectionalLight(Node xmlNode, TransformNode parent) {
+        String id = getAttribute("id", xmlNode, Function.identity());
+        Vector3 colour = getAttribute("colour", xmlNode, PARSER_MANAGER.getFromStringFunction(Vector3.class), Vector3.one);
+        float intensity = getAttribute("intensity", xmlNode, Float::parseFloat, 1.f);
+        Vector3 fromDirection = getAttribute("fromDirection", xmlNode, PARSER_MANAGER.getFromStringFunction(Vector3.class));
+
+        Light node = Light.createDirectionalLight(id, parent, colour, intensity, fromDirection);
+
+        return node;
+    }
+
+    private static Light parsePointLight(Node xmlNode, TransformNode parent) {
+        String id = getAttribute("id", xmlNode, Function.identity());
+        Vector3 colour = getAttribute("colour", xmlNode, PARSER_MANAGER.getFromStringFunction(Vector3.class), Vector3.one);
+        float intensity = getAttribute("intensity", xmlNode, Float::parseFloat, 1.f);
+        Light.LightFalloff falloff = getAttribute("falloff", xmlNode, Light.LightFalloff::fromString);
+
+        Light node = Light.createPointLight(id, parent, colour, intensity, falloff);
+
+        return node;
+    }
+
 
     private static TransformNode parseTransformNode(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode, Function.identity());
