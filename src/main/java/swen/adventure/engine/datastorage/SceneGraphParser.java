@@ -7,15 +7,12 @@ import org.w3c.dom.NodeList;
 import swen.adventure.engine.Utilities;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
-import swen.adventure.engine.scenegraph.GameObject;
-import swen.adventure.engine.scenegraph.MeshNode;
-import swen.adventure.engine.scenegraph.SceneNode;
-import swen.adventure.engine.scenegraph.TransformNode;
+import swen.adventure.engine.scenegraph.*;
+import swen.adventure.game.scenenodes.Player;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -29,6 +26,10 @@ public class SceneGraphParser {
     private static final String AMBIENT_LIGHT_TAG = "AmbientLight";
     private static final String DIRECTIONAL_LIGHT_TAG = "DirectionalLight";
     private static final String POINT_LIGHT_TAG = "PointLight";
+    private static final String CAMERA_TAG = "Camera";
+    private static final String PLAYER_TAG = "Player";
+
+
     private static final ParserManager PARSER_MANAGER = new ParserManager();
 
     public SceneNode parseSceneGraph(String input){
@@ -61,6 +62,10 @@ public class SceneGraphParser {
                 return parseGameObject(xmlNode, parent);
             case MESH_NODE_TAG:
                 return parseMeshNode(xmlNode, parent);
+            case CAMERA_TAG:
+                return parseCameraNode(xmlNode, parent);
+            case PLAYER_TAG:
+                return parsePlayerNode(xmlNode, parent);
             default:
                 fail("Unrecognised node: " + name);
                 break;
@@ -79,9 +84,17 @@ public class SceneGraphParser {
         String directory = getAttribute("directory", xmlNode, Function.identity(), "");
         String fileName = getAttribute("fileName", xmlNode, Function.identity());
 
-        MeshNode node = new MeshNode(id, directory, fileName, parent);
+        return new MeshNode(id, directory, fileName, parent);
+    }
 
-        return node;
+    private static CameraNode parseCameraNode(Node xmlNode, TransformNode parent) {
+        String id = getAttribute("id", xmlNode, Function.identity());
+        return new CameraNode(id, parent);
+    }
+
+    private static Player parsePlayerNode(Node xmlNode, TransformNode parent) {
+        String id = getAttribute("id", xmlNode, Function.identity());
+        return new Player(id, parent);
     }
 
     private static TransformNode parseTransformNode(Node xmlNode, TransformNode parent) {
