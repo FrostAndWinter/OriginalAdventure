@@ -1,5 +1,7 @@
 package swen.adventure.engine.rendering.shaders;
 
+import swen.adventure.engine.rendering.maths.Vector3;
+
 import java.nio.ByteBuffer;
 
 /**
@@ -7,4 +9,5 @@ import java.nio.ByteBuffer;
  */
 public interface MaterialShader {
     void setMaterial(ByteBuffer materialData);
+    void setTextureScale(Vector3 scale);
 }

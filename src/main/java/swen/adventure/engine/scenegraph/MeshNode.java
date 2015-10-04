@@ -5,6 +5,7 @@ import swen.adventure.engine.datastorage.BundleObject;
 import swen.adventure.engine.rendering.GLMesh;
 import swen.adventure.engine.rendering.Material;
 import swen.adventure.engine.rendering.ObjMesh;
+import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.rendering.shaders.MaterialShader;
 import swen.adventure.engine.rendering.maths.BoundingBox;
 
@@ -23,8 +24,9 @@ public class MeshNode extends SceneNode {
     private Optional<Material> _materialOverride = Optional.empty();
 
     private BoundingBox _localSpaceBoundingBox;
+    private Vector3 _textureScale = Vector3.one;
 
-    public final Event<MeshNode> eventMeshClicked = new Event<>("eventMeshClicked", this);
+    public final Event<SceneNode> eventMeshClicked = new Event<>("eventMeshClicked", this);
 
     public MeshNode(final String directory, final String fileName, final TransformNode parent) {
         this("mesh" + fileName, directory, fileName, parent); //MeshNodes of the same file share ids.
@@ -73,6 +75,7 @@ public class MeshNode extends SceneNode {
      * @param shader The Material Shader on which to set the materials.
      */
     public void render(MaterialShader shader) {
+        shader.setTextureScale(_textureScale);
         _materialOverride.ifPresent(material -> {
             shader.setMaterial(material.toBuffer());
             material.bindTextures();
@@ -86,6 +89,16 @@ public class MeshNode extends SceneNode {
         if (!_materialOverride.isPresent()) {
             _mesh.render(shader);
         }
+    }
+
+
+    public void setTextureScale(Vector3 textureScale) {
+        _textureScale = textureScale;
+    }
+
+    /** The texture scale is how much the textures should be scaled in each axis on this mesh. A scale less than 1 will tile the textures. */
+    public Vector3 textureScale() {
+        return _textureScale;
     }
 
     /**

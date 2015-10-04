@@ -1,5 +1,5 @@
 <root>
-    <TransformNode id="groundPlaneTransform" rotation="-0.70710677, 0.0, 0.0, 0.70710677" scale="25000, 25000, 1">
+    <TransformNode id="groundPlaneTransform" rotation="-0.70710677, 0.0, 0.0, 0.70710677" scale="500, 500, 0.2">
         <MeshNode id="groundPlaneMesh" fileName="Plane.obj"/>
     </TransformNode>
     
@@ -7,7 +7,17 @@
         <TransformNode id="cameraTransform">
             <Camera id="playerCamera"/>
         </TransformNode>
-        <Player id="player"/>
+        <Player id="player" boundingBox="-10, -20, -10, 10, 20, 10"/>
     </TransformNode>
-    <AmbientLight id="ambientLight" colour="0.5, 0.5, 0.5" intensity = "0.2"/>
+    <AmbientLight id="ambientLight" colour="0.5, 0.5, 0.5" intensity="2.0"/>
+    <DirectionalLight id="sunDirectionalLight" colour="0.7, 0.7, 0.7" intensity="8.0" fromDirection="0.4, 0.8, 0.3"/>
+    
+    <TransformNode id="leverTransform" translation="-40, 15, 20" rotation="0, 0, -0.7071067812, 0.7071067812" scale="0.3, 0.3, 0.3">
+        <Lever id="lever"/>
+    </TransformNode>
+    
+    <TransformNode id="chestTransform" scale="10, 10, 10">
+        <Chest id="chest"/>
+    </TransformNode>
+        
 </root>

@@ -30,7 +30,6 @@ uniform Material {
    vec4 ambientColour; //of which xyz are the colour and w is a 0/1 as to whether ambient self-illumination is enabled.
    vec4 diffuseColour; //r,g,b,a
    vec4 specularColour; //of which xyz are the colour and w is the specularity.
-   vec2 textureScale;
    int booleanMask;
 } material;
 

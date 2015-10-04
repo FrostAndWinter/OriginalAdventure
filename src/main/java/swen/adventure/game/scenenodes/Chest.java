@@ -7,6 +7,7 @@ import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.MeshNode;
+import swen.adventure.engine.scenegraph.SceneNode;
 import swen.adventure.engine.scenegraph.TransformNode;
 
 /**
@@ -20,7 +21,7 @@ public class Chest extends GameObject {
     private static final float ClosedAngle = (float)(Math.PI / 180.f * 68.f);
     private static final float AnimationDuration = 0.6f;
 
-    public final static Action<MeshNode, Player, Chest> actionToggleChest =
+    public final static Action<SceneNode, Player, Chest> actionToggleChest =
             (eventObject, player, chest, data) -> chest.toggle();
 
     private AnimableProperty _lidRotationProgress = new AnimableProperty(0);

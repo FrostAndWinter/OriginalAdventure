@@ -29,7 +29,8 @@ public class MTLParser {
     private static final Pattern PatternSpecularityMap = Pattern.compile("map_Ns");
     private static final Pattern PatternBumpMap = Pattern.compile("map_bump|bump");
     private static final Pattern PatternNormalMap = Pattern.compile("map_normal|normal");
-    private static final Pattern PatternNewLine = Pattern.compile("[^.]+");
+    private static final Pattern PatternNewLine = Pattern.compile("(\r|\n)+");
+    private static final Pattern PatternWhitespace = Pattern.compile("\\s+");
 
     public static Map<String, Material> parse(File file, String directory) throws FileNotFoundException{
         InputStream is = new FileInputStream(file);
@@ -111,13 +112,11 @@ public class MTLParser {
     }
 
     private static Texture parseTexture(Scanner scanner, String baseDirectory, boolean useSRGB, boolean isHeightMap) {
+        scanner.useDelimiter(PatternNewLine);
+        String[] args = scanner.next().split("\\s+");
 
-        List<String> args = new ArrayList<>();
-        while (scanner.hasNext() && !scanner.hasNext(PatternNewLine)) {
-            args.add(scanner.next());
-        }
-
-        String name = args.get(args.size() - 1);
+        String name = args[args.length - 1];
+        scanner.useDelimiter(PatternWhitespace);
         return isHeightMap ? Texture.loadHeightMapWithName(baseDirectory, name) : Texture.loadTextureWithName(baseDirectory, name, useSRGB);
     }
 

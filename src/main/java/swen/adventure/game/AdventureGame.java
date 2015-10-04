@@ -2,6 +2,7 @@ package swen.adventure.game;
 
 import processing.opengl.PGraphics2D;
 import swen.adventure.engine.*;
+import swen.adventure.engine.datastorage.EventConnectionParser;
 import swen.adventure.engine.datastorage.SceneGraphParser;
 import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.rendering.Material;
@@ -25,7 +26,9 @@ import swen.adventure.engine.rendering.maths.BoundingBox;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 
 public class AdventureGame implements Game {
 
@@ -56,6 +59,14 @@ public class AdventureGame implements Game {
         }
 
         this.player = (Player)_sceneGraph.nodeWithID("player").get();
+
+        try {
+            List<EventConnectionParser.EventConnection> connections = EventConnectionParser.parseFile(Utilities.readLinesFromFile(Utilities.pathForResource("EventConnections", "event")));
+            EventConnectionParser.setupConnections(connections, _sceneGraph);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 //        _sceneGraph = new TransformNode("root", new Vector3(0.f, 0.f, 0.f), new Quaternion(), new Vector3(1.f, 1.f, 1.f));
 //        TransformNode groundPlaneTransform = new TransformNode("groundPlaneTransform", _sceneGraph, false, new Vector3(0, 0, 0), Quaternion.makeWithAngleAndAxis((float) Math.PI / 2.f, -1, 0, 0), new Vector3(25000, 25000, 1));
 //        MeshNode groundPlane = new MeshNode(null, "Plane.obj", groundPlaneTransform);

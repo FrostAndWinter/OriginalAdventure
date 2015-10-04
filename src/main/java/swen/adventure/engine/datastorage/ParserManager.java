@@ -36,6 +36,13 @@ class ParserManager {
                     return new Vector4(xyzw.get(0), xyzw.get(1), xyzw.get(2), xyzw.get(3));
                 }), parsers);
 
+        addParser(BoundingBox.class, new Parser<>(
+                b -> toCsvString(Arrays.asList(b.minPoint.x, b.minPoint.y, b.minPoint.z, b.maxPoint.x, b.maxPoint.y, b.maxPoint.z)),
+                s -> {
+                    List<Float> xyzxyz = fromCsvString(s, Float.class);
+                    return new BoundingBox(new Vector3(xyzxyz.get(0), xyzxyz.get(1), xyzxyz.get(2)), new Vector3(xyzxyz.get(3), xyzxyz.get(4), xyzxyz.get(5)));
+                }), parsers);
+
         addParser(Quaternion.class, new Parser<>(
                 q -> toCsvString(Arrays.asList(q.x, q.y, q.z, q.w)),
                 s -> {

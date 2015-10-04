@@ -5,14 +5,18 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import swen.adventure.engine.Utilities;
+import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
+import swen.adventure.game.scenenodes.Lever;
 import swen.adventure.game.scenenodes.Player;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.Function;
 
 /**
@@ -28,6 +32,7 @@ public class SceneGraphParser {
     private static final String POINT_LIGHT_TAG = "PointLight";
     private static final String CAMERA_TAG = "Camera";
     private static final String PLAYER_TAG = "Player";
+    private static final String LEVER_TAG = "Lever";
 
 
     private static final ParserManager PARSER_MANAGER = new ParserManager();
@@ -75,23 +80,35 @@ public class SceneGraphParser {
                 return parsePlayerNode(xmlNode, parent);
             default:
                // fail("Unrecognised node: " + name);
-                break;
+                return parseGameObject(xmlNode, parent);
         }
-
-        return null; // dead code
     }
 
     private static SceneNode parseGameObject(Node xmlNode, TransformNode parent) {
-        String id = getAttribute("id", xmlNode, Function.identity());
-        return new GameObject(id, parent);
+        try {
+            Class<?> gameObjectClass = Class.forName("swen.adventure.game.scenenodes." + xmlNode.getNodeName());
+            Constructor<?> constructor = gameObjectClass.getConstructor(String.class, TransformNode.class);
+
+            String id = getAttribute("id", xmlNode, Function.identity());
+
+            return (GameObject)constructor.newInstance(id, parent);
+        } catch (ClassNotFoundException e) {
+            return null;
+        } catch (NoSuchMethodException|InvocationTargetException|InstantiationException|IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private static MeshNode parseMeshNode(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode, Function.identity());
         String directory = getAttribute("directory", xmlNode, Function.identity(), "");
         String fileName = getAttribute("fileName", xmlNode, Function.identity());
+        Vector3 textureScale = getAttribute("textureScale", xmlNode, PARSER_MANAGER.getFromStringFunction(Vector3.class), Vector3.one);
 
-        return new MeshNode(id, directory, fileName, parent);
+        MeshNode node = new MeshNode(id, directory, fileName, parent);
+        node.setTextureScale(textureScale);
+        return node;
     }
 
     private static CameraNode parseCameraNode(Node xmlNode, TransformNode parent) {
@@ -101,7 +118,10 @@ public class SceneGraphParser {
 
     private static Player parsePlayerNode(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode, Function.identity());
-        return new Player(id, parent);
+        BoundingBox boundingBox = getAttribute("boundingBox", xmlNode, PARSER_MANAGER.getFromStringFunction(BoundingBox.class), new BoundingBox(Vector3.zero, Vector3.zero));
+        Player player = new Player(id, parent);
+        player.collisionNode().setBoundingBox(boundingBox);
+        return player;
     }
 
     private static Light parseAmbientLight(Node xmlNode, TransformNode parent) {

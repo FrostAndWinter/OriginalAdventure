@@ -6,6 +6,7 @@ import swen.adventure.engine.rendering.ShaderProgram;
 import swen.adventure.engine.rendering.TextureUnit;
 import swen.adventure.engine.rendering.maths.Matrix3;
 import swen.adventure.engine.rendering.maths.Matrix4;
+import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.Light;
 
 import java.io.IOException;
@@ -31,6 +32,7 @@ public class GaussianPerObjectMaterialShader extends ShaderProgram implements Ma
 
     private final int _lightUniformBufferRef;
     private final int _materialUniformBufferRef;
+    private final int _textureScaleUniformBufferRef;
 
     private final int _ambientColourSamplerRef;
     private final int _diffuseColourSamplerRef;
@@ -61,6 +63,7 @@ public class GaussianPerObjectMaterialShader extends ShaderProgram implements Ma
         _modelToCameraMatrixUniformRef = glGetUniformLocation(this.glProgramRef(), "modelToCameraMatrixUniform");
         _cameraToClipMatrixUniformRef = glGetUniformLocation(this.glProgramRef(), "cameraToClipMatrixUniform");
         _normalModelToCameraMatrixUniformRef = glGetUniformLocation(this.glProgramRef(), "normalModelToCameraMatrixUniform");
+        _textureScaleUniformBufferRef = glGetUniformLocation(this.glProgramRef(), "textureScaleUniform");
 
         _maxIntensityUniformRef = glGetUniformLocation(this.glProgramRef(), "maxIntensity");
 
@@ -115,6 +118,10 @@ public class GaussianPerObjectMaterialShader extends ShaderProgram implements Ma
         glBindBuffer(GL_UNIFORM_BUFFER, _materialUniformBufferRef);
         glBufferSubData(GL_UNIFORM_BUFFER, 0, materialData);
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    }
+
+    public void setTextureScale(Vector3 textureScale) {
+        glUniform2f(_textureScaleUniformBufferRef, textureScale.x, textureScale.y);
     }
 
     public void setModelToCameraMatrix(Matrix4 matrix) {

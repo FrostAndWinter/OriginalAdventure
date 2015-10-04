@@ -24,7 +24,7 @@ public class Lever extends GameObject{
 
     private boolean _isDown = true;
 
-    public final static Action<MeshNode, Player, Lever> actionToggleLever =
+    public final static Action<SceneNode, Player, Lever> actionToggleLever =
             (eventObject, player, lever, data) -> lever.toggle(player);
 
     private AnimableProperty _leverRotationProgress = new AnimableProperty(0);
