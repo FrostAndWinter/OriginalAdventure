@@ -5,7 +5,8 @@ package swen.adventure.engine.animation;
  */
 public enum AnimationCurve {
     Linear,
-    Sine;
+    Sine,
+    Random;
 
     public double progressForPercentage(double percentage) {
         switch (this) {

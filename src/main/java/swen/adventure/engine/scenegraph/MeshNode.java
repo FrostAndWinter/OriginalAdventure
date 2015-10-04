@@ -24,7 +24,7 @@ public class MeshNode extends SceneNode {
     private Optional<Material> _materialOverride = Optional.empty();
 
     private BoundingBox _localSpaceBoundingBox;
-    private Vector3 _textureScale = Vector3.one;
+    private Vector3 _textureRepeat = Vector3.one;
 
     public final Event<SceneNode> eventMeshClicked = new Event<>("eventMeshClicked", this);
 
@@ -75,7 +75,7 @@ public class MeshNode extends SceneNode {
      * @param shader The Material Shader on which to set the materials.
      */
     public void render(MaterialShader shader) {
-        shader.setTextureScale(_textureScale);
+        shader.setTextureRepeat(_textureRepeat);
         _materialOverride.ifPresent(material -> {
             shader.setMaterial(material.toBuffer());
             material.bindTextures();
@@ -92,13 +92,13 @@ public class MeshNode extends SceneNode {
     }
 
 
-    public void setTextureScale(Vector3 textureScale) {
-        _textureScale = textureScale;
+    public void setTextureRepeat(Vector3 textureRepeat) {
+        _textureRepeat = textureRepeat;
     }
 
-    /** The texture scale is how much the textures should be scaled in each axis on this mesh. A scale less than 1 will tile the textures. */
-    public Vector3 textureScale() {
-        return _textureScale;
+    /** The texture repeat is how much the textures should be scaled in each axis on this mesh. A scale of 30, 1, 1 will tile the textures 30 times horizontally. */
+    public Vector3 textureRepeat() {
+        return _textureRepeat;
     }
 
     /**

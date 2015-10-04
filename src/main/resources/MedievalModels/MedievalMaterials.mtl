@@ -24,6 +24,7 @@ Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
 map_Kd -o 0 -1 stone-tile-3.png
+map_normal stone-tile-3_NRM.png
 Ni 1.00
 newmtl crypt_topSG
 illum 4
@@ -46,19 +47,23 @@ Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
 map_Kd -o 0 -1 oldmetal-2.png
 Ni 1.00
+
 newmtl wallSG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
 map_Kd -o 0 -1 stone-tile-1.png
+map_normal stone-tile-1_NRM.png
 Ni 1.00
+
 newmtl wallSG1
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
 map_Kd -o 0 -1 stone-tile-2.png
+map_normal stone-tile-2_NRM.png
 Ni 1.00
 newmtl woodSG
 illum 4

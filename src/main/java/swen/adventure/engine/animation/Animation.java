@@ -45,6 +45,15 @@ public class Animation {
         this(animableProperty, AnimationCurve.Linear, duration, 0.0, toValue, repeats);
     }
 
+    /**
+     * Creates a new random animation that varies between the current value and the toValue.
+     * @param animableProperty
+     * @param toValue
+     */
+    public Animation(AnimableProperty animableProperty, double toValue) {
+        this(animableProperty, AnimationCurve.Random, Float.MAX_VALUE, 0.0, toValue, true);
+    }
+
     public Animation(AnimableProperty animableProperty, double duration, double delay, double toValue) {
         this(animableProperty, AnimationCurve.Linear, duration, delay, toValue, false);
     }
@@ -74,8 +83,13 @@ public class Animation {
     }
 
     private double currentValue(double currentTime) {
-        double progress = _curve.progressForPercentage(this.percentageComplete(currentTime));
-        return _initialValue + (_finalValue - _initialValue) * progress;
+        if (_curve == AnimationCurve.Random) {
+            double value = Math.random() * (_finalValue - _initialValue) + _initialValue;
+            return value;
+        } else {
+            double progress = _curve.progressForPercentage(this.percentageComplete(currentTime));
+            return _initialValue + (_finalValue - _initialValue) * progress;
+        }
     }
 
     protected void update(double currentTime) {

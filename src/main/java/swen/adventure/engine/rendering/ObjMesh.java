@@ -126,7 +126,7 @@ public class ObjMesh extends GLMesh<Float> {
         return new ObjMesh(fileName, result);
     }
 
-    public ObjMesh(String fileName, WavefrontParser.Result parsedFile) {
+    public ObjMesh(String fileName, WavefrontParser.Result parsedFile) { //TODO While none of this functionality is repeated, it should probably still be either separated into methods or at least divided with comments.
         Set<VertexData> vertexData = new LinkedHashSet<>(); //We use a LinkedHashSet to try and maintain ordering where possible (keep vertices in the same faces close together in memory).
         Map<WavefrontParser.IndexData, VertexData> objIndicesToVertices = new HashMap<>();
 

@@ -9,5 +9,5 @@ import java.nio.ByteBuffer;
  */
 public interface MaterialShader {
     void setMaterial(ByteBuffer materialData);
-    void setTextureScale(Vector3 scale);
+    void setTextureRepeat(Vector3 scale);
 }

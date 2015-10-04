@@ -32,7 +32,7 @@ public class GaussianPerObjectMaterialShader extends ShaderProgram implements Ma
 
     private final int _lightUniformBufferRef;
     private final int _materialUniformBufferRef;
-    private final int _textureScaleUniformBufferRef;
+    private final int _textureRepeatUniformBufferRef;
 
     private final int _ambientColourSamplerRef;
     private final int _diffuseColourSamplerRef;
@@ -63,7 +63,7 @@ public class GaussianPerObjectMaterialShader extends ShaderProgram implements Ma
         _modelToCameraMatrixUniformRef = glGetUniformLocation(this.glProgramRef(), "modelToCameraMatrixUniform");
         _cameraToClipMatrixUniformRef = glGetUniformLocation(this.glProgramRef(), "cameraToClipMatrixUniform");
         _normalModelToCameraMatrixUniformRef = glGetUniformLocation(this.glProgramRef(), "normalModelToCameraMatrixUniform");
-        _textureScaleUniformBufferRef = glGetUniformLocation(this.glProgramRef(), "textureScaleUniform");
+        _textureRepeatUniformBufferRef = glGetUniformLocation(this.glProgramRef(), "textureRepeatUniform");
 
         _maxIntensityUniformRef = glGetUniformLocation(this.glProgramRef(), "maxIntensity");
 
@@ -120,8 +120,8 @@ public class GaussianPerObjectMaterialShader extends ShaderProgram implements Ma
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
     }
 
-    public void setTextureScale(Vector3 textureScale) {
-        glUniform2f(_textureScaleUniformBufferRef, textureScale.x, textureScale.y);
+    public void setTextureRepeat(Vector3 textureRepeat) {
+        glUniform2f(_textureRepeatUniformBufferRef, textureRepeat.x, textureRepeat.y);
     }
 
     public void setModelToCameraMatrix(Matrix4 matrix) {

@@ -17,7 +17,7 @@ import java.util.Collections;
  */
 public class Player extends GameObject {
 
-    private float _playerSpeed = 3.f;
+    private float _playerSpeed = 10.f;
 
     private Inventory _inventory = new Inventory(id + "Inventory", parent().get());
 

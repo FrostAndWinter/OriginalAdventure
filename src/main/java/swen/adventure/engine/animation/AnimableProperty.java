@@ -34,15 +34,21 @@ public class AnimableProperty {
      */
     protected void setAnimation(Animation animation) {
         if (_currentAnimation.isPresent() && animation != _currentAnimation.get()) {
-            Animation currentAnimation = _currentAnimation.get();
-            _currentAnimation = Optional.empty();
-            currentAnimation.destroy();
+            this.stopAnimating();
         }
 
         _currentAnimation = Optional.ofNullable(animation);
         if (animation != null) {
             animation.eventAnimationDidComplete.addAction(this, AnimableProperty.actionAnimationDidFinish);
         }
+    }
+
+    public void stopAnimating() {
+        _currentAnimation.ifPresent(animation -> {
+            _currentAnimation = Optional.empty();
+            animation.destroy();
+        });
+
     }
 
     protected void setValueFromAnimation(float value) {

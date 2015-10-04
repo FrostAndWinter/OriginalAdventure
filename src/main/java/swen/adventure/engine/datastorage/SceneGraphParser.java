@@ -5,11 +5,11 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import swen.adventure.engine.Utilities;
+import swen.adventure.engine.rendering.Material;
 import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
-import swen.adventure.game.scenenodes.Lever;
 import swen.adventure.game.scenenodes.Player;
 
 import java.io.File;
@@ -17,6 +17,8 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -104,10 +106,29 @@ public class SceneGraphParser {
         String id = getAttribute("id", xmlNode, Function.identity());
         String directory = getAttribute("directory", xmlNode, Function.identity(), "");
         String fileName = getAttribute("fileName", xmlNode, Function.identity());
-        Vector3 textureScale = getAttribute("textureScale", xmlNode, PARSER_MANAGER.getFromStringFunction(Vector3.class), Vector3.one);
+        Vector3 textureRepeat = getAttribute("textureRepeat", xmlNode, PARSER_MANAGER.getFromStringFunction(Vector3.class), Vector3.one);
+
+        Optional<String> materialDirectory = getAttribute("materialDirectory", xmlNode, Optional::of, Optional.empty());
+        Optional<String> materialFileName = getAttribute("materialFileName", xmlNode, Optional::of, Optional.empty());
+        Optional<String> materialName = getAttribute("materialName", xmlNode, Optional::of, Optional.empty());
 
         MeshNode node = new MeshNode(id, directory, fileName, parent);
-        node.setTextureScale(textureScale);
+        node.setTextureRepeat(textureRepeat);
+
+        materialFileName.ifPresent(matFileName ->
+                materialName.ifPresent(matName -> {
+                    String matDirectory = materialDirectory.orElse("");
+                    String path = Utilities.pathForResource(matDirectory, matFileName, null);
+                    try {
+                        Material material = MTLParser.parse(new File(path), matDirectory).get(matName);
+                        if (material != null) {
+                            node.setMaterialOverride(material);
+                        }
+                    } catch (FileNotFoundException e) {
+                        System.err.println("Could not load material file at " + path);
+                    }
+                }));
+
         return node;
     }
 

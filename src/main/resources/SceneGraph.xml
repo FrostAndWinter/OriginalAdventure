@@ -1,23 +1,61 @@
 <root>
-    <TransformNode id="groundPlaneTransform" rotation="-0.70710677, 0.0, 0.0, 0.70710677" scale="500, 500, 0.2">
-        <MeshNode id="groundPlaneMesh" fileName="Plane.obj"/>
+    <TransformNode id="groundPlaneTransform" rotation="-0.70710677, 0.0, 0.0, 0.70710677" scale="1200, 1800, 0.2">
+        <MeshNode id="groundPlaneMesh" fileName="Plane.obj" materialDirectory="MedievalModels" materialFileName="MedievalMaterials.mtl" materialName="corner_fullSG" textureRepeat="24, 36, 0.2"/>
     </TransformNode>
     
-    <TransformNode id="playerTransform" translation="0, 20, 200" isDynamic="true">
-        <TransformNode id="cameraTransform">
+    <TransformNode id="playerTransform" translation="0, 60, 200" isDynamic="true">
+        <TransformNode id="cameraTransform" translation="0, 40, 0">
             <Camera id="playerCamera"/>
         </TransformNode>
-        <Player id="player" boundingBox="-10, -20, -10, 10, 20, 10"/>
+        <Player id="player" boundingBox="-30, -60, -10, 30, 60, 10"/>
     </TransformNode>
     <AmbientLight id="ambientLight" colour="0.5, 0.5, 0.5" intensity="2.0"/>
     <DirectionalLight id="sunDirectionalLight" colour="0.7, 0.7, 0.7" intensity="8.0" fromDirection="0.4, 0.8, 0.3"/>
     
-    <TransformNode id="leverTransform" translation="-40, 15, 20" rotation="0, 0, -0.7071067812, 0.7071067812" scale="0.3, 0.3, 0.3">
+    <TransformNode id="leverTransform" translation="-600, 110, 90" rotation="0, 0, -0.7071067812, 0.7071067812" scale="0.5, 0.5, 0.5">
         <Lever id="lever"/>
     </TransformNode>
     
-    <TransformNode id="chestTransform" scale="10, 10, 10">
+    <TransformNode id="chestTransform" translation="-100, 0, -200" scale="30, 30, 30">
         <Chest id="chest"/>
     </TransformNode>
+    
+    <TransformNode id="leftWallTransform" translation="-600, 0, 0" rotation="0, 0.7071067812, 0, 0.7071067812" scale="20, 1, 1">
+        <MeshNode id="leftWall" directory="MedievalModels" fileName="Wall.obj" textureRepeat="20, 1, 1"/>
+    </TransformNode>
+    <TransformNode id="rightWallTransform" translation="600, 0, 0" rotation="0, -0.7071067812, 0, 0.7071067812" scale="20, 1, 1">
+        <MeshNode id="rightWall" directory="MedievalModels" fileName="Wall.obj" textureRepeat="20, 1, 1"/>
+    </TransformNode>
+    <TransformNode id="backWallTransform" translation="0, 0, 900" rotation="0, 1, 0, 0" scale="13.33333, 1, 1">
+        <MeshNode id="backWall" directory="MedievalModels" fileName="Wall.obj" textureRepeat="13.33333, 1, 1"/>
+    </TransformNode>
+    <TransformNode id="frontWallTransform" translation="0, 0, -900" rotation="0, 0, 0, 1" scale="13.33333, 1, 1">
+        <MeshNode id="frontWall" directory="MedievalModels" fileName="Wall.obj" textureRepeat="13.33333, 1, 1"/>
+    </TransformNode>
+    
+    <TransformNode id="cryptTransform" rotation="0, 0.7071067812, 0, 0.7071067812">
+        <MeshNode id="crypt" directory="MedievalModels" fileName="Crypt.obj"/>
         
+        <TransformNode id="brazier1T" translation="105, 0, 95">
+            <MeshNode id="brazier1M" directory="MedievalModels" fileName="BigTorch.obj"/>
+        </TransformNode>
+        
+        <TransformNode id="brazier2T" translation="-105, 0, 95">
+            <MeshNode id="brazier2M" directory="MedievalModels" fileName="BigTorch.obj"/>
+        </TransformNode>
+        
+        <TransformNode id="brazier3T" translation="105, 0, -95">
+            <MeshNode id="brazier3M" directory="MedievalModels" fileName="BigTorch.obj"/>
+        </TransformNode>
+        
+        <TransformNode id="brazier4T" translation="-105, 0, -95">
+            <MeshNode id="brazier4M" directory="MedievalModels" fileName="BigTorch.obj"/>
+        </TransformNode>
+        
+        <TransformNode id="flameT" translation="-105, 40, -95" scale="70, 70, 70">
+            <MeshNode id="flameM" directory="Flame" fileName="flame.obj"/>
+        </TransformNode>
+        
+    </TransformNode>
+    
 </root>

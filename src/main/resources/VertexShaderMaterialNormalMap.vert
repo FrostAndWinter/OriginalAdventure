@@ -16,7 +16,7 @@ uniform mat4 cameraToClipMatrixUniform;
 uniform mat3 normalModelToCameraMatrixUniform;
 uniform mat3 nodeToCamera3x3MatrixUniform;
 
-uniform vec2 textureScaleUniform;
+uniform vec2 textureRepeatUniform;
 
 void main() {
 
@@ -24,7 +24,7 @@ void main() {
     cameraSpacePosition = cameraPos.xyz;
 	gl_Position = cameraToClipMatrixUniform * cameraPos;
 	vertexNormal = normalModelToCameraMatrixUniform * normal;
-	textureCoordinate = texCoord.st / textureScaleUniform;
+	textureCoordinate = texCoord.st * textureRepeatUniform;
 
 	vec3 mBPrime = tangent.w * (cross(normal, tangent.xyz));
 
