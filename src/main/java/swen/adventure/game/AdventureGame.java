@@ -13,7 +13,6 @@ import swen.adventure.engine.ui.components.Frame;
 import swen.adventure.engine.ui.components.Reticule;
 import swen.adventure.engine.utils.SharedLibraryLoader;
 import swen.adventure.game.scenenodes.*;
-import swen.adventure.game.ui.components.Inventory;
 import swen.adventure.game.scenenodes.Button;
 import swen.adventure.game.scenenodes.Door;
 import swen.adventure.game.scenenodes.Key;
