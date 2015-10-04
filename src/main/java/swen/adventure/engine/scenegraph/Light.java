@@ -162,7 +162,7 @@ public final class Light extends SceneNode {
 //        Structure:
 //        struct PerLightData {
 //            Vector4 positionInCameraSpace; //16 bytes
-//            Vector4 intensity; //where xyz are the intensity colour vectors and w is the falloff; 12 bytes
+//            Vector4 intensity; //where xyz are the intensity colour vectors and w is the falloff; 16 bytes
 //        }
 
         for (int i = 0; i < 4; i++) {

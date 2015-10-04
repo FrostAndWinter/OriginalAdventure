@@ -28,16 +28,14 @@ public class MTLParser {
     private static final Pattern PatternSpecularColourMap = Pattern.compile("map_Ks");
     private static final Pattern PatternSpecularityMap = Pattern.compile("map_Ns");
     private static final Pattern PatternBumpMap = Pattern.compile("map_bump|bump");
-    private static final Pattern PatternWhitespaceExceptNewLine = Pattern.compile("[^\\S+\\r\\n]+");
-    private static final Pattern PatternWhitespace = Pattern.compile("\\s+");
     private static final Pattern PatternNewLine = Pattern.compile("[^.]+");
 
-    public static Map<String, Material> parse(File file) throws FileNotFoundException{
+    public static Map<String, Material> parse(File file, String directory) throws FileNotFoundException{
         InputStream is = new FileInputStream(file);
-        return MTLParser.parseMaterialFile(new Scanner(is));
+        return MTLParser.parseMaterialFile(new Scanner(is), directory);
     }
 
-    private static Map<String, Material> parseMaterialFile(Scanner scanner) {
+    private static Map<String, Material> parseMaterialFile(Scanner scanner, String directory) {
         Map<String, Material> materialMap = new HashMap<>();
 
         Material material = null;
@@ -63,26 +61,26 @@ public class MTLParser {
 
                 } else if (MTLParser.gobble(scanner, PatternTransparency)) {
                     if (!scanner.hasNextFloat()) { MTLParser.fail(scanner, "Transparency requires a float value"); }
-                    material.setTransparency(scanner.nextFloat());
+                    material.setOpacity(scanner.nextFloat());
 
                 } else if (MTLParser.gobble(scanner, PatternIlluminationMode)) {
                     if (!scanner.hasNextInt()) { MTLParser.fail(scanner, "Illumination mode requires an integer value."); }
                     material.setUseAmbient(scanner.nextInt() > 1);
 
                 } else if (MTLParser.gobble(scanner, PatternAmbientMap)) {
-                    material.setAmbientMap(MTLParser.parseTexture(scanner, true, false));
+                    material.setAmbientMap(MTLParser.parseTexture(scanner, directory, true, false));
 
                 } else if (MTLParser.gobble(scanner, PatternDiffuseMap)) {
-                    material.setDiffuseMap(MTLParser.parseTexture(scanner, true, false));
+                    material.setDiffuseMap(MTLParser.parseTexture(scanner, directory, true, false));
 
                 } else if (MTLParser.gobble(scanner, PatternSpecularColourMap)) {
-                    material.setSpecularColourMap(MTLParser.parseTexture(scanner, true, false));
+                    material.setSpecularColourMap(MTLParser.parseTexture(scanner, directory, true, false));
 
                 } else if (MTLParser.gobble(scanner, PatternSpecularityMap)) {
-                    material.setSpecularityMap(MTLParser.parseTexture(scanner, false, false));
+                    material.setSpecularityMap(MTLParser.parseTexture(scanner, directory, false, false));
 
                 } else if (MTLParser.gobble(scanner, PatternBumpMap)) {
-                    material.setNormalMap(MTLParser.parseTexture(scanner, false, true));
+                    material.setNormalMap(MTLParser.parseTexture(scanner, directory, false, true));
 
                 } else if (scanner.hasNextLine()) {
                     scanner.nextLine();
@@ -108,18 +106,15 @@ public class MTLParser {
         return new Vector3(vector);
     }
 
-    private static Texture parseTexture(Scanner scanner, boolean useSRGB, boolean isNormalMap) {
-        //scanner.useDelimiter(PatternWhitespaceExceptNewLine);
+    private static Texture parseTexture(Scanner scanner, String baseDirectory, boolean useSRGB, boolean isNormalMap) {
 
         List<String> args = new ArrayList<>();
         while (scanner.hasNext() && !scanner.hasNext(PatternNewLine)) {
             args.add(scanner.next());
         }
 
-        //scanner.useDelimiter(PatternWhitespace);
-
         String name = args.get(args.size() - 1);
-        return isNormalMap ? Texture.loadNormalMapWithName(name) : Texture.loadTextureWithName(name, useSRGB);
+        return isNormalMap ? Texture.loadNormalMapWithName(baseDirectory, name) : Texture.loadTextureWithName(baseDirectory, name, useSRGB);
     }
 
     private static boolean gobble(Scanner scanner, Pattern p) {

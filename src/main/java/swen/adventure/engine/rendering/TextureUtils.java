@@ -1,4 +1,4 @@
-package swen.adventure.engine;
+package swen.adventure.engine.rendering;
 
 import org.lwjgl.BufferUtils;
 

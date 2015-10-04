@@ -117,8 +117,12 @@ public class ObjMesh extends GLMesh<Float> {
     private final BoundingBox _boundingBox;
 
     public static ObjMesh loadMesh(String fileName) throws FileNotFoundException {
-        File file = new File(Utilities.pathForResource(fileName, null));
-        WavefrontParser.Result result = WavefrontParser.parse(file);
+        return ObjMesh.loadMesh(null, fileName);
+    }
+
+    public static ObjMesh loadMesh(String directory, String fileName) throws FileNotFoundException {
+        File file = new File(Utilities.pathForResource(directory, fileName, null));
+        WavefrontParser.Result result = WavefrontParser.parse(file, directory);
         return new ObjMesh(fileName, result);
     }
 

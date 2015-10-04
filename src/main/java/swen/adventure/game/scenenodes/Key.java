@@ -16,7 +16,7 @@ public class Key extends GameObject {
     public Key(String id, TransformNode parent) {
         super(id, parent);
 
-        _mesh = new MeshNode("Key_B_02.obj", parent);
+        _mesh = new MeshNode(null, "Key_B_02.obj", parent);
         _mesh.eventMeshClicked.addAction(this, (eventObject, player, listener, data) -> {
             if (_interactionEnabled) {
                 System.out.println("Key can be picked up");

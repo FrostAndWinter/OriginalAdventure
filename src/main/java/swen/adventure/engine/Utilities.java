@@ -27,15 +27,31 @@ import java.util.stream.Collectors;
  */
 public class Utilities {
 
-    public static String pathForResource(String resourceName, String extension) {
+    private static final String BasePath;
+    static {
         URI path = null;
         try {
             path = Utilities.class.getProtectionDomain().getCodeSource().getLocation().toURI();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        String pathString = new File(path).getPath().replaceFirst("classes" + File.separator + "main", "resources" + File.separator + "main");
-        pathString = pathString + File.separator + resourceName + (extension == null ? "" : "." + extension);
+        BasePath = new File(path).getPath().replaceFirst("classes" + File.separator + "main", "resources" + File.separator + "main");
+    }
+
+    public static String pathForResource(String resourceName, String extension) {
+        return Utilities.pathForResource(null, resourceName, extension);
+    }
+
+    public static String pathForResource(String directory, String resourceName, String extension) {
+        String modifiedDirectory = directory != null ? directory : "";
+        if (!modifiedDirectory.startsWith(File.separator)) {
+            modifiedDirectory = File.separator + modifiedDirectory;
+        }
+        if (!modifiedDirectory.endsWith(File.separator)) {
+            modifiedDirectory = modifiedDirectory + File.separator;
+        }
+
+        String pathString = BasePath + modifiedDirectory + resourceName + (extension == null ? "" : "." + extension);
         return pathString.replaceAll("[\\r\\n]", ""); //remove any newline characters.
     }
 

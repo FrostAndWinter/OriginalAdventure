@@ -51,24 +51,26 @@ public class WavefrontParser {
     private final Map<String, Material> materials = new HashMap<>();
 
     private Material _currentMaterial = Material.DefaultMaterial;
+    private String _directory = null;
 
-    public static Result parse(File file) throws FileNotFoundException {
+    public static Result parse(File file, String directory) throws FileNotFoundException {
         InputStream is = new FileInputStream(file);
-        return parse(is);
+        return parse(is, directory);
     }
 
     public static Result parse(String obj) {
         InputStream is = new ByteArrayInputStream(obj.getBytes(StandardCharsets.UTF_8));
-        return parse(is);
+        return parse(is, null);
     }
 
-    private static Result parse(InputStream is) {
-        WavefrontParser parser = new WavefrontParser(is);
+    private static Result parse(InputStream is, String directory) {
+        WavefrontParser parser = new WavefrontParser(is, directory);
         return new Result(parser.geometricVertices, parser.textureVertices, parser.vertexNormals, parser.polygonFaces);
     }
 
-    private WavefrontParser(InputStream is) {
+    private WavefrontParser(InputStream is, String directory) {
         this.scanner = new Scanner(is);
+        _directory = directory;
         parse();
     }
 
@@ -134,10 +136,10 @@ public class WavefrontParser {
     private void parseMaterialLibrary() {
         ensuredGobble(MATERIAL_LIBRARY_PAT, "A material library starts with a mtllib command.");
         String libraryName = scanner.next();
-        String fileName = Utilities.pathForResource(libraryName, null);
+        String fileName = Utilities.pathForResource(_directory, libraryName, null);
         Map<String, Material> libraryMaterials = null;
         try {
-            libraryMaterials = MTLParser.parse(new File(fileName));
+            libraryMaterials = MTLParser.parse(new File(fileName), _directory);
             this.materials.putAll(libraryMaterials);
         } catch (FileNotFoundException e) {
             fail("Invalid material library name caused a FileNotFoundException: " + e);

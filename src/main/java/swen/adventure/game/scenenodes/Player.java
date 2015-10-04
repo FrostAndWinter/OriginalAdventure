@@ -33,6 +33,12 @@ public class Player extends GameObject {
     public static final Action<KeyInput, KeyInput, Player> actionPlayerMoveRight=
             (eventObject, triggeringObject, player, data) -> player.move(new Vector3(player._playerSpeed, 0, 0));
 
+    public static final Action<KeyInput, KeyInput, Player> actionPlayerMoveUp =
+            (eventObject, triggeringObject, player, data) -> player.parent().get().translateBy(new Vector3(0, player._playerSpeed, 0));
+
+    public static final Action<KeyInput, KeyInput, Player> actionPlayerMoveDown =
+            (eventObject, triggeringObject, player, data) -> player.parent().get().translateBy(new Vector3(0, -player._playerSpeed, 0));
+
     public final Event<Player> eventPlayerMoved = new Event<>("eventPlayerMoved", this);
 
     public Player(String id, TransformNode parent) {

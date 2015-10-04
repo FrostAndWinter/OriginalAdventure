@@ -162,7 +162,6 @@ vec3 ComputeLighting(in PerLightData lightData) {
 	vec3 lighting = diffuseColour().rgb * lightIntensity * cosAngIncidence;
 	lighting += specularColour().rgb * lightIntensity * gaussianTerm;
 
-
 	return lighting;
 }
 

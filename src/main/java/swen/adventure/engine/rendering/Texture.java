@@ -4,7 +4,6 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.stb.STBImageResize;
 import org.lwjgl.stb.STBImageWrite;
-import swen.adventure.engine.TextureUtils;
 import swen.adventure.engine.Utilities;
 
 import java.io.File;
@@ -60,6 +59,9 @@ public class Texture {
                     STBImageResize.STBIR_EDGE_CLAMP,
                     STBImageResize.STBIR_FILTER_DEFAULT,
                     useSRGB ? STBImageResize.STBIR_COLORSPACE_SRGB : STBImageResize.STBIR_COLORSPACE_LINEAR);
+
+
+            STBImageWrite.stbi_write_png("/tmp/" + this.hashCode() + "" + w + ".png", w, h, this.numPixelComponents, outputBuffer, 0);
 
             if (success == 0) {
                 System.err.printf("Error generating mip-map with dimensions %d, %d.\n", w, h);
@@ -117,8 +119,8 @@ public class Texture {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    private static ByteBuffer loadImageWithName(String fileName, IntBuffer widthBuffer, IntBuffer heightBuffer, IntBuffer numPixelComponentsBuffer) {
-        String resourcePath = Utilities.pathForResource(fileName, null);
+    private static ByteBuffer loadImageWithName(String directory, String fileName, IntBuffer widthBuffer, IntBuffer heightBuffer, IntBuffer numPixelComponentsBuffer) {
+        String resourcePath = Utilities.pathForResource(directory, fileName, null);
 
         try {
             byte[] encodedImageData = Files.readAllBytes(new File(resourcePath).toPath()); //Read using Java APIs to work around STBImage limitations with Unicode paths on Windows.
@@ -139,40 +141,39 @@ public class Texture {
         }
     }
 
-    public static Texture loadNormalMapWithName(String fileName) {
+    public static Texture loadNormalMapWithName(String directory, String fileName) {
 
-        Texture texture = _normalsCache.get(fileName);
+        Texture texture = _normalsCache.get(directory + fileName);
         if (texture == null) {
 
             IntBuffer widthBuffer = BufferUtils.createIntBuffer(1);
             IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
             IntBuffer numPixelComponentsBuffer = BufferUtils.createIntBuffer(1);
-            ByteBuffer heightMap = Texture.loadImageWithName(fileName, widthBuffer, heightBuffer, numPixelComponentsBuffer);
+            ByteBuffer heightMap = Texture.loadImageWithName(directory, fileName, widthBuffer, heightBuffer, numPixelComponentsBuffer);
 
             ByteBuffer normalMap = TextureUtils.generateNormalMap(heightMap, widthBuffer.get(0), heightBuffer.get(0), numPixelComponentsBuffer.get(0), 2.0, false);
 
             texture = new Texture(normalMap, widthBuffer.get(), heightBuffer.get(), numPixelComponentsBuffer.get(), false);
 
-            _normalsCache.put(fileName, texture);
+            _normalsCache.put(directory + fileName, texture);
 
         }
 
         return texture;
     }
 
-    public static Texture loadTextureWithName(String fileName, boolean useSRGB) {
+    public static Texture loadTextureWithName(String directory, String fileName, boolean useSRGB) {
 
-        Texture texture = _textureCache.get(fileName);
+        Texture texture = _textureCache.get(directory + fileName);
 
         if (texture == null) {
             IntBuffer widthBuffer = BufferUtils.createIntBuffer(1);
             IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
             IntBuffer numPixelComponentsBuffer = BufferUtils.createIntBuffer(1);
-            ByteBuffer image = Texture.loadImageWithName(fileName, widthBuffer, heightBuffer, numPixelComponentsBuffer);
+            ByteBuffer image = Texture.loadImageWithName(directory, fileName, widthBuffer, heightBuffer, numPixelComponentsBuffer);
 
                 texture = new Texture(image, widthBuffer.get(), heightBuffer.get(), numPixelComponentsBuffer.get(), useSRGB);
-                _textureCache.put(fileName, texture);
-
+                _textureCache.put(directory + fileName, texture);
         }
 
         return texture;

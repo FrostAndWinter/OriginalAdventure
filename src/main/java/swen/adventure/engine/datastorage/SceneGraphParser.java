@@ -40,8 +40,9 @@ public class SceneGraphParser {
         Document doc = Utilities.loadExistingXmlDocument(is);
         Node node = doc.getFirstChild();
         String name = node.getNodeName();
-        if(!name.equals(TRANSFORM_NODE_TAG))
+        if(!name.equals(TRANSFORM_NODE_TAG)) {
             fail("Unrecognised node: " + name);
+        }
 
         return parseNode(node, Optional.empty());
     }
@@ -71,15 +72,15 @@ public class SceneGraphParser {
 
     private static TransformNode parseTransformNode(Node xmlNode, Optional<TransformNode> parent) {
         String id = getAttribute("id", xmlNode, Function.identity());
-        Vector3 translation = getAttribute("translation", xmlNode, PARSER_MANAGER.getFromStringFunction(Vector3.class));
-        Quaternion rotation = getAttribute("rotation", xmlNode, PARSER_MANAGER.getFromStringFunction(Quaternion.class));
-        Vector3 scale = getAttribute("scale", xmlNode, PARSER_MANAGER.getFromStringFunction(Vector3.class));
+        Vector3 translation = getAttribute("translation", xmlNode, PARSER_MANAGER.getFromStringFunction(Vector3.class), Vector3.zero);
+        Quaternion rotation = getAttribute("rotation", xmlNode, PARSER_MANAGER.getFromStringFunction(Quaternion.class), new Quaternion());
+        Vector3 scale = getAttribute("scale", xmlNode, PARSER_MANAGER.getFromStringFunction(Vector3.class), Vector3.one);
 
         TransformNode node;
         if(!parent.isPresent())
             node = new TransformNode(id, translation, rotation, scale);
         else {
-            boolean isDynamic = getAttribute("isDynamic", xmlNode, PARSER_MANAGER.getFromStringFunction(Boolean.class));
+            boolean isDynamic = getAttribute("isDynamic", xmlNode, PARSER_MANAGER.getFromStringFunction(Boolean.class), false);
             node = new TransformNode(id, parent.get(), isDynamic, translation, rotation, scale);
         }
 
@@ -101,13 +102,20 @@ public class SceneGraphParser {
         throw new RuntimeException(message);
     }
 
-    private static <T> T getAttribute(String name, Node node, Function<String, T> converter) {
+    private static <T> T getAttribute(String name, Node node, Function<String, T> converter, T defaultValue) {
         NamedNodeMap attributes = node.getAttributes();
         Node valueNode = attributes.getNamedItem(name);
-        if(valueNode == null)
-            fail("Node (" + node + ") doesn't have attribute " + name);
-
+        if (valueNode == null) {
+            if (defaultValue == null) {
+                fail("Node " + node + " has no attribute for name " + name);
+            }
+            return defaultValue;
+        }
         String value = valueNode.getTextContent();
         return converter.apply(value);
+    }
+
+    private static <T> T getAttribute(String name, Node node, Function<String, T> converter) {
+       return getAttribute(name, node, converter, null);
     }
 }

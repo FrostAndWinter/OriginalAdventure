@@ -23,10 +23,4 @@ public class WavefrontParserTest {
 
         WavefrontParser.Result result = WavefrontParser.parse(input);
     }
-
-    @Test
-    public void testLoadingTableFile() throws IOException {
-        File file = new File(Utilities.pathForResource("Table", "obj"));
-        WavefrontParser.Result result = WavefrontParser.parse(file);
-    }
 }

@@ -51,7 +51,7 @@ public class Material {
     private Vector3 _ambientColour;
     private Vector3 _diffuseColour;
     private Vector3 _specularColour;
-    private float _transparency;
+    private float _opacity;
     private float _specularity;
     private boolean _useAmbient = true;
 
@@ -63,16 +63,16 @@ public class Material {
 
     private ByteBuffer _bufferRepresentation = null;
 
-    public Material(Vector3 ambientColour, Vector3 diffuseColour, Vector3 specularColour, float transparency, float specularity) {
+    public Material(Vector3 ambientColour, Vector3 diffuseColour, Vector3 specularColour, float opacity, float specularity) {
         _ambientColour = ambientColour;
         _diffuseColour = diffuseColour;
         _specularColour = specularColour;
-        _transparency = transparency;
+        _opacity = opacity;
         _specularity = specularity;
     }
 
     public Material() {
-        this(Vector3.zero, Vector3.one, Vector3.one, 0.f, 0.5f);
+        this(Vector3.zero, Vector3.one, Vector3.one, 1.f, 0.5f);
     }
 
     public void setUseAmbient(boolean useAmbient) {
@@ -116,15 +116,15 @@ public class Material {
     }
 
 
-    /** Transparency is a value in the range [0, 1], and directly controls the output alpha of the material. */
+    /** Opacity is a value in the range [0, 1], and directly controls the output alpha of the material. */
     public float transparency() {
-        return _transparency;
+        return _opacity;
     }
 
-    /** Transparency controls the output alpha of the material, where a transparency of 0 is fully opaque and a transparency of 1 is fully transparent. */
-    public void setTransparency(final float transparency) {
+    /** Opacity controls the output alpha of the material, where a opacity of 1 is fully opaque and a opacity of 0 is fully transparent. */
+    public void setOpacity(final float opacity) {
         _bufferRepresentation = null;
-        _transparency = transparency;
+        _opacity = opacity;
     }
 
 
@@ -185,7 +185,7 @@ public class Material {
             floatBuffer.put(_useAmbient ? 1.f : 0.f);
 
             floatBuffer.put(_diffuseColour.v);
-            floatBuffer.put(1.f - _transparency); //convert transparency to alpha
+            floatBuffer.put(_opacity);
 
             floatBuffer.put(_specularColour.v);
             floatBuffer.put(_specularity);

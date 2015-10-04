@@ -26,15 +26,15 @@ public class MeshNode extends SceneNode {
 
     public final Event<MeshNode> eventMeshClicked = new Event<>("eventMeshClicked", this);
 
-    public MeshNode(final String fileName, final TransformNode parent) {
-        this("mesh" + fileName, fileName, parent); //MeshNodes of the same file share ids.
+    public MeshNode(final String directory, final String fileName, final TransformNode parent) {
+        this("mesh" + fileName, directory, fileName, parent); //MeshNodes of the same file share ids.
     }
 
-    public MeshNode(String id, final String fileName, final TransformNode parent) {
+    public MeshNode(String id, final String directory, final String fileName, final TransformNode parent) {
         super(id, parent, false); //TODO discuss why mesh nodes need to have the same id
 
         try {
-            _mesh = MeshNode.loadMeshWithFileName(fileName);
+            _mesh = MeshNode.loadMeshWithFileName(directory, fileName);
             _localSpaceBoundingBox = _mesh.boundingBox();
         } catch (FileNotFoundException e) {
             System.err.println("Could not load mesh file " + fileName + ": " + e);
@@ -101,7 +101,7 @@ public class MeshNode extends SceneNode {
 
     private static Map<String, GLMesh<Float>> _loadedMeshes = new HashMap<>();
 
-    private static GLMesh<Float> loadMeshWithFileName(String fileName) throws FileNotFoundException {
+    private static GLMesh<Float> loadMeshWithFileName(String directory, String fileName) throws FileNotFoundException {
         GLMesh<Float> mesh = _loadedMeshes.get(fileName);
 
         if (mesh == null) {
@@ -109,7 +109,7 @@ public class MeshNode extends SceneNode {
             String extension = fileNameComponents[fileNameComponents.length - 1];
 
             if (extension.equalsIgnoreCase("obj")) {
-                mesh = ObjMesh.loadMesh(fileName);
+                mesh = ObjMesh.loadMesh(directory, fileName);
             } else {
                 throw new RuntimeException("The file format " + extension + " is not supported.");
             }
