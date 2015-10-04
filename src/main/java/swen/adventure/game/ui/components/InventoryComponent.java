@@ -4,11 +4,12 @@ import processing.core.PGraphics;
 import swen.adventure.engine.Action;
 import swen.adventure.engine.ui.components.UIComponent;
 import swen.adventure.engine.ui.layoutmanagers.LayoutManager;
+import swen.adventure.game.scenenodes.Inventory;
 
 /**
  * Created by danielbraithwt on 9/18/15.
  */
-public class Inventory extends UIComponent {
+public class InventoryComponent extends UIComponent {
     private static final int BOX_SIZE = 30;
 
     private Object[] items;
@@ -18,7 +19,7 @@ public class Inventory extends UIComponent {
 
     private int selectedItem = 0;
 
-    public Inventory(int numItems, int x, int y) {
+    public InventoryComponent(int numItems, int x, int y) {
         super(x, y, numItems * BOX_SIZE, BOX_SIZE);
 
         this.numItems = numItems;
@@ -27,11 +28,11 @@ public class Inventory extends UIComponent {
         items = new Object[numItems];
     }
 
-    public static final Action<swen.adventure.game.scenenodes.Inventory, Void, Inventory> actionSelectItem =
+    public static final Action<Inventory, Void, InventoryComponent> actionSelectSlot =
             (playerInventory, triggeringObject, inventoryView, data) -> {
-        Integer item = (Integer) data.get("item");
-        inventoryView.setSelectedItem(item);
-    };
+                Integer item = (Integer) data.get(Inventory.SelectedSlot);
+                inventoryView.setSelectedItem(item);
+            };
 
     public void setBoxSize(int boxSize) {
         this.boxSize = boxSize;
