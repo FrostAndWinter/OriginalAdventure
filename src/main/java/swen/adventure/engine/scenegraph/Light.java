@@ -1,17 +1,14 @@
 package swen.adventure.engine.scenegraph;
 
 import org.lwjgl.BufferUtils;
-import swen.adventure.engine.Action;
 import swen.adventure.engine.datastorage.BundleObject;
 import swen.adventure.engine.rendering.maths.Matrix4;
-import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.rendering.maths.Vector4;
 
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -64,7 +61,7 @@ public class Light extends SceneNode {
     public final LightType type;
 
     /** The light's colour as a unit vector. */
-    public final Vector3 colour;
+    private Vector3 _colour;
     private float _intensity;
     private boolean _on;
     public final Optional<Vector3> direction;
@@ -80,7 +77,7 @@ public class Light extends SceneNode {
         this.type = type;
         _intensity = intensity * colourMagnitude;
         _on = true;
-        this.colour = colour.normalise();
+        _colour = colour.normalise();
         this.direction = direction.map(Vector3::normalise);
         this.falloff = falloff;
     }
@@ -88,7 +85,7 @@ public class Light extends SceneNode {
     @Override
     public BundleObject toBundle() {
         return super.toBundle()
-                .put("colour", colour)
+                .put("colour", _colour)
                 .put("intensity", _intensity)
                 // convert the enum values to their names so the valueOf() method can return their instance
                 .put("type", type.toString())
@@ -140,6 +137,13 @@ public class Light extends SceneNode {
         _intensity = intensity;
     }
 
+    public Vector3 colour() {
+        return _colour;
+    }
+
+    public void setColour(final Vector3 colour) {
+        _colour = colour;
+    }
 
     /** Returns whether the light is currently contributing to the scene. */
     public boolean isOn() {
@@ -152,7 +156,7 @@ public class Light extends SceneNode {
 
     /** @return this light's colour multiplied by its intensity. */
     public Vector3 colourVector() {
-        return this.colour.multiplyScalar(_intensity);
+        return this._colour.multiplyScalar(_intensity);
     }
 
     private void addLightDataToBuffer(ByteBuffer buffer, Matrix4 worldToCameraMatrix) {

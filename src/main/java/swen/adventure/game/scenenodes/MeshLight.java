@@ -27,30 +27,33 @@ public class MeshLight extends Light {
 
     private final Material _lightMaterial;
 
-    public MeshLight(final String id, final TransformNode parent, boolean isDynamic,
+    public MeshLight(final String id, final TransformNode parent,
                      final String meshName, final String meshDirectory,
                      final Vector3 colour, final float intensity, final LightFalloff falloff) {
-        super(id, parent, isDynamic, LightType.Point, colour, intensity, Optional.empty(), falloff);
+        super(id, parent, false, LightType.Point, colour, intensity, Optional.empty(), falloff);
 
         _baseIntensity = intensity;
         _lightIntensity = new AnimableProperty(intensity);
         _lightMaterial = this.setupMaterial(colour, intensity);
 
-        new MeshNode(id, meshDirectory, meshName, parent).setMaterialOverride(_lightMaterial);
+        new MeshNode(id + "Mesh", meshDirectory, meshName, parent).setMaterialOverride(_lightMaterial);
 
         _lightIntensity.eventValueChanged.addAction(this, (animableProperty, triggeringObject, listener, data) ->  {
             super.setIntensity(animableProperty.value());
-            _lightMaterial.setAmbientColour(colour.multiplyScalar(intensity));
+            this.setMaterialColour(_lightMaterial, this.colour(), animableProperty.value());
         });
+    }
+
+    private void setMaterialColour(Material material, final Vector3 colour, final float intensity) {
+        material.setDiffuseColour(colour.multiplyScalar(0.4f * intensity));
+        material.setAmbientColour(colour.multiplyScalar(0.6f * intensity));
     }
 
     private Material setupMaterial(final Vector3 colour, final float intensity) {
         Material material = new Material();
-        material.setDiffuseColour(Vector3.zero);
-        material.setAmbientColour(colour.multiplyScalar(intensity));
+        this.setMaterialColour(material, colour, intensity);
         material.setSpecularColour(Vector3.zero);
         material.setUseAmbient(true);
-        material.setOpacity(0.3f);
         return material;
     }
 
@@ -59,13 +62,18 @@ public class MeshLight extends Light {
         super.setIntensity(intensity);
         _baseIntensity = intensity;
         this.setIntensityVariation(_intensityVariation);
+    }
 
+    @Override
+    public void setColour(final Vector3 colour) {
+        super.setColour(colour);
+        _lightMaterial.setAmbientColour(colour);
     }
 
     public void setIntensityVariation(float intensityVariation) {
         _intensityVariation = intensityVariation;
-        float lowIntensity = this.intensity() - intensityVariation/2.f;
-        float highIntensity = this.intensity() + intensityVariation/2.f;
+        float lowIntensity = _baseIntensity - intensityVariation/2.f;
+        float highIntensity = _baseIntensity + intensityVariation/2.f;
 
         _lightIntensity.stopAnimating();
         _lightIntensity.setValue(lowIntensity);

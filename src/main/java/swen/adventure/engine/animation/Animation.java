@@ -47,8 +47,8 @@ public class Animation {
 
     /**
      * Creates a new random animation that varies between the current value and the toValue.
-     * @param animableProperty
-     * @param toValue
+     * @param animableProperty The property to animate
+     * @param toValue The maximum value the property can take.
      */
     public Animation(AnimableProperty animableProperty, double toValue) {
         this(animableProperty, AnimationCurve.Random, Float.MAX_VALUE, 0.0, toValue, true);

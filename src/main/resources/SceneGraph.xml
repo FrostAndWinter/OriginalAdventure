@@ -10,7 +10,6 @@
         <Player id="player" boundingBox="-30, -60, -10, 30, 60, 10"/>
     </TransformNode>
     <AmbientLight id="ambientLight" colour="0.5, 0.5, 0.5" intensity="2.0"/>
-    <DirectionalLight id="sunDirectionalLight" colour="0.7, 0.7, 0.7" intensity="8.0" fromDirection="0.4, 0.8, 0.3"/>
     
     <TransformNode id="leverTransform" translation="-600, 110, 90" rotation="0, 0, -0.7071067812, 0.7071067812" scale="0.5, 0.5, 0.5">
         <Lever id="lever"/>
@@ -38,23 +37,32 @@
         
         <TransformNode id="brazier1T" translation="105, 0, 95">
             <MeshNode id="brazier1M" directory="MedievalModels" fileName="BigTorch.obj"/>
+            <TransformNode id="flame1T" translation="0, 40, -8" scale="70, 70, 70">
+                <MeshLight id="flame1M" directory="Flame" fileName="flame.obj" colour="1.0, 0.0, 0.0" intensity="5.0" intensityVariation="2.0"/>
+            </TransformNode>
         </TransformNode>
         
         <TransformNode id="brazier2T" translation="-105, 0, 95">
             <MeshNode id="brazier2M" directory="MedievalModels" fileName="BigTorch.obj"/>
+            <TransformNode id="flame2T" translation="0, 40, -8" scale="70, 70, 70">
+                <MeshLight id="flame2M" directory="Flame" fileName="flame.obj" colour="1.0, 0.0, 0.0" intensity="5.0" intensityVariation="2.0"/>
+            </TransformNode>
         </TransformNode>
         
         <TransformNode id="brazier3T" translation="105, 0, -95">
             <MeshNode id="brazier3M" directory="MedievalModels" fileName="BigTorch.obj"/>
+            <TransformNode id="flame3T" translation="0, 40, -8" scale="70, 70, 70">
+                <MeshLight id="flame3M" directory="Flame" fileName="flame.obj" colour="1.0, 0.0, 0.0" intensity="5.0" intensityVariation="2.0"/>
+            </TransformNode>
         </TransformNode>
         
         <TransformNode id="brazier4T" translation="-105, 0, -95">
             <MeshNode id="brazier4M" directory="MedievalModels" fileName="BigTorch.obj"/>
+            <TransformNode id="flame4T" translation="0, 40, -8" scale="70, 70, 70">
+                <MeshLight id="flame4M" directory="Flame" fileName="flame.obj" colour="1.0, 0.0, 0.0" intensity="5.0" intensityVariation="2.0"/>
+            </TransformNode>
         </TransformNode>
-        
-        <TransformNode id="flameT" translation="-105, 40, -95" scale="70, 70, 70">
-            <MeshNode id="flameM" directory="Flame" fileName="flame.obj"/>
-        </TransformNode>
+
         
     </TransformNode>
     
