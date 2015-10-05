@@ -16,7 +16,7 @@ class Packet {
         // FIXME: awful names
         // packets coming from the server
         CLIENT_CONNECT,
-        CLIENT_DISCONNECT,
+        CLIENT_KICK,
         CLIENT_DATA,
 
         // Mutual packet types

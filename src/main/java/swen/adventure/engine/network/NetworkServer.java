@@ -129,7 +129,7 @@ public class NetworkServer implements Server<String, EventBox>, Session.SessionS
             case CLIENT_CONNECT:
                 String id = new String(packet.getPayload());
                 if (clients.containsKey(id)) {
-                    from.send(new Packet(Packet.Operation.CLIENT_DISCONNECT));
+                    from.send(new Packet(Packet.Operation.CLIENT_KICK));
                     break;
                 }
                 clients.put(id, from);

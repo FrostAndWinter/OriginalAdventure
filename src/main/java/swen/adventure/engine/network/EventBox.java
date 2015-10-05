@@ -1,9 +1,10 @@
 package swen.adventure.engine.network;
 
 import swen.adventure.engine.Event;
+import swen.adventure.engine.datastorage.ParserManager;
 import swen.adventure.engine.scenegraph.SceneNode;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -35,6 +36,10 @@ public class EventBox {
      */
     public final Map<String, Object> eventData;
 
+    private final static ParserManager PARSER = new ParserManager();
+    private final static String END_LINE = ":";
+    private final static String SEPARATORS = "!";
+
     public EventBox(String eventName, String sourceId, String targetId, String from, Map<String, Object> eventData) {
         this.eventName = eventName;
         this.sourceId = sourceId;
@@ -50,9 +55,19 @@ public class EventBox {
      * @return An EventBox using given data
      */
     public static EventBox fromBytes(byte[] raw) {
-        String[] parts = new String(raw).split(":");
+        String[] lines = new String(raw).split(END_LINE);
+        String[] parts = lines[0].split(SEPARATORS);
+        Map<String, Object> objectMap = new HashMap<>();
+        for (int i = 1; i < lines.length; i++) {
+            String[] obj = lines[i].split(SEPARATORS);
+            try {
+                objectMap.put(obj[0], PARSER.convertFromString(obj[2], Class.forName(obj[1])));
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
         // TODO: Parse eventData from bytes
-        return new EventBox(parts[0], parts[1], parts[2], parts[3], Collections.EMPTY_MAP);
+        return new EventBox(parts[0], parts[1], parts[2], parts[3], objectMap);
     }
 
     /**
@@ -62,7 +77,19 @@ public class EventBox {
      */
     public byte[] getBytes() {
         // TODO: Parse eventData to bytes
-        return String.join(":", new String[] {eventName, sourceId, targetId, from}).getBytes();
+        StringBuilder data = new StringBuilder();
+        data.append(String.join(SEPARATORS, new String[] {eventName, sourceId, targetId, from}))
+            .append(END_LINE);
+        for (Map.Entry<String, Object> entry : eventData.entrySet()) {
+            data.append(entry.getKey())
+                .append(SEPARATORS)
+                .append(entry.getValue().getClass().getCanonicalName())
+                .append(SEPARATORS)
+                .append(PARSER.convertToString(entry.getValue(), (Class) entry.getValue().getClass()))
+                .append(END_LINE);
+        }
+
+        return data.toString().getBytes();
     }
 
     public static <E> EventBox build(SceneNode source, Event<E> event, SceneNode target, Map<String,Object> data) {

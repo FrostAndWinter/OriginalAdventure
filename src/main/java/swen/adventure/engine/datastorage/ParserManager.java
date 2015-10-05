@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Liam O'Neill, Student ID 300312734, on 18/09/15.
  */
-class ParserManager {
+public class ParserManager {
 
     private static final Map<Class<?>, Parser<?>> PARSERS;
     static {
@@ -104,11 +104,11 @@ class ParserManager {
         return getParser(class0).fromStringFunction;
     }
 
-    <T> String convertToString(T t, Class<T> class0) {
+    public <T> String convertToString(T t, Class<T> class0) {
         return getParser(class0).convertToString(t);
     }
 
-    <T> T convertFromString(String str, Class<T> class0) {
+    public <T> T convertFromString(String str, Class<T> class0) {
         return getParser(class0).convertToInstance(str);
     }
 
