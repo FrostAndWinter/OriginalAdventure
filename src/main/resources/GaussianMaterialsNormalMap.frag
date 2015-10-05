@@ -97,62 +97,60 @@ float ComputeAttenuation(in vec3 objectPosition,
 	}
 }
 
-vec3 ComputeLightingUsingNormalMap(in PerLightData lightData) {
-	vec3 lightDirection;
-	vec3 lightIntensity;
 
-	if (lightData.positionInCameraSpace.w < 0.0001) {
-		lightDirection = normalize(cameraToTangentSpaceMatrix * lightData.positionInCameraSpace.xyz);
-		lightIntensity = lightData.lightIntensity.rgb;
+float ComputeAngleNormalHalf(in PerLightData lightData, out float cosAngIncidence, out vec3 lightIntensity) {
+		vec3 lightDirection;
+	if (useNormalMap()) {
+
+    	if (lightData.positionInCameraSpace.w < 0.0001) {
+    		lightDirection = normalize(cameraToTangentSpaceMatrix * lightData.positionInCameraSpace.xyz);
+    		lightIntensity = lightData.lightIntensity.rgb;
+    	}
+    	else {
+    		float attenuation = ComputeAttenuation(cameraSpacePosition,
+    			lightData.positionInCameraSpace.xyz, lightData.lightIntensity.w, lightDirection);
+    		lightIntensity = attenuation * lightData.lightIntensity.rgb;
+    		lightDirection = normalize(cameraToTangentSpaceMatrix * lightDirection);
+    	}
+
+    	vec3 surfaceNormal = normalize(texture(normalMapSampler, textureCoordinate).rgb*2.0 - 1.0);
+    	float cosAngIncidenceTemp = dot(surfaceNormal, lightDirection);
+    	cosAngIncidence = cosAngIncidenceTemp < 0.0001 ? 0.0f : cosAngIncidenceTemp; //clamp it to 0
+
+    	vec3 viewDirection = normalize(cameraToTangentSpaceMatrix * -cameraSpacePosition);
+
+    	vec3 halfAngle = normalize(lightDirection + viewDirection);
+    	float angleNormalHalf = acos(dot(halfAngle, surfaceNormal));
+    	return angleNormalHalf;
+	} else {
+		if (lightData.positionInCameraSpace.w < 0.0001) {
+        		lightDirection = lightData.positionInCameraSpace.xyz;
+        		lightIntensity = lightData.lightIntensity.rgb;
+        	}
+        	else {
+        		float attenuation = ComputeAttenuation(cameraSpacePosition,
+        			lightData.positionInCameraSpace.xyz, lightData.lightIntensity.w, lightDirection);
+        		lightIntensity = attenuation * lightData.lightIntensity.rgb;
+        	}
+
+        	vec3 surfaceNormal = normalize(vertexNormal);
+        	float cosAngIncidenceTemp = dot(surfaceNormal, lightDirection);
+        	cosAngIncidence = cosAngIncidenceTemp < 0.0001 ? 0.0f : cosAngIncidenceTemp; //clamp it to 0
+
+        	vec3 viewDirection = normalize(-cameraSpacePosition);
+
+        	vec3 halfAngle = normalize(lightDirection + viewDirection);
+        	float angleNormalHalf = acos(dot(halfAngle, surfaceNormal));
+        	return angleNormalHalf;
 	}
-	else {
-		float attenuation = ComputeAttenuation(cameraSpacePosition,
-			lightData.positionInCameraSpace.xyz, lightData.lightIntensity.w, lightDirection);
-		lightIntensity = attenuation * lightData.lightIntensity.rgb;
-		lightDirection = normalize(cameraToTangentSpaceMatrix * lightDirection);
-	}
-
-	vec3 surfaceNormal = normalize(texture(normalMapSampler, textureCoordinate).rgb*2.0 - 1.0);
-	float cosAngIncidence = dot(surfaceNormal, lightDirection);
-	cosAngIncidence = cosAngIncidence < 0.0001 ? 0.0f : cosAngIncidence; //clamp it to 0
-
-	vec3 viewDirection = normalize(cameraToTangentSpaceMatrix * -cameraSpacePosition);
-
-	vec3 halfAngle = normalize(lightDirection + viewDirection);
-	float angleNormalHalf = acos(dot(halfAngle, surfaceNormal));
-	float exponent = angleNormalHalf / specularity();
-	exponent = -(exponent * exponent);
-	float gaussianTerm = exp(exponent);
-
-	gaussianTerm = cosAngIncidence != 0.0f ? gaussianTerm : 0.0;
-
-	vec3 lighting = diffuseColour().rgb * lightIntensity * cosAngIncidence;
-	lighting += specularColour().rgb * lightIntensity * gaussianTerm;
-
-	return lighting;
 }
 
 vec3 ComputeLighting(in PerLightData lightData) {
-	vec3 lightDirection;
 	vec3 lightIntensity;
-	if (lightData.positionInCameraSpace.w < 0.0001) {
-		lightDirection = lightData.positionInCameraSpace.xyz;
-		lightIntensity = lightData.lightIntensity.rgb;
-	}
-	else {
-		float attenuation = ComputeAttenuation(cameraSpacePosition,
-			lightData.positionInCameraSpace.xyz, lightData.lightIntensity.w, lightDirection);
-		lightIntensity = attenuation * lightData.lightIntensity.rgb;
-	}
+	float cosAngIncidence;
 
-	vec3 surfaceNormal = normalize(vertexNormal);
-	float cosAngIncidence = dot(surfaceNormal, lightDirection);
-	cosAngIncidence = cosAngIncidence < 0.0001 ? 0.0f : cosAngIncidence; //clamp it to 0
+	float angleNormalHalf = ComputeAngleNormalHalf(lightData, cosAngIncidence, lightIntensity);
 
-	vec3 viewDirection = normalize(-cameraSpacePosition);
-
-	vec3 halfAngle = normalize(lightDirection + viewDirection);
-	float angleNormalHalf = acos(dot(halfAngle, surfaceNormal));
 	float exponent = angleNormalHalf / specularity();
 	exponent = -(exponent * exponent);
 	float gaussianTerm = exp(exponent);
@@ -179,10 +177,8 @@ void main() {
 	    totalLighting += ambientColour().rgb;
 	}
 
-	bool useNormalMap = useNormalMap();
-
 	for (int light = 0; light < lighting.numDynamicLights; light++) {
-		totalLighting += useNormalMap ? ComputeLightingUsingNormalMap(lighting.lights[light]) : ComputeLighting(lighting.lights[light]);
+		totalLighting += ComputeLighting(lighting.lights[light]);
 	}
 
 	totalLighting = totalLighting / maxIntensity;
