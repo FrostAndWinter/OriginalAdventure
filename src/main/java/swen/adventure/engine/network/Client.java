@@ -6,7 +6,7 @@ import java.util.Optional;
 /**
  * Created by David Barnett, Student ID 3003123764, on 20/09/15.
  */
-public interface Client {
+public interface Client<M> {
 
 
     /**
@@ -29,7 +29,7 @@ public interface Client {
      * @return The value is present when the server has messages queued from the clients to be processed. Otherwise
      * empty.
      */
-    Optional<String> poll(); // FIXME: replace String with an encapsulated data-type
+    Optional<M> poll(); // FIXME: replace String with an encapsulated data-type
 
     /**
      * Check if connected to a server
@@ -44,7 +44,7 @@ public interface Client {
      * @param message contents to be sent
      * @return returns true if the message was successfully sent, otherwise false
      */
-    boolean send(String message);
+    boolean send(M message);
 
     /**
      * Get ping in milliseconds

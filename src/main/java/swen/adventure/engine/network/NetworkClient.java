@@ -9,9 +9,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * Created by David Barnett, Student ID 3003123764, on 23/09/15.
  */
-public class NetworkClient implements Client, Session.SessionStrategy {
+public class NetworkClient implements Client<EventBox>, Session.SessionStrategy {
 
-    private final Queue<String> queue;
+    private final Queue<EventBox> queue;
     private final String id;
     private Session session;
     private double ping = -1;
@@ -35,7 +35,7 @@ public class NetworkClient implements Client, Session.SessionStrategy {
         }
 
         try {
-            session.send(new Packet(Packet.Operation.CLIENT_DISCONNECT, new byte[0]));
+            session.send(new Packet(Packet.Operation.CLIENT_KICK, new byte[0]));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -48,12 +48,12 @@ public class NetworkClient implements Client, Session.SessionStrategy {
     }
 
     @Override
-    public Optional<String> poll() {
+    public Optional<EventBox> poll() {
         if (!isConnected()) {
             throw new RuntimeException("Cannot poll a client that is not connected");
         }
 
-        String event = queue.poll();
+        EventBox event = queue.poll();
         if (event != null) {
             return Optional.of(event);
         } else {
@@ -67,17 +67,9 @@ public class NetworkClient implements Client, Session.SessionStrategy {
     }
 
     @Override
-    public boolean send(String message) {
+    public boolean send(EventBox message) {
         if (!isConnected()) {
             throw new RuntimeException("Cannot send with client that is not connected");
-        }
-
-        // FIXME: Ping example
-        try {
-            String nano = Long.toString(System.nanoTime(), 16);
-            session.send(new Packet(Packet.Operation.PING, nano.getBytes()));
-        } catch(IOException ex) {
-            ex.printStackTrace();
         }
 
         try {
@@ -94,7 +86,7 @@ public class NetworkClient implements Client, Session.SessionStrategy {
         try {
         switch (packet.getOperation()) {
             case SERVER_DATA:
-                queue.add(new String(packet.getPayload()));
+                queue.add(EventBox.fromBytes(packet.getPayload()));
                 from.send(new Packet(Packet.Operation.CLIENT_DATA, packet.getPayload()));
                 break;
             case SERVER_KILL:
