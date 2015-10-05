@@ -8,6 +8,7 @@ import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
 
+import javax.swing.table.TableStringConverter;
 import java.util.Optional;
 
 /**
@@ -39,7 +40,7 @@ public class FlickeringLight extends GameObject {
         mesh.setMaterialOverride(_lightMaterial);
         this.setMesh(mesh);
 
-        _lightIntensity.eventValueChanged.addAction(this, (animableProperty, triggeringObject, listener, data) ->  {
+        _lightIntensity.eventValueChanged.addAction(this, (animableProperty, triggeringObject, listener, data) -> {
             this.light().ifPresent(lightNode -> {
                 lightNode.setIntensity(animableProperty.value());
                 this.setMaterialColour(_lightMaterial, lightNode.colour(), animableProperty.value());
@@ -78,5 +79,22 @@ public class FlickeringLight extends GameObject {
         _lightIntensity.stopAnimating();
         _lightIntensity.setValue(lowIntensity);
         new Animation(_lightIntensity, highIntensity);
+    }
+
+
+    public Vector3 getColour() {
+        return light().get().getColour();
+    }
+
+    public Float getIntensity() {
+        return _baseIntensity;
+    }
+
+    public Light.LightFalloff getFalloff() {
+        return light().get().getFalloff();
+    }
+
+    public Float getIntensityVariation() {
+        return _intensityVariation;
     }
 }

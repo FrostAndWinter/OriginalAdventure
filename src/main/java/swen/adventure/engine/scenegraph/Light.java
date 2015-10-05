@@ -247,4 +247,24 @@ public class Light extends SceneNode {
         buffer.rewind();
         return buffer;
     }
+
+    public LightType getType() {
+        return type;
+    }
+
+    public Vector3 getColour() {
+        return _colour;
+    }
+
+    public Float getIntensity() {
+        return _intensity;
+    }
+
+    public Optional<Vector3> getDirection() {
+        return direction;
+    }
+
+    public LightFalloff getFalloff() {
+        return falloff;
+    }
 }

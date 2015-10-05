@@ -110,7 +110,7 @@ public class SceneGraphParser {
         String directory = getAttribute("directory", xmlNode, Function.identity(), "");
         String fileName = getAttribute("fileName", xmlNode, Function.identity());
         Vector3 textureRepeat = getAttribute("textureRepeat", xmlNode, PARSER_MANAGER.getFromStringFunction(Vector3.class), Vector3.one);
-        boolean isCollidable = getAttribute("isCollidable", xmlNode, Boolean::valueOf, false);
+        boolean isCollidable = getAttribute("isCollidable", xmlNode, Boolean::parseBoolean, false);
 
         Optional<String> materialDirectory = getAttribute("materialDirectory", xmlNode, Optional::of, Optional.empty());
         Optional<String> materialFileName = getAttribute("materialFileName", xmlNode, Optional::of, Optional.empty());
@@ -203,8 +203,6 @@ public class SceneGraphParser {
         NodeList children = xmlNode.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
-            String value = child.getNodeValue();
-            
             parseNode(child, node);
         }
 

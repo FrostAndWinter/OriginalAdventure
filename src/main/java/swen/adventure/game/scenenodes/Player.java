@@ -2,6 +2,7 @@ package swen.adventure.game.scenenodes;
 
 import swen.adventure.engine.Action;
 import swen.adventure.engine.KeyInput;
+import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.engine.scenegraph.CameraNode;
 import swen.adventure.engine.scenegraph.CollisionNode;
 import swen.adventure.engine.scenegraph.GameObject;

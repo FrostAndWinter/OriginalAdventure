@@ -182,4 +182,9 @@ public abstract class SceneNode implements BundleSerializable {
 
         _parent = Optional.ofNullable(newParent);
     }
+
+    public Set<SceneNode> getChildren() {
+        return Collections.unmodifiableSet(_childNodes);
+    }
+
 }

@@ -21,6 +21,10 @@ import java.util.function.Function;
  */
 public class MeshNode extends SceneNode {
 
+    // needed for serializing this node into xml
+    private final String _directory;
+    private final String _fileName;
+
     private GLMesh<Float> _mesh;
     private Optional<Material> _materialOverride = Optional.empty();
 
@@ -36,6 +40,9 @@ public class MeshNode extends SceneNode {
 
     public MeshNode(String id, final String directory, final String fileName, final TransformNode parent) {
         super(id, parent, false); //TODO discuss why mesh nodes need to have the same id
+
+        _fileName = fileName;
+        _directory = directory;
 
         try {
             _mesh = MeshNode.loadMeshWithFileName(directory, fileName);
@@ -143,5 +150,21 @@ public class MeshNode extends SceneNode {
         }
 
         return mesh;
+    }
+
+    public String getDirectory() {
+        return _directory;
+    }
+
+    public String getFileName() {
+        return _fileName;
+    }
+
+    public Vector3 getTextureRepeat() {
+        return _textureRepeat;
+    }
+
+    public boolean isCollidable() {
+        return _collisionNode.isPresent();
     }
 }
