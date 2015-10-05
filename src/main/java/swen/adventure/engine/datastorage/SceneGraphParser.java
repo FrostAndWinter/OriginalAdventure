@@ -123,15 +123,7 @@ public class SceneGraphParser {
         materialFileName.ifPresent(matFileName ->
                 materialName.ifPresent(matName -> {
                     String matDirectory = materialDirectory.orElse("");
-                    String path = Utilities.pathForResource(matDirectory, matFileName, null);
-                    try {
-                        Material material = MTLParser.parse(new File(path), matDirectory).get(matName);
-                        if (material != null) {
-                            node.setMaterialOverride(material);
-                        }
-                    } catch (FileNotFoundException e) {
-                        System.err.println("Could not load material file at " + path);
-                    }
+                    node.setMaterialOverride(MaterialLibrary.libraryWithName(matDirectory, matFileName).materialWithName(matName));
                 }));
 
         return node;

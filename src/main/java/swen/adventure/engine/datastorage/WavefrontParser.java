@@ -136,14 +136,8 @@ public class WavefrontParser {
     private void parseMaterialLibrary() {
         ensuredGobble(MATERIAL_LIBRARY_PAT, "A material library starts with a mtllib command.");
         String libraryName = scanner.next();
-        String fileName = Utilities.pathForResource(_directory, libraryName, null);
-        Map<String, Material> libraryMaterials = null;
-        try {
-            libraryMaterials = MTLParser.parse(new File(fileName), _directory);
-            this.materials.putAll(libraryMaterials);
-        } catch (FileNotFoundException e) {
-            fail("Invalid material library name caused a FileNotFoundException: " + e);
-        }
+        Map<String, Material> libraryMaterials = MaterialLibrary.libraryWithName(_directory, libraryName).materials();
+        this.materials.putAll(libraryMaterials);
     }
 
     private void parseMaterial() {

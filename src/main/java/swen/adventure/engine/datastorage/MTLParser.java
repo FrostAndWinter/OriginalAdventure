@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 29/09/15.
  */
-public class MTLParser {
+class MTLParser {
 
     private static final Pattern PatternAmbientColour = Pattern.compile("Ka");
     private static final Pattern PatternDiffuseColour = Pattern.compile("Kd");
