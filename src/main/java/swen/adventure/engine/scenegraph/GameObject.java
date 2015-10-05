@@ -40,4 +40,8 @@ public class GameObject extends SceneNode {
     public Optional<MeshNode> mesh() {
         return _mesh;
     }
+
+    public Optional<CollisionNode> getCollisionNode() {
+        return _collisionNode;
+    }
 }
