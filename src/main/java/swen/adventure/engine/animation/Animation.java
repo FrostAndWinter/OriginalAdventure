@@ -6,6 +6,7 @@ import java.util.Collections;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 2/10/15.
+ * An Animation, combined with an AnimableProperty, automatically adjusts the value of that property over time.
  */
 public class Animation {
 

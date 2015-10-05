@@ -23,6 +23,11 @@ import java.util.function.Function;
 
 /**
  * Created by Liam O'Neill, Student ID 300312734, on 22/09/15.
+ * Modified by Thomas Roughton, Student ID 300313924.
+ * Modified by Joseph Bennett.
+ *
+ * The SceneGraphParser can read from an XML file describing a scene graph and generate an internal memory representation of that graph.
+ * These files are generally used to describe the level – i
  */
 public class SceneGraphParser {
 

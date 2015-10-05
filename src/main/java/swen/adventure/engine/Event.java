@@ -1,10 +1,7 @@
 package swen.adventure.engine;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 15/09/15.
@@ -35,7 +32,7 @@ import java.util.Map;
  */
 public class Event<E, T> {
 
-    private class ActionData<L> {
+    private static class ActionData<E, T, L> {
         public final WeakReference<L> listener;
         public final Action<E, T, L> action;
 
@@ -49,7 +46,7 @@ public class Event<E, T> {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            final ActionData<?> that = (ActionData<?>) o;
+            final ActionData<?, ?, ?> that = (ActionData<?, ?, ?>) o;
 
             return listener == that.listener && action == that.action;
 
@@ -63,13 +60,68 @@ public class Event<E, T> {
         }
     }
 
-    private List<ActionData<?>> _actions = new ArrayList<>();
+    public static class EventSet<E, T> {
+        public final String eventName;
+        private List<Event<E, T>> _events = new ArrayList<>();
+        private List<ActionData<E, T, ?>> _actions = new ArrayList<>();
+
+        public EventSet(String eventName) {
+            this.eventName = eventName;
+        }
+
+        public <L> void addAction(L listener, Action<E, T, L> action) {
+            for (Event<E, T> event  : _events) {
+                event.addAction(listener, action);
+            }
+            _actions.add(new ActionData<>(listener, action));
+        }
+
+        public <L> void removeAction(L listener, Action<E, T, L> action) {
+            for (Event<E, T> event  : _events) {
+                event.removeAction(listener, action);
+            }
+            _actions.remove(new ActionData<>(listener, action));
+        }
+
+        private void addEvent(Event<E, T> event) {
+            _events.add(event);
+            for (ActionData action : _actions) {
+                event.addAction(action.listener.get(), action.action);
+            }
+        }
+
+    }
+
+    private static Map<String, EventSet> _eventNamesToEvents = new HashMap<>();
+
+    private List<ActionData<E, T, ?>> _actions = new ArrayList<>();
     private final E _eventObject;
     public final String name;
+
+
+    public EventSet<?, ?> onAllObjects() {
+        EventSet<?, ?> events = _eventNamesToEvents.get(this.name);
+        if (events == null) {
+            events = new EventSet<>(this.name);
+            _eventNamesToEvents.put(this.name, events);
+        }
+        return events;
+    }
+
+    private static <E, T> void addEventForName(Event<E, T> event, String name) {
+        EventSet<E, T> events = _eventNamesToEvents.get(name);
+        if (events == null) {
+            events = new EventSet<>(name);
+            _eventNamesToEvents.put(name, events);
+        }
+        events.addEvent(event);
+    }
 
     public Event(String name, E eventObject) {
         this.name = name;
         _eventObject = eventObject;
+
+        Event.addEventForName(this, name);
     }
 
     public <L> void addAction(L listener, Action<E, T, L> action) {

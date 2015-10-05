@@ -6,6 +6,7 @@ import java.util.List;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 2/10/15.
+ * The animation system is a static singleton that manages all Animations in the game.
  */
 public class AnimationSystem {
 
@@ -24,7 +25,7 @@ public class AnimationSystem {
     }
 
     /**
-     * Updates the animation system, changing the values of all animatable
+     * Updates the animation system, changing the values of all AnimableProperties.
      */
     public static void update() {
         double currentTime = AnimationSystem.currentTime();

@@ -13,6 +13,8 @@ import java.util.regex.Pattern;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 29/09/15.
+ * MTLParser is a parser for the Wavefront OBJ format's material files.
+ * It is not intended to be complete, but only parses the required subset of properties.
  */
 class MTLParser {
 
@@ -32,6 +34,13 @@ class MTLParser {
     private static final Pattern PatternNewLine = Pattern.compile("(\r|\n)+");
     private static final Pattern PatternWhitespace = Pattern.compile("\\s+");
 
+    /**
+     * Parses a material file and returns a map from strings to materials.
+     * @param file The file to read.
+     * @param directory The directory from which all referenced resources will be loaded relative to.
+     * @return A map from strings to materials.
+     * @throws FileNotFoundException if the file can't be found.
+     */
     public static Map<String, Material> parse(File file, String directory) throws FileNotFoundException{
         InputStream is = new FileInputStream(file);
         return MTLParser.parseMaterialFile(new Scanner(is), directory);

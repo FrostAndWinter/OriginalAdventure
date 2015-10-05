@@ -9,6 +9,7 @@ import java.util.Optional;
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 2/10/15.
  * An AnimableProperty is a floating point number that can have its value vary over time according to an animation.
+ * Instantiate an Animation with an AnimableProperty as an argument to start that animation on that property.
  */
 public class AnimableProperty {
     private float _value;
@@ -47,6 +48,7 @@ public class AnimableProperty {
         }
     }
 
+    /** Cancels an animation, causing it to stop immediately and be destroyed. */
     public void stopAnimating() {
         _currentAnimation.ifPresent(animation -> {
             _currentAnimation = Optional.empty();
@@ -60,6 +62,10 @@ public class AnimableProperty {
         eventValueChanged.trigger(_currentAnimation.get(), Collections.emptyMap());
     }
 
+    /**
+     * Directly sets the value of this property. Will print a warning and perform a no-op if the property is currently being affected by an animation.
+     * @param value The value to set it to.
+     */
     public void setValue(float value) {
         if (_currentAnimation.isPresent()) {
             System.err.println("WARNING: Tried to modify value on " + this + " to " + value + " when there is already a value assigned.");

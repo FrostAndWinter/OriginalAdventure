@@ -11,6 +11,14 @@ import java.util.stream.Collectors;
 
 /**
  * Created by josephbennett on 29/09/15
+ * Modified by Thomas Roughton, Student ID 300313924.
+ *
+ * EventConnectionParser is a parser for our domain-specific language to set up events between different objects.
+ * It can read a file in the format:
+ *
+ *  EventName; EventObject1ID, EventObject2ID, ..., EventObjectNID; ActionName; TargetObject1ID, TargetObject2ID, ..., TargetObjectNID
+ *
+ * It also provides methods to automatically build the connections between existing objects in a scene graph.
  */
 public class EventConnectionParser {
     public static class EventConnection {
@@ -33,7 +41,7 @@ public class EventConnectionParser {
                 .collect(Collectors.toList());
     }
 
-    public static EventConnection parseLine(String line) {
+    private static EventConnection parseLine(String line) {
         line = line.replaceAll("\\s+", ""); // remove whitespace
         String[] components = line.split(";");
 
@@ -48,6 +56,11 @@ public class EventConnectionParser {
         return Arrays.asList(list.split(","));
     }
 
+    /**
+     * Takes a Scene Graph and connects the actions and events within it according to connections.
+     * @param connections A list of EventConnections describing the event-action connections between the objects.
+     * @param sceneGraph The scene graph from which to retrieve the objects.
+     */
     @SuppressWarnings("unchecked")
     public static void setupConnections(List<EventConnection> connections, SceneNode sceneGraph) {
         for (EventConnection connection : connections) {

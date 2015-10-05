@@ -8,6 +8,11 @@ public enum AnimationCurve {
     Sine,
     Random;
 
+    /**
+     * Given a percentage progress, this will compute the output progress.
+     * @param percentage A percentage progress in the range [0, 1].
+     * @return A scaled progress in the range [0, 1].
+     */
     public double progressForPercentage(double percentage) {
         switch (this) {
             case Linear:
