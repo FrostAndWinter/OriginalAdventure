@@ -68,15 +68,15 @@ public class BundleSerializer {
 
     private static BundleObject readBundleObject(Node node) {
         NodeList nList = node.getChildNodes();
-        Map<String, Property> storedValues = new HashMap<>();
+        Map<String, BundleProperty> storedValues = new HashMap<>();
         for (int i = 0; i < nList.getLength(); i++) {
-            Property property = loadProperty(nList.item(i));
+            BundleProperty property = loadProperty(nList.item(i));
             storedValues.put(property.name, property);
         }
         return new BundleObject(storedValues);
     }
 
-    private static Property loadProperty(Node node) {
+    private static BundleProperty loadProperty(Node node) {
         NamedNodeMap propertyNodeMap = node.getAttributes();
         String name = propertyNodeMap.getNamedItem("name").getNodeValue();
 
@@ -96,7 +96,7 @@ public class BundleSerializer {
             else
                 instance = PARSER_MANAGER.convertFromString(value.getTextContent(), class0);
 
-            return new Property(name, instance, class0);
+            return new BundleProperty(name, instance, class0);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -104,9 +104,9 @@ public class BundleSerializer {
 
     private static BundleArray readBundleArray(Node node) {
         NodeList nList = node.getChildNodes();
-        List<Property> storedValues = new ArrayList<>();
+        List<BundleProperty> storedValues = new ArrayList<>();
         for (int i = 0; i < nList.getLength(); i++) {
-            Property property = loadProperty(nList.item(i));
+            BundleProperty property = loadProperty(nList.item(i));
             storedValues.add(property);
         }
         return new BundleArray(storedValues);
@@ -128,7 +128,7 @@ public class BundleSerializer {
                 .forEach(property -> addProperty(property, document, root));
     }
 
-    private static void addProperty(Property property, Document document, Element parent){
+    private static void addProperty(BundleProperty property, Document document, Element parent){
         Element propertyElem = document.createElement("property");
         parent.appendChild(propertyElem);
         propertyElem.setAttribute("name", property.name);
