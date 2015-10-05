@@ -59,7 +59,7 @@ public class PickerRenderer {
         glDeleteRenderbuffers(_depthStencilBuffer);
     }
 
-    public Matrix4 perspectiveMatrix(float fieldOfView) {;
+    private Matrix4 perspectiveMatrix(float fieldOfView) {;
         float cameraNear = 1.f;
         float cameraFar = 10000.f;
 
@@ -104,11 +104,12 @@ public class PickerRenderer {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    public Optional<MeshNode> selectedNode() {
+    public Optional<MeshNode> selectedNode(SceneNode sceneGraph, CameraNode cameraNode) {
+        this.render(sceneGraph, cameraNode);
         return Optional.ofNullable(_highlightedMesh);
     }
 
-    public void render(SceneNode sceneGraph, CameraNode cameraNode) {
+    private void render(SceneNode sceneGraph, CameraNode cameraNode) {
         final int[] currentNodeId = {1}; //NOTE: The maximum number of nodes is 2^24, and this will break if we go over that. But that's fine, because with that many nodes, lots of other things will break first.
                                             //This also starts at 1, since the id 0 corresponds to no object being selected.
         this.preRender();

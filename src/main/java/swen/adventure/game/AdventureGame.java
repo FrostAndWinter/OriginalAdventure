@@ -62,6 +62,7 @@ public class AdventureGame implements Game {
         }
 
         this.player = (Player)_sceneGraph.nodeWithID("player").get();
+        this.player.setCamera((CameraNode)_sceneGraph.nodeWithID("playerCamera").get());
 
         try {
             List<EventConnectionParser.EventConnection> connections = EventConnectionParser.parseFile(Utilities.readLinesFromFile(Utilities.pathForResource("EventConnections", "event")));
@@ -90,8 +91,14 @@ public class AdventureGame implements Game {
     }
 
     private static final Action<MouseInput, MouseInput, AdventureGame> clickAction = (eventObject, triggeringObject, listener, data) -> {
-           listener._pickerRenderer.selectedNode()
-                   .ifPresent(meshNode -> meshNode.eventMeshClicked.trigger(listener.player, Collections.emptyMap()));
+        listener.player.camera().ifPresent(cameraNode -> {
+            listener._pickerRenderer.selectedNode(listener._sceneGraph, cameraNode)
+                    .ifPresent(
+                            meshNode ->
+                                    meshNode.eventMeshClicked.trigger(listener.player, Collections.emptyMap()));
+        });
+
+
     };
 
     private void setupUI(int width, int height) {
@@ -112,7 +119,7 @@ public class AdventureGame implements Game {
         InventoryComponent inventoryComponent = new InventoryComponent(5, 275, 500);
         inventoryComponent.setBoxSize(50);
 
-        player.getInventory().eventItemSelected.addAction(inventoryComponent, InventoryComponent.actionSelectSlot);
+        player.inventory().eventItemSelected.addAction(inventoryComponent, InventoryComponent.actionSelectSlot);
 
         panel.addChild(inventoryComponent);
 
@@ -157,9 +164,10 @@ public class AdventureGame implements Game {
         if (Utilities.isHeadlessMode) {
             return;
         }
-        CameraNode camera = (CameraNode) _sceneGraph.nodeWithID("playerCamera").get();
-        _pickerRenderer.render(_sceneGraph, camera);
-        _glRenderer.render(_sceneGraph, _sceneGraph.allLights(), camera);
+        this.player.camera().ifPresent(cameraNode -> {
+            _glRenderer.render(_sceneGraph, _sceneGraph.allLights(), cameraNode);
+        });
+
 
         _pGraphics.beginDraw();
         _frame.draw(_pGraphics);

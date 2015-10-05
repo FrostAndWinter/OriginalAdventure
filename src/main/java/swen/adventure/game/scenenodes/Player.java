@@ -2,6 +2,7 @@ package swen.adventure.game.scenenodes;
 
 import swen.adventure.engine.Action;
 import swen.adventure.engine.KeyInput;
+import swen.adventure.engine.scenegraph.CameraNode;
 import swen.adventure.engine.scenegraph.CollisionNode;
 import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.TransformNode;
@@ -11,6 +12,7 @@ import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.game.AdventureGameKeyInput;
 
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Created by josephbennett on 19/09/15
@@ -20,6 +22,7 @@ public class Player extends GameObject {
     private float _playerSpeed = 10.f;
 
     private Inventory _inventory = new Inventory(this);
+    private Optional<CameraNode> _camera = Optional.empty();
 
     public static final Action<KeyInput, KeyInput, Player> actionPlayerMoveForward =
             (eventObject, triggeringObject, player, data) -> player.move(new Vector3(0, 0, -player._playerSpeed));
@@ -43,6 +46,10 @@ public class Player extends GameObject {
 
     public Player(String id, TransformNode parent) {
         super(id, parent);
+    }
+
+    public void setCamera(CameraNode camera) {
+        _camera = Optional.of(camera);
     }
 
     private void move(Vector3 vector) {
@@ -79,9 +86,11 @@ public class Player extends GameObject {
         return canMove[0];
     }
 
-    public Inventory getInventory() {
+    public Inventory inventory() {
         return _inventory;
     }
 
-
+    public Optional<CameraNode> camera() {
+        return _camera;
+    }
 }
