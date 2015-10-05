@@ -75,6 +75,8 @@ public class InventoryComponent extends UIComponent {
         int currentX = x;
         int currentY = y;
 
+        float scale = Math.min(scaleX, scaleY);
+
         for (int i = 0; i < numItems; i++) {
             g.fill(34, 50, 90);
             g.rect(currentX * scaleX, currentY * scaleY, boxSize * scaleX, boxSize * scaleY);
@@ -82,7 +84,7 @@ public class InventoryComponent extends UIComponent {
             // If the item is selected
             if (i == selectedItem) {
                 g.fill(255, 0, 0);
-                g.rect(currentX * scaleX + 10, currentY * scaleY + 10, boxSize * scaleX - 20, boxSize * scaleY - 20);
+                g.rect((currentX + 10) * scaleX, (currentY + 10) * scaleY, (boxSize - 20) * scaleX, (boxSize- 20) * scaleY);
             }
 
             currentX += boxSize;

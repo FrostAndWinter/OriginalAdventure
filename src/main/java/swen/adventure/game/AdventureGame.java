@@ -48,6 +48,9 @@ public class AdventureGame implements Game {
     private float _viewAngleX;
     private float _viewAngleY;
 
+    private float virtualUIWidth;
+    private float virtualUIHeight;
+
     public AdventureGame(Client<EventBox> client) {
         _client = client;
     }
@@ -102,6 +105,9 @@ public class AdventureGame implements Game {
     };
 
     private void setupUI(int width, int height) {
+
+        virtualUIWidth = width;
+        virtualUIHeight = height;
 
         _pGraphics = new PGraphics2D();
         _pGraphics.setPrimary(true);
@@ -169,8 +175,21 @@ public class AdventureGame implements Game {
         });
 
 
+        //float newHeight = _pGraphics.height;
+        //float newWidth = _pGraphics.width;
+
+
+        float scaleX = _pGraphics.width / virtualUIWidth;
+        float scaleY = _pGraphics.height / virtualUIHeight;
+        float scale = Math.min(scaleX, scaleY);
+
+        float dw = (_pGraphics.width - (scale * virtualUIWidth))/2;
+        float dh = (_pGraphics.height - (scale * virtualUIHeight))/2;
+
         _pGraphics.beginDraw();
-        _frame.draw(_pGraphics);
+        _pGraphics.noStroke();
+        _pGraphics.translate(dw, dh);
+        _frame.draw(_pGraphics, scale, scale);
         _pGraphics.endDraw();
     }
 
