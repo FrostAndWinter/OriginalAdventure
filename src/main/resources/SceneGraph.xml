@@ -20,16 +20,16 @@
     </TransformNode>
     
     <TransformNode id="leftWallTransform" translation="-600, 0, 0" rotation="0, 0.7071067812, 0, 0.7071067812" scale="20, 1, 1">
-        <MeshNode id="leftWall" directory="MedievalModels" fileName="Wall.obj" textureRepeat="20, 1, 1"/>
+        <MeshNode id="leftWall" directory="MedievalModels" fileName="Wall.obj" textureRepeat="20, 1, 1" isCollidable="true"/>
     </TransformNode>
     <TransformNode id="rightWallTransform" translation="600, 0, 0" rotation="0, -0.7071067812, 0, 0.7071067812" scale="20, 1, 1">
-        <MeshNode id="rightWall" directory="MedievalModels" fileName="Wall.obj" textureRepeat="20, 1, 1"/>
+        <MeshNode id="rightWall" directory="MedievalModels" fileName="Wall.obj" textureRepeat="20, 1, 1" isCollidable="true"/>
     </TransformNode>
     <TransformNode id="backWallTransform" translation="0, 0, 900" rotation="0, 1, 0, 0" scale="13.33333, 1, 1">
-        <MeshNode id="backWall" directory="MedievalModels" fileName="Wall.obj" textureRepeat="13.33333, 1, 1"/>
+        <MeshNode id="backWall" directory="MedievalModels" fileName="Wall.obj" textureRepeat="13.33333, 1, 1" isCollidable="true"/>
     </TransformNode>
     <TransformNode id="frontWallTransform" translation="0, 0, -900" rotation="0, 0, 0, 1" scale="13.33333, 1, 1">
-        <MeshNode id="frontWall" directory="MedievalModels" fileName="Wall.obj" textureRepeat="13.33333, 1, 1"/>
+        <MeshNode id="frontWall" directory="MedievalModels" fileName="Wall.obj" textureRepeat="13.33333, 1, 1" isCollidable="true"/>
     </TransformNode>
     
     <TransformNode id="cryptTransform" rotation="0, 0.7071067812, 0, 0.7071067812">

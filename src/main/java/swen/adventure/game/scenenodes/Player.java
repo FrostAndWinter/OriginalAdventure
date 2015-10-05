@@ -65,13 +65,18 @@ public class Player extends GameObject {
 
         transformNode.translateBy(translation);
 
-        for (CollisionNode otherCollisionNode : _allCollidables) {
-            if (otherCollisionNode != this.collisionNode() && this.collisionNode().isCollidingWith(otherCollisionNode)) {
+        final boolean[] canMove = {true};
+        this.collisionNode().ifPresent(collisionNode -> {
+            _allCollidables.stream()
+                    .filter(otherCollisionNode -> otherCollisionNode != collisionNode &&
+                            collisionNode.isCollidingWith(otherCollisionNode))
+                    .forEach(otherCollisionNode -> {
                 transformNode.setTranslation(startingTranslation);
-                return false;
-            }
-        }
-        return true;
+                canMove[0] = false;
+            });
+        });
+
+        return canMove[0];
     }
 
     public Inventory getInventory() {

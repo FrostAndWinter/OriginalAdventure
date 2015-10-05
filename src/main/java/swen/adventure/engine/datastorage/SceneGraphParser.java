@@ -111,6 +111,7 @@ public class SceneGraphParser {
         String directory = getAttribute("directory", xmlNode, Function.identity(), "");
         String fileName = getAttribute("fileName", xmlNode, Function.identity());
         Vector3 textureRepeat = getAttribute("textureRepeat", xmlNode, PARSER_MANAGER.getFromStringFunction(Vector3.class), Vector3.one);
+        boolean isCollidable = getAttribute("isCollidable", xmlNode, Boolean::valueOf, false);
 
         Optional<String> materialDirectory = getAttribute("materialDirectory", xmlNode, Optional::of, Optional.empty());
         Optional<String> materialFileName = getAttribute("materialFileName", xmlNode, Optional::of, Optional.empty());
@@ -118,6 +119,7 @@ public class SceneGraphParser {
 
         MeshNode node = new MeshNode(id, directory, fileName, parent);
         node.setTextureRepeat(textureRepeat);
+        node.setCollidable(isCollidable);
 
         materialFileName.ifPresent(matFileName ->
                 materialName.ifPresent(matName -> {
@@ -160,7 +162,7 @@ public class SceneGraphParser {
         String id = getAttribute("id", xmlNode, Function.identity());
         BoundingBox boundingBox = getAttribute("boundingBox", xmlNode, PARSER_MANAGER.getFromStringFunction(BoundingBox.class), new BoundingBox(Vector3.zero, Vector3.zero));
         Player player = new Player(id, parent);
-        player.collisionNode().setBoundingBox(boundingBox);
+        player.setCollisionNode(new CollisionNode(id + "Collider", parent, boundingBox));
         return player;
     }
 

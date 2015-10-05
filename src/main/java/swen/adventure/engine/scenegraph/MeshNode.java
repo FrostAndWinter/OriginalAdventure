@@ -25,6 +25,7 @@ public class MeshNode extends SceneNode {
 
     private BoundingBox _localSpaceBoundingBox;
     private Vector3 _textureRepeat = Vector3.one;
+    private Optional<CollisionNode> _collisionNode = Optional.empty();
 
     public final Event<SceneNode> eventMeshClicked = new Event<>("eventMeshClicked", this);
 
@@ -68,6 +69,17 @@ public class MeshNode extends SceneNode {
 
     public BoundingBox boundingBox() {
         return _localSpaceBoundingBox;
+    }
+
+    public void setCollidable(boolean collidable) {
+        if (collidable && !_collisionNode.isPresent()) {
+            _collisionNode = Optional.of(new CollisionNode(this));
+        } else {
+            _collisionNode.ifPresent(collisionNode -> {
+                collisionNode.changeParentTo(null);
+            });
+            _collisionNode = Optional.empty();
+        }
     }
 
     /**

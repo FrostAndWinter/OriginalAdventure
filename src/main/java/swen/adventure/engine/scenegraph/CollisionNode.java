@@ -9,35 +9,29 @@ import java.util.Optional;
  */
 public class CollisionNode extends SceneNode {
 
-    private GameObject _gameObject;
+    private Optional<MeshNode> _meshNode = Optional.empty();
 
-    private Optional<BoundingBox> _worldSpaceBoundingBox = Optional.empty();
-    private boolean _needsRecalculateWorldSpaceBoundingBox = true;
-    private Optional<BoundingBox> _localSpaceBoundingBox = Optional.empty();
+    private BoundingBox _worldSpaceBoundingBox = null;
+    private BoundingBox _localSpaceBoundingBox;
 
-    public CollisionNode(GameObject gameObject) {
-        this(null, gameObject);
+    public CollisionNode(MeshNode meshNode) {
+        super(meshNode.id + "Collider", meshNode.parent().get(), meshNode.isDynamic());
+        _meshNode = Optional.of(meshNode);
+        _localSpaceBoundingBox = meshNode.boundingBox();
     }
 
-    public CollisionNode(BoundingBox boundingBox, GameObject gameObject) {
-        super(gameObject.id + "Collider", gameObject.parent().get(), gameObject.isDynamic());
-        _gameObject = gameObject;
-        _localSpaceBoundingBox = Optional.ofNullable(boundingBox);
+    public CollisionNode(String id, TransformNode parent, BoundingBox boundingBox) {
+        super(id, parent, false);
+        _localSpaceBoundingBox = boundingBox;
     }
 
     public boolean isCollidingWith(CollisionNode node) {
-        if (this.worldSpaceBoundingBox().isPresent() && node.worldSpaceBoundingBox().isPresent()) {
-            return this.worldSpaceBoundingBox().get().intersectsWith(node.worldSpaceBoundingBox().get());
-        } else {
-            return false;
-        }
+        return this.worldSpaceBoundingBox().intersectsWith(node.worldSpaceBoundingBox());
     }
 
-    public Optional<BoundingBox> worldSpaceBoundingBox() {
-        if (_needsRecalculateWorldSpaceBoundingBox) {
-            _worldSpaceBoundingBox = this.boundingBox()
-                    .map(boundingBox -> boundingBox.axisAlignedBoundingBoxInSpace(this.nodeToWorldSpaceTransform()));
-            _needsRecalculateWorldSpaceBoundingBox = false;
+    public BoundingBox worldSpaceBoundingBox() {
+        if (_worldSpaceBoundingBox == null) {
+            _worldSpaceBoundingBox = this.boundingBox().axisAlignedBoundingBoxInSpace(this.nodeToWorldSpaceTransform());
         }
         return _worldSpaceBoundingBox;
     }
@@ -45,26 +39,17 @@ public class CollisionNode extends SceneNode {
     @Override
     public void transformDidChange() {
         super.transformDidChange();
-        _needsRecalculateWorldSpaceBoundingBox = true;
+        _worldSpaceBoundingBox = null;
     }
 
     /**
      * @return this object's bounding box.
-     * If it does not have one, it searches in its siblings for a MeshNode and returns its bounding box.
      */
-    public Optional<BoundingBox> boundingBox() {
-        if (!_localSpaceBoundingBox.isPresent()) {
-            for (SceneNode sibling : this.siblings()) {
-                if (sibling instanceof MeshNode) {
-                    _localSpaceBoundingBox = Optional.ofNullable(((MeshNode) sibling).boundingBox());
-                    break;
-                }
-            }
-        }
+    public BoundingBox boundingBox() {
         return _localSpaceBoundingBox;
     }
 
     public void setBoundingBox(BoundingBox boundingBox) {
-        _localSpaceBoundingBox = Optional.of(boundingBox);
+        _localSpaceBoundingBox = boundingBox;
     }
 }
