@@ -1,7 +1,9 @@
 package swen.adventure.game;
 
+import processing.core.PImage;
 import processing.opengl.PGraphics2D;
 import swen.adventure.engine.*;
+import swen.adventure.engine.Event;
 import swen.adventure.engine.datastorage.EventConnectionParser;
 import swen.adventure.engine.datastorage.SceneGraphParser;
 import swen.adventure.engine.network.Client;
@@ -13,14 +15,15 @@ import swen.adventure.engine.rendering.PickerRenderer;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.scenegraph.*;
 import swen.adventure.engine.ui.color.Color;
+import swen.adventure.engine.ui.components.*;
 import swen.adventure.engine.ui.components.Frame;
-import swen.adventure.engine.ui.components.Reticule;
+import swen.adventure.engine.ui.components.Panel;
 import swen.adventure.engine.utils.SharedLibraryLoader;
 import swen.adventure.game.scenenodes.*;
 import swen.adventure.game.ui.components.InventoryComponent;
-import swen.adventure.engine.ui.components.Panel;
-import swen.adventure.engine.ui.components.ProgressBar;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -115,6 +118,21 @@ public class AdventureGame implements Game {
 
         // Set up the UI elements
         _frame = new Frame(0, 0, width, height);
+
+        Panel splashScreen = new Panel(0, 0, width, height);
+        try {
+            Image im = ImageIO.read(new File(Utilities.pathForResource("background", "png")));
+            PImage image = new PImage(im);
+
+            ImageView imageView = new ImageView(image, 0, 0, image.width, image.height);
+
+            splashScreen.addChild(imageView);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        splashScreen.setVisible(false);
+        _frame.addChild(splashScreen);
 
         Panel panel = new Panel(0, 0, width, height);
         panel.setColor(new Color(0, 0, 0, 0));
