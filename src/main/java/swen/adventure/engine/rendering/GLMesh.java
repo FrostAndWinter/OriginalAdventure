@@ -1,6 +1,7 @@
 package swen.adventure.engine.rendering;
 
 import org.lwjgl.BufferUtils;
+import swen.adventure.engine.Utilities;
 import swen.adventure.engine.rendering.shaders.MaterialShader;
 import swen.adventure.engine.scenegraph.TransformNode;
 import swen.adventure.engine.rendering.maths.BoundingBox;
@@ -217,6 +218,10 @@ public abstract class GLMesh<T> {
     private Set<TransformNode> _parentNodes = new HashSet<>();
 
     protected void initialise(List<Attribute> attributes, List<IndexData<?>> indexData, List<NamedVertexArrayObject> namedVAOList, List<RenderCommand> primitives) {
+
+        if (Utilities.isHeadlessMode) {
+            return;
+        }
 
         _primitives = primitives;
 

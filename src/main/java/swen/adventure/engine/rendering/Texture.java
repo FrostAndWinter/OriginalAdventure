@@ -70,7 +70,7 @@ public class Texture {
             _mipMappedData.add(outputBuffer);
         }
 
-        this.glTextureRef = this.initOpenGL();
+        this.glTextureRef = Utilities.isHeadlessMode ? 0 : this.initOpenGL();
     }
 
     /**

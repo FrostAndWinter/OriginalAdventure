@@ -9,24 +9,17 @@ import swen.adventure.engine.network.DumbClient;
 import swen.adventure.engine.network.EventBox;
 import swen.adventure.engine.network.NetworkClient;
 import swen.adventure.engine.rendering.GLRenderer;
-import swen.adventure.engine.rendering.Material;
 import swen.adventure.engine.rendering.PickerRenderer;
-import swen.adventure.engine.rendering.Texture;
 import swen.adventure.engine.rendering.maths.Quaternion;
-import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
 import swen.adventure.engine.ui.color.Color;
 import swen.adventure.engine.ui.components.Frame;
 import swen.adventure.engine.ui.components.Reticule;
 import swen.adventure.engine.utils.SharedLibraryLoader;
 import swen.adventure.game.scenenodes.*;
-import swen.adventure.game.scenenodes.Button;
-import swen.adventure.game.scenenodes.Door;
-import swen.adventure.game.scenenodes.Key;
 import swen.adventure.game.ui.components.InventoryComponent;
 import swen.adventure.engine.ui.components.Panel;
 import swen.adventure.engine.ui.components.ProgressBar;
-import swen.adventure.engine.rendering.maths.BoundingBox;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -51,7 +44,7 @@ public class AdventureGame implements Game {
     private AdventureGameKeyInput _keyInput = new AdventureGameKeyInput();
     private MouseInput _mouseInput = new MouseInput();
 
-    private float _mouseSensitivity = 1;
+    private float _mouseSensitivity = 1.f;
     private float _viewAngleX;
     private float _viewAngleY;
 
@@ -78,8 +71,10 @@ public class AdventureGame implements Game {
             e.printStackTrace();
         }
 
-        _glRenderer = new GLRenderer(width, height);
-        _pickerRenderer = new PickerRenderer();
+        if (!Utilities.isHeadlessMode) {
+            _glRenderer = new GLRenderer(width, height);
+            _pickerRenderer = new PickerRenderer();
+        }
 
         _keyInput.eventMoveForwardKeyPressed.addAction(player, Player.actionPlayerMoveForward);
         _keyInput.eventMoveBackwardKeyPressed.addAction(player, Player.actionPlayerMoveBackward);
@@ -159,6 +154,9 @@ public class AdventureGame implements Game {
     }
 
     private void render() {
+        if (Utilities.isHeadlessMode) {
+            return;
+        }
         CameraNode camera = (CameraNode) _sceneGraph.nodeWithID("playerCamera").get();
         _pickerRenderer.render(_sceneGraph, camera);
         _glRenderer.render(_sceneGraph, _sceneGraph.allLights(), camera);
