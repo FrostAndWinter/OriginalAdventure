@@ -108,6 +108,15 @@ public class Event<E, T> {
         return events;
     }
 
+    public static EventSet<?, ?> eventSetForName(String name) {
+        EventSet<?, ?> events = _eventNamesToEvents.get(name);
+        if (events == null) {
+            events = new EventSet<>(name);
+            _eventNamesToEvents.put(name, events);
+        }
+        return events;
+    }
+
     private static <E, T> void addEventForName(Event<E, T> event, String name) {
         EventSet<E, T> events = _eventNamesToEvents.get(name);
         if (events == null) {
