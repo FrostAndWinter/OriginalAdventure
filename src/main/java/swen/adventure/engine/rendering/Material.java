@@ -39,6 +39,7 @@ public class Material {
 
     public static Material DefaultMaterial = new Material();
 
+
     // Samplers are lazily loaded in bindSamplers
     // This is because some computers do not support glGenSamplers, if this is called statically
     // it makes the Material class fail to load and crashes in other parts of the program
