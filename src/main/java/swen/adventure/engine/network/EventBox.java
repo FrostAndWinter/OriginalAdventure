@@ -92,7 +92,7 @@ public class EventBox {
         return data.toString().getBytes();
     }
 
-    public static <E> EventBox build(SceneNode source, Event<E> event, SceneNode target, Map<String,Object> data) {
+    public static <E, T> EventBox build(SceneNode source, Event<E, T> event, SceneNode target, Map<String,Object> data) {
         // FIXME: assumes source.id is a network client
         return new EventBox(event.name, source.id, target.id, source.id, data);
     }

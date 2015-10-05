@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  */
 public class Utilities {
 
-    public static final boolean isHeadlessMode = true;
+    public static final boolean isHeadlessMode = false;
 
     private static final String BasePath;
     static {

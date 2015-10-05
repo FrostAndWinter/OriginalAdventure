@@ -24,7 +24,7 @@ public class Animation {
     private boolean _complete = false;
     private AnimationCurve _curve = AnimationCurve.Linear;
 
-    public final Event<Animation> eventAnimationDidComplete = new Event<>("eventAnimationDidComplete", this);
+    public final Event<Animation, Animation> eventAnimationDidComplete = new Event<>("eventAnimationDidComplete", this);
 
     public Animation(AnimableProperty animableProperty, AnimationCurve curve, double duration, double delay, double toValue, boolean repeats) {
         _animableProperty = animableProperty;

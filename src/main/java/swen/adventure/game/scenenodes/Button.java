@@ -16,7 +16,7 @@ import java.util.Collections;
  */
 public class Button extends GameObject {
 
-    public final Event<Button> eventButtonPressed = new Event<>("eventButtonPressed", this);
+    public final Event<Button, Player> eventButtonPressed = new Event<>("eventButtonPressed", this);
 
 
     public Button(String id, TransformNode parent) {

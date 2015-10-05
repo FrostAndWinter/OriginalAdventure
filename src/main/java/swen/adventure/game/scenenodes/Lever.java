@@ -18,7 +18,7 @@ import java.util.Collections;
  */
 public class Lever extends GameObject{
 
-    public final Event<SceneNode> eventLeverToggled = new Event<>("eventLeverToggled", this);
+    public final Event<SceneNode, Player> eventLeverToggled = new Event<>("eventLeverToggled", this);
 
     private TransformNode _hingeTransform;
 

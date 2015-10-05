@@ -8,6 +8,7 @@ import swen.adventure.engine.rendering.ObjMesh;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.rendering.shaders.MaterialShader;
 import swen.adventure.engine.rendering.maths.BoundingBox;
+import swen.adventure.game.scenenodes.Player;
 
 import java.io.FileNotFoundException;
 import java.util.HashMap;
@@ -27,7 +28,7 @@ public class MeshNode extends SceneNode {
     private Vector3 _textureRepeat = Vector3.one;
     private Optional<CollisionNode> _collisionNode = Optional.empty();
 
-    public final Event<SceneNode> eventMeshClicked = new Event<>("eventMeshClicked", this);
+    public final Event<SceneNode, Player> eventMeshClicked = new Event<>("eventMeshClicked", this);
 
     public MeshNode(final String directory, final String fileName, final TransformNode parent) {
         this("mesh" + fileName, directory, fileName, parent); //MeshNodes of the same file share ids.

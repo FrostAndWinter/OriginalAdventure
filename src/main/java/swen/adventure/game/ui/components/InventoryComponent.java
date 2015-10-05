@@ -5,6 +5,7 @@ import swen.adventure.engine.Action;
 import swen.adventure.engine.ui.components.UIComponent;
 import swen.adventure.engine.ui.layoutmanagers.LayoutManager;
 import swen.adventure.game.scenenodes.Inventory;
+import swen.adventure.game.scenenodes.Player;
 
 /**
  * Created by danielbraithwt on 9/18/15.
@@ -28,7 +29,7 @@ public class InventoryComponent extends UIComponent {
         items = new Object[numItems];
     }
 
-    public static final Action<Inventory, Void, InventoryComponent> actionSelectSlot =
+    public static final Action<Inventory, Player, InventoryComponent> actionSelectSlot =
             (playerInventory, triggeringObject, inventoryView, data) -> {
                 Integer item = (Integer) data.get(Inventory.SelectedSlot);
                 inventoryView.setSelectedItem(item);

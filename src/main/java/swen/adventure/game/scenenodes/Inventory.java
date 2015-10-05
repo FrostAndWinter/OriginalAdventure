@@ -26,10 +26,13 @@ public class Inventory extends SceneNode {
      */
     private final int capacity = 5;
 
-    private List<GameObject> items = new ArrayList<>(capacity);
 
-    public Inventory(String id, TransformNode parent) {
-        super(id, parent, false);
+    private List<GameObject> items = new ArrayList<>(capacity);
+    private Player player;
+
+    public Inventory(Player player) {
+        super(player.id + "Inventory", player.parent().get(), false);
+        this.player = player;
     }
 
     public void selectSlot(int slot) {
@@ -38,7 +41,7 @@ public class Inventory extends SceneNode {
         }
 
         selectedSlot = slot;
-        eventItemSelected.trigger(null, Collections.singletonMap(SelectedSlot, slot));
+        this.eventItemSelected.trigger(this.player, Collections.singletonMap(SelectedSlot, slot));
     }
 
     /**
@@ -62,5 +65,5 @@ public class Inventory extends SceneNode {
         return selectedSlot;
     }
 
-    public final Event<Inventory> eventItemSelected = new Event<>("eventItemSelected", this);
+    public final Event<Inventory, Player> eventItemSelected = new Event<>("eventItemSelected", this);
 }

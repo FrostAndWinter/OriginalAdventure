@@ -19,7 +19,7 @@ public class Player extends GameObject {
 
     private float _playerSpeed = 10.f;
 
-    private Inventory _inventory = new Inventory(id + "Inventory", parent().get());
+    private Inventory _inventory = new Inventory(this);
 
     public static final Action<KeyInput, KeyInput, Player> actionPlayerMoveForward =
             (eventObject, triggeringObject, player, data) -> player.move(new Vector3(0, 0, -player._playerSpeed));
@@ -39,7 +39,7 @@ public class Player extends GameObject {
     public static final Action<KeyInput, KeyInput, Player> actionPlayerMoveDown =
             (eventObject, triggeringObject, player, data) -> player.parent().get().translateBy(new Vector3(0, -player._playerSpeed, 0));
 
-    public final Event<Player> eventPlayerMoved = new Event<>("eventPlayerMoved", this);
+    public final Event<Player, Player> eventPlayerMoved = new Event<>("eventPlayerMoved", this);
 
     public Player(String id, TransformNode parent) {
         super(id, parent);

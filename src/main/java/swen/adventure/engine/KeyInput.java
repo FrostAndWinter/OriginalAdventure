@@ -8,7 +8,7 @@ import java.util.Map;
  * Created by Thomas Roughton, Student ID 300313924, on 2/10/15.
  */
 public abstract class KeyInput {
-    protected Map<Character, Event<KeyInput>> keyMappings = new HashMap<>();
+    protected Map<Character, Event<KeyInput, KeyInput>> keyMappings = new HashMap<>();
     private Map<Character, Boolean> keyPressedMap = new HashMap<>();
 
     public void pressKey(Character key) {

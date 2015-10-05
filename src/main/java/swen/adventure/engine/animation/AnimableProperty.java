@@ -8,13 +8,17 @@ import java.util.Optional;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 2/10/15.
+ * An AnimableProperty is a floating point number that can have its value vary over time according to an animation.
  */
 public class AnimableProperty {
     private float _value;
 
     private Optional<Animation> _currentAnimation = Optional.empty();
 
-    public final Event<AnimableProperty> eventValueChanged = new Event<>("eventValueChanged", this);
+    /**
+     * The ValueChanged event triggers whenever the
+     */
+    public final Event<AnimableProperty, Animation> eventValueChanged = new Event<>("eventValueChanged", this);
 
     public static final Action<Animation, Animation, AnimableProperty> actionAnimationDidFinish = (animation, triggeringObject, animatableProperty, data) -> {
         animatableProperty._currentAnimation.ifPresent(propertyAnimation -> {

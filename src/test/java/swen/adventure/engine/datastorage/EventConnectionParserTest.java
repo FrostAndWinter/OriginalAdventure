@@ -73,7 +73,7 @@ public class EventConnectionParserTest {
 
     public static class Door extends SceneNode {
 
-        public final Event<Door> eventDoorOpened = new Event<>("eventDoorOpened", this);
+        public final Event<Door, Door> eventDoorOpened = new Event<>("eventDoorOpened", this);
 
         public Door(String id) {
             super(id);

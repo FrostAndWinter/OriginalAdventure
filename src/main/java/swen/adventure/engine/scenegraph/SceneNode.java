@@ -111,10 +111,10 @@ public abstract class SceneNode implements BundleSerializable {
      * @throws RuntimeException if the event does not exist on this object.
      */
     @SuppressWarnings("unchecked")
-    public Event<? extends GameObject> eventWithName(String eventName) {
+    public Event<? extends GameObject, ?> eventWithName(String eventName) {
         try {
             Field field = this.getClass().getField("event" + eventName);
-            return (Event<? extends GameObject>) field.get(this);
+            return (Event<? extends GameObject, ?>) field.get(this);
         } catch (IllegalAccessException e) {
             System.err.println("Error accessing event with name " + eventName + ": " + e);
         } catch (NoSuchFieldException ignored) {

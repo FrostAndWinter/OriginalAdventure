@@ -11,12 +11,12 @@ public class MouseInput {
     }
 
     private final static class MouseEvent {
-        public MouseEvent(Event<MouseInput> mouseInputEvent, Button button) {
+        public MouseEvent(Event<MouseInput, MouseInput> mouseInputEvent, Button button) {
             this.mouseInputEvent = mouseInputEvent;
             this.button = button;
         }
 
-        public final Event<MouseInput> mouseInputEvent;
+        public final Event<MouseInput, MouseInput> mouseInputEvent;
         public final Button button;
     }
 
@@ -42,6 +42,6 @@ public class MouseInput {
         }
     }
 
-    public final Event<MouseInput> eventMouseButtonPressed = new Event<>("eventMouseButtonPressed", this);
-    public final Event<MouseInput> eventMouseButtonReleased = new Event<>("eventMouseButtonReleased", this);
+    public final Event<MouseInput, MouseInput> eventMouseButtonPressed = new Event<>("eventMouseButtonPressed", this);
+    public final Event<MouseInput, MouseInput> eventMouseButtonReleased = new Event<>("eventMouseButtonReleased", this);
 }
