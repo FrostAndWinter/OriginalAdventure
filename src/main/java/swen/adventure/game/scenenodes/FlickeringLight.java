@@ -6,41 +6,44 @@ import swen.adventure.engine.animation.Animation;
 import swen.adventure.engine.rendering.Material;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
-import swen.adventure.engine.scenegraph.Light;
-import swen.adventure.engine.scenegraph.MeshNode;
-import swen.adventure.engine.scenegraph.SceneNode;
-import swen.adventure.engine.scenegraph.TransformNode;
+import swen.adventure.engine.scenegraph.*;
 
 import java.util.Optional;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 5/10/15.
  */
-public class MeshLight extends Light {
+public class FlickeringLight extends GameObject {
 
     private float _baseIntensity;
     private float _intensityVariation = 0.f;
 
     private AnimableProperty _lightIntensity;
 
-    private MeshNode _meshNode;
-
     private final Material _lightMaterial;
 
-    public MeshLight(final String id, final TransformNode parent,
-                     final String meshName, final String meshDirectory,
-                     final Vector3 colour, final float intensity, final LightFalloff falloff) {
-        super(id, parent, false, LightType.Point, colour, intensity, Optional.empty(), falloff);
+    public FlickeringLight(final String id, final TransformNode parent,
+                           final String meshName, final String meshDirectory,
+                           final Vector3 colour, final float intensity, final Light.LightFalloff falloff) {
+        super(id, parent);
 
         _baseIntensity = intensity;
         _lightIntensity = new AnimableProperty(intensity);
         _lightMaterial = this.setupMaterial(colour, intensity);
 
-        new MeshNode(id + "Mesh", meshDirectory, meshName, parent).setMaterialOverride(_lightMaterial);
+        Light light = Light.createPointLight(id + "Light", parent, colour, intensity, falloff);
+
+        this.setLight(light);
+
+        MeshNode mesh = new MeshNode(id + "Mesh", meshDirectory, meshName, parent);
+        mesh.setMaterialOverride(_lightMaterial);
+        this.setMesh(mesh);
 
         _lightIntensity.eventValueChanged.addAction(this, (animableProperty, triggeringObject, listener, data) ->  {
-            super.setIntensity(animableProperty.value());
-            this.setMaterialColour(_lightMaterial, this.colour(), animableProperty.value());
+            this.light().ifPresent(lightNode -> {
+                lightNode.setIntensity(animableProperty.value());
+                this.setMaterialColour(_lightMaterial, lightNode.colour(), animableProperty.value());
+            });
         });
     }
 
@@ -57,17 +60,14 @@ public class MeshLight extends Light {
         return material;
     }
 
-    @Override
     public void setIntensity(float intensity) {
-        super.setIntensity(intensity);
         _baseIntensity = intensity;
         this.setIntensityVariation(_intensityVariation);
     }
 
-    @Override
     public void setColour(final Vector3 colour) {
-        super.setColour(colour);
-        _lightMaterial.setAmbientColour(colour);
+        this.light().ifPresent(light -> light.setColour(colour));
+        this.setMaterialColour(_lightMaterial, colour, _lightIntensity.value());
     }
 
     public void setIntensityVariation(float intensityVariation) {

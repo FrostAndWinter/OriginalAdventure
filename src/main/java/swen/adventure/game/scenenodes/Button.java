@@ -18,18 +18,15 @@ public class Button extends GameObject {
 
     public final Event<Button> eventButtonPressed = new Event<>("eventButtonPressed", this);
 
-    private MeshNode _mesh = null;
 
     public Button(String id, TransformNode parent) {
         super(id, parent);
 
         //TransformNode body = new TransformNode(id + "ButtonBody", parent, true, new Vector3(100, 100, 0), new Quaternion(), new Vector3(40, 40, 40));
-        _mesh = new MeshNode(id + "ButtonMesh", "box.obj", parent);
+        MeshNode mesh = new MeshNode(id + "ButtonMesh", "box.obj", parent);
+        this.setMesh(mesh);
 
-        _mesh.eventMeshClicked.addAction(this, (eventObject, player, listener, data) -> this.eventButtonPressed.trigger(player, Collections.emptyMap()));
+        mesh.eventMeshClicked.addAction(this, (eventObject, player, listener, data) -> this.eventButtonPressed.trigger(player, Collections.emptyMap()));
     }
 
-    public MeshNode mesh() {
-        return _mesh;
-    }
 }

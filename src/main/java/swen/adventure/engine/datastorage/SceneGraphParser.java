@@ -10,7 +10,7 @@ import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
-import swen.adventure.game.scenenodes.MeshLight;
+import swen.adventure.game.scenenodes.FlickeringLight;
 import swen.adventure.game.scenenodes.Player;
 
 import java.io.File;
@@ -19,7 +19,6 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -33,7 +32,7 @@ public class SceneGraphParser {
     private static final String AMBIENT_LIGHT_TAG = "AmbientLight";
     private static final String DIRECTIONAL_LIGHT_TAG = "DirectionalLight";
     private static final String POINT_LIGHT_TAG = "PointLight";
-    private static final String MESH_LIGHT_TAG = "MeshLight";
+    private static final String FLICKERING_LIGHT_TAG = "FlickeringLight";
     private static final String CAMERA_TAG = "Camera";
     private static final String PLAYER_TAG = "Player";
     private static final String LEVER_TAG = "Lever";
@@ -82,8 +81,8 @@ public class SceneGraphParser {
                 return parseCameraNode(xmlNode, parent);
             case PLAYER_TAG:
                 return parsePlayerNode(xmlNode, parent);
-            case MESH_LIGHT_TAG:
-                return parseMeshLightNode(xmlNode, parent);
+            case FLICKERING_LIGHT_TAG:
+                return parseFlickeringLightNode(xmlNode, parent);
             default:
                // fail("Unrecognised node: " + name);
                 return parseGameObject(xmlNode, parent);
@@ -138,7 +137,7 @@ public class SceneGraphParser {
         return node;
     }
 
-    private static MeshLight parseMeshLightNode(Node xmlNode, TransformNode parent) {
+    private static FlickeringLight parseFlickeringLightNode(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode, Function.identity());
         String directory = getAttribute("directory", xmlNode, Function.identity(), "");
         String fileName = getAttribute("fileName", xmlNode, Function.identity());
@@ -147,10 +146,10 @@ public class SceneGraphParser {
         float intensity = getAttribute("intensity", xmlNode, Float::parseFloat, 1.f);
         Light.LightFalloff falloff = getAttribute("falloff", xmlNode, Light.LightFalloff::fromString, Light.LightFalloff.Quadratic);
 
-        MeshLight meshLight = new MeshLight(id, parent, fileName, directory, colour, intensity, falloff);
+        FlickeringLight flickeringLight = new FlickeringLight(id, parent, fileName, directory, colour, intensity, falloff);
         float intensityVariation = getAttribute("intensityVariation", xmlNode, Float::parseFloat, 0.f);
-        meshLight.setIntensityVariation(intensityVariation);
-        return meshLight;
+        flickeringLight.setIntensityVariation(intensityVariation);
+        return flickeringLight;
     }
 
     private static CameraNode parseCameraNode(Node xmlNode, TransformNode parent) {
