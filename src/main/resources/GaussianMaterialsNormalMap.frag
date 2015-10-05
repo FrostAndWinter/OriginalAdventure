@@ -171,7 +171,9 @@ void main() {
 	    discard;
 	}
 
-	vec3 totalLighting = diffuseColour().rgb * lighting.ambientIntensity.rgb;
+	vec4 diffuse = diffuseColour();
+
+	vec3 totalLighting = diffuse.rgb * lighting.ambientIntensity.rgb;
 
 	if (material.ambientColour.a > 0.9f) { // ~= 1
 	    totalLighting += ambientColour().rgb;
@@ -185,5 +187,5 @@ void main() {
 
 	totalLighting = totalLighting / maxIntensity;
 
-	outputColor = vec4(totalLighting, material.diffuseColour.a);
+	outputColor = vec4(totalLighting, diffuse.a);
 }

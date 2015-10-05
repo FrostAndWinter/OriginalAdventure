@@ -17,6 +17,11 @@
     
     <TransformNode id="chestTransform" translation="-100, 0, -200" scale="30, 30, 30">
         <Chest id="chest"/>
+        <TransformNode id="chestContentsTransform" rotation="-0.70710677, 0.0, 0.0, 0.70710677">
+            <TransformNode id="noteTransform" translation="-0.49, -0.5, 0.9" rotation="0.04972948, 0.0049895914, 0.099708654, 0.9937607" scale="0.3, 0.3, 0.3">
+                <MeshNode id="noteMesh" fileName="Plane.obj" materialDirectory="Note" materialFileName="MoonlightNote.mtl" materialName="Note"/>
+            </TransformNode>
+        </TransformNode>
     </TransformNode>
     
     <TransformNode id="leftWallTransform" translation="-600, 0, 0" rotation="0, 0.7071067812, 0, 0.7071067812" scale="20, 1, 1">
@@ -33,37 +38,35 @@
     </TransformNode>
     
     <TransformNode id="cryptTransform" rotation="0, 0.7071067812, 0, 0.7071067812">
-        <MeshNode id="crypt" directory="MedievalModels" fileName="Crypt.obj"/>
+        <MeshNode id="crypt" directory="MedievalModels" fileName="Crypt.obj" isCollidable="true"/>
         
         <TransformNode id="brazier1T" translation="105, 0, 95">
-            <MeshNode id="brazier1M" directory="MedievalModels" fileName="BigTorch.obj"/>
-            <TransformNode id="flame1T" translation="0, 40, -8" scale="70, 70, 70">
+            <MeshNode id="brazier1M" directory="MedievalModels" fileName="BigTorch.obj" isCollidable="true"/>
+            <TransformNode id="flame1T" translation="0, 40, -8" rotation="0, 0.4338837391, 0, 0.9009688679" scale="70, 70, 70">
                 <MeshLight id="flame1M" directory="Flame" fileName="flame.obj" colour="1.0, 0.0, 0.0" intensity="5.0" intensityVariation="2.0"/>
             </TransformNode>
         </TransformNode>
         
         <TransformNode id="brazier2T" translation="-105, 0, 95">
-            <MeshNode id="brazier2M" directory="MedievalModels" fileName="BigTorch.obj"/>
-            <TransformNode id="flame2T" translation="0, 40, -8" scale="70, 70, 70">
+            <MeshNode id="brazier2M" directory="MedievalModels" fileName="BigTorch.obj" isCollidable="true"/>
+            <TransformNode id="flame2T" translation="0, 40, -8" scale="68, 74, 72">
                 <MeshLight id="flame2M" directory="Flame" fileName="flame.obj" colour="1.0, 0.0, 0.0" intensity="5.0" intensityVariation="2.0"/>
             </TransformNode>
         </TransformNode>
         
         <TransformNode id="brazier3T" translation="105, 0, -95">
-            <MeshNode id="brazier3M" directory="MedievalModels" fileName="BigTorch.obj"/>
-            <TransformNode id="flame3T" translation="0, 40, -8" scale="70, 70, 70">
+            <MeshNode id="brazier3M" directory="MedievalModels" fileName="BigTorch.obj" isCollidable="true"/>
+            <TransformNode id="flame3T" translation="0, 40, -8" rotation="0, -0.4338837391, 0, 0.9009688679" scale="72, 71, 68">
                 <MeshLight id="flame3M" directory="Flame" fileName="flame.obj" colour="1.0, 0.0, 0.0" intensity="5.0" intensityVariation="2.0"/>
             </TransformNode>
         </TransformNode>
         
         <TransformNode id="brazier4T" translation="-105, 0, -95">
-            <MeshNode id="brazier4M" directory="MedievalModels" fileName="BigTorch.obj"/>
-            <TransformNode id="flame4T" translation="0, 40, -8" scale="70, 70, 70">
+            <MeshNode id="brazier4M" directory="MedievalModels" fileName="BigTorch.obj" isCollidable="true"/>
+            <TransformNode id="flame4T" translation="0, 40, -8" scale="69, 68, 67">
                 <MeshLight id="flame4M" directory="Flame" fileName="flame.obj" colour="1.0, 0.0, 0.0" intensity="5.0" intensityVariation="2.0"/>
             </TransformNode>
         </TransformNode>
-
-        
     </TransformNode>
     
 </root>

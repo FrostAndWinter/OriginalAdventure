@@ -30,6 +30,7 @@ public class Chest extends GameObject {
         super(id, parent);
 
         MeshNode chestMesh = new MeshNode(id + "ChestMesh", "Chest", "Chest.obj", parent);
+        chestMesh.setCollidable(true);
 
         Vector3 hingeOffset = new Vector3(0.f, chestMesh.boundingBox().height() - 0.05f, 0.f);
         _hingeTransform = new TransformNode(id + "ChestHinge", parent, true, hingeOffset, new Quaternion(), Vector3.one);
