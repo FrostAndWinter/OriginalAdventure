@@ -10,13 +10,13 @@ import java.util.stream.Collectors;
  */
 public class BundleObject implements BundleSerializable {
 
-    private final Map<String, Property> storedValues;
+    private final Map<String, BundleProperty> storedValues;
 
     public BundleObject() {
         this.storedValues = new HashMap<>();
     }
 
-    BundleObject(Map<String, Property> storedValues) {
+    BundleObject(Map<String, BundleProperty> storedValues) {
         this.storedValues = storedValues;
     }
 
@@ -60,16 +60,16 @@ public class BundleObject implements BundleSerializable {
         return storedValues.containsKey(name);
     }
 
-    Iterable<Property> getProperties() {
+    Iterable<BundleProperty> getProperties() {
         return storedValues.values();
     }
 
     private <T> void putValue(String name, T value) {
-        storedValues.put(name, new Property(name, value, value.getClass()));
+        storedValues.put(name, new BundleProperty(name, value, value.getClass()));
     }
 
     /*private <T> Optional<T> getOptionalValue(String name, Class<T> class0) {
-        Property property = storedValues.get(name);
+        BundleProperty property = storedValues.get(name);
         if(property == null)
             return Optional.empty();
 
@@ -80,12 +80,12 @@ public class BundleObject implements BundleSerializable {
     }*/
 
     private <T> T getValue(String name, Class<T> class0) {
-        Property property = storedValues.get(name);
+        BundleProperty property = storedValues.get(name);
         if(property == null)
-            throw new IllegalArgumentException("Property " + name + " doesn't exist.");
+            throw new IllegalArgumentException("BundleProperty " + name + " doesn't exist.");
 
         if(class0 != property.class0)
-            throw new ClassCastException("Property \"" + name + "\" isn't a type of " + class0.getSimpleName());
+            throw new ClassCastException("BundleProperty \"" + name + "\" isn't a type of " + class0.getSimpleName());
 
         return class0.cast(property.value);
     }

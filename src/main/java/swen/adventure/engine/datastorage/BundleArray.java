@@ -10,13 +10,13 @@ import java.util.stream.Collectors;
  */
 public class BundleArray {
 
-    private final List<Property> storedValues;
+    private final List<BundleProperty> storedValues;
 
     public BundleArray(){
         this.storedValues = new ArrayList<>();
     }
 
-    BundleArray(List<Property> storedValues) {
+    BundleArray(List<BundleProperty> storedValues) {
         this.storedValues = new ArrayList<>(storedValues);
     }
 
@@ -48,16 +48,16 @@ public class BundleArray {
         if(index < 0 || index >= size())
             throw new IllegalArgumentException("index is out of bounds " + index);
 
-        Property property = storedValues.get(index);
+        BundleProperty property = storedValues.get(index);
 
         if(class0 != property.class0)
-            throw new ClassCastException("Property at index" + index + " isn't a type of " + class0.getSimpleName());
+            throw new ClassCastException("BundleProperty at index" + index + " isn't a type of " + class0.getSimpleName());
 
         return class0.cast(property.value);
     }
 
     private void putValue(int index, Object value) {
-        storedValues.add(index, new Property(Integer.toString(index), value, value.getClass()));
+        storedValues.add(index, new BundleProperty(Integer.toString(index), value, value.getClass()));
     }
 
     public int size() {
@@ -88,7 +88,7 @@ public class BundleArray {
         return "BundleArray{" + String.join(",", toStrings) + '}';
     }
 
-    List<Property> getProperties() {
+    List<BundleProperty> getProperties() {
         return Collections.unmodifiableList(storedValues);
     }
 }

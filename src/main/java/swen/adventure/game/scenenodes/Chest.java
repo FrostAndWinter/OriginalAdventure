@@ -69,4 +69,12 @@ public class Chest extends GameObject {
         _isOpen = false;
         new Animation(_lidRotationProgress, AnimationDuration * Math.abs(0.5f - _lidRotationProgress.value()), 0.0f);
     }
+
+    public boolean isOpen() {
+        return _isOpen;
+    }
+
+    public void setOpen(boolean isOpen) {
+        _isOpen = isOpen;
+    }
 }
