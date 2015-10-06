@@ -41,7 +41,7 @@ public class EventConnectionParser {
                 .collect(Collectors.toList());
     }
 
-    private static EventConnection parseLine(String line) {
+    public static EventConnection parseLine(String line) {
         line = line.replaceAll("\\s+", ""); // remove whitespace
         String[] components = line.split(";");
 
