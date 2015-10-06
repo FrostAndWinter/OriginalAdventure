@@ -23,18 +23,20 @@
             </TransformNode>
         </TransformNode>
     </TransformNode>
-    
-    <TransformNode id="leftWallTransform" translation="-600, 0, 0" rotation="0, 0.7071067812, 0, 0.7071067812" scale="20, 1, 1">
-        <MeshNode id="leftWall" directory="MedievalModels" fileName="Wall.obj" textureRepeat="20, 1, 1" isCollidable="true"/>
-    </TransformNode>
-    <TransformNode id="rightWallTransform" translation="600, 0, 0" rotation="0, -0.7071067812, 0, 0.7071067812" scale="20, 1, 1">
-        <MeshNode id="rightWall" directory="MedievalModels" fileName="Wall.obj" textureRepeat="20, 1, 1" isCollidable="true"/>
-    </TransformNode>
-    <TransformNode id="backWallTransform" translation="0, 0, 900" rotation="0, 1, 0, 0" scale="13.33333, 1, 1">
-        <MeshNode id="backWall" directory="MedievalModels" fileName="Wall.obj" textureRepeat="13.33333, 1, 1" isCollidable="true"/>
-    </TransformNode>
-    <TransformNode id="frontWallTransform" translation="0, 0, -900" rotation="0, 0, 0, 1" scale="13.33333, 1, 1">
-        <MeshNode id="frontWall" directory="MedievalModels" fileName="Wall.obj" textureRepeat="13.33333, 1, 1" isCollidable="true"/>
+
+    <TransformNode id="wallsTransform" scale="1, 1.4, 1">
+        <TransformNode id="leftWallTransform" translation="-600, 0, 0" rotation="0, 0.7071067812, 0, 0.7071067812" scale="20, 1, 1">
+            <MeshNode id="leftWall" directory="MedievalModels" fileName="Wall.obj" textureRepeat="20, 1, 1" isCollidable="true"/>
+        </TransformNode>
+        <TransformNode id="rightWallTransform" translation="600, 0, 0" rotation="0, -0.7071067812, 0, 0.7071067812" scale="20, 1, 1">
+            <MeshNode id="rightWall" directory="MedievalModels" fileName="Wall.obj" textureRepeat="20, 1, 1" isCollidable="true"/>
+        </TransformNode>
+        <TransformNode id="backWallTransform" translation="0, 0, 900" rotation="0, 1, 0, 0" scale="13.33333, 1, 1">
+            <MeshNode id="backWall" directory="MedievalModels" fileName="Wall.obj" textureRepeat="13.33333, 1, 1" isCollidable="true"/>
+        </TransformNode>
+        <TransformNode id="frontWallTransform" translation="0, 0, -900" rotation="0, 0, 0, 1" scale="13.33333, 1, 1">
+            <MeshNode id="frontWall" directory="MedievalModels" fileName="Wall.obj" textureRepeat="13.33333, 1, 1" isCollidable="true"/>
+        </TransformNode>
     </TransformNode>
     
     <TransformNode id="cryptTransform" rotation="0, 0.7071067812, 0, 0.7071067812">
@@ -64,9 +66,39 @@
         <TransformNode id="brazier4T" translation="-105, 0, -95">
             <MeshNode id="brazier4M" directory="MedievalModels" fileName="BigTorch.obj" isCollidable="true"/>
             <TransformNode id="flame4T" translation="0, 40, -8" scale="69, 68, 67">
-                <FlickeringLight id="flame4M" directory="Flame" fileName="flame.obj" colour="1.0, 0.0, 0.0" intensity="5.0" intensityVariation="2.0"/>
+                <FlickeringLight id="flame4M" directory="Flame" fileName="flame.obj" colour="1.0, 0.0, 0.0" intensity="8.0" intensityVariation="3.0"/>
             </TransformNode>
         </TransformNode>
+    </TransformNode>
+
+    <TransformNode id="wallTorchesTransform" translation="0, -20, 840" rotation="0, 1, 0, 0">
+
+        <TransformNode id="keyT" translation="0, 165, -46" scale="5, 5, 5">
+            <Key id="key"/>
+        </TransformNode>
+
+        <TransformNode id="redTorchT" translation="-40.0, -10.0, 0.0">
+            <MeshNode id="redTorchM" directory="MedievalModels" fileName="Torch.obj" isCollidable="true"/>
+            <TransformNode id="redTorchFlameT" translation="2, 152, -33" scale="16, 24, 16">
+                <FlickeringLight id="redTorchFlame" directory="Flame" fileName="flame.obj" colour="1.0, 0.0, 0.0" intensity="9.0" intensityVariation="2.0"/>
+            </TransformNode>
+        </TransformNode>
+
+        <TransformNode id="greenTorchT" translation="40.0, -10.0, 0.0">
+            <MeshNode id="greenTorchM" directory="MedievalModels" fileName="Torch.obj" isCollidable="true"/>
+            <TransformNode id="greenTorchFlameT" translation="2, 152, -33" scale="16, 24, 16">
+                <FlickeringLight id="greenTorchFlame" directory="Flame" fileName="flame.obj" colour="0.0, 1.0, 0.0" intensity="9.0" intensityVariation="2.0"/>
+            </TransformNode>
+        </TransformNode>
+
+        <TransformNode id="blueTorchT" translation="0.0, 70.0, 0.0">
+            <MeshNode id="blueTorchM" directory="MedievalModels" fileName="Torch.obj" isCollidable="true"/>
+            <TransformNode id="blueTorchFlameT" translation="2, 152, -33" scale="16, 24, 16">
+                <FlickeringLight id="blueTorchFlame" directory="Flame" fileName="flame.obj" colour="0.0, 0.0, 1.0" intensity="9.0" intensityVariation="2.0"/>
+            </TransformNode>
+
+        </TransformNode>
+
     </TransformNode>
     
 </root>

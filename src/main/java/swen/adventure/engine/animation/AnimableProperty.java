@@ -52,7 +52,7 @@ public class AnimableProperty {
     public void stopAnimating() {
         _currentAnimation.ifPresent(animation -> {
             _currentAnimation = Optional.empty();
-            animation.destroy();
+            animation.stop();
         });
 
     }

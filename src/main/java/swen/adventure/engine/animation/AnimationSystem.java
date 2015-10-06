@@ -29,17 +29,21 @@ public class AnimationSystem {
      */
     public static void update() {
         double currentTime = AnimationSystem.currentTime();
-        Iterator<Animation> iterator = _animations.iterator();
+        Iterator<Animation> iterator = new ArrayList<>(_animations).iterator();
+
+        List<Animation> animationsToRemove = new ArrayList<>();
 
         while (iterator.hasNext()) {
             Animation animation = iterator.next();
             if (animation.isComplete()) {
                 animation.destroy();
-                iterator.remove();
+                animationsToRemove.add(animation);
                 continue;
             }
             animation.update(currentTime);
         }
+
+        _animations.removeAll(animationsToRemove);
     }
 
 }

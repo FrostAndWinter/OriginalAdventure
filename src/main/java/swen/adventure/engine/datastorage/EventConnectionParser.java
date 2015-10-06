@@ -7,6 +7,7 @@ import swen.adventure.engine.scenegraph.SceneNode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -68,9 +69,13 @@ public class EventConnectionParser {
                 SceneNode targetObject = sceneGraph.nodeWithID(objectName).get();
                 Event event = targetObject.eventWithName(connection.eventName);
                 for (String listenerName : connection.listenerNames) {
-                    SceneNode listeningObject = sceneGraph.nodeWithID(listenerName).get();
-                    Action action = Action.actionWithName(connection.actionName, listeningObject);
-                    event.addAction(listeningObject, action);
+                    Optional<SceneNode> listeningObject = sceneGraph.nodeWithID(listenerName);
+                    if (!listeningObject.isPresent()) {
+                        System.err.println("Error retrieving listening object with id" + listenerName);
+                        break;
+                    }
+                    Action action = Action.actionWithName(connection.actionName, listeningObject.get());
+                    event.addAction(listeningObject.get(), action);
                 }
             }
         }

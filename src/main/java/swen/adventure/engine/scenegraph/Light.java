@@ -50,7 +50,7 @@ public class Light extends SceneNode {
 
     private static final int MaxLights = 32;
     private static final int PerLightDataSize = 32;
-    private static final float LightAttenuationFactor = 0.0002f;
+    private static final float LightAttenuationFactor = 0.00006f;
 
     public static final int BufferSizeInBytes = Vector4.sizeInBytes + //ambient light
             4 + //num dynamic lights

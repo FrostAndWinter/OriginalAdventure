@@ -103,6 +103,11 @@ public class Animation {
         }
     }
 
+    /** Stops the animation so it ceases to update any properties. */
+    public void stop() {
+        _complete = true;
+    }
+
     /** @return Whether the animation is still in progress. */
     public boolean isComplete() {
         return _complete;
@@ -116,7 +121,7 @@ public class Animation {
     /**
      * Cancels the animation, triggers that it's complete, and removes it from the animation system.
      */
-    public void destroy() {
+    protected void destroy() {
         _complete = true;
         this.eventAnimationDidComplete.trigger(this, Collections.emptyMap());
     }

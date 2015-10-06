@@ -1,10 +1,12 @@
 package swen.adventure.game.scenenodes;
 
+import swen.adventure.engine.ConditionalEvent;
 import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.TransformNode;
 
 /**
  * Created by danielbraithwt on 10/3/15.
+ * Modified by Thomas Roughton, Student ID 300313924
  */
 public class Key extends Item {
 
