@@ -2,10 +2,9 @@ package swen.adventure.engine;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.*;
+import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GLContext;
 import swen.adventure.engine.animation.AnimationSystem;
-import swen.adventure.engine.utils.SharedLibraryLoader;
 
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
@@ -183,10 +182,7 @@ public class GameDelegate {
         // LWJGL detects the context that is current in the current thread,
         // creates the ContextCapabilities instance and makes the OpenGL
         // bindings available for use.
-        // GL.createCapabilities(true); // valid for latest build
-        //GLContext.createFromCurrent(); // use this line instead with the 3.0.0a build
-
-        GLContext.createFromCurrent();
+        GL.createCapabilities(true); // valid for latest build
 
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);

@@ -15,7 +15,6 @@ import swen.adventure.engine.scenegraph.*;
 import swen.adventure.engine.ui.color.Color;
 import swen.adventure.engine.ui.components.Frame;
 import swen.adventure.engine.ui.components.Reticule;
-import swen.adventure.engine.utils.SharedLibraryLoader;
 import swen.adventure.game.scenenodes.*;
 import swen.adventure.game.ui.components.InventoryComponent;
 import swen.adventure.engine.ui.components.Panel;
@@ -80,13 +79,7 @@ public class AdventureGame implements Game {
             _pickerRenderer = new PickerRenderer();
         }
 
-        _keyInput.eventMoveForwardKeyPressed.addAction(player, Player.actionPlayerMoveForward);
-        _keyInput.eventMoveBackwardKeyPressed.addAction(player, Player.actionPlayerMoveBackward);
-        _keyInput.eventMoveLeftKeyPressed.addAction(player, Player.actionPlayerMoveLeft);
-        _keyInput.eventMoveRightKeyPressed.addAction(player, Player.actionPlayerMoveRight);
-
-        _keyInput.eventMoveUpKeyPressed.addAction(player, Player.actionPlayerMoveUp);
-        _keyInput.eventMoveDownKeyPressed.addAction(player, Player.actionPlayerMoveDown);
+        _keyInput.eventMoveInDirection.addAction(this.player, Player.actionMoveInDirection);
 
         _mouseInput.eventMouseButtonPressed.addAction(this, AdventureGame.clickAction);
 
@@ -149,7 +142,7 @@ public class AdventureGame implements Game {
 
     @Override
     public void update(long deltaMillis) {
-        _keyInput.handleInput();
+        _keyInput.handleInput(deltaMillis);
         _mouseInput.handleInput();
 
         Optional<EventBox> box;
@@ -215,8 +208,6 @@ public class AdventureGame implements Game {
     }
 
     public static void main(String[] args) {
-        SharedLibraryLoader.load();
-
         // Start with networking using CLI arguments <player id> <host> <port>
         Client<EventBox> client;
         if (args.length == 3) {

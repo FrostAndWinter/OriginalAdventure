@@ -35,11 +35,11 @@ public class MeshNode extends SceneNode {
     public final Event<SceneNode, Player> eventMeshClicked = new Event<>("eventMeshClicked", this);
 
     public MeshNode(final String directory, final String fileName, final TransformNode parent) {
-        this("mesh" + fileName, directory, fileName, parent); //MeshNodes of the same file share ids.
+        this("mesh" + fileName, directory, fileName, parent);
     }
 
     public MeshNode(String id, final String directory, final String fileName, final TransformNode parent) {
-        super(id, parent, false); //TODO discuss why mesh nodes need to have the same id
+        super(id, parent, false);
 
         _fileName = fileName;
         _directory = directory;

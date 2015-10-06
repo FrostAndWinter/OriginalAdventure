@@ -117,9 +117,9 @@ public class SceneGraphParser {
         Vector3 textureRepeat = getAttribute("textureRepeat", xmlNode, PARSER_MANAGER.getFromStringFunction(Vector3.class), Vector3.one);
         boolean isCollidable = getAttribute("isCollidable", xmlNode, Boolean::parseBoolean, false);
 
-        Optional<String> materialDirectory = getAttribute("materialDirectory", xmlNode, Optional::of, Optional.empty());
-        Optional<String> materialFileName = getAttribute("materialFileName", xmlNode, Optional::of, Optional.empty());
-        Optional<String> materialName = getAttribute("materialName", xmlNode, Optional::of, Optional.empty());
+        Optional<String> materialDirectory = (Optional<String>) getAttribute("materialDirectory", xmlNode, Optional::of, Optional.empty());
+        Optional<String> materialFileName = (Optional<String>)getAttribute("materialFileName", xmlNode, Optional::of, Optional.empty());
+        Optional<String> materialName = (Optional<String>)getAttribute("materialName", xmlNode, Optional::of, Optional.empty());
 
         MeshNode node = new MeshNode(id, directory, fileName, parent);
         node.setTextureRepeat(textureRepeat);

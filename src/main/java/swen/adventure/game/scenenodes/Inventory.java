@@ -1,13 +1,11 @@
 package swen.adventure.game.scenenodes;
 
-import swen.adventure.engine.Action;
 import swen.adventure.engine.Event;
-import swen.adventure.engine.KeyInput;
 import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.SceneNode;
-import swen.adventure.engine.scenegraph.TransformNode;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by josephbennett on 29/09/15
@@ -27,12 +25,21 @@ public class Inventory extends SceneNode {
     private final int capacity = 5;
 
 
-    private List<GameObject> items = new ArrayList<>(capacity);
-    private Player player;
+    private List<Item> items = new ArrayList<>(capacity);
+    private Player _player;
 
     public Inventory(Player player) {
         super(player.id + "Inventory", player.parent().get(), false);
-        this.player = player;
+        _player = player;
+
+
+         Event.EventSet<Item, Player> eventSetItemPickup = (Event.EventSet<Item, Player>) Event.eventSetForName("eventItemPickup");
+         eventSetItemPickup.addAction(this, (item, playerWhoPickedUpItem, listener, data) -> {
+             // make sure this is inventory of the player who picked up the item and not someone else.
+             if (_player.equals(playerWhoPickedUpItem)) {
+                storeItem(item);
+             }
+         });
     }
 
     public void selectSlot(int slot) {
@@ -41,20 +48,19 @@ public class Inventory extends SceneNode {
         }
 
         selectedSlot = slot;
-        this.eventItemSelected.trigger(this.player, Collections.singletonMap(SelectedSlot, slot));
     }
 
     /**
-     * Stores the given game object in the inventory.
+     * Stores the given item in the inventory.
      *
-     * @param gameObject game object to store
+     * @param item game object to store
      * @return true if inventory has enough space, false otherwise.
      */
-    public boolean storeItem(GameObject gameObject) {
+    public boolean storeItem(Item item) {
         if (items.size() < capacity) {
-            gameObject.changeParentTo(this.parent().get());
+            item.setEnabled(false); // hide the item in the world
 
-            items.add(gameObject);
+            items.add(item);
             return true;
         }
 

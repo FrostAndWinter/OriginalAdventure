@@ -44,4 +44,18 @@ public class GameObject extends SceneNode {
     public Optional<CollisionNode> getCollisionNode() {
         return _collisionNode;
     }
+
+    @Override
+    public void setEnabled(boolean isEnabled) {
+        super.setEnabled(isEnabled);
+        if (_collisionNode.isPresent()) {
+            _collisionNode.get().setEnabled(isEnabled);
+        }
+        if (_mesh.isPresent()) {
+            _mesh.get().setEnabled(isEnabled);
+        }
+        if (_light.isPresent()) {
+            _light.get().setEnabled(isEnabled);
+        }
+    }
 }
