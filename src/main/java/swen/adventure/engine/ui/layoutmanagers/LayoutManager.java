@@ -13,7 +13,7 @@ public abstract class LayoutManager {
 
     protected List<UIComponent> components;
 
-    protected int padding;
+    protected int padding; // Padding round the edge of the component
 
     protected int width;
     protected int height;
@@ -32,5 +32,10 @@ public abstract class LayoutManager {
         return height + padding;
     }
 
+    /**
+     * Will change position and size of the components given
+     * to the layout manager
+     * @param g pGraphics that will be drawn to
+     */
     public abstract void applyLayout(PGraphics g);
 }
