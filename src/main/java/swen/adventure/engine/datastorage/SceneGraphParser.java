@@ -45,9 +45,6 @@ public class SceneGraphParser {
     private static final String PLAYER_TAG = "Player";
     private static final String PUZZLE_TAG = "Puzzle";
 
-
-    private static final ParserManager PARSER_MANAGER = new ParserManager();
-
     public static TransformNode parseSceneGraph(String input) {
         InputStream is = Utilities.stringToInputStream(input);
         return parseSceneNode(is);
@@ -119,7 +116,7 @@ public class SceneGraphParser {
         String id = getAttribute("id", xmlNode, Function.identity());
         String directory = getAttribute("directory", xmlNode, Function.identity(), "");
         String fileName = getAttribute("fileName", xmlNode, Function.identity());
-        Vector3 textureRepeat = getAttribute("textureRepeat", xmlNode, PARSER_MANAGER.getFromStringFunction(Vector3.class), Vector3.one);
+        Vector3 textureRepeat = getAttribute("textureRepeat", xmlNode, ParserManager.getFromStringFunction(Vector3.class), Vector3.one);
         boolean isCollidable = getAttribute("isCollidable", xmlNode, Boolean::parseBoolean, false);
 
         Optional<String> materialDirectory = (Optional<String>) getAttribute("materialDirectory", xmlNode, Optional::of, Optional.empty());
@@ -152,7 +149,7 @@ public class SceneGraphParser {
         String directory = getAttribute("directory", xmlNode, Function.identity(), "");
         String fileName = getAttribute("fileName", xmlNode, Function.identity());
 
-        Vector3 colour = getAttribute("colour", xmlNode, PARSER_MANAGER.getFromStringFunction(Vector3.class), Vector3.one);
+        Vector3 colour = getAttribute("colour", xmlNode, ParserManager.getFromStringFunction(Vector3.class), Vector3.one);
         float intensity = getAttribute("intensity", xmlNode, Float::parseFloat, 1.f);
         Light.LightFalloff falloff = getAttribute("falloff", xmlNode, Light.LightFalloff::fromString, Light.LightFalloff.Quadratic);
 
@@ -169,7 +166,7 @@ public class SceneGraphParser {
 
     private static Player parsePlayerNode(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode, Function.identity());
-        BoundingBox boundingBox = getAttribute("boundingBox", xmlNode, PARSER_MANAGER.getFromStringFunction(BoundingBox.class), new BoundingBox(Vector3.zero, Vector3.zero));
+        BoundingBox boundingBox = getAttribute("boundingBox", xmlNode, ParserManager.getFromStringFunction(BoundingBox.class), new BoundingBox(Vector3.zero, Vector3.zero));
         Player player = new Player(id, parent);
         player.setCollisionNode(new CollisionNode(id + "Collider", parent, boundingBox));
         return player;
@@ -177,7 +174,7 @@ public class SceneGraphParser {
 
     private static Light parseAmbientLight(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode, Function.identity());
-        Vector3 colour = getAttribute("colour", xmlNode, PARSER_MANAGER.getFromStringFunction(Vector3.class), Vector3.one);
+        Vector3 colour = getAttribute("colour", xmlNode, ParserManager.getFromStringFunction(Vector3.class), Vector3.one);
         float intensity = getAttribute("intensity", xmlNode, Float::parseFloat, 1.f);
 
         Light node = Light.createAmbientLight(id, parent, colour, intensity);
@@ -187,9 +184,9 @@ public class SceneGraphParser {
 
     private static Light parseDirectionalLight(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode, Function.identity());
-        Vector3 colour = getAttribute("colour", xmlNode, PARSER_MANAGER.getFromStringFunction(Vector3.class), Vector3.one);
+        Vector3 colour = getAttribute("colour", xmlNode, ParserManager.getFromStringFunction(Vector3.class), Vector3.one);
         float intensity = getAttribute("intensity", xmlNode, Float::parseFloat, 1.f);
-        Vector3 fromDirection = getAttribute("fromDirection", xmlNode, PARSER_MANAGER.getFromStringFunction(Vector3.class));
+        Vector3 fromDirection = getAttribute("fromDirection", xmlNode, ParserManager.getFromStringFunction(Vector3.class));
 
         Light node = Light.createDirectionalLight(id, parent, colour, intensity, fromDirection);
 
@@ -198,7 +195,7 @@ public class SceneGraphParser {
 
     private static Light parsePointLight(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode, Function.identity());
-        Vector3 colour = getAttribute("colour", xmlNode, PARSER_MANAGER.getFromStringFunction(Vector3.class), Vector3.one);
+        Vector3 colour = getAttribute("colour", xmlNode, ParserManager.getFromStringFunction(Vector3.class), Vector3.one);
         float intensity = getAttribute("intensity", xmlNode, Float::parseFloat, 1.f);
         Light.LightFalloff falloff = getAttribute("falloff", xmlNode, Light.LightFalloff::fromString);
 
@@ -210,11 +207,11 @@ public class SceneGraphParser {
 
     private static TransformNode parseTransformNode(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode, Function.identity());
-        Vector3 translation = getAttribute("translation", xmlNode, PARSER_MANAGER.getFromStringFunction(Vector3.class), Vector3.zero);
-        Quaternion rotation = getAttribute("rotation", xmlNode, PARSER_MANAGER.getFromStringFunction(Quaternion.class), new Quaternion());
-        Vector3 scale = getAttribute("scale", xmlNode, PARSER_MANAGER.getFromStringFunction(Vector3.class), Vector3.one);
+        Vector3 translation = getAttribute("translation", xmlNode, ParserManager.getFromStringFunction(Vector3.class), Vector3.zero);
+        Quaternion rotation = getAttribute("rotation", xmlNode, ParserManager.getFromStringFunction(Quaternion.class), new Quaternion());
+        Vector3 scale = getAttribute("scale", xmlNode, ParserManager.getFromStringFunction(Vector3.class), Vector3.one);
 
-        boolean isDynamic = getAttribute("isDynamic", xmlNode, PARSER_MANAGER.getFromStringFunction(Boolean.class), false);
+        boolean isDynamic = getAttribute("isDynamic", xmlNode, ParserManager.getFromStringFunction(Boolean.class), false);
         TransformNode node = new TransformNode(id, parent, isDynamic, translation, rotation, scale);
 
         // now parse any children

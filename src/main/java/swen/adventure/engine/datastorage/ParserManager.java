@@ -97,19 +97,19 @@ public class ParserManager {
         return uncheckedParser;
     }
 
-    <T> Function<T, String> getToStringFunction(Class<T> class0){
+    static <T> Function<T, String> getToStringFunction(Class<T> class0){
         return getParser(class0).toStringFunction;
     }
 
-    <T> Function<String, T> getFromStringFunction(Class<T> class0){
+    static <T> Function<String, T> getFromStringFunction(Class<T> class0){
         return getParser(class0).fromStringFunction;
     }
 
-    public <T> String convertToString(T t, Class<T> class0) {
+    public static <T> String convertToString(T t, Class<T> class0) {
         return getParser(class0).convertToString(t);
     }
 
-    public <T> T convertFromString(String str, Class<T> class0) {
+    public static <T> T convertFromString(String str, Class<T> class0) {
         return getParser(class0).convertToInstance(str);
     }
 

@@ -32,16 +32,26 @@ public class PuzzleConditionParser {
 
         for (String conditionString : conditions) {
             String[] components = conditionString.split(",");
-            if (components.length != 3) {
+
+            Class typeClass = Boolean.class;
+
+            int index = 0;
+            if (components.length == 4) {
+                try {
+                    typeClass = Class.forName(components[index++]);
+                } catch (ClassNotFoundException e) {
+                    System.err.println("Error parsing condition list: " + e);
+                }
+            } else if (components.length != 3) {
                 System.err.println("Error reading condition string " + conditionString + ": a condition must have three components.");
                 break;
             }
-            Optional<SceneNode> targetObject = sceneGraph.nodeWithID(components[0]);
+            Optional<SceneNode> targetObject = sceneGraph.nodeWithID(components[index++]);
             if (!targetObject.isPresent()) {
-                System.err.println("Error parsing condition list: could not find object with id " + components[0]);
+                System.err.println("Error parsing condition list: could not find object with id " + components[index - 1]);
                 break;
             }
-            String getterName = components[1];
+            String getterName = components[index++];
             Supplier supplier;
             try {
                 Method getter = targetObject.get().getClass().getMethod(getterName);
@@ -57,7 +67,7 @@ public class PuzzleConditionParser {
                 break;
             }
 
-            boolean desiredValue = Boolean.valueOf(components[2]);
+            Object desiredValue = ParserManager.convertFromString(components[index++], typeClass);
 
             conditionsList.add(new Puzzle.PuzzleCondition(supplier, desiredValue));
         }
