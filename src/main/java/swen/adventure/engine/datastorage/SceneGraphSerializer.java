@@ -51,7 +51,7 @@ public class SceneGraphSerializer {
         Node serializedNode;
 
         if (isRoot(sceneNode))
-            serializedNode = serializeRoot();
+            serializedNode = serializeRoot(xmlParentNode);
 
         else if (sceneNode instanceof TransformNode)
             serializedNode = serializeTransformNode((TransformNode) sceneNode, xmlParentNode);
@@ -104,8 +104,8 @@ public class SceneGraphSerializer {
         return sceneNode instanceof FlickeringLight;
     }
 
-    private Node serializeRoot() {
-        return createElement("root");
+    private Node serializeRoot(Node xmlParentNode) {
+        return createElement("root", xmlParentNode);
     }
 
     private Node serializeTransformNode(TransformNode transformNode, Node xmlParentNode) {
@@ -190,8 +190,10 @@ public class SceneGraphSerializer {
         setAttribute(name, parseToString(object, class0), xmlElement);
     }
 
-    private Element createElement(String tagName) {
-        return document.createElement(tagName);
+    private Element createElement(String tagName, Node xmlParentNode) {
+        Element newElement = document.createElement(tagName);
+        xmlParentNode.appendChild(newElement);
+        return newElement;
     }
 
     private Element createElementForNode(SceneNode sceneNode, Node xmlParentNode) {
@@ -200,9 +202,8 @@ public class SceneGraphSerializer {
     }
 
     private Element createElementForNode(String tagName, SceneNode sceneNode, Node xmlParentNode) {
-        Element newNode = createElement(tagName);
+        Element newNode = createElement(tagName, xmlParentNode);
         newNode.setAttribute("id", sceneNode.id);
-        xmlParentNode.appendChild(newNode);
         return newNode;
     }
 
