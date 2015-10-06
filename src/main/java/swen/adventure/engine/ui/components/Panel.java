@@ -31,6 +31,10 @@ public class Panel extends swen.adventure.engine.ui.components.UIComponent {
     @Override
     public void drawComponent(PGraphics g, float scaleX, float scaleY) {
 
+        if (!getVisible()) {
+            return;
+        }
+
         if (color == null) {
             g.fill(23, 54, 123);
         } else {

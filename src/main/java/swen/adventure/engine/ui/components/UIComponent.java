@@ -30,6 +30,10 @@ public abstract class UIComponent {
     }
 
     public void draw(PGraphics g) {
+        if (!visible) {
+            return;
+        }
+
         draw(g, 1, 1);
     }
 
@@ -120,6 +124,10 @@ public abstract class UIComponent {
     protected abstract void drawComponent(PGraphics g, float scaleX, float scaleY);
 
     protected void drawComponent(PGraphics g) {
+        if (!visible) {
+            return;
+        }
+
         draw(g, 1, 1);
     }
 

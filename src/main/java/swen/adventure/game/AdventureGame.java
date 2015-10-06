@@ -1,5 +1,7 @@
 package swen.adventure.game;
 
+import org.lwjgl.Sys;
+import org.lwjgl.opengl.GLContext;
 import processing.core.PImage;
 import processing.opengl.PGraphics2D;
 import swen.adventure.engine.*;
@@ -41,6 +43,10 @@ public class AdventureGame implements Game {
 
     // Elements of the UI
     private swen.adventure.engine.ui.components.Frame _frame;
+    private Panel splashScreen;
+    private ProgressBar loadingProgressBar;
+
+    private boolean glStarted;
 
     private Player player;
 
@@ -60,40 +66,50 @@ public class AdventureGame implements Game {
 
     @Override
     public void setup(int width, int height) {
-
-        try {
-            _sceneGraph = SceneGraphParser.parseSceneGraph(new File(Utilities.pathForResource("SceneGraph", "xml")));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        this.player = (Player)_sceneGraph.nodeWithID("player").get();
-        this.player.setCamera((CameraNode)_sceneGraph.nodeWithID("playerCamera").get());
-
-        try {
-            List<EventConnectionParser.EventConnection> connections = EventConnectionParser.parseFile(Utilities.readLinesFromFile(Utilities.pathForResource("EventConnections", "event")));
-            EventConnectionParser.setupConnections(connections, _sceneGraph);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         if (!Utilities.isHeadlessMode) {
             _glRenderer = new GLRenderer(width, height);
             _pickerRenderer = new PickerRenderer();
         }
 
-        _keyInput.eventMoveForwardKeyPressed.addAction(player, Player.actionPlayerMoveForward);
-        _keyInput.eventMoveBackwardKeyPressed.addAction(player, Player.actionPlayerMoveBackward);
-        _keyInput.eventMoveLeftKeyPressed.addAction(player, Player.actionPlayerMoveLeft);
-        _keyInput.eventMoveRightKeyPressed.addAction(player, Player.actionPlayerMoveRight);
-
-        _keyInput.eventMoveUpKeyPressed.addAction(player, Player.actionPlayerMoveUp);
-        _keyInput.eventMoveDownKeyPressed.addAction(player, Player.actionPlayerMoveDown);
-
-        _mouseInput.eventMouseButtonPressed.addAction(this, AdventureGame.clickAction);
-
         this.setupUI(width, height);
+        this.render();
+
+        new Thread(() -> {
+            GLContext.createFromCurrent();
+
+            try {
+                _sceneGraph = SceneGraphParser.parseSceneGraph(new File(Utilities.pathForResource("SceneGraph", "xml")));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            this.player = (Player)_sceneGraph.nodeWithID("player").get();
+            this.player.setCamera((CameraNode) _sceneGraph.nodeWithID("playerCamera").get());
+
+            try {
+                List<EventConnectionParser.EventConnection> connections = EventConnectionParser.parseFile(Utilities.readLinesFromFile(Utilities.pathForResource("EventConnections", "event")));
+                EventConnectionParser.setupConnections(connections, _sceneGraph);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            _keyInput.eventMoveForwardKeyPressed.addAction(player, Player.actionPlayerMoveForward);
+            _keyInput.eventMoveBackwardKeyPressed.addAction(player, Player.actionPlayerMoveBackward);
+            _keyInput.eventMoveLeftKeyPressed.addAction(player, Player.actionPlayerMoveLeft);
+            _keyInput.eventMoveRightKeyPressed.addAction(player, Player.actionPlayerMoveRight);
+
+            _keyInput.eventMoveUpKeyPressed.addAction(player, Player.actionPlayerMoveUp);
+            _keyInput.eventMoveDownKeyPressed.addAction(player, Player.actionPlayerMoveDown);
+
+            _mouseInput.eventMouseButtonPressed.addAction(this, AdventureGame.clickAction);
+
+            splashScreen.setVisible(false);
+
+            glStarted = true;
+        }).start();
+
+        this.render();
     }
 
     private static final Action<MouseInput, MouseInput, AdventureGame> clickAction = (eventObject, triggeringObject, listener, data) -> {
@@ -103,8 +119,6 @@ public class AdventureGame implements Game {
                             meshNode ->
                                     meshNode.eventMeshClicked.trigger(listener.player, Collections.emptyMap()));
         });
-
-
     };
 
     private void setupUI(int width, int height) {
@@ -119,20 +133,22 @@ public class AdventureGame implements Game {
         // Set up the UI elements
         _frame = new Frame(0, 0, width, height);
 
-        Panel splashScreen = new Panel(0, 0, width, height);
+        splashScreen = new Panel(0, 0, width, height);
         try {
             Image im = ImageIO.read(new File(Utilities.pathForResource("background", "png")));
             PImage image = new PImage(im);
 
-            ImageView imageView = new ImageView(image, 0, 0, image.width, image.height);
+            ImageView imageView = new ImageView(image, 0, 0, width, height);
 
             splashScreen.addChild(imageView);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        splashScreen.setVisible(false);
-        _frame.addChild(splashScreen);
+        loadingProgressBar = new ProgressBar(100, 100, 275, 500);
+        splashScreen.addChild(loadingProgressBar);
+
+        splashScreen.setVisible(true);
 
         Panel panel = new Panel(0, 0, width, height);
         panel.setColor(new Color(0, 0, 0, 0));
@@ -143,7 +159,7 @@ public class AdventureGame implements Game {
         InventoryComponent inventoryComponent = new InventoryComponent(5, 275, 500);
         inventoryComponent.setBoxSize(50);
 
-        player.inventory().eventItemSelected.addAction(inventoryComponent, InventoryComponent.actionSelectSlot);
+        //player.inventory().eventItemSelected.addAction(inventoryComponent, InventoryComponent.actionSelectSlot);
 
         panel.addChild(inventoryComponent);
 
@@ -152,11 +168,15 @@ public class AdventureGame implements Game {
         panel.addChild(reticule);
 
         _frame.addChild(panel);
+        _frame.addChild(splashScreen);
     }
 
     @Override
     public void setSize(int width, int height) {
-        _glRenderer.setSize(width, height);
+        if (glStarted) {
+            _glRenderer.setSize(width, height);
+        }
+
         _pGraphics.setSize(width, height);
     }
 
@@ -167,35 +187,34 @@ public class AdventureGame implements Game {
 
     @Override
     public void update(long deltaMillis) {
-        _keyInput.handleInput();
-        _mouseInput.handleInput();
+        if (glStarted) {
+            _keyInput.handleInput();
+            _mouseInput.handleInput();
 
-        Optional<EventBox> box;
-        while ((box = _client.poll()).isPresent()) {
-            EventBox event = box.get();
-            SceneNode source = _sceneGraph.nodeWithID(event.sourceId).get();
-            SceneNode target = _sceneGraph.nodeWithID(event.targetId).get();
-            Event e = target.eventWithName(event.eventName);
-            e.trigger(source, event.eventData);
+            Optional<EventBox> box;
+            while ((box = _client.poll()).isPresent()) {
+                EventBox event = box.get();
+                SceneNode source = _sceneGraph.nodeWithID(event.sourceId).get();
+                SceneNode target = _sceneGraph.nodeWithID(event.targetId).get();
+                Event e = target.eventWithName(event.eventName);
+                e.trigger(source, event.eventData);
+            }
+
+            player.parent().get().setRotation(Quaternion.makeWithAngleAndAxis(_viewAngleX / 500, 0, -1, 0).multiply(Quaternion.makeWithAngleAndAxis(_viewAngleY / 500, -1, 0, 0)));
         }
-
-        player.parent().get().setRotation(Quaternion.makeWithAngleAndAxis(_viewAngleX / 500, 0, -1, 0).multiply(Quaternion.makeWithAngleAndAxis(_viewAngleY / 500, -1, 0, 0)));
 
         this.render();
     }
 
     private void render() {
-        if (Utilities.isHeadlessMode) {
-            return;
+        if (glStarted) {
+            if (Utilities.isHeadlessMode) {
+                return;
+            }
+            this.player.camera().ifPresent(cameraNode -> {
+                _glRenderer.render(_sceneGraph, _sceneGraph.allLights(), cameraNode);
+            });
         }
-        this.player.camera().ifPresent(cameraNode -> {
-            _glRenderer.render(_sceneGraph, _sceneGraph.allLights(), cameraNode);
-        });
-
-
-        //float newHeight = _pGraphics.height;
-        //float newWidth = _pGraphics.width;
-
 
         float scaleX = _pGraphics.width / virtualUIWidth;
         float scaleY = _pGraphics.height / virtualUIHeight;
