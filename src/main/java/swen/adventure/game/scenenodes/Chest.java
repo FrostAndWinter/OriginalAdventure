@@ -38,8 +38,8 @@ public class Chest extends GameObject {
         TransformNode lidTransform = new TransformNode(id + "ChestLid", _hingeTransform, true, hingeOffset.negate(), new Quaternion(), Vector3.one);
         MeshNode lidMesh = new MeshNode(id + "ChestLid", "Chest", "ChestLid.obj", lidTransform);
 
-        chestMesh.eventMeshClicked.addAction(this, actionToggleChest);
-        lidMesh.eventMeshClicked.addAction(this, actionToggleChest);
+        chestMesh.eventMeshPressed.addAction(this, actionToggleChest);
+        lidMesh.eventMeshPressed.addAction(this, actionToggleChest);
 
 //        _hingeTransform.translateBy(new Vector3(-doorMesh.boundingBox().width() * 50 / 2, 0.f, 0.f));
 //        body.translateBy(new Vector3(doorMesh.boundingBox().width()*50/2, 0.f, 0.f));

@@ -81,17 +81,29 @@ public class AdventureGame implements Game {
 
         _keyInput.eventMoveInDirection.addAction(this.player, Player.actionMoveInDirection);
 
-        _mouseInput.eventMouseButtonPressed.addAction(this, AdventureGame.clickAction);
+        _mouseInput.eventMouseButtonPressed.addAction(this, AdventureGame.pressAction);
+        _mouseInput.eventMouseButtonReleased.addAction(this, AdventureGame.releaseAction);
 
         this.setupUI(width, height);
     }
 
-    private static final Action<MouseInput, MouseInput, AdventureGame> clickAction = (eventObject, triggeringObject, listener, data) -> {
+    private static final Action<MouseInput, MouseInput, AdventureGame> pressAction = (eventObject, triggeringObject, listener, data) -> {
         listener.player.camera().ifPresent(cameraNode -> {
             listener._pickerRenderer.selectedNode(listener._sceneGraph, cameraNode)
                     .ifPresent(
                             meshNode ->
-                                    meshNode.eventMeshClicked.trigger(listener.player, Collections.emptyMap()));
+                                    meshNode.eventMeshPressed.trigger(listener.player, Collections.emptyMap()));
+        });
+
+
+    };
+
+    private static final Action<MouseInput, MouseInput, AdventureGame> releaseAction = (eventObject, triggeringObject, listener, data) -> {
+        listener.player.camera().ifPresent(cameraNode -> {
+            listener._pickerRenderer.selectedNode(listener._sceneGraph, cameraNode)
+                    .ifPresent(
+                            meshNode ->
+                                    meshNode.eventMeshReleased.trigger(listener.player, Collections.emptyMap()));
         });
 
 

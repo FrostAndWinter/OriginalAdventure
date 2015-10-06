@@ -23,7 +23,7 @@ public class Item extends GameObject {
     @Override
     public void setMesh(MeshNode mesh) {
         super.setMesh(mesh);
-        mesh.eventMeshClicked.addAction(this, (eventObject, player, listener, data) -> {
+        mesh.eventMeshPressed.addAction(this, (eventObject, player, listener, data) -> {
             if (_interactionEnabled) {
                 eventItemPickup.trigger(player, Collections.emptyMap());
             }
