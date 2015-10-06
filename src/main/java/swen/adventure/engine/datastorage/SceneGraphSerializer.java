@@ -11,9 +11,8 @@ import swen.adventure.engine.scenegraph.*;
 import swen.adventure.game.scenenodes.FlickeringLight;
 import swen.adventure.game.scenenodes.Player;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Created by Liam O'Neill, Student ID 300312734, on 04/10/15.
@@ -24,16 +23,27 @@ public class SceneGraphSerializer {
 
     private final Document document = Utilities.createDocument();
 
-    public static void serialize(SceneNode root, File file) throws FileNotFoundException {
-        new SceneGraphSerializer().start(root, file);
+    public static void serializeToFile(SceneNode root, File file) throws FileNotFoundException {
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        serializeToStream(root, fileOutputStream);
+    }
+
+    public static String serializeToString(SceneNode root) {
+        ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
+        serializeToStream(root, arrayOutputStream);
+        return new String(arrayOutputStream.toByteArray(), StandardCharsets.UTF_8);
+    }
+
+    public static void serializeToStream(SceneNode root, OutputStream outputStream) {
+        new SceneGraphSerializer().start(root, outputStream);
     }
 
     private SceneGraphSerializer(){
     }
 
-    public void start(SceneNode root, File file) throws FileNotFoundException {
+    public void start(SceneNode root, OutputStream outputStream) {
         serializeSceneNode(root, document);
-        Utilities.writeOutDocument(document, new FileOutputStream(file), true);
+        Utilities.writeOutDocument(document, outputStream, true);
     }
 
 
@@ -114,13 +124,12 @@ public class SceneGraphSerializer {
         setAttribute("textureRepeat", meshNode.getTextureRepeat(), Vector3.class, xmlElement);
         setAttribute("isCollidable", meshNode.isCollidable(), Boolean.class, xmlElement);
 
-        // TODO add attributes for material override
 
         return xmlElement;
     }
 
     private Node serializeGameObjectNode(GameObject gameObject, Node xmlParentNode) {
-        // TODO serialize different game objects
+        // TODO serializeToStream different game objects
         return createElementForNode(gameObject, xmlParentNode);
     }
 
