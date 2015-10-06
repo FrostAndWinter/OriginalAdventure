@@ -1,15 +1,14 @@
 package swen.adventure.game;
 
 import swen.adventure.engine.Event;
+import swen.adventure.engine.datastorage.SceneGraphParser;
 import swen.adventure.engine.network.EventBox;
 import swen.adventure.engine.network.NetworkServer;
 import swen.adventure.engine.network.Server;
-import swen.adventure.engine.rendering.maths.Quaternion;
-import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.SceneNode;
-import swen.adventure.engine.scenegraph.TransformNode;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -25,8 +24,7 @@ public class MultiPlayerServer implements Runnable {
     public MultiPlayerServer(int port, String map) {
         server = new NetworkServer();
         try {
-            // FIXME
-            root = new TransformNode("root", new Vector3(0.f, 0.f, 0.f), new Quaternion(), new Vector3(1.f, 1.f, 1.f)); // new SceneGraphParser().parseSceneGraph(new File(eventData));
+            root = SceneGraphParser.parseSceneGraph(new File(map));
             server.start(port);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
@@ -40,6 +38,11 @@ public class MultiPlayerServer implements Runnable {
                 continue;
             }
             EventBox event = isEvent.get();
+
+            if (event.eventName.equals("playerConnected")) {
+                server.sendSnapShot(event.from, root);
+            }
+
             GameObject source = (GameObject)root.nodeWithID(event.sourceId).get();
             GameObject target = (GameObject)root.nodeWithID(event.targetId).get();
             Event e = target.eventWithName(event.eventName);

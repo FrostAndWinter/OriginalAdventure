@@ -1,5 +1,9 @@
 package swen.adventure.engine.network;
 
+import swen.adventure.engine.datastorage.SceneGraphSerializer;
+import swen.adventure.engine.scenegraph.SceneNode;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -13,6 +17,7 @@ import java.util.stream.Collectors;
  */
 public class NetworkServer implements Server<String, EventBox>, Session.SessionStrategy {
     private final Map<String, Session> clients;
+    private final Map<String, String> netIdToGameObj;
     private final Queue<EventBox> queue;
     private ServerSocket serverSocket;
     private Thread acceptThread;
@@ -23,6 +28,7 @@ public class NetworkServer implements Server<String, EventBox>, Session.SessionS
      */
     public NetworkServer() {
         clients = new ConcurrentHashMap<>();
+        netIdToGameObj = new ConcurrentHashMap<>();
         queue = new ConcurrentLinkedQueue<>();
     }
 
@@ -84,6 +90,24 @@ public class NetworkServer implements Server<String, EventBox>, Session.SessionS
     }
 
     @Override
+    public boolean sendSnapShot(String id, SceneNode root) {
+        Session session = clients.get(id);
+        if (session == null) {
+            return false;
+        }
+
+        try {
+            ByteArrayOutputStream bio = new ByteArrayOutputStream();
+            SceneGraphSerializer.serializeToStream(root, bio);
+            session.send(new Packet(Packet.Operation.SNAPSHOT, bio.toByteArray()));
+            return true;
+        } catch (IOException ex) {
+            System.out.println("Server: Failed to send to " + id + ": " + ex);
+            return false;
+        }
+    }
+
+    @Override
     public void sendAll(EventBox message, String... exclude) {
         List<String> ex = Arrays.asList(exclude);
         this.getClientIds().stream().filter(id -> !ex.contains(id)).forEach(id -> send(id, message));
@@ -133,16 +157,14 @@ public class NetworkServer implements Server<String, EventBox>, Session.SessionS
                     break;
                 }
                 clients.put(id, from);
-                System.out.println("Client connectd id:" + id);
+                System.out.println("Client connected id:" + id);
+                queue.add(new EventBox("playerConnected", id, "spawnPoint", id, Collections.emptyMap()));
                 break;
-
             case CLIENT_DATA:
                 queue.add(EventBox.fromBytes(packet.getPayload()));
                 break;
             case PING:
-
-                    from.send(new Packet(Packet.Operation.PONG, packet.getPayload()));
-
+                from.send(new Packet(Packet.Operation.PONG, packet.getPayload()));
                 break;
             default:
                 System.out.println("Unimplemented Server operation: " + packet.getOperation());

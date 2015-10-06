@@ -1,5 +1,7 @@
 package swen.adventure.engine.network;
 
+import swen.adventure.engine.scenegraph.SceneNode;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +50,15 @@ public interface Server<I, M> {
      * @return returns true if the message was successfully sent, otherwise false
      */
     boolean send(I id, M message); // FIXME: replace String with an encapsulate data-type
+
+    /**
+     * Send a snapshot of a scenenode from the root of the graph
+     *
+     * @param id ID to client to be sent to
+     * @param root the root of the Scene graph to send
+     * @return true if the message was successfully sent, otherwise false
+     */
+    boolean sendSnapShot(I id, SceneNode root);
 
     /**
      * List of Ids of connected clients
