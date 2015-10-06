@@ -11,26 +11,26 @@ out vec4 outputColor;
 layout(std140) uniform;
 
 struct PerLightData {
-	vec4 positionInCameraSpace;
-	vec4 lightIntensity;
+    vec4 positionInCameraSpace;
+    vec4 lightIntensity;
 };
 
 const int MaxLights = 32;
 
 uniform Light {
-	vec4 ambientIntensity;
-	int numDynamicLights;
-	int padding1;
-	float lightAttenuationFactor;
-	float padding2;
-	PerLightData lights[MaxLights];
+    vec4 ambientIntensity;
+    int numDynamicLights;
+    int padding1;
+    float lightAttenuationFactor;
+    float padding2;
+    PerLightData lights[MaxLights];
 } lighting;
 
 uniform Material {
-   vec4 ambientColour; //of which xyz are the colour and w is a 0/1 as to whether ambient self-illumination is enabled.
-   vec4 diffuseColour; //r,g,b,a
-   vec4 specularColour; //of which xyz are the colour and w is the specularity.
-   int booleanMask;
+    vec4 ambientColour; //of which xyz are the colour and w is a 0/1 as to whether ambient self-illumination is enabled.
+    vec4 diffuseColour; //r,g,b,a
+    vec4 specularColour; //of which xyz are the colour and w is the specularity.
+    int booleanMask;
 } material;
 
 uniform sampler2D ambientColourSampler;
@@ -75,113 +75,100 @@ float specularity() {
 }
 
 bool useNormalMap() {
-	return (material.booleanMask & (1 << 4)) != 0;
+    return (material.booleanMask & (1 << 4)) != 0;
 }
 
 float ComputeAttenuation(in vec3 objectPosition,
-	in vec3 lightPosition,
-	in float falloffType,
-	out vec3 lightDirection) {
-
-	vec3 vectorToLight = lightPosition - objectPosition;
-	float lightDistanceSqr = dot(vectorToLight, vectorToLight);
-	float inverseLightDistance = inversesqrt(lightDistanceSqr);
-	lightDirection = vectorToLight * inverseLightDistance;
-
-	if (falloffType < 0.0001) { //LightFalloff.None, ~= 0
-	    return 1.f;
-	} else if (falloffType < 1.2f) { //LightFalloff.Linear, ~= 1
-         return inverseLightDistance / (inverseLightDistance + lighting.lightAttenuationFactor);
-	} else { //LightFalloff.Quadratic
-        return (1 / (1.f + lighting.lightAttenuationFactor * lightDistanceSqr));
-	}
+    in vec3 lightPosition,
+    in float falloffType,
+    out vec3 lightDirection) {
+        
+        vec3 vectorToLight = lightPosition - objectPosition;
+        float lightDistanceSqr = dot(vectorToLight, vectorToLight);
+        float inverseLightDistance = inversesqrt(lightDistanceSqr);
+        lightDirection = vectorToLight * inverseLightDistance;
+        
+        if (falloffType < 0.0001) { //LightFalloff.None, ~= 0
+            return 1.f;
+        } else if (falloffType < 1.2f) { //LightFalloff.Linear, ~= 1
+            return inverseLightDistance / (inverseLightDistance + lighting.lightAttenuationFactor);
+        } else { //LightFalloff.Quadratic
+            return (1 / (1.f + lighting.lightAttenuationFactor * lightDistanceSqr));
+        }
 }
 
 
 float ComputeAngleNormalHalf(in PerLightData lightData, out float cosAngIncidence, out vec3 lightIntensity) {
-		vec3 lightDirection;
-	if (useNormalMap()) {
+    vec3 lightDirection;
+    if (lightData.positionInCameraSpace.w < 0.0001) {
+        lightDirection = lightData.positionInCameraSpace.xyz;
+        lightIntensity = lightData.lightIntensity.rgb;
+    }
+    else {
+        float attenuation = ComputeAttenuation(cameraSpacePosition,
+            lightData.positionInCameraSpace.xyz, lightData.lightIntensity.w, lightDirection);
+        lightIntensity = attenuation * lightData.lightIntensity.rgb;
+    }
+    vec3 viewDirection;
+    vec3 surfaceNormal;
+    if (useNormalMap()) {
 
-    	if (lightData.positionInCameraSpace.w < 0.0001) {
-    		lightDirection = normalize(cameraToTangentSpaceMatrix * lightData.positionInCameraSpace.xyz);
-    		lightIntensity = lightData.lightIntensity.rgb;
-    	}
-    	else {
-    		float attenuation = ComputeAttenuation(cameraSpacePosition,
-    			lightData.positionInCameraSpace.xyz, lightData.lightIntensity.w, lightDirection);
-    		lightIntensity = attenuation * lightData.lightIntensity.rgb;
-    		lightDirection = normalize(cameraToTangentSpaceMatrix * lightDirection);
-    	}
+        lightDirection = cameraToTangentSpaceMatrix * lightDirection;
+        surfaceNormal = normalize(texture(normalMapSampler, textureCoordinate).rgb*2.0 - 1.0);
+        viewDirection = normalize(cameraToTangentSpaceMatrix * -cameraSpacePosition);
 
-    	vec3 surfaceNormal = normalize(texture(normalMapSampler, textureCoordinate).rgb*2.0 - 1.0);
-    	float cosAngIncidenceTemp = dot(surfaceNormal, lightDirection);
-    	cosAngIncidence = cosAngIncidenceTemp < 0.0001 ? 0.0f : cosAngIncidenceTemp; //clamp it to 0
 
-    	vec3 viewDirection = normalize(cameraToTangentSpaceMatrix * -cameraSpacePosition);
+    } else {
+        surfaceNormal = normalize(vertexNormal);
+        viewDirection = normalize(-cameraSpacePosition);
+    }
 
-    	vec3 halfAngle = normalize(lightDirection + viewDirection);
-    	float angleNormalHalf = acos(dot(halfAngle, surfaceNormal));
-    	return angleNormalHalf;
-	} else {
-		if (lightData.positionInCameraSpace.w < 0.0001) {
-        		lightDirection = lightData.positionInCameraSpace.xyz;
-        		lightIntensity = lightData.lightIntensity.rgb;
-        	}
-        	else {
-        		float attenuation = ComputeAttenuation(cameraSpacePosition,
-        			lightData.positionInCameraSpace.xyz, lightData.lightIntensity.w, lightDirection);
-        		lightIntensity = attenuation * lightData.lightIntensity.rgb;
-        	}
-
-        	vec3 surfaceNormal = normalize(vertexNormal);
-        	float cosAngIncidenceTemp = dot(surfaceNormal, lightDirection);
-        	cosAngIncidence = cosAngIncidenceTemp < 0.0001 ? 0.0f : cosAngIncidenceTemp; //clamp it to 0
-
-        	vec3 viewDirection = normalize(-cameraSpacePosition);
-
-        	vec3 halfAngle = normalize(lightDirection + viewDirection);
-        	float angleNormalHalf = acos(dot(halfAngle, surfaceNormal));
-        	return angleNormalHalf;
-	}
+    float cosAngIncidenceTemp = dot(surfaceNormal, lightDirection);
+    cosAngIncidence = cosAngIncidenceTemp < 0.0001 ? 0.0f : cosAngIncidenceTemp; //clamp it to 0
+    vec3 halfAngle = normalize(lightDirection + viewDirection);
+    float angleNormalHalf = acos(dot(halfAngle, surfaceNormal));
+    return angleNormalHalf;
 }
 
-vec3 ComputeLighting(in PerLightData lightData) {
-	vec3 lightIntensity;
-	float cosAngIncidence;
+vec3 ComputeLighting(in PerLightData lightData, in vec4 diffuse, in vec4 specular, in float specularity) {
+    vec3 lightIntensity;
+    float cosAngIncidence;
+    
+    float angleNormalHalf = ComputeAngleNormalHalf(lightData, cosAngIncidence, lightIntensity);
+    
+    float exponent = angleNormalHalf / specularity;
+    exponent = -(exponent * exponent);
+    float gaussianTerm = exp(exponent);
 
-	float angleNormalHalf = ComputeAngleNormalHalf(lightData, cosAngIncidence, lightIntensity);
+    gaussianTerm = cosAngIncidence != 0.0f ? gaussianTerm : 0.0;
+    
+    vec3 lighting = diffuse.rgb * lightIntensity * cosAngIncidence;
+    lighting += specular.rgb * lightIntensity * gaussianTerm;
 
-	float exponent = angleNormalHalf / specularity();
-	exponent = -(exponent * exponent);
-	float gaussianTerm = exp(exponent);
-
-	gaussianTerm = cosAngIncidence != 0.0f ? gaussianTerm : 0.0;
-
-	vec3 lighting = diffuseColour().rgb * lightIntensity * cosAngIncidence;
-	lighting += specularColour().rgb * lightIntensity * gaussianTerm;
-
-	return lighting;
+    return lighting;
 }
 
 void main() {
+    
+    if (material.diffuseColour.a < 0.001f) {
+        discard;
+    }
 
-	if (material.diffuseColour.a < 0.001f) {
-	    discard;
-	}
+    vec4 diffuse = diffuseColour();
+    vec4 specular = specularColour();
+    float specularity = specularity();
 
-	vec4 diffuse = diffuseColour();
+    vec3 totalLighting = diffuse.rgb * lighting.ambientIntensity.rgb;
 
-	vec3 totalLighting = diffuse.rgb * lighting.ambientIntensity.rgb;
+    if (material.ambientColour.a > 0.9f) { // ~= 1
+        totalLighting += ambientColour().rgb;
+    }
 
-	if (material.ambientColour.a > 0.9f) { // ~= 1
-	    totalLighting += ambientColour().rgb;
-	}
+    for (int light = 0; light < lighting.numDynamicLights; light++) {
+        totalLighting += ComputeLighting(lighting.lights[light], diffuse, specular, specularity);
+    }
 
-	for (int light = 0; light < lighting.numDynamicLights; light++) {
-		totalLighting += ComputeLighting(lighting.lights[light]);
-	}
+    totalLighting = totalLighting / maxIntensity;
 
-	totalLighting = totalLighting / maxIntensity;
-
-	outputColor = vec4(totalLighting, diffuse.a);
+    outputColor = vec4(totalLighting, diffuse.a);
 }
