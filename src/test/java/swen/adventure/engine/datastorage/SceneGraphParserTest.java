@@ -1,6 +1,6 @@
 package swen.adventure.engine.datastorage;
 
-import org.junit.Assume;
+import org.junit.Ignore;
 import org.junit.Test;
 import swen.adventure.engine.Utilities;
 import swen.adventure.engine.rendering.maths.Quaternion;
@@ -19,33 +19,26 @@ import static org.junit.Assume.assumeNoException;
  */
 public class SceneGraphParserTest {
 
-    private static final SceneGraphParser SCENE_GRAPH_PARSER = new SceneGraphParser();
     private static final String DIRECTORY = "src/test/resources/swen/adventure/engine/datastorage/";
 
     @Test
     public void testSingleTransformNode() throws Exception {
         TransformNode expected = new TransformNode(
-                "id1",
-                new Vector3(36.646f, 383.0f, -263.7f),
-                new Quaternion(-1.0f, 2.0f, 6.5f, -4.3f),
-                new Vector3(74.2f, 5736.3f, 3623.2f)
+                "root",
+                Vector3.zero,
+                new Quaternion(),
+                Vector3.one
         );
         testAgainstFile("testSingleTransformNode", expected);
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void testGameObjectAsRoot() throws Exception {
-        String xmlGraph = readFile("testGameObjectAsRoot");
-        SCENE_GRAPH_PARSER.parseSceneGraph(xmlGraph);
     }
 
     @Test
     public void testNestedTransformNodes() throws Exception {
         TransformNode root = new TransformNode(
-                "id1",
-                new Vector3(36.646f, 383.0f, -263.7f),
-                new Quaternion(-1.0f, 2.0f, 6.5f, -4.3f),
-                new Vector3(74.2f, 5736.3f, 3623.2f)
+                "root",
+                Vector3.zero,
+                new Quaternion(),
+                Vector3.one
         );
 
         TransformNode child = new TransformNode(
@@ -63,10 +56,10 @@ public class SceneGraphParserTest {
     @Test
     public void testGameObjectInTransformNode() throws Exception {
         TransformNode root = new TransformNode(
-                "id1",
-                new Vector3(36.646f, 383.0f, -263.7f),
-                new Quaternion(-1.0f, 2.0f, 6.5f, -4.3f),
-                new Vector3(74.2f, 5736.3f, 3623.2f)
+                "root",
+                Vector3.zero,
+                new Quaternion(),
+                Vector3.one
         );
 
         GameObject child = new GameObject("id2", root);
@@ -76,7 +69,7 @@ public class SceneGraphParserTest {
 
     private static void testAgainstFile(String fileName, SceneNode expected) throws IOException {
         String graphXml = readFile(fileName);
-        SceneNode result = SCENE_GRAPH_PARSER.parseSceneGraph(graphXml);
+        SceneNode result = SceneGraphParser.parseSceneGraph(graphXml);
         assertEquals(expected, result);
     }
 
