@@ -1,6 +1,5 @@
 package swen.adventure.game.scenenodes;
 
-import swen.adventure.engine.ConditionalEvent;
 import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.TransformNode;
 

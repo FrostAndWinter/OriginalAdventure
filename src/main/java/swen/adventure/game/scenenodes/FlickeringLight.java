@@ -1,7 +1,6 @@
 package swen.adventure.game.scenenodes;
 
 import swen.adventure.engine.Action;
-import swen.adventure.engine.ConditionalEvent;
 import swen.adventure.engine.Event;
 import swen.adventure.engine.animation.AnimableProperty;
 import swen.adventure.engine.animation.Animation;
@@ -27,9 +26,6 @@ public class FlickeringLight extends GameObject {
     private AnimableProperty _lightIntensity;
 
     private final Material _lightMaterial;
-
-    public final ConditionalEvent<FlickeringLight, Player> eventLightIsOn = new ConditionalEvent<>("eventLightIsOn", this, this::isOn);
-    public final ConditionalEvent<FlickeringLight, Player> eventLightIsOff = new ConditionalEvent<>("eventLightIsOn", this, () -> !this.isOn());
 
     public final Event<FlickeringLight, Player> eventLightToggled = new Event<>("eventLightToggled", this);
 
