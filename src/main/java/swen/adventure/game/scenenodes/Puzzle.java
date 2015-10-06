@@ -6,6 +6,7 @@ import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.TransformNode;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -14,10 +15,23 @@ import java.util.function.Supplier;
  */
 public class Puzzle extends GameObject {
 
+    public static class PuzzleCondition<T> {
+        public final Supplier<T> getter;
+        public final T requiredState;
+
+        public PuzzleCondition(final Supplier<T> getter, final T requiredState) {
+            this.getter = getter;
+            this.requiredState = requiredState;
+        }
+
+        public boolean isTrue() {
+            return this.getter.get().equals(requiredState);
+        }
+    }
+
     private boolean _puzzleSolved;
 
-    private Supplier<Boolean>[] _getters;
-    private boolean[] _requiredStates;
+    private List<PuzzleCondition> _conditions;
 
     public final Event<Puzzle, Puzzle> eventPuzzleSolved = new Event<>("eventPuzzleSolved", this);
     public final Event<Puzzle, Puzzle> eventPuzzleUnsolved = new Event<>("eventPuzzleUnsolved", this);
@@ -26,15 +40,10 @@ public class Puzzle extends GameObject {
         puzzle.checkForStateChange();
     };
 
-    public Puzzle(final String id, final TransformNode parent, Supplier<Boolean>[] getters, boolean[] requiredStates) {
+    public Puzzle(final String id, final TransformNode parent, List<PuzzleCondition> conditions) {
         super(id, parent);
 
-        if (_getters.length != _requiredStates.length) {
-            throw new RuntimeException("The lights and required states arrays must be the same length.");
-        }
-
-        _getters = getters;
-        _requiredStates = requiredStates;
+        _conditions = conditions;
 
         _puzzleSolved = this.isPuzzleSolved();
         this.triggerPuzzleStateEvent();
@@ -42,8 +51,8 @@ public class Puzzle extends GameObject {
 
     private boolean isPuzzleSolved() {
         boolean puzzleSolved = true;
-        for (int i = 0; i < _getters.length; i++) {
-            if (_getters[i].get() != _requiredStates[i]) {
+        for (PuzzleCondition condition : _conditions) {
+            if (!condition.isTrue()) {
                 puzzleSolved = false;
             }
         }

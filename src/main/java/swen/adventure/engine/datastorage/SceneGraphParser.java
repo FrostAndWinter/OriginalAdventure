@@ -10,14 +10,17 @@ import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
+import swen.adventure.game.PuzzleConditionParser;
 import swen.adventure.game.scenenodes.FlickeringLight;
 import swen.adventure.game.scenenodes.Player;
+import swen.adventure.game.scenenodes.Puzzle;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -40,7 +43,7 @@ public class SceneGraphParser {
     private static final String FLICKERING_LIGHT_TAG = "FlickeringLight";
     private static final String CAMERA_TAG = "Camera";
     private static final String PLAYER_TAG = "Player";
-    private static final String LEVER_TAG = "Lever";
+    private static final String PUZZLE_TAG = "Puzzle";
 
 
     private static final ParserManager PARSER_MANAGER = new ParserManager();
@@ -88,6 +91,8 @@ public class SceneGraphParser {
                 return parsePlayerNode(xmlNode, parent);
             case FLICKERING_LIGHT_TAG:
                 return parseFlickeringLightNode(xmlNode, parent);
+            case PUZZLE_TAG:
+                return parsePuzzle(xmlNode, parent);
             default:
                // fail("Unrecognised node: " + name);
                 return parseGameObject(xmlNode, parent);
@@ -132,6 +137,14 @@ public class SceneGraphParser {
                 }));
 
         return node;
+    }
+
+    public static Puzzle parsePuzzle(Node xmlNode, TransformNode parent) {
+        String id = getAttribute("id", xmlNode, Function.identity());
+        String conditionsList = getAttribute("conditions", xmlNode, Function.identity());
+        List<Puzzle.PuzzleCondition> conditions = PuzzleConditionParser.parseConditionList(conditionsList, parent);
+
+        return new Puzzle(id, parent, conditions);
     }
 
     private static FlickeringLight parseFlickeringLightNode(Node xmlNode, TransformNode parent) {
