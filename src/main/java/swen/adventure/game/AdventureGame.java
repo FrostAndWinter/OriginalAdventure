@@ -116,7 +116,7 @@ public class AdventureGame implements Game {
         ProgressBar healthBar = new ProgressBar(100, 100, 30, 30);
         panel.addChild(healthBar);
 
-        InventoryComponent inventoryComponent = new InventoryComponent(5, 275, 500);
+        InventoryComponent inventoryComponent = new InventoryComponent(player.inventory(), 275, 500);
         inventoryComponent.setBoxSize(50);
 
         player.inventory().eventItemSelected.addAction(inventoryComponent, InventoryComponent.actionSelectSlot);

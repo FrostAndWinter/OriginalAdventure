@@ -50,6 +50,10 @@ public class Inventory extends SceneNode {
         selectedSlot = slot;
     }
 
+    public int getCapacity() {
+        return capacity;
+    }
+
     /**
      * Stores the given item in the inventory.
      *

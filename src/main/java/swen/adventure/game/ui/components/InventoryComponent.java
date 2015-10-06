@@ -13,20 +13,20 @@ import swen.adventure.game.scenenodes.Player;
 public class InventoryComponent extends UIComponent {
     private static final int BOX_SIZE = 30;
 
-    private Object[] items;
+    private Inventory inventory;
 
     private int numItems;
     private int boxSize;
 
     private int selectedItem = 0;
 
-    public InventoryComponent(int numItems, int x, int y) {
-        super(x, y, numItems * BOX_SIZE, BOX_SIZE);
+    public InventoryComponent(Inventory inventory, int x, int y) {
+        super(x, y, inventory.getCapacity() * BOX_SIZE, BOX_SIZE);
 
         this.numItems = numItems;
         boxSize = BOX_SIZE;
 
-        items = new Object[numItems];
+        this.inventory = inventory;
     }
 
     public static final Action<Inventory, Player, InventoryComponent> actionSelectSlot =
@@ -45,14 +45,6 @@ public class InventoryComponent extends UIComponent {
 
     public int getSelectedItem() {
         return selectedItem;
-    }
-
-    public void setItemAt(int index, Object o) {
-        items[index] = o;
-    }
-
-    public Object getItemAt(int index) {
-        return items[index];
     }
 
     @Override
@@ -82,10 +74,10 @@ public class InventoryComponent extends UIComponent {
             g.rect(currentX * scaleX, currentY * scaleY, boxSize * scaleX, boxSize * scaleY);
 
             // If the item is selected
-            if (i == selectedItem) {
-                g.fill(255, 0, 0);
-                g.rect((currentX + 10) * scaleX, (currentY + 10) * scaleY, (boxSize - 20) * scaleX, (boxSize- 20) * scaleY);
-            }
+//            if (i == selectedItem) {
+//                g.fill(255, 0, 0);
+//                g.rect((currentX + 10) * scaleX, (currentY + 10) * scaleY, (boxSize - 20) * scaleX, (boxSize- 20) * scaleY);
+//            }
 
             currentX += boxSize;
         }
