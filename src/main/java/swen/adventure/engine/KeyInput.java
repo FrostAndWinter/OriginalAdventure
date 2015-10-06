@@ -1,6 +1,7 @@
 package swen.adventure.engine;
 
-import java.util.Collections;
+import swen.adventure.game.EventDataKeys;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,12 +20,21 @@ public abstract class KeyInput {
         keyPressedMap.put(Character.toLowerCase(key), false);
     }
 
-    public void handleInput() {
+    public void handleInput(long deltaMillis) {
         keyPressedMap.entrySet()
                 .stream()
                 .filter(Map.Entry::getValue)
-                .map((entry) -> keyMappings.get(entry.getKey()))
-                .filter(event -> event != null)
-                .forEach(keyInputEvent -> keyInputEvent.trigger(this, Collections.emptyMap()));
+                .forEach(entry -> {
+                    Character key = entry.getKey();
+                    Event<KeyInput, KeyInput> event = keyMappings.get(key);
+                    if (event != null) {
+                        event.trigger(this, new HashMap() {{
+                            put(EventDataKeys.ElapsedMillis, deltaMillis);
+                            put(EventDataKeys.Event, event);
+                        }});
+                    }
+
+                });
+
     }
 }

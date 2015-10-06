@@ -2,15 +2,12 @@ package swen.adventure.game.scenenodes;
 
 import swen.adventure.engine.Action;
 import swen.adventure.engine.KeyInput;
-import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.engine.scenegraph.CameraNode;
-import swen.adventure.engine.scenegraph.CollisionNode;
 import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.TransformNode;
-import swen.adventure.game.AdventureGame;
 import swen.adventure.engine.Event;
 import swen.adventure.engine.rendering.maths.Vector3;
-import swen.adventure.game.AdventureGameKeyInput;
+import swen.adventure.game.EventDataKeys;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -20,28 +17,17 @@ import java.util.Optional;
  */
 public class Player extends GameObject {
 
-    private float _playerSpeed = 10.f;
+    private float _playerSpeed = 600.f; //units per second
 
     private Inventory _inventory = new Inventory(this);
     private Optional<CameraNode> _camera = Optional.empty();
 
-    public static final Action<KeyInput, KeyInput, Player> actionPlayerMoveForward =
-            (eventObject, triggeringObject, player, data) -> player.move(new Vector3(0, 0, -player._playerSpeed));
-
-    public static final Action<KeyInput, KeyInput, Player> actionPlayerMoveBackward =
-            (eventObject, triggeringObject, player, data) -> player.move(new Vector3(0, 0, player._playerSpeed));
-
-    public static final Action<KeyInput, KeyInput, Player> actionPlayerMoveLeft =
-            (eventObject, triggeringObject, player, data) -> player.move(new Vector3(-player._playerSpeed, 0, 0));
-
-    public static final Action<KeyInput, KeyInput, Player> actionPlayerMoveRight=
-            (eventObject, triggeringObject, player, data) -> player.move(new Vector3(player._playerSpeed, 0, 0));
-
-    public static final Action<KeyInput, KeyInput, Player> actionPlayerMoveUp =
-            (eventObject, triggeringObject, player, data) -> player.parent().get().translateBy(new Vector3(0, player._playerSpeed, 0));
-
-    public static final Action<KeyInput, KeyInput, Player> actionPlayerMoveDown =
-            (eventObject, triggeringObject, player, data) -> player.parent().get().translateBy(new Vector3(0, -player._playerSpeed, 0));
+    public static final Action<KeyInput, KeyInput, Player> actionMoveInDirection =
+            (eventObject, triggeringObject, player, data) -> {
+                Vector3 direction = (Vector3)data.get(EventDataKeys.Direction);
+                long elapsedMillis = (Long)data.get(EventDataKeys.ElapsedMillis);
+                player.move(direction.multiplyScalar(player._playerSpeed * elapsedMillis / 1000.f));
+            };
 
     public final Event<Player, Player> eventPlayerMoved = new Event<>("eventPlayerMoved", this);
 

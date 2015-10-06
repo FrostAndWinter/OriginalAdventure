@@ -23,6 +23,8 @@ public abstract class SceneNode implements BundleSerializable {
     /** Dynamic nodes are any nodes whose transforms may change during the execution of the game. */
     private boolean _isDynamic = false;
 
+    private boolean _isEnabled = true;
+
     public final String id;
     protected Map<String, SceneNode> _idsToNodesMap;
     protected Set<Light> _allLights;
@@ -143,9 +145,11 @@ public abstract class SceneNode implements BundleSerializable {
      * @param traversalFunction The function to apply to each node.
      */
     public void traverse(NodeTraversalFunction traversalFunction) {
-        traversalFunction.visit(this);
-        for (SceneNode child : _childNodes) {
-            child.traverse(traversalFunction);
+        if (_isEnabled) {
+            traversalFunction.visit(this);
+            for (SceneNode child : _childNodes) {
+                child.traverse(traversalFunction);
+            }
         }
     }
 
@@ -185,6 +189,10 @@ public abstract class SceneNode implements BundleSerializable {
 
     public Set<SceneNode> getChildren() {
         return Collections.unmodifiableSet(_childNodes);
+    }
+
+    public void setEnabled(boolean isEnabled) {
+        _isEnabled = isEnabled;
     }
 
 }

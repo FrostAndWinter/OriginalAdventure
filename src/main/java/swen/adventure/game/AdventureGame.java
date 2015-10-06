@@ -80,13 +80,7 @@ public class AdventureGame implements Game {
             _pickerRenderer = new PickerRenderer();
         }
 
-        _keyInput.eventMoveForwardKeyPressed.addAction(player, Player.actionPlayerMoveForward);
-        _keyInput.eventMoveBackwardKeyPressed.addAction(player, Player.actionPlayerMoveBackward);
-        _keyInput.eventMoveLeftKeyPressed.addAction(player, Player.actionPlayerMoveLeft);
-        _keyInput.eventMoveRightKeyPressed.addAction(player, Player.actionPlayerMoveRight);
-
-        _keyInput.eventMoveUpKeyPressed.addAction(player, Player.actionPlayerMoveUp);
-        _keyInput.eventMoveDownKeyPressed.addAction(player, Player.actionPlayerMoveDown);
+        _keyInput.eventMoveInDirection.addAction(this.player, Player.actionMoveInDirection);
 
         _mouseInput.eventMouseButtonPressed.addAction(this, AdventureGame.clickAction);
 
@@ -149,7 +143,7 @@ public class AdventureGame implements Game {
 
     @Override
     public void update(long deltaMillis) {
-        _keyInput.handleInput();
+        _keyInput.handleInput(deltaMillis);
         _mouseInput.handleInput();
 
         Optional<EventBox> box;
