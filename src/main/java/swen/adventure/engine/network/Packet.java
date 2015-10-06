@@ -25,7 +25,8 @@ class Packet {
 
         // Server packets going out
         SERVER_DATA,
-        SERVER_KILL;
+        SERVER_KILL,
+        SNAPSHOT;
 
         public byte toByte() {
             byte b = 0;

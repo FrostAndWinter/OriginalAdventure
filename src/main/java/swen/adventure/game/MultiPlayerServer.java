@@ -38,6 +38,11 @@ public class MultiPlayerServer implements Runnable {
                 continue;
             }
             EventBox event = isEvent.get();
+
+            if (event.eventName.equals("playerConnected")) {
+                server.sendSnapShot(event.from, root);
+            }
+
             GameObject source = (GameObject)root.nodeWithID(event.sourceId).get();
             GameObject target = (GameObject)root.nodeWithID(event.targetId).get();
             Event e = target.eventWithName(event.eventName);

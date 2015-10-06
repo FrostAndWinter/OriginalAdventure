@@ -99,7 +99,7 @@ public class NetworkClient implements Client<EventBox>, Session.SessionStrategy 
                 ping = (System.nanoTime() - Long.parseLong(new String(packet.getPayload()), 16)) / 1000000.0;
                 break;
             default:
-                System.out.println("Unimplemented Client operation: " + packet.getOperation());
+                System.out.println("Unimplemented Client operation: " + packet.getOperation() + " length:" + packet.getPayload().length);
                 break;
         }
         } catch (IOException ex) { ex.printStackTrace(); }
