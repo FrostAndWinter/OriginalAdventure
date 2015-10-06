@@ -28,10 +28,7 @@ dependencies {
 project.ext.lwjglVersion = "3.0.0a"
 
 dependencies {
-    compile "org.lwjgl:lwjgl:${lwjglVersion}"
-    compile "org.lwjgl:lwjgl-platform:${lwjglVersion}:natives-windows"
-    compile "org.lwjgl:lwjgl-platform:${lwjglVersion}:natives-linux"
-    compile "org.lwjgl:lwjgl-platform:${lwjglVersion}:natives-osx"
+    compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 
 jacocoTestReport {

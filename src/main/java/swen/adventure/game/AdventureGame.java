@@ -15,7 +15,6 @@ import swen.adventure.engine.scenegraph.*;
 import swen.adventure.engine.ui.color.Color;
 import swen.adventure.engine.ui.components.Frame;
 import swen.adventure.engine.ui.components.Reticule;
-import swen.adventure.engine.utils.SharedLibraryLoader;
 import swen.adventure.game.scenenodes.*;
 import swen.adventure.game.ui.components.InventoryComponent;
 import swen.adventure.engine.ui.components.Panel;
@@ -209,8 +208,6 @@ public class AdventureGame implements Game {
     }
 
     public static void main(String[] args) {
-        SharedLibraryLoader.load();
-
         // Start with networking using CLI arguments <player id> <host> <port>
         Client<EventBox> client;
         if (args.length == 3) {
