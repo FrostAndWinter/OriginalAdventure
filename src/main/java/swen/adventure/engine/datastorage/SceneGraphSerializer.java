@@ -11,9 +11,8 @@ import swen.adventure.engine.scenegraph.*;
 import swen.adventure.game.scenenodes.FlickeringLight;
 import swen.adventure.game.scenenodes.Player;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Created by Liam O'Neill, Student ID 300312734, on 04/10/15.
@@ -24,16 +23,27 @@ public class SceneGraphSerializer {
 
     private final Document document = Utilities.createDocument();
 
-    public static void serialize(SceneNode root, File file) throws FileNotFoundException {
-        new SceneGraphSerializer().start(root, file);
+    public static void serializeToFile(SceneNode root, File file) throws FileNotFoundException {
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        serializeToStream(root, fileOutputStream);
+    }
+
+    public static String serializeToString(SceneNode root) {
+        ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
+        serializeToStream(root, arrayOutputStream);
+        return new String(arrayOutputStream.toByteArray(), StandardCharsets.UTF_8);
+    }
+
+    public static void serializeToStream(SceneNode root, OutputStream outputStream) {
+        new SceneGraphSerializer().start(root, outputStream);
     }
 
     private SceneGraphSerializer(){
     }
 
-    public void start(SceneNode root, File file) throws FileNotFoundException {
+    public void start(SceneNode root, OutputStream outputStream) {
         serializeSceneNode(root, document);
-        Utilities.writeOutDocument(document, new FileOutputStream(file), true);
+        Utilities.writeOutDocument(document, outputStream, true);
     }
 
 
@@ -41,7 +51,7 @@ public class SceneGraphSerializer {
         Node serializedNode;
 
         if (isRoot(sceneNode))
-            serializedNode = serializeRoot();
+            serializedNode = serializeRoot(xmlParentNode);
 
         else if (sceneNode instanceof TransformNode)
             serializedNode = serializeTransformNode((TransformNode) sceneNode, xmlParentNode);
@@ -94,8 +104,8 @@ public class SceneGraphSerializer {
         return sceneNode instanceof FlickeringLight;
     }
 
-    private Node serializeRoot() {
-        return createElement("root");
+    private Node serializeRoot(Node xmlParentNode) {
+        return createElement("root", xmlParentNode);
     }
 
     private Node serializeTransformNode(TransformNode transformNode, Node xmlParentNode) {
@@ -114,13 +124,12 @@ public class SceneGraphSerializer {
         setAttribute("textureRepeat", meshNode.getTextureRepeat(), Vector3.class, xmlElement);
         setAttribute("isCollidable", meshNode.isCollidable(), Boolean.class, xmlElement);
 
-        // TODO add attributes for material override
 
         return xmlElement;
     }
 
     private Node serializeGameObjectNode(GameObject gameObject, Node xmlParentNode) {
-        // TODO serialize different game objects
+        // TODO serializeToStream different game objects
         return createElementForNode(gameObject, xmlParentNode);
     }
 
@@ -181,8 +190,10 @@ public class SceneGraphSerializer {
         setAttribute(name, parseToString(object, class0), xmlElement);
     }
 
-    private Element createElement(String tagName) {
-        return document.createElement(tagName);
+    private Element createElement(String tagName, Node xmlParentNode) {
+        Element newElement = document.createElement(tagName);
+        xmlParentNode.appendChild(newElement);
+        return newElement;
     }
 
     private Element createElementForNode(SceneNode sceneNode, Node xmlParentNode) {
@@ -191,9 +202,8 @@ public class SceneGraphSerializer {
     }
 
     private Element createElementForNode(String tagName, SceneNode sceneNode, Node xmlParentNode) {
-        Element newNode = createElement(tagName);
+        Element newNode = createElement(tagName, xmlParentNode);
         newNode.setAttribute("id", sceneNode.id);
-        xmlParentNode.appendChild(newNode);
         return newNode;
     }
 

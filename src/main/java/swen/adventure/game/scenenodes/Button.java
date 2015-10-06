@@ -1,10 +1,6 @@
 package swen.adventure.game.scenenodes;
 
-import swen.adventure.engine.Action;
 import swen.adventure.engine.Event;
-import swen.adventure.engine.MouseInput;
-import swen.adventure.engine.rendering.maths.Quaternion;
-import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.TransformNode;
@@ -26,7 +22,7 @@ public class Button extends GameObject {
         MeshNode mesh = new MeshNode(id + "ButtonMesh", "box.obj", parent);
         this.setMesh(mesh);
 
-        mesh.eventMeshClicked.addAction(this, (eventObject, player, listener, data) -> this.eventButtonPressed.trigger(player, Collections.emptyMap()));
+        mesh.eventMeshPressed.addAction(this, (eventObject, player, listener, data) -> this.eventButtonPressed.trigger(player, Collections.emptyMap()));
     }
 
 }

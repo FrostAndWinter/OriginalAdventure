@@ -38,8 +38,8 @@ public class Lever extends GameObject{
 
         MeshNode leverMesh = new MeshNode(id + "Lever", "Lever", "Lever.obj", _hingeTransform);
 
-        leverBaseMesh.eventMeshClicked.addAction(this, actionToggleLever);
-        leverMesh.eventMeshClicked.addAction(this, actionToggleLever);
+        leverBaseMesh.eventMeshPressed.addAction(this, actionToggleLever);
+        leverMesh.eventMeshPressed.addAction(this, actionToggleLever);
 
         _leverRotationProgress.eventValueChanged.addAction(this, (eventObject, triggeringObject, listener, data) ->  {
             listener._hingeTransform.setRotation(Quaternion.makeWithAngleAndAxis((float) (eventObject.value() * (-Math.PI/3)), 0, 0, 1));
