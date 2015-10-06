@@ -1,1 +1,5 @@
-LeverToggled; lever; ToggleLight; blueTorchFlame
+//Connections for the lever/light/key puzzle.
+LeverToggled; lever; ToggleLight; greenTorchFlame
+LightToggled; blueTorchFlame, redTorchFlame, greenTorchFlame; CheckPuzzle; keyPuzzle
+PuzzleSolved; keyPuzzle; SetEnabled; key
+PuzzleUnsolved; keyPuzzle; SetDisabled; key

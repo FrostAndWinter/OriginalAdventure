@@ -15,7 +15,7 @@ import java.util.Collections;
  */
 public class FlickeringLight extends GameObject {
 
-    private static final float LightAnimationTime = 0.8f;
+    private static final float LightAnimationTime = 0.3f;
 
     private boolean _isOn = true;
     private boolean _isAnimatingToggle = false;

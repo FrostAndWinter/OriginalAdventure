@@ -1,13 +1,12 @@
-package swen.adventure.game.scenenodes;
+package swen.adventure.engine.scenegraph;
 
 import swen.adventure.engine.Action;
 import swen.adventure.engine.Event;
-import swen.adventure.engine.scenegraph.GameObject;
-import swen.adventure.engine.scenegraph.TransformNode;
+import swen.adventure.game.scenenodes.FlickeringLight;
+import swen.adventure.game.scenenodes.Player;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -36,7 +35,7 @@ public class Puzzle extends GameObject {
     public final Event<Puzzle, Puzzle> eventPuzzleSolved = new Event<>("eventPuzzleSolved", this);
     public final Event<Puzzle, Puzzle> eventPuzzleUnsolved = new Event<>("eventPuzzleUnsolved", this);
 
-    public static final Action<FlickeringLight, Player, Puzzle> actionLightToggled = (light, player, puzzle, data) -> {
+    public static final Action<FlickeringLight, Player, Puzzle> actionCheckPuzzle = (light, player, puzzle, data) -> {
         puzzle.checkForStateChange();
     };
 

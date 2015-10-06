@@ -38,6 +38,7 @@ public class EventConnectionParser {
 
     public static List<EventConnection> parseFile(List<String> lines) {
         return lines.stream()
+                .filter(line -> line.length() > 0 && !line.startsWith("//"))
                 .map(EventConnectionParser::parseLine)
                 .collect(Collectors.toList());
     }

@@ -2,14 +2,13 @@ package swen.adventure.game;
 
 import swen.adventure.engine.datastorage.ParserManager;
 import swen.adventure.engine.scenegraph.SceneNode;
-import swen.adventure.game.scenenodes.Puzzle;
+import swen.adventure.engine.scenegraph.Puzzle;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -51,13 +50,14 @@ public class PuzzleConditionParser {
                 System.err.println("Error parsing condition list: could not find object with id " + components[index - 1]);
                 break;
             }
+            SceneNode sceneNode = targetObject.get();
             String getterName = components[index++];
             Supplier supplier;
             try {
-                Method getter = targetObject.get().getClass().getMethod(getterName);
+                Method getter = sceneNode.getClass().getMethod(getterName);
                 supplier = () -> {
                     try {
-                        return getter.invoke(targetObject);
+                        return getter.invoke(sceneNode);
                     } catch (IllegalAccessException | InvocationTargetException e) {
                         throw new RuntimeException("Error retrieving property using getter " + getterName + ": " + e);
                     }
@@ -67,7 +67,7 @@ public class PuzzleConditionParser {
                 break;
             }
 
-            Object desiredValue = ParserManager.convertFromString(components[index++], typeClass);
+            Object desiredValue = ParserManager.convertFromString(components[index], typeClass);
 
             conditionsList.add(new Puzzle.PuzzleCondition(supplier, desiredValue));
         }

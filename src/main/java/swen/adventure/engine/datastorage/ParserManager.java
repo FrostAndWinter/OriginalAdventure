@@ -2,7 +2,6 @@ package swen.adventure.engine.datastorage;
 
 import swen.adventure.engine.Utilities;
 import swen.adventure.engine.rendering.maths.*;
-import swen.adventure.game.scenenodes.Puzzle;
 
 import java.util.*;
 import java.util.function.Function;

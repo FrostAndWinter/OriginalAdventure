@@ -24,7 +24,7 @@ public class Chest extends GameObject {
     public final static Action<SceneNode, Player, Chest> actionToggleChest =
             (eventObject, player, chest, data) -> chest.toggle();
 
-    private AnimableProperty _lidRotationProgress = new AnimableProperty(0);
+    private AnimableProperty _lidRotationProgress = new AnimableProperty(ClosedAngle);
 
     public Chest(String id, TransformNode parent) {
         super(id, parent);
@@ -33,7 +33,7 @@ public class Chest extends GameObject {
         chestMesh.setCollidable(true);
 
         Vector3 hingeOffset = new Vector3(0.f, chestMesh.boundingBox().height() - 0.05f, 0.f);
-        _hingeTransform = new TransformNode(id + "ChestHinge", parent, true, hingeOffset, new Quaternion(), Vector3.one);
+        _hingeTransform = new TransformNode(id + "ChestHinge", parent, true, hingeOffset, Quaternion.makeWithAngleAndAxis(ClosedAngle, 1, 0, 0), Vector3.one);
 
         TransformNode lidTransform = new TransformNode(id + "ChestLid", _hingeTransform, true, hingeOffset.negate(), new Quaternion(), Vector3.one);
         MeshNode lidMesh = new MeshNode(id + "ChestLid", "Chest", "ChestLid.obj", lidTransform);
@@ -45,7 +45,7 @@ public class Chest extends GameObject {
 //        body.translateBy(new Vector3(doorMesh.boundingBox().width()*50/2, 0.f, 0.f));
 
         _lidRotationProgress.eventValueChanged.addAction(this, (eventObject, triggeringObject, listener, data) ->  {
-            listener._hingeTransform.setRotation(Quaternion.makeWithAngleAndAxis((float) (eventObject.value() * (ClosedAngle)), 1, 0, 0));
+            listener._hingeTransform.setRotation(Quaternion.makeWithAngleAndAxis(eventObject.value() * (ClosedAngle), 1, 0, 0));
         });
 
         this.close();
@@ -62,12 +62,12 @@ public class Chest extends GameObject {
 
     public void open() {
         _isOpen = true;
-        new Animation(_lidRotationProgress, AnimationDuration * Math.abs(0.5f - _lidRotationProgress.value()), 1.0f);
+        new Animation(_lidRotationProgress, AnimationDuration * Math.abs(0.5f - _lidRotationProgress.value()), 0.0f);
     }
 
     public void close() {
         _isOpen = false;
-        new Animation(_lidRotationProgress, AnimationDuration * Math.abs(0.5f - _lidRotationProgress.value()), 0.0f);
+        new Animation(_lidRotationProgress, AnimationDuration * Math.abs(0.5f - _lidRotationProgress.value()), 1.0f);
     }
 
     public boolean isOpen() {
@@ -76,5 +76,10 @@ public class Chest extends GameObject {
 
     public void setOpen(boolean isOpen) {
         _isOpen = isOpen;
+        if (isOpen) {
+            this.open();
+        } else {
+            this.close();
+        }
     }
 }

@@ -5,7 +5,6 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import swen.adventure.engine.Utilities;
-import swen.adventure.engine.rendering.Material;
 import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
@@ -13,7 +12,7 @@ import swen.adventure.engine.scenegraph.*;
 import swen.adventure.game.PuzzleConditionParser;
 import swen.adventure.game.scenenodes.FlickeringLight;
 import swen.adventure.game.scenenodes.Player;
-import swen.adventure.game.scenenodes.Puzzle;
+import swen.adventure.engine.scenegraph.Puzzle;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -102,8 +101,11 @@ public class SceneGraphParser {
             Constructor<?> constructor = gameObjectClass.getConstructor(String.class, TransformNode.class);
 
             String id = getAttribute("id", xmlNode, Function.identity());
+            boolean enabled = getAttribute("enabled", xmlNode, Boolean::valueOf, true);
 
-            return (GameObject)constructor.newInstance(id, parent);
+            GameObject gameObject = (GameObject)constructor.newInstance(id, parent);
+            gameObject.setEnabled(enabled);
+            return gameObject;
         } catch (ClassNotFoundException e) {
             return null;
         } catch (NoSuchMethodException|InvocationTargetException|InstantiationException|IllegalAccessException e) {

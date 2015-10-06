@@ -1,6 +1,9 @@
 package swen.adventure.game.scenenodes;
 
+import swen.adventure.engine.Action;
+import swen.adventure.engine.animation.AnimableProperty;
 import swen.adventure.engine.scenegraph.MeshNode;
+import swen.adventure.engine.scenegraph.Puzzle;
 import swen.adventure.engine.scenegraph.TransformNode;
 
 /**
@@ -8,6 +11,14 @@ import swen.adventure.engine.scenegraph.TransformNode;
  * Modified by Thomas Roughton, Student ID 300313924
  */
 public class Key extends Item {
+
+    public Action<Puzzle, Puzzle, Key> actionSetEnabled = (puzzle, ignored, key, data) -> {
+        this.setEnabled(true);
+    };
+
+    public Action<Puzzle, Puzzle, Key> actionSetDisabled = (puzzle, ignored, key, data) -> {
+        this.setEnabled(false);
+    };
 
     public Key(String id, TransformNode parent) {
         super(id, parent);

@@ -191,6 +191,10 @@ public abstract class SceneNode implements BundleSerializable {
         return Collections.unmodifiableSet(_childNodes);
     }
 
+    public boolean isEnabled() {
+        return _isEnabled;
+    }
+
     public void setEnabled(boolean isEnabled) {
         _isEnabled = isEnabled;
     }
