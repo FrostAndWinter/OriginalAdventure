@@ -6,6 +6,7 @@ import swen.adventure.engine.scenegraph.SceneNode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by josephbennett on 29/09/15
@@ -69,6 +70,15 @@ public class Inventory extends SceneNode {
         }
 
         return false; // inventory is full
+    }
+
+    public Optional<Item> getItemAt(int i) {
+        Item item = null;
+        if (i >= 0 && i < items.size()) {
+            item = items.get(i);
+        }
+
+        return Optional.ofNullable(item);
     }
 
     public int getSelectedSlot() {

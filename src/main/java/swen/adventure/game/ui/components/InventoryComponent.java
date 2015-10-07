@@ -1,11 +1,15 @@
 package swen.adventure.game.ui.components;
 
+import org.lwjgl.Sys;
 import processing.core.PGraphics;
 import swen.adventure.engine.Action;
 import swen.adventure.engine.ui.components.UIComponent;
 import swen.adventure.engine.ui.layoutmanagers.LayoutManager;
 import swen.adventure.game.scenenodes.Inventory;
+import swen.adventure.game.scenenodes.Item;
 import swen.adventure.game.scenenodes.Player;
+
+import java.util.Optional;
 
 /**
  * Created by danielbraithwt on 9/18/15.
@@ -15,7 +19,6 @@ public class InventoryComponent extends UIComponent {
 
     private Inventory inventory;
 
-    private int numItems;
     private int boxSize;
 
     private int selectedItem = 0;
@@ -23,7 +26,6 @@ public class InventoryComponent extends UIComponent {
     public InventoryComponent(Inventory inventory, int x, int y) {
         super(x, y, inventory.getCapacity() * BOX_SIZE, BOX_SIZE);
 
-        this.numItems = numItems;
         boxSize = BOX_SIZE;
 
         this.inventory = inventory;
@@ -69,15 +71,25 @@ public class InventoryComponent extends UIComponent {
 
         float scale = Math.min(scaleX, scaleY);
 
-        for (int i = 0; i < numItems; i++) {
+        for (int i = 0; i < inventory.getCapacity(); i++) {
             g.fill(34, 50, 90);
             g.rect(currentX * scaleX, currentY * scaleY, boxSize * scaleX, boxSize * scaleY);
 
             // If the item is selected
-//            if (i == selectedItem) {
-//                g.fill(255, 0, 0);
-//                g.rect((currentX + 10) * scaleX, (currentY + 10) * scaleY, (boxSize - 20) * scaleX, (boxSize- 20) * scaleY);
-//            }
+            if (i == inventory.getSelectedSlot()) {
+                g.fill(255, 0, 0);
+                g.rect((currentX + 10) * scaleX, (currentY + 10) * scaleY, (boxSize - 20) * scaleX, (boxSize- 20) * scaleY);
+            }
+
+            Optional<Item> item = inventory.getItemAt(i);
+
+            if (item.isPresent()) {
+                g.text(item.get().id, currentX, currentY);
+            } else {
+                g.fill(0, 0, 0, 0);
+                g.text("test", currentX, currentY);
+            }
+
 
             currentX += boxSize;
         }
