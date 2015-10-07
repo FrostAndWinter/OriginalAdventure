@@ -147,15 +147,22 @@ public class InventoryComponent extends UIComponent {
                     meshNode.setEnabled(true);
 
                     float meshMaxDimension = Math.max(meshNode.boundingBox().width(), meshNode.boundingBox().height());
-                    float xScale = (boxSize) * scaleX / meshMaxDimension;
-                    float yScale = (boxSize) * scaleY / meshMaxDimension;
 
                     TransformNode transformNode = meshNode.parent().get();
 
                     if (current == _inventory.getSelectedSlot() && showItem) {
-                        transformNode.setTranslation(new Vector3((finalCurrentX + boxSize / 2) * scaleX, (height) - (this.y + boxSize / 2) * scaleY, 0.f));
+                        int w = (int) (width - 2 * dx);
+                        int h = (int) (height - 2 * dy);
+
+                        float xScale = (w) / meshMaxDimension;
+                        float yScale = (h) / meshMaxDimension;
+
+                        transformNode.setTranslation(new Vector3(dx + w/2, dy + h/2, 0.f));
                         transformNode.setScale(new Vector3(xScale, yScale, 1.f));
                     } else {
+                        float xScale = (boxSize) * scaleX / meshMaxDimension;
+                        float yScale = (boxSize) * scaleY / meshMaxDimension;
+
                         transformNode.setTranslation(new Vector3(dx + (finalCurrentX + boxSize / 2) * scaleX, dy + (height) - (this.y + boxSize / 2) * scaleY, 0.f));
                         transformNode.setScale(new Vector3(xScale, yScale, 1.f));
                     }
