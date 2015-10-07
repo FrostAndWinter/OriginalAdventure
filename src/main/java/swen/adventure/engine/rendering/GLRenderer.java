@@ -81,10 +81,18 @@ public class GLRenderer {
         glDisable(GL_DEPTH_TEST);
     }
 
-    public void render(List<MeshNode> nodes, List<Light> lights, CameraNode cameraNode) {
+    /**
+     * Renders the given nodes using the given lights and transformation matrix
+     * @param nodes The nodes to render
+     * @param lights The lights to use in lighting the nodes
+     * @param worldToCameraMatrix A transformation to convert the node's position in world space to a position in camera space.
+     * @param fieldOfView The field of view of the camera
+     * @param hdrMaxIntensity The maximum light intensity in the scene.
+     */
+    public void render(List<MeshNode> nodes, List<Light> lights, Matrix4 worldToCameraMatrix, float fieldOfView, float hdrMaxIntensity) {
 
-        if (cameraNode.fieldOfView() != _currentFOV) {
-            _currentFOV = cameraNode.fieldOfView();
+        if (fieldOfView != _currentFOV) {
+            _currentFOV = fieldOfView;
             this.setProjectionMatrix();
         }
 
@@ -92,11 +100,9 @@ public class GLRenderer {
 
         _defaultShader.useProgram();
 
-        _defaultShader.setMaxIntensity(cameraNode.hdrMaxIntensity());
+        _defaultShader.setMaxIntensity(hdrMaxIntensity);
 
-        _defaultShader.setLightData(Light.toLightBlock(lights.stream().filter(Light::isOn).collect(Collectors.toList()), cameraNode.worldToNodeSpaceTransform()));
-
-        Matrix4 worldToCameraMatrix = cameraNode.worldToNodeSpaceTransform();
+        _defaultShader.setLightData(Light.toLightBlock(lights.stream().filter(Light::isOn).collect(Collectors.toList()), worldToCameraMatrix));
 
         nodes.forEach(node -> {
             Matrix4 nodeToCameraSpaceTransform = worldToCameraMatrix.multiply(node.nodeToWorldSpaceTransform());

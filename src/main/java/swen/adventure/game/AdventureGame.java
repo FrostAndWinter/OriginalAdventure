@@ -95,7 +95,7 @@ public class AdventureGame implements Game {
             return;
         }
         listener.player.camera().ifPresent(cameraNode -> {
-            listener._pickerRenderer.selectedNode(listener._meshNodesSortedByZ, cameraNode)
+            listener._pickerRenderer.selectedNode(listener._meshNodesSortedByZ, cameraNode.worldToNodeSpaceTransform())
                     .ifPresent(
                             meshNode ->
                                     meshNode.eventMeshPressed.trigger(listener.player, Collections.emptyMap()));
@@ -109,7 +109,7 @@ public class AdventureGame implements Game {
             return;
         }
         listener.player.camera().ifPresent(cameraNode -> {
-            listener._pickerRenderer.selectedNode(listener._meshNodesSortedByZ, cameraNode)
+            listener._pickerRenderer.selectedNode(listener._meshNodesSortedByZ, cameraNode.worldToNodeSpaceTransform())
                     .ifPresent(
                             meshNode ->
                                     meshNode.eventMeshReleased.trigger(listener.player, Collections.emptyMap()));
@@ -187,7 +187,7 @@ public class AdventureGame implements Game {
 
         this.player.camera().ifPresent(cameraNode -> {
             _meshNodesSortedByZ = DepthSorter.sortedMeshNodesByZ(_sceneGraph, cameraNode.worldToNodeSpaceTransform());
-            _glRenderer.render(_meshNodesSortedByZ, _sceneGraph.allNodesOfType(Light.class), cameraNode);
+            _glRenderer.render(_meshNodesSortedByZ, _sceneGraph.allNodesOfType(Light.class), cameraNode.worldToNodeSpaceTransform(), cameraNode.fieldOfView(), cameraNode.hdrMaxIntensity());
         });
 
 

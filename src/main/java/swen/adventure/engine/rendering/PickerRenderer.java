@@ -104,8 +104,8 @@ public class PickerRenderer {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    public Optional<MeshNode> selectedNode(List<MeshNode> meshNodes, CameraNode cameraNode) {
-        this.render(meshNodes, cameraNode.worldToNodeSpaceTransform());
+    public Optional<MeshNode> selectedNode(List<MeshNode> meshNodes, Matrix4 worldToCameraMatrix) {
+        this.render(meshNodes, worldToCameraMatrix);
         return Optional.ofNullable(_highlightedMesh);
     }
 
