@@ -87,7 +87,7 @@ public class AdventureGame implements Game {
 
         _mouseInput.eventMouseButtonPressed.addAction(this, AdventureGame.pressAction);
         _mouseInput.eventMouseButtonReleased.addAction(this, AdventureGame.releaseAction);
-        _keyInput.eventHideShowItem.addAction(this, (eventObject, triggeringObject, listener, data) -> {
+        _keyInput.eventHideShowInventory.addAction(this, (eventObject, triggeringObject, listener, data) -> {
             _inventory.setShowItem(!_inventory.getShowItem());
         });
 
@@ -167,8 +167,7 @@ public class AdventureGame implements Game {
 
     @Override
     public void update(long deltaMillis) {
-        _keyInput.handleInput(deltaMillis);
-        _mouseInput.handleInput();
+        _mouseInput.handleInput(); //TODO rework to remove polling from queue.
 
         Optional<EventBox> box;
         while ((box = _client.poll()).isPresent()) {

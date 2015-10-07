@@ -39,6 +39,7 @@ public class GameDelegate {
     private static double _mousePrevY = 0;
 
     private static long _timeLastUpdate;
+    private static long _elapsedTime;
 
     private static Game _game = null;
 
@@ -200,16 +201,20 @@ public class GameDelegate {
             AnimationSystem.update();
 
             long currentTime = System.currentTimeMillis();
+            _elapsedTime = currentTime - _timeLastUpdate;
+            _timeLastUpdate = currentTime;
 
-            _game.update(currentTime - _timeLastUpdate);
+            // Poll for window events. The key callback above will only be
+            // invoked during this call.
+            glfwPollEvents();
+            _game.keyInput().checkHeldKeys(character -> glfwGetKey(_window, character) == GLFW_PRESS, _elapsedTime);
+
+            _game.update(_elapsedTime);
 
             _timeLastUpdate = currentTime;
 
             glfwSwapBuffers(_window); // swap the color buffers
 
-            // Poll for _window events. The key callback above will only be
-            // invoked during this call.
-            glfwPollEvents();
         }
     }
     private static void handleMouseInput() {

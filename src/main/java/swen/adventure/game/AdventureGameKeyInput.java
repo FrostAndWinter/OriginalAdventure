@@ -11,12 +11,12 @@ public class AdventureGameKeyInput extends KeyInput {
 
         public AdventureGameKeyInput() {
             super();
-            keyMappings.put('w', this.eventMoveForwardKeyPressed);
-            keyMappings.put('s', this.eventMoveBackwardKeyPressed);
-            keyMappings.put('a', this.eventMoveLeftKeyPressed);
-            keyMappings.put('d', this.eventMoveRightKeyPressed);
-            keyMappings.put('i', this.eventHideShowItem);
-
+            this.onHeldMappings.put('W', this.eventMoveForwardKeyPressed);
+            this.onHeldMappings.put('S', this.eventMoveBackwardKeyPressed);
+            this.onHeldMappings.put('A', this.eventMoveLeftKeyPressed);
+            this.onHeldMappings.put('D', this.eventMoveRightKeyPressed);
+            this.onPressMappings.put('I', this.eventHideShowInventory);
+            this.onReleasedMappings.put('I', this.eventHideShowInventory);
 
             this.eventMoveBackwardKeyPressed.addAction(this, actionMoveKeyPressed);
             this.eventMoveForwardKeyPressed.addAction(this, actionMoveKeyPressed);
@@ -25,9 +25,9 @@ public class AdventureGameKeyInput extends KeyInput {
 
         }
 
-    public final Event<KeyInput, KeyInput> eventHideShowItem = new Event<>("eventHideShowInventory", this);
+    public final Event<KeyInput, KeyInput> eventHideShowInventory = new Event<>("eventHideShowInventory", this);
 
-        private final Event<KeyInput, KeyInput> eventMoveForwardKeyPressed = new Event<>("eventMoveForwardKeyPressed", this);
+    private final Event<KeyInput, KeyInput> eventMoveForwardKeyPressed = new Event<>("eventMoveForwardKeyPressed", this);
     private final Event<KeyInput, KeyInput> eventMoveBackwardKeyPressed = new Event<>("eventMoveBackwardKeyPressed", this);
     private final Event<KeyInput, KeyInput> eventMoveRightKeyPressed = new Event<>("eventMoveRightKeyPressed", this);
     private final Event<KeyInput, KeyInput> eventMoveLeftKeyPressed = new Event<>("eventMoveLeftKeyPressed", this);
