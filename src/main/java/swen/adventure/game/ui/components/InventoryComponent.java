@@ -109,7 +109,8 @@ public class InventoryComponent extends UIComponent {
      */
     public void drawItems(GLRenderer renderer, float scaleX, float scaleY, float width, float height) {
 
-        _toScreenTransform.setScale(new Vector3(1.f / width, 1.f / height, 1.f));
+        _toScreenTransform.setScale(new Vector3(2.f / width, 2.f / height, 1.f));
+        _toScreenTransform.setTranslation(new Vector3(-1.f, -1.f, -1.f));
 
         int currentX = this.x;
 
@@ -132,15 +133,13 @@ public class InventoryComponent extends UIComponent {
 
                     meshNode.setEnabled(true);
 
-                    float boxCentreXNormalised = (finalCurrentX) * scaleX;
-                    float boxCentreYNormalised = (this.y + boxSize + 5.f) * scaleY;
-
                     float meshMaxDimension = Math.max(meshNode.boundingBox().width(), meshNode.boundingBox().height());
                     float xScale = boxSize * scaleX / meshMaxDimension;
                     float yScale = boxSize * scaleY / meshMaxDimension;
 
                     TransformNode transformNode = meshNode.parent().get();
-                    transformNode.setTranslation(new Vector3(boxCentreXNormalised*2.f - width, height - boxCentreYNormalised*2.f, 0.f));
+               //     transformNode.setTranslation(new Vector3(finalCurrentX, -this.y, 0.f));
+                    transformNode.setTranslation(new Vector3(finalCurrentX, height - this.y, 0.f));
                     transformNode.setScale(new Vector3(xScale, yScale, 1.f));
 
                     nodesToRender.add(meshNode);
