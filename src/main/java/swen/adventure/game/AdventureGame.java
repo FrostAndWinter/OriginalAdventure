@@ -1,6 +1,7 @@
 package swen.adventure.game;
 
 import processing.opengl.PGraphics2D;
+import swen.adventure.Settings;
 import swen.adventure.engine.*;
 import swen.adventure.engine.datastorage.EventConnectionParser;
 import swen.adventure.engine.datastorage.SceneGraphParser;
@@ -43,12 +44,14 @@ public class AdventureGame implements Game {
     private AdventureGameKeyInput _keyInput = new AdventureGameKeyInput();
     private MouseInput _mouseInput = new MouseInput();
 
-    private float _mouseSensitivity = 1.f;
+    private float _mouseSensitivity = Settings.MouseSensitivity;
     private float _viewAngleX;
     private float _viewAngleY;
 
     private float virtualUIWidth;
     private float virtualUIHeight;
+
+    private List<MeshNode> _meshNodesSortedByZ = null;
 
     public AdventureGame(Client<EventBox> client) {
         _client = client;
@@ -88,8 +91,11 @@ public class AdventureGame implements Game {
     }
 
     private static final Action<MouseInput, MouseInput, AdventureGame> pressAction = (eventObject, triggeringObject, listener, data) -> {
+        if (listener._meshNodesSortedByZ == null) {
+            return;
+        }
         listener.player.camera().ifPresent(cameraNode -> {
-            listener._pickerRenderer.selectedNode(listener._sceneGraph, cameraNode)
+            listener._pickerRenderer.selectedNode(listener._meshNodesSortedByZ, cameraNode)
                     .ifPresent(
                             meshNode ->
                                     meshNode.eventMeshPressed.trigger(listener.player, Collections.emptyMap()));
@@ -99,8 +105,11 @@ public class AdventureGame implements Game {
     };
 
     private static final Action<MouseInput, MouseInput, AdventureGame> releaseAction = (eventObject, triggeringObject, listener, data) -> {
+        if (listener._meshNodesSortedByZ == null) {
+            return;
+        }
         listener.player.camera().ifPresent(cameraNode -> {
-            listener._pickerRenderer.selectedNode(listener._sceneGraph, cameraNode)
+            listener._pickerRenderer.selectedNode(listener._meshNodesSortedByZ, cameraNode)
                     .ifPresent(
                             meshNode ->
                                     meshNode.eventMeshReleased.trigger(listener.player, Collections.emptyMap()));
@@ -175,8 +184,10 @@ public class AdventureGame implements Game {
         if (Utilities.isHeadlessMode) {
             return;
         }
+
         this.player.camera().ifPresent(cameraNode -> {
-            _glRenderer.render(_sceneGraph, _sceneGraph.allLights(), cameraNode);
+            _meshNodesSortedByZ = DepthSorter.sortedMeshNodesByZ(_sceneGraph, cameraNode.worldToNodeSpaceTransform());
+            _glRenderer.render(_meshNodesSortedByZ, _sceneGraph.allNodesOfType(Light.class), cameraNode);
         });
 
 

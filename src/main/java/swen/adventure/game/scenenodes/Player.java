@@ -3,6 +3,7 @@ package swen.adventure.game.scenenodes;
 import swen.adventure.engine.Action;
 import swen.adventure.engine.KeyInput;
 import swen.adventure.engine.scenegraph.CameraNode;
+import swen.adventure.engine.scenegraph.CollisionNode;
 import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.TransformNode;
 import swen.adventure.engine.Event;
@@ -61,7 +62,7 @@ public class Player extends GameObject {
 
         final boolean[] canMove = {true};
         this.collisionNode().ifPresent(collisionNode -> {
-            _allCollidables.stream()
+            this.allNodesOfType(CollisionNode.class).stream()
                     .filter(otherCollisionNode -> otherCollisionNode != collisionNode &&
                             collisionNode.isCollidingWith(otherCollisionNode))
                     .forEach(otherCollisionNode -> {

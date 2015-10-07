@@ -27,8 +27,7 @@ public abstract class SceneNode implements BundleSerializable {
 
     public final String id;
     protected Map<String, SceneNode> _idsToNodesMap;
-    protected Set<Light> _allLights;
-    protected Set<CollisionNode> _allCollidables;
+    protected Map<Class<? extends SceneNode>, List<? extends SceneNode>> _nodesOfTypeMap;
 
     @Override
     public BundleObject toBundle() {
@@ -49,8 +48,7 @@ public abstract class SceneNode implements BundleSerializable {
      */
     public SceneNode(String id) {
         _idsToNodesMap = new HashMap<>();
-        _allLights = new HashSet<>();
-        _allCollidables = new HashSet<>();
+        _nodesOfTypeMap = new HashMap<>();
 
         this.id = id;
         _idsToNodesMap.put(id, this);
@@ -67,19 +65,20 @@ public abstract class SceneNode implements BundleSerializable {
 
         //Get a reference to the id-node dictionary, and pass along a reference to the lights set.
         _idsToNodesMap = parent._idsToNodesMap;
-        _allLights = parent._allLights;
-        _allCollidables = parent._allCollidables;
+        _nodesOfTypeMap = parent._nodesOfTypeMap;
 
         this.id = id;
         _idsToNodesMap.put(id, this);
 
         _isDynamic = isDynamic || parent.isDynamic(); //a node is considered dynamic if it or any of its parents can have a changing transform.
 
-        if (this instanceof Light) {
-            _allLights.add((Light)this);
-        } else if (this instanceof CollisionNode) {
-            _allCollidables.add((CollisionNode)this);
-        }
+        this.addNodeWithTypeToMap(this.getClass(), this);
+    }
+
+
+    private <T extends SceneNode> void addNodeWithTypeToMap(Class<T> type, SceneNode node) {
+        List<T> list = this.allNodesOfType(type);
+        list.add((T)node);
     }
 
     public Optional<TransformNode> parent() {
@@ -136,12 +135,17 @@ public abstract class SceneNode implements BundleSerializable {
     /**
      * @return All of the lights in the scene.
      */
-    public Set<Light> allLights() {
-        return _allLights;
+    public <T extends SceneNode> List<T> allNodesOfType(Class<T> type) {
+        List<T> nodes = (List<T>)_nodesOfTypeMap.get(type);
+        if (nodes == null) {
+            nodes = new ArrayList<>();
+            _nodesOfTypeMap.put(type, nodes);
+        }
+        return nodes;
     }
 
     /**
-     * Recursively applies a function to this node and then its children.
+     * Recursively applies a function to this node and then its children. Skips any disabled nodes
      * @param traversalFunction The function to apply to each node.
      */
     public void traverse(NodeTraversalFunction traversalFunction) {

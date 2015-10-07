@@ -4,6 +4,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import swen.adventure.Settings;
 import swen.adventure.engine.animation.AnimationSystem;
 
 import java.nio.ByteBuffer;
@@ -86,7 +87,7 @@ public class GameDelegate {
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-        glfwWindowHint(GLFW_SAMPLES, 8);
+        glfwWindowHint(GLFW_SAMPLES, Settings.Multisampling);
         glfwWindowHint(GLFW_SRGB_CAPABLE, GL_TRUE);
 
         // setup the main _window

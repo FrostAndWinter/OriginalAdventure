@@ -104,13 +104,13 @@ public class PickerRenderer {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    public Optional<MeshNode> selectedNode(SceneNode sceneGraph, CameraNode cameraNode) {
-        this.render(sceneGraph, cameraNode);
+    public Optional<MeshNode> selectedNode(List<MeshNode> meshNodes, CameraNode cameraNode) {
+        this.render(meshNodes, cameraNode.worldToNodeSpaceTransform());
         return Optional.ofNullable(_highlightedMesh);
     }
 
-    private void render(SceneNode sceneGraph, CameraNode cameraNode) {
-        final int[] currentNodeId = {1}; //NOTE: The maximum number of nodes is 2^24, and this will break if we go over that. But that's fine, because with that many nodes, lots of other things will break first.
+    private void render(List<MeshNode> meshNodes, Matrix4 worldToCameraMatrix) {
+        final int[] currentNodeId = {1}; //NOTE: The maximum number of nodes is 2^24, and this will break if we go over that. But that's fine, because with that many nodes lots of other things will break first.
                                             //This also starts at 1, since the id 0 corresponds to no object being selected.
         this.preRender();
 
@@ -118,24 +118,18 @@ public class PickerRenderer {
 
         _pickerShader.useProgram();
 
-        Matrix4 worldToCameraMatrix = cameraNode.worldToNodeSpaceTransform();
+        meshNodes.forEach(node -> {
+            Matrix4 nodeToCameraSpaceTransform = worldToCameraMatrix.multiply(node.nodeToWorldSpaceTransform());
+            Matrix4 nodeToClipSpaceTransform = this.perspectiveMatrix(_currentFOV).multiply(nodeToCameraSpaceTransform);
 
-        sceneGraph.traverse((node) -> {
-            if (node instanceof MeshNode) {
-                MeshNode meshNode = (MeshNode)node;
+            int id = currentNodeId[0]++;
 
-                Matrix4 nodeToCameraSpaceTransform = worldToCameraMatrix.multiply(node.nodeToWorldSpaceTransform());
-                Matrix4 nodeToClipSpaceTransform = this.perspectiveMatrix(_currentFOV).multiply(nodeToCameraSpaceTransform);
+            _idsToNodes[id] = new WeakReference<>(node);
 
-                int id = currentNodeId[0]++;
+            _pickerShader.setModelToClipMatrix(nodeToClipSpaceTransform);
+            _pickerShader.setID(id);
 
-                _idsToNodes[id] = new WeakReference<>(meshNode);
-
-                _pickerShader.setModelToClipMatrix(nodeToClipSpaceTransform);
-                _pickerShader.setID(id);
-
-                meshNode.render();
-            }
+            node.render();
         });
 
         _pickerShader.endUseProgram();

@@ -9,6 +9,7 @@ import swen.adventure.engine.scenegraph.Light;
 import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.SceneNode;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -80,7 +81,7 @@ public class GLRenderer {
         glDisable(GL_DEPTH_TEST);
     }
 
-    public void render(SceneNode sceneGraph, Set<Light> lights, CameraNode cameraNode) {
+    public void render(List<MeshNode> nodes, List<Light> lights, CameraNode cameraNode) {
 
         if (cameraNode.fieldOfView() != _currentFOV) {
             _currentFOV = cameraNode.fieldOfView();
@@ -93,23 +94,20 @@ public class GLRenderer {
 
         _defaultShader.setMaxIntensity(cameraNode.hdrMaxIntensity());
 
-        _defaultShader.setLightData(Light.toLightBlock(sceneGraph.allLights().stream().filter(Light::isOn).collect(Collectors.toList()), cameraNode.worldToNodeSpaceTransform()));
+        _defaultShader.setLightData(Light.toLightBlock(lights.stream().filter(Light::isOn).collect(Collectors.toList()), cameraNode.worldToNodeSpaceTransform()));
 
         Matrix4 worldToCameraMatrix = cameraNode.worldToNodeSpaceTransform();
 
-        sceneGraph.traverse((node) -> {
-            if (node instanceof MeshNode) {
-                MeshNode meshNode = (MeshNode)node;
+        nodes.forEach(node -> {
+            Matrix4 nodeToCameraSpaceTransform = worldToCameraMatrix.multiply(node.nodeToWorldSpaceTransform());
+            Matrix3 normalModelToCameraSpaceTransform = nodeToCameraSpaceTransform.getMatrix3().inverse().transpose();
 
-                Matrix4 nodeToCameraSpaceTransform = worldToCameraMatrix.multiply(node.nodeToWorldSpaceTransform());
-                Matrix3 normalModelToCameraSpaceTransform = nodeToCameraSpaceTransform.getMatrix3().inverse().transpose();
+            _defaultShader.setModelToCameraMatrix(nodeToCameraSpaceTransform);
+            _defaultShader.setNormalModelToCameraMatrix(normalModelToCameraSpaceTransform);
 
-                _defaultShader.setModelToCameraMatrix(nodeToCameraSpaceTransform);
-                _defaultShader.setNormalModelToCameraMatrix(normalModelToCameraSpaceTransform);
-
-                meshNode.render(_defaultShader);
-            }
+            node.render(_defaultShader);
         });
+
 
         _defaultShader.endUseProgram();
 

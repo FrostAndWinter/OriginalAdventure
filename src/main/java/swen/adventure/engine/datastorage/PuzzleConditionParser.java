@@ -1,4 +1,4 @@
-package swen.adventure.game;
+package swen.adventure.engine.datastorage;
 
 import swen.adventure.engine.datastorage.ParserManager;
 import swen.adventure.engine.scenegraph.SceneNode;
@@ -37,7 +37,7 @@ public class PuzzleConditionParser {
             int index = 0;
             if (components.length == 4) {
                 try {
-                    typeClass = Class.forName(components[index++]);
+                    typeClass = Class.forName("java.lang." + components[index++]);
                 } catch (ClassNotFoundException e) {
                     System.err.println("Error parsing condition list: " + e);
                 }
