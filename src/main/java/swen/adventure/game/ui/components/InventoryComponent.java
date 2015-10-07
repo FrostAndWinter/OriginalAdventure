@@ -27,6 +27,7 @@ import java.util.Optional;
  */
 public class InventoryComponent extends UIComponent {
     private static final int BOX_SIZE = 30;
+    private static final int INNER_PADDING = 6;
 
     private int boxSize;
 
@@ -86,15 +87,14 @@ public class InventoryComponent extends UIComponent {
         int currentY = y;
 
         for (int i = 0; i < Inventory.Capacity; i++) {
-            g.fill(34, 50, 90);
+            g.fill(0);
+            if (i == selectedItem) {
+                g.fill(180);
+            }
             g.rect(currentX * scaleX, currentY * scaleY, boxSize * scaleX, boxSize * scaleY);
 
-            // If the item is selected
-            if (i == selectedItem) {
-                g.fill(255, 0, 0);
-                g.rect((currentX + 10) * scaleX, (currentY + 10) * scaleY, (boxSize - 20) * scaleX, (boxSize - 20) * scaleY);
-            }
-
+            g.fill(34, 50, 90);
+            g.rect((currentX + (INNER_PADDING/2)) * scaleX, (currentY + (INNER_PADDING/2)) * scaleY, (boxSize - INNER_PADDING) * scaleX, (boxSize - INNER_PADDING) * scaleY);
             currentX += boxSize;
         }
     }
@@ -107,17 +107,17 @@ public class InventoryComponent extends UIComponent {
      * @param width
      * @param height
      */
-    public void drawItems(GLRenderer renderer, float scaleX, float scaleY, float width, float height) {
+    public void drawItems(GLRenderer renderer, float scaleX, float scaleY, float dx, float dy, float width, float height) {
 
         _toScreenTransform.setScale(new Vector3(2.f / width, 2.f / height, 1.f));
         _toScreenTransform.setTranslation(new Vector3(-1.f, -1.f, -1.f));
 
-        int currentX = this.x;
+        float currentX = this.x;
 
         List<MeshNode> nodesToRender = new ArrayList<>();
 
         for (Item item : _inventory.items()) {
-                final int finalCurrentX = currentX;
+                final float finalCurrentX = currentX;
 
                 item.mesh().ifPresent(itemMesh -> {
 
@@ -134,12 +134,11 @@ public class InventoryComponent extends UIComponent {
                     meshNode.setEnabled(true);
 
                     float meshMaxDimension = Math.max(meshNode.boundingBox().width(), meshNode.boundingBox().height());
-                    float xScale = boxSize * scaleX / meshMaxDimension;
-                    float yScale = boxSize * scaleY / meshMaxDimension;
+                    float xScale = (boxSize) * scaleX / meshMaxDimension;
+                    float yScale = (boxSize) * scaleY / meshMaxDimension;
 
                     TransformNode transformNode = meshNode.parent().get();
-               //     transformNode.setTranslation(new Vector3(finalCurrentX, -this.y, 0.f));
-                    transformNode.setTranslation(new Vector3(finalCurrentX, height - this.y, 0.f));
+                    transformNode.setTranslation(new Vector3(dx + (finalCurrentX + boxSize / 2) * scaleX, dy + (height - boxSize / 2) - (this.y) * scaleY, 0.f));
                     transformNode.setScale(new Vector3(xScale, yScale, 1.f));
 
                     nodesToRender.add(meshNode);

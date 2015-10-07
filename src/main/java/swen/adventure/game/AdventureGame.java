@@ -205,7 +205,7 @@ public class AdventureGame implements Game {
         _frame.draw(_pGraphics, scale, scale);
         _pGraphics.endDraw();
 
-        _inventory.drawItems(_glRenderer, scale, scale, _pGraphics.width, _pGraphics.height);
+        _inventory.drawItems(_glRenderer, scale, scale, dw, dh, _pGraphics.width, _pGraphics.height);
     }
 
     /**
