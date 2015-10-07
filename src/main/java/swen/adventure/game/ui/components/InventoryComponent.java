@@ -32,6 +32,7 @@ public class InventoryComponent extends UIComponent {
     private int boxSize;
 
     private int selectedItem = 0;
+    private boolean showItem;
 
     private final Inventory _inventory;
     private final TransformNode _rootSceneNode = new TransformNode("root", Vector3.zero, new Quaternion(), Vector3.one);
@@ -64,6 +65,15 @@ public class InventoryComponent extends UIComponent {
 
     public int getSelectedItem() {
         return selectedItem;
+    }
+
+    public boolean getShowItem() {
+        return showItem;
+    }
+
+    public void setShowItem(boolean showItem) {
+        // TODO: Ensure that it cant be set to true if no item is in inventory
+        this.showItem = showItem;
     }
 
     @Override
@@ -116,7 +126,10 @@ public class InventoryComponent extends UIComponent {
 
         List<MeshNode> nodesToRender = new ArrayList<>();
 
-        for (Item item : _inventory.items()) {
+        for (int i = 0; i < _inventory.items().size(); i++) {
+                Item item = _inventory.items().get(i);
+
+                final int current = i;
                 final float finalCurrentX = currentX;
 
                 item.mesh().ifPresent(itemMesh -> {
@@ -138,8 +151,14 @@ public class InventoryComponent extends UIComponent {
                     float yScale = (boxSize) * scaleY / meshMaxDimension;
 
                     TransformNode transformNode = meshNode.parent().get();
-                    transformNode.setTranslation(new Vector3(dx + (finalCurrentX + boxSize / 2) * scaleX, dy + (height - boxSize / 2) - (this.y) * scaleY, 0.f));
-                    transformNode.setScale(new Vector3(xScale, yScale, 1.f));
+
+                    if (current == _inventory.getSelectedSlot() && showItem) {
+                        transformNode.setTranslation(new Vector3((finalCurrentX + boxSize / 2) * scaleX, (height) - (this.y + boxSize / 2) * scaleY, 0.f));
+                        transformNode.setScale(new Vector3(xScale, yScale, 1.f));
+                    } else {
+                        transformNode.setTranslation(new Vector3(dx + (finalCurrentX + boxSize / 2) * scaleX, dy + (height) - (this.y + boxSize / 2) * scaleY, 0.f));
+                        transformNode.setScale(new Vector3(xScale, yScale, 1.f));
+                    }
 
                     nodesToRender.add(meshNode);
                 });

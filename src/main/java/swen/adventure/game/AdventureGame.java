@@ -87,6 +87,9 @@ public class AdventureGame implements Game {
 
         _mouseInput.eventMouseButtonPressed.addAction(this, AdventureGame.pressAction);
         _mouseInput.eventMouseButtonReleased.addAction(this, AdventureGame.releaseAction);
+        _keyInput.eventHideShowItem.addAction(this, (eventObject, triggeringObject, listener, data) -> {
+            _inventory.setShowItem(!_inventory.getShowItem());
+        });
 
         this.setupUI(width, height);
     }

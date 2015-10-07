@@ -15,6 +15,8 @@ public class AdventureGameKeyInput extends KeyInput {
             keyMappings.put('s', this.eventMoveBackwardKeyPressed);
             keyMappings.put('a', this.eventMoveLeftKeyPressed);
             keyMappings.put('d', this.eventMoveRightKeyPressed);
+            keyMappings.put('i', this.eventHideShowItem);
+
 
             this.eventMoveBackwardKeyPressed.addAction(this, actionMoveKeyPressed);
             this.eventMoveForwardKeyPressed.addAction(this, actionMoveKeyPressed);
@@ -22,6 +24,8 @@ public class AdventureGameKeyInput extends KeyInput {
             this.eventMoveRightKeyPressed.addAction(this, actionMoveKeyPressed);
 
         }
+
+    public final Event<KeyInput, KeyInput> eventHideShowItem = new Event<>("eventHideShowInventory", this);
 
         private final Event<KeyInput, KeyInput> eventMoveForwardKeyPressed = new Event<>("eventMoveForwardKeyPressed", this);
     private final Event<KeyInput, KeyInput> eventMoveBackwardKeyPressed = new Event<>("eventMoveBackwardKeyPressed", this);
