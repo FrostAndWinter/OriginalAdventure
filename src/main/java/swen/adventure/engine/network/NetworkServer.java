@@ -2,6 +2,7 @@ package swen.adventure.engine.network;
 
 import swen.adventure.engine.datastorage.SceneGraphSerializer;
 import swen.adventure.engine.scenegraph.SceneNode;
+import swen.adventure.game.scenenodes.SpawnNode;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -158,7 +159,7 @@ public class NetworkServer implements Server<String, EventBox>, Session.SessionS
                 }
                 clients.put(id, from);
                 System.out.println("Client connected id:" + id);
-                queue.add(new EventBox("playerConnected", id, "spawnPoint", id, Collections.emptyMap()));
+                queue.add(new EventBox("playerConnected", SpawnNode.ID, id, id, Collections.emptyMap()));
                 break;
             case CLIENT_DATA:
                 queue.add(EventBox.fromBytes(packet.getPayload()));

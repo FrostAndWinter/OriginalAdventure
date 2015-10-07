@@ -14,6 +14,7 @@ import swen.adventure.engine.network.NetworkClient;
 import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.rendering.PickerRenderer;
 import swen.adventure.engine.rendering.maths.Quaternion;
+import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
 import swen.adventure.game.input.AdventureGameKeyInput;
 import swen.adventure.game.input.AdventureGameMouseInput;
@@ -21,9 +22,10 @@ import swen.adventure.game.scenenodes.*;
 import swen.adventure.game.ui.components.InventoryComponent;
 import swen.adventure.game.ui.components.UI;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 public class AdventureGame implements Game {
@@ -59,30 +61,51 @@ public class AdventureGame implements Game {
 
     @Override
     public void setup(int width, int height) {
-
-        try {
-            _sceneGraph = SceneGraphParser.parseSceneGraph(new File(Utilities.pathForResource("SceneGraph", "xml")));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        this._player = (Player)_sceneGraph.nodeWithID("player").get();
-        this._player.setCamera((CameraNode) _sceneGraph.nodeWithID("playerCamera").get());
-
-        try {
-            List<EventConnectionParser.EventConnection> connections = EventConnectionParser.parseFile(Utilities.readLinesFromFile(Utilities.pathForResource("EventConnections", "event")));
-            EventConnectionParser.setupConnections(connections, _sceneGraph);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         if (!Utilities.isHeadlessMode) {
             _glRenderer = new GLRenderer(width, height);
             _pickerRenderer = new PickerRenderer();
         }
 
-        this.setupUI(width, height);
+        virtualUIWidth = width;
+        virtualUIHeight = height;
+
+        // Wait for the SNAPSHOT event
+        Optional<EventBox> box;
+        while (!(box = _client.poll()).isPresent()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        EventBox event = box.get();
+        setupSceneGraph(SceneGraphParser.parseSceneGraph(event.eventData.get("scenegraph").toString()), event.targetId);
+    }
+
+    private void setupSceneGraph(TransformNode sceneGraph, String playerId) {
+        _sceneGraph = sceneGraph;
+
+
+        SpawnNode spawn = (SpawnNode)_sceneGraph.nodeWithID(SpawnNode.ID).get();
+        spawn.spawnPlayerWithId(playerId);
+
+        _player = (Player)_sceneGraph.nodeWithID(playerId).get();
+        TransformNode cameraTransform = new TransformNode(playerId + "CameraTranslation",
+                _player.parent().get(), false, new Vector3(0, 40, 0), new Quaternion(), Vector3.one);
+        _player.setCamera(new CameraNode(playerId + "Camera", cameraTransform));
+
+        _keyInput.eventMoveInDirection.addAction(_player, Player.actionMoveInDirection);
+        _keyInput.eventMoveInDirection.addAction(_player, Player.actionMoveInDirection);
+
+        try {
+            List<EventConnectionParser.EventConnection> connections = EventConnectionParser.parseFile(Utilities.readLinesFromFile(Utilities.pathForResource("EventConnections", "event")));
+            EventConnectionParser.setupConnections(connections, _sceneGraph);
+            if (false) {
+                throw new IOException();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         _keyInput.eventMoveInDirection.addAction(this._player, Player.actionMoveInDirection);
 
@@ -106,6 +129,8 @@ public class AdventureGame implements Game {
             Interaction interaction = (Interaction) data.get(EventDataKeys.Interaction);
             _possibleInteractionsForStep.put(interaction.interactionType, interaction);
         });
+
+        this.setupUI((int)virtualUIWidth, (int)virtualUIHeight);
     }
 
     private static final Action<Input, Input, AdventureGame> primaryActionFired = (eventObject, triggeringObject, adventureGame, data) -> {
@@ -150,7 +175,6 @@ public class AdventureGame implements Game {
     }
 
     private void setupUI(int width, int height) {
-
         virtualUIWidth = width;
         virtualUIHeight = height;
 
@@ -180,6 +204,13 @@ public class AdventureGame implements Game {
         while ((box = _client.poll()).isPresent()) {
             EventBox event = box.get();
             SceneNode source = _sceneGraph.nodeWithID(event.sourceId).get();
+
+            if (event.eventName.equals("playerConnected")) {
+                SpawnNode spawn = (SpawnNode)source;
+                spawn.spawnPlayerWithId(event.targetId);
+                continue;
+            }
+
             SceneNode target = _sceneGraph.nodeWithID(event.targetId).get();
             Event e = target.eventWithName(event.eventName);
             e.trigger(source, event.eventData);
@@ -256,7 +287,7 @@ public class AdventureGame implements Game {
         // Start with networking using CLI arguments <_player id> <host> <port>
         Client<EventBox> client;
         if (args.length == 3) {
-            client = new NetworkClient("player" + Math.random());
+            client = new NetworkClient(args[0] + Math.random());
             try {
                 client.connect(args[1], Integer.parseInt(args[2]));
             } catch (IOException e) {
@@ -264,7 +295,16 @@ public class AdventureGame implements Game {
                 return;
             }
         } else {
-            client = new DumbClient();
+            DumbClient dumbClient = new DumbClient();
+            Map<String, Object> data = new HashMap<>();
+            try {
+                data.put("scenegraph", new String(Files.readAllBytes(new File(Utilities.pathForResource("SceneGraph", "xml")).toPath())));
+                dumbClient.add(new EventBox("snapshot", "", "player", null, data));
+                client = dumbClient;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
         }
 
         GameDelegate.setGame(new AdventureGame(client));

@@ -7,6 +7,7 @@ import swen.adventure.engine.network.NetworkServer;
 import swen.adventure.engine.network.Server;
 import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.SceneNode;
+import swen.adventure.game.scenenodes.SpawnNode;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,8 +25,11 @@ public class MultiPlayerServer implements Runnable {
     public MultiPlayerServer(int port, String map) {
         server = new NetworkServer();
         try {
+            System.out.println("Loading map");
             root = SceneGraphParser.parseSceneGraph(new File(map));
+            System.out.println("Completed loading map");
             server.start(port);
+            System.out.println("Accepting connections");
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
@@ -39,11 +43,17 @@ public class MultiPlayerServer implements Runnable {
             }
             EventBox event = isEvent.get();
 
+            GameObject source = (GameObject)root.nodeWithID(event.sourceId).get();
+
             if (event.eventName.equals("playerConnected")) {
                 server.sendSnapShot(event.from, root);
+
+                SpawnNode spawn = (SpawnNode) source;
+                spawn.spawnPlayerWithId(event.targetId);
+                server.sendAll(event, event.from);
+                continue;
             }
 
-            GameObject source = (GameObject)root.nodeWithID(event.sourceId).get();
             GameObject target = (GameObject)root.nodeWithID(event.targetId).get();
             Event e = target.eventWithName(event.eventName);
             e.trigger(source, event.eventData);

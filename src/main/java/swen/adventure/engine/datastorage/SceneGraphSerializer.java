@@ -8,8 +8,7 @@ import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
-import swen.adventure.game.scenenodes.FlickeringLight;
-import swen.adventure.game.scenenodes.Player;
+import swen.adventure.game.scenenodes.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -77,12 +76,35 @@ public class SceneGraphSerializer {
         else if (sceneNode instanceof Player)
             serializedNode = serializePlayerNode((Player) sceneNode, xmlParentNode);
 
+        else if (sceneNode instanceof Puzzle)
+            serializedNode = serializePuzzle((Puzzle) sceneNode, xmlParentNode);
+
+        else if (sceneNode instanceof SpawnNode)
+            serializedNode = serializeSpawnNode((SpawnNode) sceneNode, xmlParentNode);
+
+        else if (sceneNode instanceof Key)
+            serializedNode = serializeKey((Key) sceneNode, xmlParentNode);
+
+        else if (sceneNode instanceof Note)
+            serializedNode = serializeNote((Note) sceneNode, xmlParentNode);
+
+        else if (sceneNode instanceof Lever)
+            serializedNode = serializeLever((Lever) sceneNode, xmlParentNode);
+
+        else if (sceneNode instanceof Chest)
+            serializedNode = serializeChest((Chest) sceneNode, xmlParentNode);
+
+
         else
-            throw new RuntimeException("Don't recognise node " + sceneNode);
+            serializedNode = null;
+            //throw new RuntimeException("Don't recognise node " + sceneNode);
 
         sceneNode.children()
                 .forEach(node -> serializeSceneNode(node, serializedNode));
     }
+
+
+
 
     private boolean isRoot(SceneNode sceneNode) {
         return sceneNode instanceof TransformNode && sceneNode.id.equals("root");
@@ -162,15 +184,19 @@ public class SceneGraphSerializer {
 
     private Node serializePlayerNode(Player playerNode, Node xmlParentNode) {
         Element xmlElement = createElementForNode(playerNode, xmlParentNode);
-        setAttribute("boundingBox", playerNode.collisionNode().get().boundingBox(),
-                BoundingBox.class, xmlElement);
+
+        playerNode.collisionNode().ifPresent(collisionNode -> {
+            setAttribute("boundingBox", collisionNode.boundingBox(),
+                    BoundingBox.class, xmlElement);
+        });
+
         return xmlElement;
     }
 
     private Node serializeFlickeringLightNode(FlickeringLight flickeringLightNode, Node xmlParentNode) {
         Element xmlElement = createElementForNode(flickeringLightNode, xmlParentNode);
         setAttribute("directory", flickeringLightNode.mesh().get().getDirectory(), xmlElement);
-        setAttribute("fileName", flickeringLightNode.mesh().get().getDirectory(), xmlElement);
+        setAttribute("fileName", flickeringLightNode.mesh().get().getFileName(), xmlElement);
         setAttribute("colour", flickeringLightNode.getColour(), Vector3.class, xmlElement);
         setAttribute("intensity", flickeringLightNode.getIntensity(), Float.class, xmlElement);
         setAttribute("falloff", flickeringLightNode.getFalloff().toString(), xmlElement);
@@ -178,6 +204,44 @@ public class SceneGraphSerializer {
         setAttribute("intensityVariation", flickeringLightNode.getIntensityVariation(), Float.class, xmlElement);
         return xmlElement;
     }
+
+    private Node serializePuzzle(Puzzle sceneNode, Node xmlParentNode) {
+        Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
+        setAttribute("id", sceneNode.id, xmlElement);
+        setAttribute("conditions", sceneNode.getConditionSource(), xmlElement);
+        return xmlElement;
+    }
+
+    private Node serializeKey(Key sceneNode, Node xmlParentNode) {
+        Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
+        setAttribute("id", sceneNode.id, xmlElement);
+        setAttribute("enabled", Boolean.toString(sceneNode.isEnabled()), xmlElement);
+        return xmlElement;
+    }
+
+    private Node serializeSpawnNode(SpawnNode sceneNode, Node xmlParentNode) {
+        Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
+        setAttribute("id", sceneNode.id, xmlElement);
+        return xmlElement;
+    }
+
+    private Node serializeChest(Chest sceneNode, Node xmlParentNode) {
+        Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
+        setAttribute("id", sceneNode.id, xmlElement);
+        return xmlElement;
+    }
+
+    private Node serializeLever(Lever sceneNode, Node xmlParentNode) {
+        Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
+        setAttribute("id", sceneNode.id, xmlElement);
+        return xmlElement;
+    }
+    private Node serializeNote(Note sceneNode, Node xmlParentNode) {
+        Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
+        setAttribute("id", sceneNode.id, xmlElement);
+        return xmlElement;
+    }
+
 
     private <T> String parseToString(T object, Class<T> class0) {
         return PARSER_MANAGER.getToStringFunction(class0).apply(object);

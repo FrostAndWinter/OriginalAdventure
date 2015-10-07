@@ -8,6 +8,7 @@ import swen.adventure.game.scenenodes.Player;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 6/10/15.
@@ -26,10 +27,12 @@ public final class Puzzle extends GameObject {
     public static class PuzzleCondition<T> {
         public final Supplier<T> getter;
         public final T requiredState;
+        public final String source;
 
-        public PuzzleCondition(final Supplier<T> getter, final T requiredState) {
+        public PuzzleCondition(final Supplier<T> getter, final T requiredState, String source) {
             this.getter = getter;
             this.requiredState = requiredState;
+            this.source = source;
         }
 
         public boolean isTrue() {
@@ -61,6 +64,10 @@ public final class Puzzle extends GameObject {
 
         _puzzleSolved = this.isPuzzleSolved();
         this.triggerPuzzleStateEvent();
+    }
+    
+    public String getConditionSource() {
+        return String.join(";", _conditions.stream().map(cond -> cond.source).collect(Collectors.toList()));
     }
 
     /**

@@ -1,7 +1,11 @@
 package swen.adventure.engine.network;
 
+import swen.adventure.engine.datastorage.SceneGraphParser;
+
 import java.io.IOException;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -87,7 +91,6 @@ public class NetworkClient implements Client<EventBox>, Session.SessionStrategy 
         switch (packet.getOperation()) {
             case SERVER_DATA:
                 queue.add(EventBox.fromBytes(packet.getPayload()));
-                from.send(new Packet(Packet.Operation.CLIENT_DATA, packet.getPayload()));
                 break;
             case SERVER_KILL:
                 disconnect();
@@ -97,6 +100,11 @@ public class NetworkClient implements Client<EventBox>, Session.SessionStrategy 
                 break;
             case PONG:
                 ping = (System.nanoTime() - Long.parseLong(new String(packet.getPayload()), 16)) / 1000000.0;
+                break;
+            case SNAPSHOT:
+                Map<String, Object> data = new HashMap<>();
+                data.put("scenegraph", new String(packet.getPayload()));
+                queue.add(new EventBox("snapshot", "root", id, null, data));
                 break;
             default:
                 System.out.println("Unimplemented Client operation: " + packet.getOperation() + " length:" + packet.getPayload().length);
