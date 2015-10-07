@@ -12,6 +12,8 @@ import java.util.Arrays;
  */
 public class Matrix4 {
 
+    public static final Matrix4 identity = new Matrix4();
+
     public final float[] m;
 
     public Matrix4() {

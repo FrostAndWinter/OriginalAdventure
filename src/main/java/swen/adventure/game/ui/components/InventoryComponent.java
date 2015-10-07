@@ -2,31 +2,49 @@ package swen.adventure.game.ui.components;
 
 import processing.core.PGraphics;
 import swen.adventure.engine.Action;
+import swen.adventure.engine.rendering.GLRenderer;
+import swen.adventure.engine.rendering.maths.Matrix4;
+import swen.adventure.engine.rendering.maths.Quaternion;
+import swen.adventure.engine.rendering.maths.Vector3;
+import swen.adventure.engine.scenegraph.Light;
+import swen.adventure.engine.scenegraph.MeshNode;
+import swen.adventure.engine.scenegraph.SceneNode;
+import swen.adventure.engine.scenegraph.TransformNode;
 import swen.adventure.engine.ui.components.UIComponent;
 import swen.adventure.engine.ui.layoutmanagers.LayoutManager;
 import swen.adventure.game.scenenodes.Inventory;
+import swen.adventure.game.scenenodes.Item;
 import swen.adventure.game.scenenodes.Player;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by danielbraithwt on 9/18/15.
+ * Modified by Thomas Roughton, Student ID 300313924
  */
 public class InventoryComponent extends UIComponent {
     private static final int BOX_SIZE = 30;
 
-    private Object[] items;
-
-    private int numItems;
     private int boxSize;
 
     private int selectedItem = 0;
 
-    public InventoryComponent(int numItems, int x, int y) {
-        super(x, y, numItems * BOX_SIZE, BOX_SIZE);
+    private final Inventory _inventory;
+    private final TransformNode _rootSceneNode = new TransformNode("root", Vector3.zero, new Quaternion(), Vector3.one);
+    private final TransformNode _toScreenTransform = new TransformNode("toScreenTransform", _rootSceneNode, true, new Vector3(0.f, 0.f, -1.f), new Quaternion(), Vector3.one);
+    private final Light _modelLight = Light.createDirectionalLight("directionalLight", _rootSceneNode, Vector3.one.normalise(), 0.5f, new Vector3(0.5f, 0.5f, 0.5f));
 
-        this.numItems = numItems;
+    private final Matrix4 _projectionMatrix = Matrix4.makeOrtho(-1.f, 1.f, -1.f, 1.f, 1.f, 1000.f);
+
+    public InventoryComponent(Inventory inventory, int x, int y) {
+        super(x, y, Inventory.Capacity * BOX_SIZE, BOX_SIZE);
+
+        _inventory = inventory;
+
         boxSize = BOX_SIZE;
-
-        items = new Object[numItems];
     }
 
     public static final Action<Inventory, Player, InventoryComponent> actionSelectSlot =
@@ -45,14 +63,6 @@ public class InventoryComponent extends UIComponent {
 
     public int getSelectedItem() {
         return selectedItem;
-    }
-
-    public void setItemAt(int index, Object o) {
-        items[index] = o;
-    }
-
-    public Object getItemAt(int index) {
-        return items[index];
     }
 
     @Override
@@ -75,21 +85,73 @@ public class InventoryComponent extends UIComponent {
         int currentX = x;
         int currentY = y;
 
-        float scale = Math.min(scaleX, scaleY);
-
-        for (int i = 0; i < numItems; i++) {
+        for (int i = 0; i < Inventory.Capacity; i++) {
             g.fill(34, 50, 90);
             g.rect(currentX * scaleX, currentY * scaleY, boxSize * scaleX, boxSize * scaleY);
 
             // If the item is selected
             if (i == selectedItem) {
                 g.fill(255, 0, 0);
-                g.rect((currentX + 10) * scaleX, (currentY + 10) * scaleY, (boxSize - 20) * scaleX, (boxSize- 20) * scaleY);
+                g.rect((currentX + 10) * scaleX, (currentY + 10) * scaleY, (boxSize - 20) * scaleX, (boxSize - 20) * scaleY);
             }
 
             currentX += boxSize;
         }
     }
+
+    /**
+     *
+     * @param renderer
+     * @param scaleX
+     * @param scaleY
+     * @param width
+     * @param height
+     */
+    public void drawItems(GLRenderer renderer, float scaleX, float scaleY, float width, float height) {
+
+        _toScreenTransform.setScale(new Vector3(1.f / width, 1.f / height, 1.f));
+
+        int currentX = this.x;
+
+        List<MeshNode> nodesToRender = new ArrayList<>();
+
+        for (Item item : _inventory.items()) {
+                final int finalCurrentX = currentX;
+
+                item.mesh().ifPresent(itemMesh -> {
+
+                    Optional<SceneNode> meshNodeOpt = _toScreenTransform.nodeWithID(itemMesh.id);
+                    MeshNode meshNode;
+                    if (meshNodeOpt.isPresent()) {
+                        meshNode = (MeshNode) meshNodeOpt.get();
+                    } else {
+                        TransformNode transformNode = new TransformNode(itemMesh.id + "Transform", _toScreenTransform, true, Vector3.zero, new Quaternion(), Vector3.one);
+                        meshNode = new MeshNode(itemMesh.id, itemMesh.getDirectory(), itemMesh.getFileName(), transformNode);
+                        itemMesh.materialOverride().ifPresent(meshNode::setMaterialOverride);
+                    }
+
+                    meshNode.setEnabled(true);
+
+                    float boxCentreXNormalised = (finalCurrentX) * scaleX;
+                    float boxCentreYNormalised = (this.y + boxSize + 5.f) * scaleY;
+
+                    float meshMaxDimension = Math.max(meshNode.boundingBox().width(), meshNode.boundingBox().height());
+                    float xScale = boxSize * scaleX / meshMaxDimension;
+                    float yScale = boxSize * scaleY / meshMaxDimension;
+
+                    TransformNode transformNode = meshNode.parent().get();
+                    transformNode.setTranslation(new Vector3(boxCentreXNormalised*2.f - width, height - boxCentreYNormalised*2.f, 0.f));
+                    transformNode.setScale(new Vector3(xScale, yScale, 1.f));
+
+                    nodesToRender.add(meshNode);
+                });
+
+            currentX += boxSize;
+        }
+
+        renderer.render(nodesToRender, Collections.singletonList(_modelLight), Matrix4.identity, _projectionMatrix, 1.5f);
+    }
+
 
     @Override
     public boolean withinBounds(int x, int y) {

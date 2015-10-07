@@ -12,7 +12,7 @@ import java.util.function.Function;
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 15/09/15.
  */
-public class TransformNode extends SceneNode {
+public final class TransformNode extends SceneNode {
     private Vector3 _translation;
     private Quaternion _rotation;
     private Vector3 _scale;

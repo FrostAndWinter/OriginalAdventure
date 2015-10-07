@@ -3,7 +3,7 @@ package swen.adventure.engine.scenegraph;
 /**
  * Created by josephbennett on 19/09/15
  */
-public class CameraNode extends SceneNode {
+public final class CameraNode extends SceneNode {
 
     private float _fieldOfView = (float)Math.PI/3.f;
     private float _hdrMaxIntensity = 12.f;

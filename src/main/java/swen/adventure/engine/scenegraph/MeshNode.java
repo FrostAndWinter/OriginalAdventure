@@ -19,7 +19,7 @@ import java.util.function.Function;
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 25/09/15.
  */
-public class MeshNode extends SceneNode {
+public final class MeshNode extends SceneNode {
 
     // needed for serializing this node into xml
     private final String _directory;

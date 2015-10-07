@@ -215,7 +215,7 @@ public class GameDelegate {
     private static void handleMouseInput() {
 
         if (!_mouseLocked && glfwGetMouseButton(_window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
-            // hide mouse cursor and move cursor to centre of _window
+            // hide mouse cursor and move cursor to centre of window
             glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
             glfwSetCursorPos(_window, _windowWidth / 2, _windowHeight / 2);
 

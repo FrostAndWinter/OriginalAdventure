@@ -7,7 +7,7 @@ import java.util.Optional;
 /**
  * Created by josephbennett on 29/09/15
  */
-public class CollisionNode extends SceneNode {
+public final class CollisionNode extends SceneNode {
 
     private Optional<MeshNode> _meshNode = Optional.empty();
 

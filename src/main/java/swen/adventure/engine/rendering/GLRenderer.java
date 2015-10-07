@@ -25,6 +25,7 @@ public class GLRenderer {
     private GaussianMaterialsNormalMapsShader _defaultShader;
     private int _width, _height;
     private float _currentFOV = (float)Math.PI/3.f;
+    private Matrix4 _currentProjectionMatrix;
 
     public GLRenderer(int width, int height) {
         _defaultShader = new GaussianMaterialsNormalMapsShader();
@@ -40,16 +41,9 @@ public class GLRenderer {
         return Matrix4.makePerspective(fieldOfView, cameraAspect, cameraNear, cameraFar);
     }
 
-    private void setProjectionMatrix() {
-
-        _defaultShader.useProgram();
-        _defaultShader.setCameraToClipMatrix(this.perspectiveMatrix(_width, _height, _currentFOV));
-        _defaultShader.endUseProgram();
-    }
-
     public void setSize(int width, int height) {
         _width = width; _height = height;
-        this.setProjectionMatrix();
+        _currentProjectionMatrix = this.perspectiveMatrix(_width, _height, _currentFOV);
     }
 
     /**
@@ -68,8 +62,7 @@ public class GLRenderer {
         glDepthRange(0.0f, 1.0f);
         glEnable(GL_DEPTH_CLAMP);
 
-        glClearColor(0.f, 0.f, 0.f, 1.f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_DEPTH_BUFFER_BIT);
     }
 
     /**
@@ -93,14 +86,29 @@ public class GLRenderer {
 
         if (fieldOfView != _currentFOV) {
             _currentFOV = fieldOfView;
-            this.setProjectionMatrix();
+            _currentProjectionMatrix = this.perspectiveMatrix(_width, _height, fieldOfView);
         }
+
+        this.render(nodes, lights, worldToCameraMatrix, _currentProjectionMatrix, hdrMaxIntensity);
+    }
+
+    /**
+     * Renders the given nodes using the given lights and transformation matrix, overriding the projection matrix.
+     * @param nodes The nodes to render
+     * @param lights The lights to use in lighting the nodes
+     * @param worldToCameraMatrix A transformation to convert the node's position in world space to a position in camera space.
+     * @param projectionMatrix The projection matrix to use
+     * @param hdrMaxIntensity The maximum light intensity in the scene.
+     */
+    public void render(List<MeshNode> nodes, List<Light> lights, Matrix4 worldToCameraMatrix, Matrix4 projectionMatrix, float hdrMaxIntensity) {
 
         this.preRender();
 
         _defaultShader.useProgram();
 
         _defaultShader.setMaxIntensity(hdrMaxIntensity);
+
+        _defaultShader.setCameraToClipMatrix(projectionMatrix);
 
         _defaultShader.setLightData(Light.toLightBlock(lights.stream().filter(Light::isOn).collect(Collectors.toList()), worldToCameraMatrix));
 

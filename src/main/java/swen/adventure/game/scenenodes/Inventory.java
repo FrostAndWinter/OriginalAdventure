@@ -22,10 +22,10 @@ public class Inventory extends SceneNode {
     /**
      * The capacity of the inventory (i.e how many game objects it can hold)
      */
-    private final int capacity = 5;
+    public static final int Capacity = 5;
 
 
-    private List<Item> items = new ArrayList<>(capacity);
+    private List<Item> items = new ArrayList<>(Capacity);
     private Player _player;
 
     public Inventory(Player player) {
@@ -43,11 +43,15 @@ public class Inventory extends SceneNode {
     }
 
     public void selectSlot(int slot) {
-        if (slot < 0 || slot > capacity) {
-            throw new IllegalArgumentException("Given slot cannot be selected. Available slots between 0 and " + capacity);
+        if (slot < 0 || slot >= Capacity) {
+            throw new IllegalArgumentException("Given slot cannot be selected. Available slots between 0 and " + Capacity);
         }
 
         selectedSlot = slot;
+    }
+
+    public List<Item> items() {
+        return this.items;
     }
 
     /**
@@ -57,7 +61,7 @@ public class Inventory extends SceneNode {
      * @return true if inventory has enough space, false otherwise.
      */
     public boolean storeItem(Item item) {
-        if (items.size() < capacity) {
+        if (items.size() < Capacity) {
             item.setEnabled(false); // hide the item in the world
 
             items.add(item);

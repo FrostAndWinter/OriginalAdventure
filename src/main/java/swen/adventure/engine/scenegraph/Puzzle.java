@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 6/10/15.
  */
-public class Puzzle extends GameObject {
+public final class Puzzle extends GameObject {
 
     public static class PuzzleCondition<T> {
         public final Supplier<T> getter;

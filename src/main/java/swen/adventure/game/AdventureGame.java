@@ -38,6 +38,7 @@ public class AdventureGame implements Game {
 
     // Elements of the UI
     private swen.adventure.engine.ui.components.Frame _frame;
+    private swen.adventure.game.ui.components.InventoryComponent _inventory;
 
     private Player player;
 
@@ -136,15 +137,15 @@ public class AdventureGame implements Game {
         ProgressBar healthBar = new ProgressBar(100, 100, 30, 30);
         panel.addChild(healthBar);
 
-        InventoryComponent inventoryComponent = new InventoryComponent(5, 275, 500);
-        inventoryComponent.setBoxSize(50);
+        _inventory = new InventoryComponent(this.player.inventory(), 275, 500);
+        _inventory.setBoxSize(50);
 
-        player.inventory().eventItemSelected.addAction(inventoryComponent, InventoryComponent.actionSelectSlot);
+        player.inventory().eventItemSelected.addAction(_inventory, InventoryComponent.actionSelectSlot);
 
-        panel.addChild(inventoryComponent);
+        panel.addChild(_inventory);
 
         int size = 5;
-        Reticule reticule = new Reticule(width/2 - (size), height/2 - size, size);
+        Reticule reticule = new Reticule(width/2, height/2, size);
         panel.addChild(reticule);
 
         _frame.addChild(panel);
@@ -191,10 +192,6 @@ public class AdventureGame implements Game {
         });
 
 
-        //float newHeight = _pGraphics.height;
-        //float newWidth = _pGraphics.width;
-
-
         float scaleX = _pGraphics.width / virtualUIWidth;
         float scaleY = _pGraphics.height / virtualUIHeight;
         float scale = Math.min(scaleX, scaleY);
@@ -207,6 +204,8 @@ public class AdventureGame implements Game {
         _pGraphics.translate(dw, dh);
         _frame.draw(_pGraphics, scale, scale);
         _pGraphics.endDraw();
+
+        _inventory.drawItems(_glRenderer, scale, scale, _pGraphics.width, _pGraphics.height);
     }
 
     /**
