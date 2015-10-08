@@ -167,7 +167,7 @@ public class AdventureGame implements Game {
 
     @Override
     public void update(long deltaMillis) {
-        _mouseInput.handleInput(); //TODO rework to remove polling from queue.
+        GameDelegate.pollInput();
 
         Optional<EventBox> box;
         while ((box = _client.poll()).isPresent()) {

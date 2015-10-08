@@ -178,6 +178,15 @@ public class GameDelegate {
         glfwShowWindow(_window);
     }
 
+    public static void pollInput() {
+        // Poll for window events. The key callback above will only be
+        // invoked during this call.
+        glfwPollEvents();
+
+        _game.mouseInput().handleInput();
+        _game.keyInput().checkHeldKeys(character -> glfwGetKey(_window, character) == GLFW_PRESS, _elapsedTime);
+    }
+
     private static void loop() {
         // This line is critical for LWJGL's interoperation with GLFW's
         // OpenGL context, or any context that is managed externally.
@@ -203,11 +212,6 @@ public class GameDelegate {
             long currentTime = System.currentTimeMillis();
             _elapsedTime = currentTime - _timeLastUpdate;
             _timeLastUpdate = currentTime;
-
-            // Poll for window events. The key callback above will only be
-            // invoked during this call.
-            glfwPollEvents();
-            _game.keyInput().checkHeldKeys(character -> glfwGetKey(_window, character) == GLFW_PRESS, _elapsedTime);
 
             _game.update(_elapsedTime);
 

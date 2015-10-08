@@ -16,6 +16,7 @@ public class Item extends GameObject {
 
     private boolean _interactionEnabled = true;
 
+    /** An Item's parent transform must directly bring the item into world space (including centering the mesh at the origin); any extra translations must be done in a separate transform. */
     public Item(String id, TransformNode parent) {
         super(id, parent);
     }
