@@ -52,7 +52,7 @@ public class AdventureGame implements Game {
     private float virtualUIWidth;
     private float virtualUIHeight;
 
-    private List<MeshNode> _meshNodesSortedByZ = null;
+    private Optional<MeshNode> _meshBeingLookedAt = Optional.empty();
 
     public AdventureGame(Client<EventBox> client) {
         _client = client;
@@ -95,29 +95,19 @@ public class AdventureGame implements Game {
     }
 
     private static final Action<MouseInput, MouseInput, AdventureGame> pressAction = (eventObject, triggeringObject, listener, data) -> {
-        if (listener._meshNodesSortedByZ == null) {
-            return;
-        }
-        listener.player.camera().ifPresent(cameraNode -> {
-            listener._pickerRenderer.selectedNode(listener._meshNodesSortedByZ, cameraNode.worldToNodeSpaceTransform())
-                    .ifPresent(
+        listener._meshBeingLookedAt.ifPresent(
                             meshNode ->
-                                    meshNode.eventMeshPressed.trigger(listener.player, Collections.emptyMap()));
-        });
+                                    meshNode.eventMeshPressed.trigger(listener.player, Collections.emptyMap())
+        );
 
 
     };
 
     private static final Action<MouseInput, MouseInput, AdventureGame> releaseAction = (eventObject, triggeringObject, listener, data) -> {
-        if (listener._meshNodesSortedByZ == null) {
-            return;
-        }
-        listener.player.camera().ifPresent(cameraNode -> {
-            listener._pickerRenderer.selectedNode(listener._meshNodesSortedByZ, cameraNode.worldToNodeSpaceTransform())
-                    .ifPresent(
-                            meshNode ->
-                                    meshNode.eventMeshReleased.trigger(listener.player, Collections.emptyMap()));
-        });
+        listener._meshBeingLookedAt.ifPresent(
+                meshNode ->
+                        meshNode.eventMeshReleased.trigger(listener.player, Collections.emptyMap())
+        );
 
 
     };
@@ -189,8 +179,9 @@ public class AdventureGame implements Game {
         }
 
         this.player.camera().ifPresent(cameraNode -> {
-            _meshNodesSortedByZ = DepthSorter.sortedMeshNodesByZ(_sceneGraph, cameraNode.worldToNodeSpaceTransform());
-            _glRenderer.render(_meshNodesSortedByZ, _sceneGraph.allNodesOfType(Light.class), cameraNode.worldToNodeSpaceTransform(), cameraNode.fieldOfView(), cameraNode.hdrMaxIntensity());
+            List<MeshNode> meshNodesSortedByZ = DepthSorter.sortedMeshNodesByZ(_sceneGraph, cameraNode.worldToNodeSpaceTransform());
+            _meshBeingLookedAt = _pickerRenderer.selectedNode(meshNodesSortedByZ,cameraNode.worldToNodeSpaceTransform());
+            _glRenderer.render(meshNodesSortedByZ, _sceneGraph.allNodesOfType(Light.class), cameraNode.worldToNodeSpaceTransform(), cameraNode.fieldOfView(), cameraNode.hdrMaxIntensity());
         });
 
 

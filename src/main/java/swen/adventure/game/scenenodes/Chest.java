@@ -52,9 +52,6 @@ public class Chest extends GameObject {
         chestMesh.eventMeshPressed.addAction(this, actionToggleChest);
         lidMesh.eventMeshPressed.addAction(this, actionToggleChest);
 
-//        _hingeTransform.translateBy(new Vector3(-doorMesh.boundingBox().width() * 50 / 2, 0.f, 0.f));
-//        body.translateBy(new Vector3(doorMesh.boundingBox().width()*50/2, 0.f, 0.f));
-
         _lidRotationProgress.eventValueChanged.addAction(this, (eventObject, triggeringObject, listener, data) ->  {
             listener._hingeTransform.setRotation(Quaternion.makeWithAngleAndAxis(eventObject.value() * (ClosedAngle), 1, 0, 0));
         });
