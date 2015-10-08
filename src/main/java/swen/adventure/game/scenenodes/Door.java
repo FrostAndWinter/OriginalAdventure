@@ -25,10 +25,14 @@ public class Door extends GameObject {
     public Door(String id, TransformNode parent) {
         super(id, parent);
 
-        _hingeTransform = new TransformNode(id + "DoorHinge", parent, true, Vector3.zero, new Quaternion(), Vector3.one);
+        final String hingeTransformId = id + "DoorHinge";
+        final String bodyTransformId = id + "DoorBody";
+        final String meshId = id + "DoorMesh";
 
-        TransformNode body = new TransformNode(id + "DoorBody", _hingeTransform, true, Vector3.zero, new Quaternion(), new Vector3(50, 100, 1));
-        MeshNode doorMesh = new MeshNode(id + "DoorMesh", "box.obj", body);
+        _hingeTransform = parent.findNodeWithIdOrCreate(hingeTransformId, () -> new TransformNode(hingeTransformId, parent, true, Vector3.zero, new Quaternion(), Vector3.one));
+
+        TransformNode body = parent.findNodeWithIdOrCreate(bodyTransformId, () -> new TransformNode(bodyTransformId, _hingeTransform, true, Vector3.zero, new Quaternion(), new Vector3(50, 100, 1)));
+        MeshNode doorMesh = parent.findNodeWithIdOrCreate(meshId, () -> new MeshNode(meshId, "box.obj", body));
 
         _hingeTransform.translateBy(new Vector3(-doorMesh.boundingBox().width() * 50 / 2, 0.f, 0.f));
         body.translateBy(new Vector3(doorMesh.boundingBox().width()*50/2, 0.f, 0.f));

@@ -32,11 +32,15 @@ public class Lever extends GameObject{
     public Lever(String id, TransformNode parent) {
         super(id, parent);
 
-        MeshNode leverBaseMesh = new MeshNode(id + "LeverBase", "Lever", "LeverBase.obj", parent);
+        final String leverBaseMeshId = id + "LeverBase";
+        final String leverHingeId = id + "LeverHinge";
+        final String leverMeshId = id + "Lever";
 
-        _hingeTransform = new TransformNode(id + "LeverHinge", parent, true, Vector3.zero, new Quaternion(), Vector3.one);
+        MeshNode leverBaseMesh = parent.findNodeWithIdOrCreate(leverBaseMeshId, () -> new MeshNode(leverBaseMeshId, "Lever", "LeverBase.obj", parent));
 
-        MeshNode leverMesh = new MeshNode(id + "Lever", "Lever", "Lever.obj", _hingeTransform);
+        _hingeTransform = parent.findNodeWithIdOrCreate(leverHingeId, () -> new TransformNode(leverHingeId, parent, true, Vector3.zero, new Quaternion(), Vector3.one));
+
+        MeshNode leverMesh = parent.findNodeWithIdOrCreate(leverMeshId, () -> new MeshNode(id + "Lever", "Lever", "Lever.obj", _hingeTransform));
 
         leverBaseMesh.eventMeshPressed.addAction(this, actionToggleLever);
         leverMesh.eventMeshPressed.addAction(this, actionToggleLever);

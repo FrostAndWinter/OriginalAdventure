@@ -22,21 +22,32 @@ public class Chest extends GameObject {
     private static final float AnimationDuration = 0.6f;
 
     public final static Action<SceneNode, Player, Chest> actionToggleChest =
-            (eventObject, player, chest, data) -> chest.toggle();
+            (eventObject, player, chest, data) -> chest.toggle(true);
 
     private AnimableProperty _lidRotationProgress = new AnimableProperty(ClosedAngle);
 
     public Chest(String id, TransformNode parent) {
         super(id, parent);
 
-        MeshNode chestMesh = new MeshNode(id + "ChestMesh", "Chest", "Chest.obj", parent);
+        final String chestMeshId = id + "ChestMesh";
+
+        MeshNode chestMesh = parent.findNodeWithIdOrCreate(chestMeshId, () -> new MeshNode(chestMeshId, "Chest", "Chest.obj", parent));
         chestMesh.setCollidable(true);
+        chestMesh.setParent(parent);
 
         Vector3 hingeOffset = new Vector3(0.f, chestMesh.boundingBox().height() - 0.05f, 0.f);
-        _hingeTransform = new TransformNode(id + "ChestHinge", parent, true, hingeOffset, Quaternion.makeWithAngleAndAxis(ClosedAngle, 1, 0, 0), Vector3.one);
 
-        TransformNode lidTransform = new TransformNode(id + "ChestLid", _hingeTransform, true, hingeOffset.negate(), new Quaternion(), Vector3.one);
-        MeshNode lidMesh = new MeshNode(id + "ChestLid", "Chest", "ChestLid.obj", lidTransform);
+        final String hingeId = id + "ChestHinge";
+
+        _hingeTransform = parent.findNodeWithIdOrCreate(hingeId, () -> new TransformNode(hingeId, parent, true, hingeOffset, Quaternion.makeWithAngleAndAxis(ClosedAngle, 1, 0, 0), Vector3.one));
+
+        final String lidTransformId = id + "ChestLidT";
+
+        TransformNode lidTransform = parent.findNodeWithIdOrCreate(lidTransformId, () -> new TransformNode(lidTransformId, _hingeTransform, true, hingeOffset.negate(), new Quaternion(), Vector3.one));
+
+        final String lidMeshId = id + "LidMesh";
+
+        MeshNode lidMesh = parent.findNodeWithIdOrCreate(lidMeshId, () -> new MeshNode(id + "ChestLid", "Chest", "ChestLid.obj", lidTransform));
 
         chestMesh.eventMeshPressed.addAction(this, actionToggleChest);
         lidMesh.eventMeshPressed.addAction(this, actionToggleChest);
@@ -48,38 +59,47 @@ public class Chest extends GameObject {
             listener._hingeTransform.setRotation(Quaternion.makeWithAngleAndAxis(eventObject.value() * (ClosedAngle), 1, 0, 0));
         });
 
-        this.close();
+        this.close(false);
     }
 
-    public void toggle() {
+    public void toggle(boolean animated) {
 
         if (_isOpen) {
-            this.close();
+            this.close(animated);
         } else {
-            this.open();
+            this.open(animated);
         }
     }
 
-    public void open() {
+    public void open(boolean animate) {
         _isOpen = true;
-        new Animation(_lidRotationProgress, AnimationDuration * Math.abs(0.5f - _lidRotationProgress.value()), 0.0f);
+        if (animate) {
+            new Animation(_lidRotationProgress, AnimationDuration * Math.abs(0.5f - _lidRotationProgress.value()), 0.0f);
+        } else {
+            _lidRotationProgress.stopAnimating();
+            _lidRotationProgress.setValue(0.f);
+        }
     }
 
-    public void close() {
+    public void close(boolean animate) {
         _isOpen = false;
-        new Animation(_lidRotationProgress, AnimationDuration * Math.abs(0.5f - _lidRotationProgress.value()), 1.0f);
+        if (animate) {
+            new Animation(_lidRotationProgress, AnimationDuration * Math.abs(0.5f - _lidRotationProgress.value()), 1.0f);
+        } else {
+            _lidRotationProgress.stopAnimating();
+            _lidRotationProgress.setValue(1.f);
+        }
     }
 
     public boolean isOpen() {
         return _isOpen;
     }
 
-    public void setOpen(boolean isOpen) {
-        _isOpen = isOpen;
+    public void setOpen(boolean isOpen, boolean animate) {
         if (isOpen) {
-            this.open();
+            this.open(animate);
         } else {
-            this.close();
+            this.close(animate);
         }
     }
 }

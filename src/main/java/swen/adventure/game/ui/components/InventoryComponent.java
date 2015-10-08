@@ -2,6 +2,7 @@ package swen.adventure.game.ui.components;
 
 import processing.core.PGraphics;
 import swen.adventure.engine.Action;
+import swen.adventure.engine.animation.AnimableProperty;
 import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.rendering.maths.Matrix4;
 import swen.adventure.engine.rendering.maths.Quaternion;
@@ -156,9 +157,10 @@ public class InventoryComponent extends UIComponent {
 
                         float xScale = (w) / meshMaxDimension;
                         float yScale = (h) / meshMaxDimension;
+                        float scale = Math.min(xScale, yScale);
 
                         transformNode.setTranslation(new Vector3(dx + w/2, dy + h/2, 0.f));
-                        transformNode.setScale(new Vector3(xScale, yScale, 1.f));
+                        transformNode.setScale(new Vector3(scale, scale, 1.f));
                     } else {
                         float xScale = (boxSize) * scaleX / meshMaxDimension;
                         float yScale = (boxSize) * scaleY / meshMaxDimension;

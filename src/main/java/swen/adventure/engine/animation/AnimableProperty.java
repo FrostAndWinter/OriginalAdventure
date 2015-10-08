@@ -72,6 +72,7 @@ public class AnimableProperty {
             return;
         }
         _value = value;
+        eventValueChanged.trigger(null, Collections.emptyMap());
     }
 
     public float value() {

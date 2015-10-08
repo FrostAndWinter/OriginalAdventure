@@ -72,7 +72,7 @@ public class EventConnectionParser {
                 for (String listenerName : connection.listenerNames) {
                     Optional<SceneNode> listeningObject = sceneGraph.nodeWithID(listenerName);
                     if (!listeningObject.isPresent()) {
-                        System.err.println("Error retrieving listening object with id" + listenerName);
+                        System.err.println("Error retrieving listening object with id " + listenerName);
                         break;
                     }
                     Action action = Action.actionWithName(connection.actionName, listeningObject.get());

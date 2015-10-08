@@ -12,7 +12,9 @@ public class Note extends Item {
     public Note(String id, TransformNode parent) {
         super(id, parent);
 
-        MeshNode noteMesh = new MeshNode(id + "Mesh", null, "Plane.obj", parent);
+        final String meshID = id + "Mesh";
+
+        MeshNode noteMesh = parent.findNodeWithIdOrCreate(meshID, () -> new MeshNode(meshID, null, "Plane.obj", parent));
         noteMesh.setMaterialOverride(MaterialLibrary.libraryWithName("Note", "MoonlightNote.mtl").materialWithName("Note"));
         this.setMesh(noteMesh);
     }

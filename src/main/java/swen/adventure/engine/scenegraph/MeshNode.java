@@ -85,7 +85,7 @@ public final class MeshNode extends SceneNode {
             _collisionNode = Optional.of(new CollisionNode(this));
         } else {
             _collisionNode.ifPresent(collisionNode -> {
-                collisionNode.changeParentTo(null);
+                collisionNode.setParent(null);
             });
             _collisionNode = Optional.empty();
         }

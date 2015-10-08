@@ -7,6 +7,7 @@ import swen.adventure.engine.rendering.maths.Matrix4;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 15/09/15.
@@ -133,6 +134,17 @@ public abstract class SceneNode implements BundleSerializable {
     }
 
     /**
+     * Either fetches a node with a particular id, or creates it if it doesn't already exist.
+     * @param nodeID The id of the node to fetch.
+     * @return The node in this node's graph with nodeID as its id, or Optional.empty if it can't be found.
+     */
+    public <T extends SceneNode> T findNodeWithIdOrCreate(String nodeID, Supplier<T> supplier) {
+        T node = (T)_idsToNodesMap.get(nodeID);
+
+        return (node != null) ? node : supplier.get();
+    }
+
+    /**
      * @return All of the lights in the scene.
      */
     public <T extends SceneNode> List<T> allNodesOfType(Class<T> type) {
@@ -179,8 +191,13 @@ public abstract class SceneNode implements BundleSerializable {
      *
      * @param newParent the new parent
      */
-    public void changeParentTo(TransformNode newParent) {
+    public void setParent(TransformNode newParent) {
         if (_parent.isPresent()) {
+            if (_parent.get() == newParent) {
+                return;
+            } else if (!this.isDynamic()) {
+                throw new RuntimeException("Static node with id " + this.id + " cannot be re-parented.");
+            }
             _parent.get()._childNodes.remove(this);
         }
 

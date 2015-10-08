@@ -23,7 +23,9 @@ public class Key extends Item {
     public Key(String id, TransformNode parent) {
         super(id, parent);
 
-        MeshNode keyMesh = new MeshNode(null, "Key_B_02.obj", parent);
+        final String keyMeshId = id + "KeyMesh";
+
+        MeshNode keyMesh = parent.findNodeWithIdOrCreate(keyMeshId, () -> new MeshNode(keyMeshId, null, "Key_B_02.obj", parent));
         this.setMesh(keyMesh);
     }
 

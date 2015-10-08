@@ -60,11 +60,14 @@ public class FlickeringLight extends GameObject {
         _lightIntensity = new AnimableProperty(intensity);
         _lightMaterial = this.setupMaterial(colour, intensity);
 
-        Light light = Light.createPointLight(id + "Light", parent, colour, intensity, falloff);
+        final String lightID = id + "Light";
+        Light light = parent.findNodeWithIdOrCreate(lightID, () -> Light.createPointLight(lightID, parent, colour, intensity, falloff));
 
         this.setLight(light);
 
-        MeshNode mesh = new MeshNode(id + "Mesh", meshDirectory, meshName, parent);
+        final String meshID = id + "Mesh";
+
+        MeshNode mesh = parent.findNodeWithIdOrCreate(meshID, () -> new MeshNode(meshID, meshDirectory, meshName, parent));
         mesh.setMaterialOverride(_lightMaterial);
         this.setMesh(mesh);
 
