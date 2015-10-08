@@ -116,7 +116,7 @@ public class SceneGraphParser {
             String id = getAttribute("id", xmlNode, Function.identity());
             boolean enabled = getAttribute("enabled", xmlNode, Boolean::valueOf, true);
 
-            GameObject gameObject = (GameObject)parent.nodeWithID(id).orElseGet(() -> {
+            GameObject gameObject = (GameObject)parent.findNodeWithIdOrCreate(id, () -> {
                 try {
                     return (SceneNode)constructor.newInstance(id, parent);
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
@@ -149,7 +149,7 @@ public class SceneGraphParser {
         Optional<String> materialFileName = (Optional<String>)getAttribute("materialFileName", xmlNode, Optional::of, Optional.empty());
         Optional<String> materialName = (Optional<String>)getAttribute("materialName", xmlNode, Optional::of, Optional.empty());
 
-        MeshNode node = (MeshNode)parent.nodeWithID(id).orElseGet(() -> new MeshNode(id, directory, fileName, parent));
+        MeshNode node = parent.findNodeWithIdOrCreate(id, () -> new MeshNode(id, directory, fileName, parent));
         node.setTextureRepeat(textureRepeat);
         node.setCollidable(isCollidable);
 
@@ -168,7 +168,7 @@ public class SceneGraphParser {
 
         String id = getAttribute("id", xmlNode, Function.identity());
 
-        Puzzle puzzle = (Puzzle) parent.nodeWithID(id).orElseGet(() -> {
+        Puzzle puzzle = (Puzzle) parent.findNodeWithIdOrCreate(id, () -> {
             String conditionsList = getAttribute("conditions", xmlNode, Function.identity());
             List<Puzzle.PuzzleCondition> conditions = PuzzleConditionParser.parseConditionList(conditionsList, parent);
             return new Puzzle(id, parent, conditions);
@@ -188,7 +188,7 @@ public class SceneGraphParser {
         float intensity = getAttribute("intensity", xmlNode, Float::parseFloat, 1.f);
         Light.LightFalloff falloff = getAttribute("falloff", xmlNode, Light.LightFalloff::fromString, Light.LightFalloff.Quadratic);
 
-        FlickeringLight flickeringLight = (FlickeringLight) parent.nodeWithID(id).orElseGet(() ->
+        FlickeringLight flickeringLight = (FlickeringLight) parent.findNodeWithIdOrCreate(id, () ->
               new FlickeringLight(id, parent, fileName, directory, colour, intensity, falloff)
         );
 
@@ -205,7 +205,7 @@ public class SceneGraphParser {
     private static CameraNode parseCameraNode(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode, Function.identity());
 
-        CameraNode cameraNode = (CameraNode) parent.nodeWithID(id).orElseGet(() ->
+        CameraNode cameraNode = (CameraNode) parent.findNodeWithIdOrCreate(id, () ->
             new CameraNode(id, parent)
         );
 
@@ -219,7 +219,7 @@ public class SceneGraphParser {
         BoundingBox boundingBox = getAttribute("boundingBox", xmlNode, ParserManager.getFromStringFunction(BoundingBox.class), new BoundingBox(Vector3.zero, Vector3.zero));
         String colliderID = id + "Collider";
 
-        Player player = (Player) parent.nodeWithID(id).orElseGet(() -> new Player(id, parent));
+        Player player = (Player) parent.findNodeWithIdOrCreate(id, () -> new Player(id, parent));
 
         player.setParent(parent);
 
@@ -236,7 +236,7 @@ public class SceneGraphParser {
         Vector3 colour = getAttribute("colour", xmlNode, ParserManager.getFromStringFunction(Vector3.class), Vector3.one);
         float intensity = getAttribute("intensity", xmlNode, Float::parseFloat, 1.f);
 
-        Light node = (Light) parent.nodeWithID(id).orElseGet(() -> Light.createAmbientLight(id, parent, colour, intensity));
+        Light node = (Light) parent.findNodeWithIdOrCreate(id, () -> Light.createAmbientLight(id, parent, colour, intensity));
 
         node.setColour(colour);
         node.setIntensity(intensity);
@@ -251,7 +251,7 @@ public class SceneGraphParser {
         float intensity = getAttribute("intensity", xmlNode, Float::parseFloat, 1.f);
         Vector3 fromDirection = getAttribute("fromDirection", xmlNode, ParserManager.getFromStringFunction(Vector3.class));
 
-        Light node = (Light) parent.nodeWithID(id).orElseGet(() -> Light.createDirectionalLight(id, parent, colour, intensity, fromDirection));
+        Light node = (Light) parent.findNodeWithIdOrCreate(id, () -> Light.createDirectionalLight(id, parent, colour, intensity, fromDirection));
 
         node.setColour(colour);
         node.setIntensity(intensity);
@@ -266,7 +266,7 @@ public class SceneGraphParser {
         float intensity = getAttribute("intensity", xmlNode, Float::parseFloat, 1.f);
         Light.LightFalloff falloff = getAttribute("falloff", xmlNode, Light.LightFalloff::fromString);
 
-        Light node = (Light) parent.nodeWithID(id).orElseGet(() -> Light.createPointLight(id, parent, colour, intensity, falloff));
+        Light node = (Light) parent.findNodeWithIdOrCreate(id, () -> Light.createPointLight(id, parent, colour, intensity, falloff));
 
         node.setColour(colour);
         node.setIntensity(intensity);
@@ -284,7 +284,7 @@ public class SceneGraphParser {
 
         boolean isDynamic = getAttribute("isDynamic", xmlNode, ParserManager.getFromStringFunction(Boolean.class), false);
 
-        TransformNode node = (TransformNode)parent.nodeWithID(id).orElseGet(() -> new TransformNode(id, parent, isDynamic, translation, rotation, scale));
+        TransformNode node = (TransformNode)parent.findNodeWithIdOrCreate(id, () -> new TransformNode(id, parent, isDynamic, translation, rotation, scale));
         if (node.isDynamic()) {
             node.setTranslation(translation);
             node.setRotation(rotation);
