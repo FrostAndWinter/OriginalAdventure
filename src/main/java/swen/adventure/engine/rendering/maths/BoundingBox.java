@@ -54,6 +54,11 @@ public class BoundingBox {
                 point.z <= this.maxPoint.z;
     }
 
+    /**
+     * Returns the vertex of this box in the direction described by direction.
+     * @param direction The direction to look in.
+     * @return The vertex in that direction.
+     */
     public Vector3 vertexInDirection(Direction direction) {
         switch (direction) {
             case FrontUpLeft:
@@ -76,6 +81,10 @@ public class BoundingBox {
         throw new RuntimeException("Not a valid direction: " + direction);
     }
 
+    /**
+     * @param otherBox The box to check intersection with.
+     * @return Whether this box is intersecting with the other box.
+     */
     public boolean intersectsWith(BoundingBox otherBox) {
         return !(this.maxPoint.x < otherBox.minPoint.x ||
                 this.minPoint.x > otherBox.maxPoint.x ||
@@ -84,11 +93,7 @@ public class BoundingBox {
                 this.maxPoint.z < otherBox.minPoint.z ||
                 this.minPoint.z > otherBox.maxPoint.z);
     }
-    
 
-    public BoundingBox transformByMatrix(Matrix4 matrix) {
-        return new BoundingBox(matrix.multiplyWithTranslation(this.minPoint), matrix.multiplyWithTranslation(this.maxPoint));
-    }
 
     @Override
     public String toString() {
@@ -98,6 +103,13 @@ public class BoundingBox {
                 '}';
     }
 
+    /**
+     * Transforms this bounding box from its local space to the space described by nodeToSpaceTransform.
+     * The result is guaranteed to be axis aligned – that is, with no rotation in the destination space.
+     * It may or may not have the same width, height, or depth as its source.
+     * @param nodeToSpaceTransform The transformation from local to the destination space.
+     * @return This box in the destination coordinate system.
+     */
     public BoundingBox axisAlignedBoundingBoxInSpace(Matrix4 nodeToSpaceTransform) {
 
         float minX = Float.MAX_VALUE, minY = Float.MAX_VALUE, minZ = Float.MAX_VALUE;

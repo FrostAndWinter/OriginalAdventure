@@ -45,12 +45,17 @@ public class PuzzleConditionParser {
                 System.err.println("Error reading condition string " + conditionString + ": a condition must have three components.");
                 break;
             }
+
+
             Optional<SceneNode> targetObject = sceneGraph.nodeWithID(components[index++]);
             if (!targetObject.isPresent()) {
                 System.err.println("Error parsing condition list: could not find object with id " + components[index - 1]);
                 break;
             }
             SceneNode sceneNode = targetObject.get();
+
+
+
             String getterName = components[index++];
             Supplier supplier;
             try {
@@ -66,6 +71,9 @@ public class PuzzleConditionParser {
                 System.err.println("Error parsing condition list: " + e);
                 break;
             }
+
+
+
 
             Object desiredValue = ParserManager.convertFromString(components[index], typeClass);
 

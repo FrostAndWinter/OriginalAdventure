@@ -6,16 +6,19 @@ import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.TransformNode;
 
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Created by josephbennett on 6/10/15
- * Modefied By Daniel Braithwate ID: 300313770
+ * Modified By Daniel Braithwate ID: 300313770
  */
 public class Item extends GameObject {
 
     public final Event<Item, Player> eventItemPickup = new Event<>("eventItemPickup", this);
 
     private boolean _interactionEnabled = true;
+
+    private Optional<Container> _container = Optional.empty();
 
     private String _description;
 
@@ -37,6 +40,14 @@ public class Item extends GameObject {
 
     public void setInteractionEnabled(boolean interactionEnabled) {
         _interactionEnabled = interactionEnabled;
+    }
+
+    protected void setContainer(Container container) {
+        _container = Optional.ofNullable(container);
+    }
+
+    public Optional<Container> container() {
+        return _container;
     }
 
     public String getDescription() {

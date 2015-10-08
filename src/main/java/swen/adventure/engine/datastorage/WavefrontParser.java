@@ -14,6 +14,8 @@ import java.util.regex.Pattern;
 /**
  * Created by Liam O'Neill, Student ID 300312734, on 19/09/15.
  * Modified by Thomas Roughton, Student ID 300313924.
+ *
+ * WavefrontParser parses .obj mesh files into lists of vertices, texture coordinates, normals, and faces.
  */
 public class WavefrontParser {
 
@@ -230,7 +232,6 @@ public class WavefrontParser {
         }
     }
 
-    // this class is temporary
     public static class Result {
         public final List<Vector> geometricVertices;
         public final List<Vector3> textureVertices;

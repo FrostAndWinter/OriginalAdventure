@@ -8,6 +8,9 @@ import static org.lwjgl.opengl.GL30.GL_HALF_FLOAT;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 20/09/15.
+ *
+ * AttributeType defines the different OpenGL types that can be used for vertex array objects and vertex buffer objects.
+ * It also provides methods to write those types to a buffer object.
  */
 public enum AttributeType {
 
@@ -36,6 +39,16 @@ public enum AttributeType {
         this.sizeInBytes = sizeInBytes;
     }
 
+    /**
+     * Writes a list of data to a byte buffer.
+     * @param buffer The buffer to write to, positioned such that index 0 in the data will be at the buffer's position + offset.
+     * @param dataArray The list of data to write.
+     * @param componentsPerStride The number of components to write per stride. For a vec3, this would be 3; for single elements, this would be one.
+     *                            It is also possible (and preferable) to specify the length of dataArray as this parameter if the data is to be contiguous in the buffer.
+     * @param offset The offset at which to write into the buffer.
+     * @param stride The gap in bytes between successive elements.
+     * @param type The type of the elements to write to the buffer.
+     */
     @SuppressWarnings("unchecked")
     public void writeToBuffer(ByteBuffer buffer, List<?> dataArray, int componentsPerStride, int offset, int stride, AttributeType type) {
         switch (type) {

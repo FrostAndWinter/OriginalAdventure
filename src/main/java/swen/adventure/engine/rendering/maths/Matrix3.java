@@ -7,6 +7,9 @@ import java.util.Arrays;
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 17/09/15.
  * Methods adapted from and designed to emulate Apple's GLKit framework.
+ * Note that no effort has been made to verify these methods' accuracy beyond recognition of the source as reliable
+ * and testing that the results are as expected in use – in this regard, the classes Matrix3, Matrix4, Quaternion, Vector3, and Vector4 should be considered
+ * to be part of a third-party library.
  */
 public class Matrix3 {
     public final float[] m;

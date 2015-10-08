@@ -17,6 +17,8 @@ import static org.lwjgl.opengl.GL31.*;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 26/09/15.
+ * MultipleLightsUniformMaterialShader defines a shader that uses a uniform material (i.e. set colour and specularity)
+ * and performs gaussian specular shading on that material.
  */
 public class MultipleLightsUniformMaterialShader extends ShaderProgram {
     private final int _modelToCameraMatrixUniformRef;

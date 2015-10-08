@@ -12,10 +12,10 @@ import static org.lwjgl.opengl.GL20.glUniform1i;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 3/10/15.
+ * This class describes a shader that, in addition to the functionality provided by GaussianPerObjectMaterialShader, also allows per-material normal maps.
  */
 public class GaussianMaterialsNormalMapsShader extends GaussianPerObjectMaterialShader {
 
-    private final int _normalMapSamplerRef;
     private final int _nodeToCamera3x3MatrixUniformRef;
 
     private static String vertexShaderText() {
@@ -39,11 +39,11 @@ public class GaussianMaterialsNormalMapsShader extends GaussianPerObjectMaterial
     public GaussianMaterialsNormalMapsShader(String vertexShader, String fragmentShader) {
         super(vertexShader, fragmentShader);
 
-        _normalMapSamplerRef = glGetUniformLocation(this.glProgramRef(), "normalMapSampler");
+        final int normalMapSamplerRef = glGetUniformLocation(this.glProgramRef(), "normalMapSampler");
         _nodeToCamera3x3MatrixUniformRef = glGetUniformLocation(this.glProgramRef(), "nodeToCamera3x3MatrixUniform");
 
         this.useProgram();
-        glUniform1i(_normalMapSamplerRef, TextureUnit.NormalMapUnit.glUnit);
+        glUniform1i(normalMapSamplerRef, TextureUnit.NormalMapUnit.glUnit);
         this.endUseProgram();
     }
 

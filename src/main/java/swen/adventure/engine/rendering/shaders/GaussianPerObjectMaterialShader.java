@@ -19,6 +19,12 @@ import static org.lwjgl.opengl.GL31.*;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 26/09/15.
+ *
+ * GaussianPerObjectMaterialShader describes a shader that implements materials (set via a uniform),
+ * gaussian specular shading, diffuse shading, and textures for specularity, specular colour,
+ * diffuse colour, and ambient colour.
+ * It also provides functionality to repeat a texture in the U or V direction.
+ * Up to 32 light sources are supported.
  */
 public class GaussianPerObjectMaterialShader extends ShaderProgram implements MaterialShader {
     private final int _modelToCameraMatrixUniformRef;
@@ -33,11 +39,6 @@ public class GaussianPerObjectMaterialShader extends ShaderProgram implements Ma
     private final int _lightUniformBufferRef;
     private final int _materialUniformBufferRef;
     private final int _textureRepeatUniformBufferRef;
-
-    private final int _ambientColourSamplerRef;
-    private final int _diffuseColourSamplerRef;
-    private final int _specularColourSamplerRef;
-    private final int _specularitySamplerRef;
 
     private static String vertexShaderText() {
         try {
@@ -67,17 +68,17 @@ public class GaussianPerObjectMaterialShader extends ShaderProgram implements Ma
 
         _maxIntensityUniformRef = glGetUniformLocation(this.glProgramRef(), "maxIntensity");
 
-        _ambientColourSamplerRef = glGetUniformLocation(this.glProgramRef(), "ambientColourSampler");
-        _diffuseColourSamplerRef = glGetUniformLocation(this.glProgramRef(), "diffuseColourSampler");
-        _specularColourSamplerRef = glGetUniformLocation(this.glProgramRef(), "specularColourSampler");
-        _specularitySamplerRef = glGetUniformLocation(this.glProgramRef(), "specularitySampler");
+        final int ambientColourSamplerRef = glGetUniformLocation(this.glProgramRef(), "ambientColourSampler");
+        final int diffuseColourSamplerRef = glGetUniformLocation(this.glProgramRef(), "diffuseColourSampler");
+        final int specularColourSamplerRef = glGetUniformLocation(this.glProgramRef(), "specularColourSampler");
+        final int specularitySamplerRef = glGetUniformLocation(this.glProgramRef(), "specularitySampler");
 
         //Bind the sampler references to texture unit indices
         this.useProgram();
-        glUniform1i(_ambientColourSamplerRef, TextureUnit.AmbientColourUnit.glUnit);
-        glUniform1i(_diffuseColourSamplerRef, TextureUnit.DiffuseColourUnit.glUnit);
-        glUniform1i(_specularColourSamplerRef, TextureUnit.SpecularColourUnit.glUnit);
-        glUniform1i(_specularitySamplerRef, TextureUnit.SpecularityUnit.glUnit);
+        glUniform1i(ambientColourSamplerRef, TextureUnit.AmbientColourUnit.glUnit);
+        glUniform1i(diffuseColourSamplerRef, TextureUnit.DiffuseColourUnit.glUnit);
+        glUniform1i(specularColourSamplerRef, TextureUnit.SpecularColourUnit.glUnit);
+        glUniform1i(specularitySamplerRef, TextureUnit.SpecularityUnit.glUnit);
         this.endUseProgram();
 
         //Setup the uniform buffers

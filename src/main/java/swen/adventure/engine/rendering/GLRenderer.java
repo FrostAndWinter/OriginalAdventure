@@ -19,6 +19,8 @@ import static org.lwjgl.opengl.GL32.*;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 19/09/15.
+ *
+ * GLRenderer provides mechanisms to render MeshNodes under lighting defined by a set of Lights and using a given camera matrix.
  */
 public class GLRenderer {
 
@@ -33,7 +35,7 @@ public class GLRenderer {
         this.setSize(width, height);
     }
 
-    public Matrix4 perspectiveMatrix(int width, int height, float fieldOfView) {;
+    private Matrix4 perspectiveMatrix(int width, int height, float fieldOfView) {;
         float cameraNear = 1.f;
         float cameraFar = 10000.f;
         float cameraAspect = width / (float) height;

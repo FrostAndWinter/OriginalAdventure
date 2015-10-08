@@ -129,7 +129,7 @@ public class PickerRenderer {
             _pickerShader.setModelToClipMatrix(nodeToClipSpaceTransform);
             _pickerShader.setID(id);
 
-            node.render();
+            node.render(ObjMesh.VAOPositions);
         });
 
         _pickerShader.endUseProgram();

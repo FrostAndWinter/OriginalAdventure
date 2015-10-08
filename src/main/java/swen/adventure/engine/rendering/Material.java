@@ -14,24 +14,7 @@ public class Material {
 
     //Format:
 
-//    struct Material {
-//        //Packed into a single vec4
-//        Vector3 ambientColour;
-//        float ambientEnabled; //where ~0 is false and ~1 is true.
 //
-//        //Packed into a single vec4
-//        Vector3 diffuseColour;
-//        float alpha;
-//
-//        //Packed into a single vec4
-//        Vector3 specularColour;
-//        float specularity;
-//
-//        boolean useAmbientMap; //packed in an integer as 1 << 0
-//        boolean useDiffuseMap; //packed in an integer as 1 << 1
-//        boolean useSpecularColourMap; //packed in an integer as 1 << 2
-//        boolean useSpecularityMap; //packed in an integer as 1 << 3
-//        boolean useNormalMap; //packed in an integer as 1 << 4
 //    }
 
     public static final int NumFloats = 4 * 3; //3 vec4s.
@@ -141,21 +124,33 @@ public class Material {
         _specularity = specularity;
     }
 
+    /**
+     * @param diffuseMap A map that defines the diffuse colour of the material at each texture coordinate.
+     */
     public void setDiffuseMap(final Texture diffuseMap) {
         _bufferRepresentation = null;
         _diffuseMap = Optional.of(diffuseMap);
     }
 
+    /**
+     * @param ambientMap A map that defines the ambient colour of the material at each texture coordinate.
+     */
     public void setAmbientMap(final Texture ambientMap) {
         _bufferRepresentation = null;
         _ambientMap = Optional.of(ambientMap);
     }
 
+    /**
+     * @param specularColourMap A map that defines the specular colour of the material at each texture coordinate.
+     */
     public void setSpecularColourMap(final Texture specularColourMap) {
         _bufferRepresentation = null;
         _specularColourMap = Optional.of(specularColourMap);
     }
 
+    /**
+     * @param specularityMap A map that defines the specularity of the material at each texture coordinate.
+     */
     public void setSpecularityMap(final Texture specularityMap) {
         _bufferRepresentation = null; //TODO instead of regenerating the buffer after every change, we should probably just modify the data directly to represent the change.
         _specularityMap = Optional.of(specularityMap);
@@ -176,6 +171,28 @@ public class Material {
         return result;
     }
 
+    /**
+     * @return This material's attributes, packed into a ByteBuffer.
+     * The format is as follows:
+     * struct Material {
+     * //Packed into a single vec4
+     * Vector3 ambientColour;
+     * float ambientEnabled; //where ~0 is false and ~1 is true.
+     *
+     * //Packed into a single vec4
+     * Vector3 diffuseColour;
+     * float alpha;
+     *
+     * //Packed into a single vec4
+     * Vector3 specularColour;
+     * float specularity;
+
+     * boolean useAmbientMap; //packed in an integer as 1 << 0
+     * boolean useDiffuseMap; //packed in an integer as 1 << 1
+     * boolean useSpecularColourMap; //packed in an integer as 1 << 2
+     * boolean useSpecularityMap; //packed in an integer as 1 << 3
+     * boolean useNormalMap; //packed in an integer as 1 << 4
+     */
     public ByteBuffer toBuffer() {
 
         if (_bufferRepresentation == null) {
@@ -202,6 +219,9 @@ public class Material {
         return _bufferRepresentation; //FIXME be careful that the buffer doesn't get its position/mark etc. changed.
     }
 
+    /**
+     * Binds all the samplers for Material to their respective texture units.
+     */
     public static void bindSamplers() {
         try {
             if (ambientMapSampler == null) {
@@ -229,6 +249,9 @@ public class Material {
         }
     }
 
+    /**
+     * Unbinds all the samplers for Material from their respective texture units.
+     */
     public static void unbindSamplers() {
         if (ambientMapSampler != null) {
             Material.ambientMapSampler.unbindSampler();
@@ -247,6 +270,9 @@ public class Material {
         }
     }
 
+    /**
+     * Binds all the textures that are present for this material to their respective texture units.
+     */
     public void bindTextures() {
         _diffuseMap.ifPresent(texture -> texture.bindToTextureUnit(TextureUnit.DiffuseColourUnit));
         _ambientMap.ifPresent(texture -> texture.bindToTextureUnit(TextureUnit.AmbientColourUnit));
@@ -255,6 +281,9 @@ public class Material {
         _normalMap.ifPresent(texture -> texture.bindToTextureUnit(TextureUnit.NormalMapUnit));
     }
 
+    /**
+     * Unbinds all textures from their respective texture units.
+     */
     public static void unbindTextures() {
         Texture.unbindTexture(TextureUnit.AmbientColourUnit);
         Texture.unbindTexture(TextureUnit.DiffuseColourUnit);

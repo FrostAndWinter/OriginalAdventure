@@ -28,7 +28,7 @@ import java.util.function.Function;
  * Modified by Joseph Bennett.
  *
  * The SceneGraphParser can read from an XML file describing a scene graph and generate an internal memory representation of that graph.
- * These files are generally used to describe the level – i
+ * These files are generally used to describe the level, but can also describe the saved state.
  */
 public class SceneGraphParser {
 

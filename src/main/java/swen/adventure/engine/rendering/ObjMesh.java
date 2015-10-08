@@ -102,11 +102,11 @@ public class ObjMesh extends GLMesh<Float> {
     private static final int TextureCoordinateAttributeIndex = 1;
     private static final int TangentAttributeIndex = 3;
 
-    private static final String VAOPositions = "vaoPositions";
-    private static final String VAOPositionsAndNormals = "vaoPositionsAndNormals";
-    private static final String VAOPositionsAndTexCoords = "vaoPositionsAndTexCoords";
-    private static final String VAOPositionsNormalsTexCoords = "vaoPositionsNormalsTexCoords";
-    private static final String VAOPositionsNormalsTexCoordsTangents = "vaoPositionsNormalsTexCoordsTangents";
+    public static final String VAOPositions = "vaoPositions";
+    public static final String VAOPositionsAndNormals = "vaoPositionsAndNormals";
+    public static final String VAOPositionsAndTexCoords = "vaoPositionsAndTexCoords";
+    public static final String VAOPositionsNormalsTexCoords = "vaoPositionsNormalsTexCoords";
+    public static final String VAOPositionsNormalsTexCoordsTangents = "vaoPositionsNormalsTexCoordsTangents";
 
     private boolean _hasNormals = false;
     private boolean _hasTextureCoordinates = false;

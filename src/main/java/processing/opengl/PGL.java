@@ -2409,7 +2409,7 @@ public abstract class PGL {
      if (USE_DIRECT_BUFFERS || (buf.hasArray() && buf.array() != arr)) {
        buf.position(offset);
        buf.put(arr, offset, size);
-       buf.flip().limit(offset + size);
+       buf.rewind();
      }
    }
 

@@ -19,9 +19,16 @@ import static org.lwjgl.opengl.GL30.*;
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 20/09/15.
  * Adapted from the ArcSynthesis GL Tutorials (https://bitbucket.org/alfonse/gltut/wiki/Home)
+ *
+ * A GLMesh defines a set of OpenGL vertex array objects and vertex buffer objects that can be used to performing rendering tasks.
+ * It's intended to abstract the disparate components of meth attributes and materials into a single object that can be used to render.
  */
 public abstract class GLMesh<T> {
 
+    /**
+     * A render command is a command that can be used to draw elements in OpenGL.
+     * It stores a material, along with the information required to draw the elements.
+     */
     static class RenderCommand {
         public final boolean isIndexedCommand;
         public final int primitiveType;
@@ -34,7 +41,7 @@ public abstract class GLMesh<T> {
 
         /**
          * Constructs a new non-indexed command.
-         * @param primitiveType Either GL_UNSIGNED_BYTE or GL_UNSIGNED_SHORT
+         * @param primitiveType GL_UNSIGNED_BYTE, GL_UNSIGNED_SHORT, or GL_UNSIGNED_INT
          * @param startIndex The start index for drawing the array.
          * @param material The material to use when performing this render command.
          */
@@ -107,7 +114,7 @@ public abstract class GLMesh<T> {
     }
 
     /**
-     * An attribute is an abstraction around an array of primitives.
+     * An attribute is an abstraction around an array of primitives, providing extra information that is required for OpenGL.
      */
      class Attribute {
             public final int attributeIndex;
@@ -177,6 +184,10 @@ public abstract class GLMesh<T> {
 
         }
 
+    /**
+     * IndexData defines a list of indices.
+     * @param <U> The type of data that the indices are.
+     */
     static class IndexData<U> {
         public final AttributeType attributeType;
         public final List<U> data;
@@ -198,6 +209,9 @@ public abstract class GLMesh<T> {
         }
     }
 
+    /**
+     * A vertex array object that allows you to pass only certain attributes to the shader (i.e. just vertex positions).
+     */
     static class NamedVertexArrayObject {
         public final String name;
         public final List<Integer> attributeIndices;
@@ -208,14 +222,10 @@ public abstract class GLMesh<T> {
         }
     }
 
-    private int _attributeArrraysBufferRef = 0;
-    private int _indexBufferRef = 0;
     private int _vertexArrayObjectRef = 0;
 
-    private List<RenderCommand> _primitives;
+    private List<RenderCommand> _primitives; //The primitives that make up this mesh.
     private Map<String, Integer> _namedVAOs = new HashMap<>();
-
-    private Set<TransformNode> _parentNodes = new HashSet<>();
 
     protected void initialise(List<Attribute> attributes, List<IndexData<?>> indexData, List<NamedVertexArrayObject> namedVAOList, List<RenderCommand> primitives) {
 
@@ -257,8 +267,8 @@ public abstract class GLMesh<T> {
         glBindVertexArray(_vertexArrayObjectRef);
 
         //Create the buffer object.
-        _attributeArrraysBufferRef = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, _attributeArrraysBufferRef);
+        final int attributeArrraysBufferRef = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, attributeArrraysBufferRef);
         glBufferData(GL_ARRAY_BUFFER, attributeBufferSize, GL_STATIC_DRAW);
 
         ByteBuffer attributesBuffer = BufferUtils.createByteBuffer(attributeBufferSize);
@@ -321,8 +331,8 @@ public abstract class GLMesh<T> {
         if (indexBufferSize > 0) {
             glBindVertexArray(_vertexArrayObjectRef);
 
-            _indexBufferRef = glGenBuffers();
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferRef);
+            final int indexBufferRef = glGenBuffers();
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferRef);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBufferSize, GL_STATIC_DRAW);
 
             //Fill with data.
@@ -344,7 +354,7 @@ public abstract class GLMesh<T> {
 
             for (int vao : _namedVAOs.values()) {
                 glBindVertexArray(vao);
-                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferRef);
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferRef);
             }
 
             glBindVertexArray(0);
@@ -387,6 +397,10 @@ public abstract class GLMesh<T> {
         glBindVertexArray(0);
     }
 
+    /**
+     * Renders using only the named vertex array objects.
+     * @param vertexArrayObjectName A string constant, referencing the vertex array objects to be used in rendering.
+     */
     public void render(String vertexArrayObjectName) {
         Integer vaoObj = _namedVAOs.get(vertexArrayObjectName);
         if (vaoObj == null) {

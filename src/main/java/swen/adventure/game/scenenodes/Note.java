@@ -9,10 +9,10 @@ import swen.adventure.engine.scenegraph.TransformNode;
  */
 public class Note extends Item {
 
-    private static final String NOTE_DESCRIPTION = "A written message, could be a clue";
+    private static final String NoteDescription = "A mysterious note found hidden in a chest.";
 
     public Note(String id, TransformNode parent) {
-        super(id, parent, NOTE_DESCRIPTION);
+        super(id, parent, NoteDescription);
 
         final String meshID = id + "Mesh";
 

@@ -6,6 +6,8 @@ import static org.lwjgl.opengl.GL20.glGetUniformLocation;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 19/09/15.
+ * A PointLightShader is a simple shader that lights objects based on a single point light and ambient light.
+ * It takes a single colour parameter, and does not allow textures.
  */
 public class PointLightShader extends ShaderProgram {
     public final int modelToCameraMatrixUniformRef;

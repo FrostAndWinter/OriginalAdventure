@@ -10,6 +10,7 @@ import java.util.Set;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 15/09/15.
+ * An Octree partitions points spatially to allow for efficient lookup of what points are in an area.
  */
 class OctreeNode<T> {
 
@@ -78,7 +79,7 @@ class OctreeNode<T> {
     /**
      * Returns a list of sets of elements that may be within the region.
      * May also return objects that are outside of the region: these may need to be discarded by whatever processes the objects.
-     * The list of sets is a performance consideration (i.e. we're only generating a small list instead of a massive set or adding a large number of elements.
+     * The list of sets is a performance consideration (i.e. we're only generating a small list instead of a massive set or adding a large number of elements.)
      */
     public List<Set<T>> valuesInRegion(BoundingBox region) {
         List<Set<T>> list = new ArrayList<Set<T>>();
