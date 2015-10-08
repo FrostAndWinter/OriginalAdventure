@@ -9,6 +9,7 @@ import java.util.Collections;
 
 /**
  * Created by josephbennett on 6/10/15
+ * Modefied By Daniel Braithwate ID: 300313770
  */
 public class Item extends GameObject {
 
@@ -16,9 +17,12 @@ public class Item extends GameObject {
 
     private boolean _interactionEnabled = true;
 
+    private String _description;
+
     /** An Item's parent transform must directly bring the item into world space (including centering the mesh at the origin); any extra translations must be done in a separate transform. */
-    public Item(String id, TransformNode parent) {
+    public Item(String id, TransformNode parent, String description) {
         super(id, parent);
+        _description = description;
     }
 
     @Override
@@ -33,5 +37,9 @@ public class Item extends GameObject {
 
     public void setInteractionEnabled(boolean interactionEnabled) {
         _interactionEnabled = interactionEnabled;
+    }
+
+    public String getDescription() {
+        return _description;
     }
 }

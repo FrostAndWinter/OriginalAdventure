@@ -12,6 +12,8 @@ import swen.adventure.engine.scenegraph.TransformNode;
  */
 public class Key extends Item {
 
+    private static final String KEY_DESCRIPTION = "May or may not open a door";
+
     public Action<Puzzle, Puzzle, Key> actionSetEnabled = (puzzle, ignored, key, data) -> {
         this.setEnabled(true);
     };
@@ -21,7 +23,7 @@ public class Key extends Item {
     };
 
     public Key(String id, TransformNode parent) {
-        super(id, parent);
+        super(id, parent, KEY_DESCRIPTION);
 
         final String keyMeshId = id + "KeyMesh";
 

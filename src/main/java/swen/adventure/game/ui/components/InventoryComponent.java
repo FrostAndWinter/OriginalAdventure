@@ -73,7 +73,10 @@ public class InventoryComponent extends UIComponent {
     }
 
     public void setShowItem(boolean showItem) {
-        // TODO: Ensure that it cant be set to true if no item is in inventory
+        if (_inventory.getSelectedSlot() >= _inventory.items().size()) {
+            return;
+        }
+        
         this.showItem = showItem;
     }
 
@@ -97,14 +100,30 @@ public class InventoryComponent extends UIComponent {
         int currentX = x;
         int currentY = y;
 
+        if (showItem) {
+            g.fill(255);
+            //g.text(_inventory.items().get(_inventory.getSelectedSlot()).getDescription(), x * scaleX, y * scaleY + (height * scaleY)/2);
+            g.text("Descirption", x * scaleX, (y + height/2) * scaleY);
+        } else {
+            g.fill(0,0,0,0);
+            g.text("Descirption", x * scaleX, (y + height/2) * scaleY);
+        }
+
         for (int i = 0; i < Inventory.Capacity; i++) {
             g.fill(0);
             if (i == selectedItem) {
                 g.fill(180);
             }
+
+            if (showItem) {
+                g.fill(0,0,0,0);
+            }
+
             g.rect(currentX * scaleX, currentY * scaleY, boxSize * scaleX, boxSize * scaleY);
 
-            g.fill(34, 50, 90);
+            if (!showItem) {
+                g.fill(34, 50, 90);
+            }
             g.rect((currentX + (INNER_PADDING/2)) * scaleX, (currentY + (INNER_PADDING/2)) * scaleY, (boxSize - INNER_PADDING) * scaleX, (boxSize - INNER_PADDING) * scaleY);
             currentX += boxSize;
         }
@@ -153,13 +172,13 @@ public class InventoryComponent extends UIComponent {
 
                     if (current == _inventory.getSelectedSlot() && showItem) {
                         int w = (int) (width - 2 * dx);
-                        int h = (int) (height - 2 * dy);
+                        int h = (int) (height - 2 * dy - this.height * scaleY * 3);
 
                         float xScale = (w) / meshMaxDimension;
                         float yScale = (h) / meshMaxDimension;
                         float scale = Math.min(xScale, yScale);
 
-                        transformNode.setTranslation(new Vector3(dx + w/2, dy + h/2, 0.f));
+                        transformNode.setTranslation(new Vector3(dx + w/2, dy + h/2 + this.height * scaleY* 3, 0.f));
                         transformNode.setScale(new Vector3(scale, scale, 1.f));
                     } else {
                         float xScale = (boxSize) * scaleX / meshMaxDimension;
