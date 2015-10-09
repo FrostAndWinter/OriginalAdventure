@@ -34,6 +34,8 @@ public final class MeshNode extends SceneNode {
 
     public final Event<SceneNode, Player> eventMeshPressed = new Event<>("eventMeshPressed", this);
     public Event<SceneNode, Player> eventMeshReleased = new Event<>("eventMeshReleased", this);
+    public final Event<SceneNode, Player> eventMeshLookedAt = new Event<>("eventMeshLookedAt", this);
+    public final Event<SceneNode, Player> eventMeshLookedAwayFrom = new Event<>("eventMeshLookedAwayFrom", this);
 
     public MeshNode(final String directory, final String fileName, final TransformNode parent) {
         this("mesh" + fileName, directory, fileName, parent);

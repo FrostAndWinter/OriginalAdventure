@@ -180,7 +180,16 @@ public class AdventureGame implements Game {
 
         this.player.camera().ifPresent(cameraNode -> {
             List<MeshNode> meshNodesSortedByZ = DepthSorter.sortedMeshNodesByZ(_sceneGraph, cameraNode.worldToNodeSpaceTransform());
-            _meshBeingLookedAt = _pickerRenderer.selectedNode(meshNodesSortedByZ,cameraNode.worldToNodeSpaceTransform());
+
+            Optional<MeshNode> previousMeshBeingLookedAt = _meshBeingLookedAt;
+            _meshBeingLookedAt = _pickerRenderer.selectedNode(meshNodesSortedByZ, cameraNode.worldToNodeSpaceTransform());
+
+            // if the mesh being looked at changes, trigger appropriate events on the meshes
+            if (!previousMeshBeingLookedAt.equals(_meshBeingLookedAt)) {
+                _meshBeingLookedAt.ifPresent(meshNode -> meshNode.eventMeshLookedAt.trigger(this.player, Collections.emptyMap()));
+                previousMeshBeingLookedAt.ifPresent(meshNode ->  meshNode.eventMeshLookedAwayFrom.trigger(this.player, Collections.emptyMap()));
+            }
+
             _glRenderer.render(meshNodesSortedByZ, _sceneGraph.allNodesOfType(Light.class), cameraNode.worldToNodeSpaceTransform(), cameraNode.fieldOfView(), cameraNode.hdrMaxIntensity());
         });
 
