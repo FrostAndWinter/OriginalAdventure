@@ -14,6 +14,9 @@ public final class CameraNode extends SceneNode {
         super(id, parent, false);
     }
 
+    /**
+     * @return The field of view to use for perspective projection with this camera.
+     */
     public float fieldOfView() {
         return _fieldOfView;
     }
@@ -22,6 +25,9 @@ public final class CameraNode extends SceneNode {
         _fieldOfView = fieldOfView;
     }
 
+    /**
+     * @return The maximum light intensity that the camera should pick up for HDR toning – any values above this will be clipped.
+     */
     public float hdrMaxIntensity() {
         return _hdrMaxIntensity;
     }

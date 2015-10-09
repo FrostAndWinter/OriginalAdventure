@@ -11,6 +11,12 @@ import java.util.function.Supplier;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 15/09/15.
+ *
+ * SceneNode is the root class for any object that exists within the game world.
+ * When chained together, SceneNodes implement a recursive tree structure called a scene graph.
+ * The use of this structure has correlations with the Composite design pattern – any scene node can be treated as a singular node,
+ * as it encapsulates the behaviour of its children.
+ *
  */
 public abstract class SceneNode implements BundleSerializable {
 

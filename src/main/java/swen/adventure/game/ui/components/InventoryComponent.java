@@ -13,6 +13,7 @@ import swen.adventure.engine.scenegraph.SceneNode;
 import swen.adventure.engine.scenegraph.TransformNode;
 import swen.adventure.engine.ui.components.UIComponent;
 import swen.adventure.engine.ui.layoutmanagers.LayoutManager;
+import swen.adventure.game.Interaction;
 import swen.adventure.game.scenenodes.Inventory;
 import swen.adventure.game.scenenodes.Item;
 import swen.adventure.game.scenenodes.Player;
@@ -42,6 +43,8 @@ public class InventoryComponent extends UIComponent {
 
     private final Matrix4 _projectionMatrix = Matrix4.makeOrtho(-1.f, 1.f, -1.f, 1.f, 1.f, 1000.f);
 
+    private final List<Interaction> _interactionsForStep = new ArrayList<>();
+
     public InventoryComponent(Inventory inventory, int x, int y) {
         super(x, y, Inventory.Capacity * BOX_SIZE, BOX_SIZE);
 
@@ -51,6 +54,12 @@ public class InventoryComponent extends UIComponent {
     }
 
     public static final Action<Inventory, Player, InventoryComponent> actionSelectSlot =
+            (playerInventory, triggeringObject, inventoryView, data) -> {
+                Integer item = (Integer) data.get(Inventory.SelectedSlot);
+                inventoryView.setSelectedItem(item);
+            };
+
+    public static final Action<Inventory, Player, InventoryComponent> actionProvideInteraction =
             (playerInventory, triggeringObject, inventoryView, data) -> {
                 Integer item = (Integer) data.get(Inventory.SelectedSlot);
                 inventoryView.setSelectedItem(item);

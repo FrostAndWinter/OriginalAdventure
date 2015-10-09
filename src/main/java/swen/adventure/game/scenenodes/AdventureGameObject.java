@@ -15,8 +15,8 @@ import java.util.Optional;
  */
 public class AdventureGameObject extends GameObject {
 
-    public final Event<AdventureGameObject, Player> eventGameObjectLookedAt = new Event<>("eventGameObjectLookedAt", this);
-    public final Event<AdventureGameObject, Player> eventGameObjectLookedAwayFrom = new Event<>("eventGameObjectLookedAwayFrom", this);
+    protected final Event<AdventureGameObject, Player> eventGameObjectLookedAt = new Event<>("eventGameObjectLookedAt", this);
+    public final Event<AdventureGameObject, Player> eventShouldProvideInteraction = new Event<>("eventShouldProvideInteraction", this);
 
     private Optional<Container> _container = Optional.empty();
 
@@ -38,10 +38,6 @@ public class AdventureGameObject extends GameObject {
 
         mesh.eventMeshLookedAt.addAction(this, (eventObject, player, listener, data) -> {
             listener.eventGameObjectLookedAt.trigger(player, Collections.emptyMap());
-        });
-
-        mesh.eventMeshLookedAwayFrom.addAction(this, (eventObject, player, listener, data) -> {
-            listener.eventGameObjectLookedAwayFrom.trigger(player, Collections.emptyMap());
         });
     }
 
