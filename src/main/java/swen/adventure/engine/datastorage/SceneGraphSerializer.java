@@ -162,7 +162,7 @@ public class SceneGraphSerializer {
 
     private Node serializePlayerNode(Player playerNode, Node xmlParentNode) {
         Element xmlElement = createElementForNode(playerNode, xmlParentNode);
-        setAttribute("boundingBox", playerNode.getCollisionNode().get().boundingBox(),
+        setAttribute("boundingBox", playerNode.collisionNode().get().boundingBox(),
                 BoundingBox.class, xmlElement);
         return xmlElement;
     }

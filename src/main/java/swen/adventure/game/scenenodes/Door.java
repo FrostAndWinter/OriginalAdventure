@@ -11,7 +11,7 @@ import swen.adventure.engine.scenegraph.SceneNode;
 import swen.adventure.engine.scenegraph.TransformNode;
 
 
-public class Door extends GameObject {
+public class Door extends AdventureGameObject {
 
     private TransformNode _hingeTransform;
 

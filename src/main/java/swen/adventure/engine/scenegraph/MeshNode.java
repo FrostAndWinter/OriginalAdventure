@@ -112,7 +112,7 @@ public final class MeshNode extends SceneNode {
         }
     }
 
-
+    /** The texture repeat is how much the textures should be scaled in each axis on this mesh. A scale of 30, 1, 1 will tile the textures 30 times horizontally. */
     public void setTextureRepeat(Vector3 textureRepeat) {
         _textureRepeat = textureRepeat;
     }
@@ -129,8 +129,12 @@ public final class MeshNode extends SceneNode {
         _mesh.render();
     }
 
-    public void render(String vertexArrayObjectName) {
-        _mesh.render(vertexArrayObjectName);
+    /**
+     * Renders using the currently bound shader and materials, and passing only those vertex attributes specified by the vertex array object.
+     * @param vertexArrayObject An enum value specifying which vertex attributes to pass to the shader.
+     */
+    public void render(GLMesh.VertexArrayObject vertexArrayObject) {
+        _mesh.render(vertexArrayObject);
     }
 
     private static Map<String, GLMesh<Float>> _loadedMeshes = new HashMap<>();

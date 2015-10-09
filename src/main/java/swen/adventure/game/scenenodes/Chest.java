@@ -13,7 +13,7 @@ import swen.adventure.engine.scenegraph.TransformNode;
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 4/10/15.
  */
-public class Chest extends GameObject {
+public class Chest extends AdventureGameObject {
 
     private boolean _isOpen = false;
     private TransformNode _hingeTransform;

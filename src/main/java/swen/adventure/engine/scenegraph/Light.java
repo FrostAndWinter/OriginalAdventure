@@ -14,6 +14,9 @@ import java.util.stream.Collectors;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 26/09/15.
+ *
+ * A Light is a light source in the scene. Currently, point, directional, and ambient variants are supported.
+ * A variety of different attributes can be set on the lights.
  */
 public final class Light extends SceneNode {
 
@@ -60,14 +63,13 @@ public final class Light extends SceneNode {
 
     public final LightType type;
 
-    /** The light's colour as a unit vector. */
     private Vector3 _colour;
     private float _intensity;
     private boolean _on;
     public final Optional<Vector3> direction;
     public final LightFalloff falloff;
 
-    protected Light(final String id, final TransformNode parent, final boolean isDynamic,
+    private Light(final String id, final TransformNode parent, final boolean isDynamic,
                   final LightType type, final Vector3 colour, final float intensity,
                   final Optional<Vector3> direction, final LightFalloff falloff) {
         super(id, parent, isDynamic);
@@ -129,6 +131,7 @@ public final class Light extends SceneNode {
         return new Light(id, parent, false, LightType.Point, colour, intensity, Optional.empty(), falloff);
     }
 
+    /** The light's intensity. */
     public float intensity() {
         return _intensity;
     }
@@ -137,6 +140,7 @@ public final class Light extends SceneNode {
         _intensity = intensity;
     }
 
+    /** The light's colour as a unit vector. */
     public Vector3 colour() {
         return _colour;
     }

@@ -13,7 +13,7 @@ import java.util.Collections;
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 5/10/15.
  */
-public class FlickeringLight extends GameObject {
+public class FlickeringLight extends AdventureGameObject {
 
     private static final float LightAnimationTime = 0.3f;
 

@@ -23,23 +23,26 @@ import static org.lwjgl.opengl.GL21.*;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 29/09/15.
+ *
+ * A Texture is a multi-dimensional array of pixel data that is usually used to represent images.
+ * This class is intended to make using image files with OpenGL as simple as binding and unbinding the texture from a texture unit.
  */
-public class Texture {
+public final class Texture {
 
     private static Map<String, Texture> _textureCache = new HashMap<>();
     private static Map<String, Texture> _normalsCache = new HashMap<>();
 
     public final ByteBuffer textureData;
     private final List<ByteBuffer> _mipMappedData = new ArrayList<>();
+
     public final int width;
     public final int height;
     public final int numPixelComponents;
-
     public final boolean useSRGB;
 
-    public final int glTextureRef;
+    private final int glTextureRef;
 
-    public Texture(final ByteBuffer textureData, final int width, final int height, final int numPixelComponents, boolean useSRGB) {
+    private Texture(final ByteBuffer textureData, final int width, final int height, final int numPixelComponents, boolean useSRGB) {
         this.textureData = textureData;
         this.width = width;
         this.height = height;
@@ -48,7 +51,7 @@ public class Texture {
         this.useSRGB = useSRGB;
 
         int bytesPerPixel = textureData.limit()/(width * height);
-        for (int w = width, h = height; w > 1 || h > 1; ) {
+        for (int w = width, h = height; w > 1 || h > 1; ) { //Generate mip-maps using STBImageResize.
             w /= 2; h /= 2;
 
             ByteBuffer outputBuffer = BufferUtils.createByteBuffer(w * h * bytesPerPixel);
@@ -109,11 +112,19 @@ public class Texture {
         }
     }
 
+    /**
+     * Binds the texture to a given texture unit.
+     * @param textureUnit The texture unit to bind to.
+     */
     public void bindToTextureUnit(TextureUnit textureUnit) {
         glActiveTexture(GL_TEXTURE0 + textureUnit.glUnit);
         glBindTexture(GL_TEXTURE_2D, this.glTextureRef);
     }
 
+    /**
+     * Unbinds the currently bound texture from the specified texture unit.
+     * @param textureUnit The texture unit to unbind the texture from.
+     */
     public static void unbindTexture(TextureUnit textureUnit) {
         glActiveTexture(GL_TEXTURE0 + textureUnit.glUnit);
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -141,6 +152,13 @@ public class Texture {
         }
     }
 
+    /**
+     * Loads a height map from an image file at the specified location.
+     * It then converts it to a normal map and returns the resulting texture.
+     * @param directory The directory to look for the image file in.
+     * @param fileName The name of the image file.
+     * @return A normal map texture, consisting of the base image and mip-mapped images.
+     */
     public static Texture loadHeightMapWithName(String directory, String fileName) {
 
         Texture texture = _normalsCache.get(directory + fileName);
@@ -162,6 +180,13 @@ public class Texture {
         return texture;
     }
 
+    /**
+     * Loads an image from the file at the specified location.
+     * @param directory The directory to look for the image file in.
+     * @param fileName The name of the image file.
+     * @param useSRGB Whether or not the image is in the sRGB colour space.
+     * @return A texture, consisting of the base image and mip-mapped images.
+     */
     public static Texture loadTextureWithName(String directory, String fileName, boolean useSRGB) {
 
         Texture texture = _textureCache.get(directory + fileName);

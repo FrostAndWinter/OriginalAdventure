@@ -102,15 +102,7 @@ public class ObjMesh extends GLMesh<Float> {
     private static final int TextureCoordinateAttributeIndex = 1;
     private static final int TangentAttributeIndex = 3;
 
-    public static final String VAOPositions = "vaoPositions";
-    public static final String VAOPositionsAndNormals = "vaoPositionsAndNormals";
-    public static final String VAOPositionsAndTexCoords = "vaoPositionsAndTexCoords";
-    public static final String VAOPositionsNormalsTexCoords = "vaoPositionsNormalsTexCoords";
-    public static final String VAOPositionsNormalsTexCoordsTangents = "vaoPositionsNormalsTexCoordsTangents";
-
     private boolean _hasNormals = false;
-    private boolean _hasTextureCoordinates = false;
-    private boolean _hasFourComponentGeoVectors = false;
     private List<VertexData> _vertices = new ArrayList<>();
     private Map<Material, List<Integer>> _triIndices = new HashMap<>();
 
@@ -130,6 +122,11 @@ public class ObjMesh extends GLMesh<Float> {
         Set<VertexData> vertexData = new LinkedHashSet<>(); //We use a LinkedHashSet to try and maintain ordering where possible (keep vertices in the same faces close together in memory).
         Map<WavefrontParser.IndexData, VertexData> objIndicesToVertices = new HashMap<>();
 
+        //Firstly, we iterate through the specified faces and zip together the vertex data.
+        //OBJ files can share texture coordinates or normals for different vertices, whereas OpenGL requires that they be repeated per vertex.
+        //We therefore use a set of VertexData to store all the different possible vertices – if two vertices are in fact identical in every respect, then we /can/ repeat them.
+        boolean hasFourComponentGeoVectors = false;
+        boolean hasTextureCoordinates = false;
         for (WavefrontParser.PolygonFace polygonFace : parsedFile.polygonFaces) {
             for (WavefrontParser.IndexData indexData : polygonFace.indices) {
                 Vector geometricVertex = parsedFile.geometricVertices.get(indexData.vertexIndex - 1);
@@ -137,8 +134,8 @@ public class ObjMesh extends GLMesh<Float> {
                 Optional<Vector3> vertexNormal = indexData.normalIndex.isPresent() ? Optional.of(parsedFile.vertexNormals.get(indexData.normalIndex.get() - 1)) : Optional.empty();
 
                 _hasNormals = _hasNormals || vertexNormal.isPresent();
-                _hasTextureCoordinates = _hasTextureCoordinates || textureCoordinate.isPresent();
-                _hasFourComponentGeoVectors = _hasFourComponentGeoVectors || geometricVertex instanceof Vector4;
+                hasTextureCoordinates = hasTextureCoordinates || textureCoordinate.isPresent();
+                hasFourComponentGeoVectors = hasFourComponentGeoVectors || geometricVertex instanceof Vector4;
 
                 VertexData vertex = new VertexData(geometricVertex, vertexNormal, textureCoordinate);
                 vertexData.add(vertex); //Populate the vertex data.
@@ -149,12 +146,14 @@ public class ObjMesh extends GLMesh<Float> {
 
         _vertices = vertexData.stream().collect(Collectors.toList());
 
+        //Next, go through the index data and convert them into the correct indices for _vertices (as opposed to the indices in the OBJ file).
         for (WavefrontParser.PolygonFace polygonFace : parsedFile.polygonFaces) {
-            List<Integer> vertexIndices = polygonFace.indices.stream().map((data) -> {
+            List<Integer> vertexIndices = polygonFace.indices.stream().map((data) -> { //Map the indices in indexData to a list of indices mapping to items in vertexData.
                 VertexData vertex = objIndicesToVertices.get(data);
                 return _vertices.indexOf(vertex);
             }).collect(Collectors.toList());
 
+            //Then, add the indices to the index list for the face's material.
             if (vertexIndices.size() == 4) {
                 this.processAndAddFacesAtIndices(polygonFace.material, Arrays.asList(vertexIndices.get(0), vertexIndices.get(1), vertexIndices.get(3))); //convert to triangles
                 this.processAndAddFacesAtIndices(polygonFace.material, Arrays.asList(vertexIndices.get(1), vertexIndices.get(2), vertexIndices.get(3)));
@@ -163,7 +162,8 @@ public class ObjMesh extends GLMesh<Float> {
             }
         }
 
-        if (_hasNormals && _hasTextureCoordinates) {
+        //If we can generate tangents for use in normal mapping, do so.
+        if (_hasNormals && hasTextureCoordinates) {
             for (List<Integer> indices : _triIndices.values()) {
                 this.computeTangentsAndBiTangents(_vertices, indices);
             }
@@ -176,39 +176,40 @@ public class ObjMesh extends GLMesh<Float> {
 
         for (VertexData vertex : _vertices) {
             Vector geometricPosition = vertex.vertexPosition;
-            if (_hasFourComponentGeoVectors && geometricPosition instanceof Vector3) {
+            if (hasFourComponentGeoVectors && geometricPosition instanceof Vector3) {
                 Vector3 vec3 = (Vector3)geometricPosition;
-               geometricPosition = new Vector4(vec3, 1.f);
+               geometricPosition = new Vector4(vec3, 1.f); //All the vertices need to have the same number of components, so if any of them have four components (i.e. a w value) then give the rest a 1 w value.
             }
 
             this.addVectorToList(geometricPosition, vertexGeometry);
 
             if (_hasNormals) {
-                this.addVectorToList(vertex.vertexNormal.orElse(new Vector3(1.f, 0.f, 0.f)), vertexNormals);
+                this.addVectorToList(vertex.vertexNormal.orElseGet(() -> new Vector3(1.f, 0.f, 0.f)), vertexNormals);
                 if (!vertex.vertexNormal.isPresent()) { System.err.println("Warning: mesh with name " + fileName + " has missing normals for vertex at " + geometricPosition); }
             }
-            if (_hasTextureCoordinates) {
-                this.addVectorToList(vertex.textureCoordinate.orElse(new Vector3(1.f, 0.f, 0.f)), textureCoordinates);
+            if (hasTextureCoordinates) {
+                this.addVectorToList(vertex.textureCoordinate.orElseGet(() -> new Vector3(1.f, 0.f, 0.f)), textureCoordinates);
                 if (!vertex.textureCoordinate.isPresent()) {
                     System.err.println("Warning: mesh with name " + fileName + " has missing texture coordinates for vertex at " + geometricPosition);
                 }
             }
 
-            if (_hasNormals && _hasTextureCoordinates) {
-                vertex.orthogonaliseTangent();
+            if (_hasNormals && hasTextureCoordinates) {
+                vertex.orthogonaliseTangent(); //We need to make sure the tangents are correctly sized and oriented.
                 this.addVectorToList(vertex.tangent().get(), tangents);
             }
         }
 
+        //Generate the attribute lists.
         List<Attribute> attributes = new ArrayList<>();
-        attributes.add(new Attribute(VertexGeometryAttributeIndex, _hasFourComponentGeoVectors ? 4 : 3, AttributeType.Float, false, vertexGeometry));
+        attributes.add(new Attribute(VertexGeometryAttributeIndex, hasFourComponentGeoVectors ? 4 : 3, AttributeType.Float, false, vertexGeometry));
         if (_hasNormals) {
             attributes.add(new Attribute(VertexNormalAttributeIndex, 3, AttributeType.Float, false, vertexNormals));
         }
-        if (_hasTextureCoordinates) {
+        if (hasTextureCoordinates) {
             attributes.add(new Attribute(TextureCoordinateAttributeIndex, 3, AttributeType.Float, false, textureCoordinates));
         }
-        if (_hasNormals && _hasTextureCoordinates) {
+        if (_hasNormals && hasTextureCoordinates) {
             attributes.add(new Attribute(TangentAttributeIndex, 4, AttributeType.Float, false, tangents));
         }
 
@@ -220,21 +221,23 @@ public class ObjMesh extends GLMesh<Float> {
             indexData.add(new IndexData<>(entry.getValue(), AttributeType.UInt));
         }
 
+        //Generate the specific vertex array objects.
         List<NamedVertexArrayObject> namedVAOs = new ArrayList<>();
-        namedVAOs.add(new NamedVertexArrayObject(VAOPositions, Collections.singletonList(VertexGeometryAttributeIndex)));
+        namedVAOs.add(new NamedVertexArrayObject(VertexArrayObject.Positions, Collections.singletonList(VertexGeometryAttributeIndex)));
         if (_hasNormals) {
-            namedVAOs.add(new NamedVertexArrayObject(VAOPositionsAndNormals, Arrays.asList(VertexGeometryAttributeIndex, VertexNormalAttributeIndex)));
+            namedVAOs.add(new NamedVertexArrayObject(VertexArrayObject.PositionsAndNormals, Arrays.asList(VertexGeometryAttributeIndex, VertexNormalAttributeIndex)));
         }
-        if (_hasTextureCoordinates) {
-            namedVAOs.add(new NamedVertexArrayObject(VAOPositionsAndTexCoords, Arrays.asList(VertexGeometryAttributeIndex, TextureCoordinateAttributeIndex)));
+        if (hasTextureCoordinates) {
+            namedVAOs.add(new NamedVertexArrayObject(VertexArrayObject.PositionsAndTextureCoordinates, Arrays.asList(VertexGeometryAttributeIndex, TextureCoordinateAttributeIndex)));
         }
-        if (_hasNormals && _hasTextureCoordinates) {
-            namedVAOs.add(new NamedVertexArrayObject(VAOPositionsNormalsTexCoords, Arrays.asList(VertexGeometryAttributeIndex, VertexNormalAttributeIndex, TextureCoordinateAttributeIndex)));
-            namedVAOs.add(new NamedVertexArrayObject(VAOPositionsNormalsTexCoordsTangents, Arrays.asList(VertexGeometryAttributeIndex, VertexNormalAttributeIndex, TextureCoordinateAttributeIndex, TangentAttributeIndex)));
+        if (_hasNormals && hasTextureCoordinates) {
+            namedVAOs.add(new NamedVertexArrayObject(VertexArrayObject.PositionsNormalsAndTextureCoordinates, Arrays.asList(VertexGeometryAttributeIndex, VertexNormalAttributeIndex, TextureCoordinateAttributeIndex)));
+            namedVAOs.add(new NamedVertexArrayObject(VertexArrayObject.PositionsNormalsTextureCoordinatesAndTangents, Arrays.asList(VertexGeometryAttributeIndex, VertexNormalAttributeIndex, TextureCoordinateAttributeIndex, TangentAttributeIndex)));
         }
 
         _boundingBox = this.computeBoundingBox();
 
+        //Finally, pass the computed data to a GLMesh to bind it to the OpenGL context.
         super.initialise(attributes, indexData, namedVAOs, renderCommands);
     }
 

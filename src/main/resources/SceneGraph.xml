@@ -17,11 +17,15 @@
     
     <TransformNode id="chestTransform" translation="-100, 0, -200" scale="30, 30, 30">
         <Chest id="chest"/>
-        <TransformNode id="chestContentsTransform" rotation="-0.70710677, 0.0, 0.0, 0.70710677">
-            <TransformNode id="noteTransform" translation="-0.49, -0.5, 0.9" rotation="0.04972948, 0.0049895914, 0.099708654, 0.9937607" scale="0.3, 0.3, 0.3">
-                <Note id="note" />
+
+        <TransformNode id="chestContentsTransform" translation="-0.4, 0.88, 0.5" rotation="-0.70710677, 0.0, 0.0, 0.70710677" scale="0.03333, 0.03333, 0.03333">
+            <Container id="chestContainer" showTopItem="true" selectionObject="chest"/>
+
+            <TransformNode id="noteTransform" rotation="0.04972948, 0.0049895914, 0.099708654, 0.9937607" scale="10.0, 10.0, 10.0">
+                <Note id="note" container="chestContainer"/>
             </TransformNode>
         </TransformNode>
+
     </TransformNode>
 
     <TransformNode id="wallsTransform" scale="1, 1.4, 1">

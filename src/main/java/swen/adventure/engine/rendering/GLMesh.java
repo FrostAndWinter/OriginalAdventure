@@ -26,6 +26,18 @@ import static org.lwjgl.opengl.GL30.*;
 public abstract class GLMesh<T> {
 
     /**
+     * This enum describes the different possible sets of data that can be passed to a vertex shader.
+     * For instance, PositionsAndTextureCoordinates specifies that only the positions and texture coordinates should be passed.
+     */
+    public enum VertexArrayObject {
+        Positions,
+        PositionsAndNormals,
+        PositionsAndTextureCoordinates,
+        PositionsNormalsAndTextureCoordinates,
+        PositionsNormalsTextureCoordinatesAndTangents;
+    }
+
+    /**
      * A render command is a command that can be used to draw elements in OpenGL.
      * It stores a material, along with the information required to draw the elements.
      */
@@ -213,10 +225,10 @@ public abstract class GLMesh<T> {
      * A vertex array object that allows you to pass only certain attributes to the shader (i.e. just vertex positions).
      */
     static class NamedVertexArrayObject {
-        public final String name;
+        public final VertexArrayObject name;
         public final List<Integer> attributeIndices;
 
-        public NamedVertexArrayObject(final String name, final List<Integer> attributeIndices) {
+        public NamedVertexArrayObject(final VertexArrayObject name, final List<Integer> attributeIndices) {
             this.name = name;
             this.attributeIndices = attributeIndices;
         }
@@ -225,7 +237,7 @@ public abstract class GLMesh<T> {
     private int _vertexArrayObjectRef = 0;
 
     private List<RenderCommand> _primitives; //The primitives that make up this mesh.
-    private Map<String, Integer> _namedVAOs = new HashMap<>();
+    private EnumMap<VertexArrayObject, Integer> _namedVAOs = new EnumMap<>(VertexArrayObject.class);
 
     protected void initialise(List<Attribute> attributes, List<IndexData<?>> indexData, List<NamedVertexArrayObject> namedVAOList, List<RenderCommand> primitives) {
 
@@ -399,10 +411,10 @@ public abstract class GLMesh<T> {
 
     /**
      * Renders using only the named vertex array objects.
-     * @param vertexArrayObjectName A string constant, referencing the vertex array objects to be used in rendering.
+     * @param vertexArrayObject An enum value specifying which vertex arrays should be passed to the vertex shader for rendering.
      */
-    public void render(String vertexArrayObjectName) {
-        Integer vaoObj = _namedVAOs.get(vertexArrayObjectName);
+    public void render(VertexArrayObject vertexArrayObject) {
+        Integer vaoObj = _namedVAOs.get(vertexArrayObject);
         if (vaoObj == null) {
             return;
         }
@@ -410,9 +422,7 @@ public abstract class GLMesh<T> {
 
         glBindVertexArray(vao);
 
-        for (RenderCommand primitive : _primitives) {
-            primitive.render();
-        }
+        _primitives.forEach(GLMesh.RenderCommand::render);
 
         glBindVertexArray(0);
     }

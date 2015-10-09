@@ -1,5 +1,6 @@
 package swen.adventure.game.scenenodes;
 
+import swen.adventure.engine.Event;
 import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.SceneNode;
 import swen.adventure.engine.scenegraph.TransformNode;
@@ -9,7 +10,8 @@ import java.util.*;
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 8/10/15.
  */
-public class Container extends GameObject {
+public class Container extends AdventureGameObject {
+
     private final List<Item> _items;
     private final int _capacity;
 

@@ -16,7 +16,7 @@ import java.util.Collections;
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 4/10/15.
  */
-public class Lever extends GameObject {
+public class Lever extends AdventureGameObject {
 
     public final Event<SceneNode, Player> eventLeverToggled = new Event<>("eventLeverToggled", this);
 

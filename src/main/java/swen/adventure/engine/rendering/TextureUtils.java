@@ -34,7 +34,6 @@ public class TextureUtils {
 
         for(y = 0; y < height; y++) {
             for(x = 0; x < width; x++) {
-                double center = getPixel(heightMap, wrap, x, y, width, height, componentsPerPixel);
                 double up = getPixel(heightMap, wrap, x, y - 1, width, height, componentsPerPixel);
                 double down = getPixel(heightMap, wrap, x, y + 1, width, height, componentsPerPixel);
                 double left = getPixel(heightMap, wrap, x - 1, y, width, height, componentsPerPixel);

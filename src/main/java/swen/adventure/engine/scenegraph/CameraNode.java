@@ -2,6 +2,8 @@ package swen.adventure.engine.scenegraph;
 
 /**
  * Created by josephbennett on 19/09/15
+ *
+ * Represents a camera in the world that can be used for rendering.
  */
 public final class CameraNode extends SceneNode {
 

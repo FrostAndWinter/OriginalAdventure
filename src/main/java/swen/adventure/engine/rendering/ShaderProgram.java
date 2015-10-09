@@ -9,6 +9,10 @@ import static org.lwjgl.opengl.GL32.GL_GEOMETRY_SHADER;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 19/09/15.
+ *
+ * ShaderProgram is an abstraction around an OpenGL shader.
+ * It is intended to be subclassed to specify methods for setting specific uniforms and uniform blocks in different shaders.
+ * It also manages compiling and linking the different shaders.
  */
 public class ShaderProgram {
     private final int _glProgramRef;
@@ -26,15 +30,27 @@ public class ShaderProgram {
         return _glProgramRef;
     }
 
+    /**
+     * Binds this program to the OpenGL context.
+     */
     public void useProgram() {
         glUseProgram(_glProgramRef);
     }
 
+    /**
+     * Unbinds this program from the OpenGL context.
+     */
     public void endUseProgram() {
         glUseProgram(0);
     }
 
-    public static int createProgram(List<Integer> shaderList){
+    /**
+     * Creates and links a shader program using the specified OpenGL shader objects.
+     * @param shaderList A list of references to OpenGL shader objects.
+     * @return A reference to the OpenGL program.
+     */
+    private static int createProgram(List<Integer> shaderList) {
+
         int program = glCreateProgram();
 
         for (int shader : shaderList) {
@@ -58,7 +74,13 @@ public class ShaderProgram {
         return program;
     }
 
-    public static int createShader(int shaderType, String shaderText) {
+    /**
+     * Creates and compiles a shader from the given text.
+     * @param shaderType The type of the shader. Any of GL_VERTEX_SHADER, GL_GEOMETRY_SHADER, or GL_FRAGMENT_SHADER.
+     * @param shaderText The text of the shader program.
+     * @return A reference to the OpenGL shader object.
+     */
+    private static int createShader(int shaderType, String shaderText) {
         int shader = glCreateShader(shaderType);
         glShaderSource(shader, shaderText);
         glCompileShader(shader);

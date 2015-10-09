@@ -17,11 +17,14 @@ import static org.lwjgl.opengl.GL32.*;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 1/10/15.
+ *
+ * The PickerRenderer is a specific GL renderer that renders each mesh in a different colour.
+ * It then reads back the colour at a specific location and returns which MeshNode that is associated with.
+ * This technique is known as 'Colour Picking'.
  */
 public class PickerRenderer {
 
     private PickerShader _pickerShader;
-    private int _width, _height;
     private float _currentFOV = 0.0001f; //Set an extremely narrow field of view, since we're basically only interested in the centre pixel.
 
     private WeakReference<MeshNode>[] _idsToNodes = (WeakReference<MeshNode>[]) new WeakReference[0xFFFFFF];
@@ -36,6 +39,9 @@ public class PickerRenderer {
         this.initGL();
     }
 
+    /**
+     * Initialise all the OpenGL objects – specifically, the framebuffers to use for off-screen drawing.
+     */
     private void initGL() {
         _frameBufferObject = glGenFramebuffers();
         _colourRenderBuffer = glGenRenderbuffers();
@@ -53,12 +59,21 @@ public class PickerRenderer {
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     }
 
+    /**
+     * Remove the frame-buffers for this picker from the context.
+     */
     private void deinitGL() {
         glDeleteFramebuffers(_frameBufferObject);
         glDeleteRenderbuffers(_colourRenderBuffer);
         glDeleteRenderbuffers(_depthStencilBuffer);
     }
 
+    /**
+     * Generates a perspective matrix with a 1:1 aspect ratio.
+     * Uses 1 for zNear and 10000 for zFar.
+     * @param fieldOfView The field of view to use
+     * @return The perspective matrix with the specified field of view.
+     */
     private Matrix4 perspectiveMatrix(float fieldOfView) {;
         float cameraNear = 1.f;
         float cameraFar = 10000.f;
@@ -104,6 +119,12 @@ public class PickerRenderer {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
+    /**
+     * Renders the scene and then returns the mesh that is currently in the centre of the scene.
+     * @param meshNodes The meshes to render.
+     * @param worldToCameraMatrix The transformation matrix to convert from world space to camera space.
+     * @return The MeshNode that is situated in the centre of the screen, if it is present.
+     */
     public Optional<MeshNode> selectedNode(List<MeshNode> meshNodes, Matrix4 worldToCameraMatrix) {
         this.render(meshNodes, worldToCameraMatrix);
         return Optional.ofNullable(_highlightedMesh);
@@ -129,7 +150,7 @@ public class PickerRenderer {
             _pickerShader.setModelToClipMatrix(nodeToClipSpaceTransform);
             _pickerShader.setID(id);
 
-            node.render(ObjMesh.VAOPositions);
+            node.render(GLMesh.VertexArrayObject.Positions);
         });
 
         _pickerShader.endUseProgram();

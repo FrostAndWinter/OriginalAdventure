@@ -16,7 +16,7 @@ import java.util.Optional;
 /**
  * Created by josephbennett on 19/09/15
  */
-public class Player extends GameObject {
+public class Player extends AdventureGameObject {
 
     private float _playerSpeed = 600.f; //units per second
 

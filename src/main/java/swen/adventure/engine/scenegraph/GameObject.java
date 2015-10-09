@@ -4,7 +4,8 @@ import java.util.Optional;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 15/09/15.
- * Implements a variant of the component pattern – a game object can hold references to different 'component' nodes.
+ * Implements a variant of the composite/decorator pattern – a game object can hold references to different 'component' nodes, and can be treated as the combination of those nodes.
+ * A game object can be 'decorated' with different component nodes.
  */
 public class GameObject extends SceneNode {
 
@@ -39,10 +40,6 @@ public class GameObject extends SceneNode {
 
     public Optional<MeshNode> mesh() {
         return _mesh;
-    }
-
-    public Optional<CollisionNode> getCollisionNode() {
-        return _collisionNode;
     }
 
     @Override

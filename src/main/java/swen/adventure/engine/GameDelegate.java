@@ -88,7 +88,7 @@ public class GameDelegate {
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-        glfwWindowHint(GLFW_SAMPLES, Settings.Multisampling);
+        glfwWindowHint(GLFW_SAMPLES, Settings.MultiSampling);
         glfwWindowHint(GLFW_SRGB_CAPABLE, GL_TRUE);
 
         // setup the main _window

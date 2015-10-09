@@ -143,7 +143,7 @@ vec3 ComputeLighting(in PerLightData lightData, in vec4 diffuse, in vec4 specula
     gaussianTerm = cosAngIncidence != 0.0f ? gaussianTerm : 0.0;
     
     vec3 lighting = diffuse.rgb * lightIntensity * cosAngIncidence;
-    lighting += specular.rgb * lightIntensity * gaussianTerm;
+    lighting = specular.rgb * lightIntensity * gaussianTerm;
 
     return lighting;
 }
