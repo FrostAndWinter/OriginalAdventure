@@ -76,7 +76,7 @@ public class InventoryComponent extends UIComponent {
         if (_inventory.getSelectedSlot() >= _inventory.items().size()) {
             return;
         }
-        
+
         this.showItem = showItem;
     }
 
@@ -103,10 +103,6 @@ public class InventoryComponent extends UIComponent {
         if (showItem) {
             g.fill(255);
             g.text(_inventory.items().get(_inventory.getSelectedSlot()).getDescription(), x * scaleX, y * scaleY + (height * scaleY)/2);
-            g.text("Descirption", x * scaleX, (y + height/2) * scaleY);
-        } else {
-            g.fill(0,0,0,0);
-            g.text("Descirption", x * scaleX, (y + height/2) * scaleY);
         }
 
         for (int i = 0; i < Inventory.Capacity; i++) {
