@@ -69,7 +69,7 @@ public class FlickeringLight extends AdventureGameObject {
 
         MeshNode mesh = parent.findNodeWithIdOrCreate(meshID, () -> new MeshNode(meshID, meshDirectory, meshName, parent));
         mesh.setMaterialOverride(_lightMaterial);
-        this.setMesh(mesh);
+        this.setMainMesh(mesh);
 
         _lightIntensity.eventValueChanged.addAction(this,  (animableProperty, triggeringObject, listener, data) -> {
             this.light().ifPresent(lightNode -> {

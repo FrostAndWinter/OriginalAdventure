@@ -32,6 +32,7 @@ public class Chest extends AdventureGameObject {
         final String chestMeshId = id + "ChestMesh";
 
         MeshNode chestMesh = parent.findNodeWithIdOrCreate(chestMeshId, () -> new MeshNode(chestMeshId, "Chest", "Chest.obj", parent));
+        addMesh(chestMesh);
         chestMesh.setCollidable(true);
         chestMesh.setParent(parent);
 
@@ -48,9 +49,11 @@ public class Chest extends AdventureGameObject {
         final String lidMeshId = id + "LidMesh";
 
         MeshNode lidMesh = parent.findNodeWithIdOrCreate(lidMeshId, () -> new MeshNode(id + "ChestLid", "Chest", "ChestLid.obj", lidTransform));
+        addMesh(lidMesh);
 
         chestMesh.eventMeshPressed.addAction(this, actionToggleChest);
         lidMesh.eventMeshPressed.addAction(this, actionToggleChest);
+
 
         _lidRotationProgress.eventValueChanged.addAction(this, (eventObject, triggeringObject, listener, data) ->  {
             listener._hingeTransform.setRotation(Quaternion.makeWithAngleAndAxis(eventObject.value() * (ClosedAngle), 1, 0, 0));

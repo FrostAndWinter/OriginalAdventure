@@ -37,10 +37,12 @@ public class Lever extends AdventureGameObject {
         final String leverMeshId = id + "Lever";
 
         MeshNode leverBaseMesh = parent.findNodeWithIdOrCreate(leverBaseMeshId, () -> new MeshNode(leverBaseMeshId, "Lever", "LeverBase.obj", parent));
+        addMesh(leverBaseMesh);
 
         _hingeTransform = parent.findNodeWithIdOrCreate(leverHingeId, () -> new TransformNode(leverHingeId, parent, true, Vector3.zero, new Quaternion(), Vector3.one));
 
         MeshNode leverMesh = parent.findNodeWithIdOrCreate(leverMeshId, () -> new MeshNode(id + "Lever", "Lever", "Lever.obj", _hingeTransform));
+        addMesh(leverMesh);
 
         leverBaseMesh.eventMeshPressed.addAction(this, actionToggleLever);
         leverMesh.eventMeshPressed.addAction(this, actionToggleLever);

@@ -1,5 +1,9 @@
 package swen.adventure.engine.scenegraph;
 
+import javafx.scene.shape.Mesh;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -12,7 +16,15 @@ public class GameObject extends SceneNode {
     private Optional<CollisionNode> _collisionNode = Optional.empty();
 
     private Optional<Light> _light = Optional.empty();
-    private Optional<MeshNode> _mesh = Optional.empty();
+    private Optional<MeshNode> _mainMesh = Optional.empty();
+
+    /**
+     * Game objects can have more than one mesh. A game object usually has
+     * more than one mesh if animations are needed, as you can only animate meshes as a whole.
+     *
+     * TODO Revisit how this is done.
+     */
+    private List<MeshNode> _meshes = new ArrayList<>();
 
     public GameObject(String id, final TransformNode parent) {
         super(id, parent, true);
@@ -34,12 +46,21 @@ public class GameObject extends SceneNode {
         return _light;
     }
 
-    public void setMesh(final MeshNode mesh) {
-        _mesh = Optional.of(mesh);
+    public void setMainMesh(final MeshNode mesh) {
+        _mainMesh = Optional.of(mesh);
+        addMesh(mesh);
     }
 
     public Optional<MeshNode> mesh() {
-        return _mesh;
+        return _mainMesh;
+    }
+
+    protected void addMesh(MeshNode meshNode) {
+        if (_meshes.contains(meshNode)) {
+            return;
+        }
+
+        _meshes.add(meshNode);
     }
 
     @Override
@@ -48,9 +69,11 @@ public class GameObject extends SceneNode {
         if (_collisionNode.isPresent()) {
             _collisionNode.get().setEnabled(isEnabled);
         }
-        if (_mesh.isPresent()) {
-            _mesh.get().setEnabled(isEnabled);
+
+        for (MeshNode mesh : _meshes) {
+            mesh.setEnabled(isEnabled);
         }
+
         if (_light.isPresent()) {
             _light.get().setEnabled(isEnabled);
         }

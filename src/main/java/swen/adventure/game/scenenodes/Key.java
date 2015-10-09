@@ -1,7 +1,6 @@
 package swen.adventure.game.scenenodes;
 
 import swen.adventure.engine.Action;
-import swen.adventure.engine.animation.AnimableProperty;
 import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.Puzzle;
 import swen.adventure.engine.scenegraph.TransformNode;
@@ -28,7 +27,7 @@ public class Key extends Item {
         final String keyMeshId = id + "KeyMesh";
 
         MeshNode keyMesh = parent.findNodeWithIdOrCreate(keyMeshId, () -> new MeshNode(keyMeshId, null, "Key_B_02.obj", parent));
-        this.setMesh(keyMesh);
+        this.setMainMesh(keyMesh);
     }
 
 }

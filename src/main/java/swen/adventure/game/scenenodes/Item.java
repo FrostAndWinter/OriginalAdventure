@@ -1,12 +1,10 @@
 package swen.adventure.game.scenenodes;
 
 import swen.adventure.engine.Event;
-import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.TransformNode;
 
 import java.util.Collections;
-import java.util.Optional;
 
 /**
  * Created by josephbennett on 6/10/15
@@ -27,8 +25,8 @@ public class Item extends AdventureGameObject {
     }
 
     @Override
-    public void setMesh(MeshNode mesh) {
-        super.setMesh(mesh);
+    public void setMainMesh(MeshNode mesh) {
+        super.setMainMesh(mesh);
         mesh.eventMeshPressed.addAction(this, (eventObject, player, listener, data) -> {
             if (_interactionEnabled) {
                 eventItemPickup.trigger(player, Collections.emptyMap());

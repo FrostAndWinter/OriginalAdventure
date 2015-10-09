@@ -33,6 +33,7 @@ public class Door extends AdventureGameObject {
 
         TransformNode body = parent.findNodeWithIdOrCreate(bodyTransformId, () -> new TransformNode(bodyTransformId, _hingeTransform, true, Vector3.zero, new Quaternion(), new Vector3(50, 100, 1)));
         MeshNode doorMesh = parent.findNodeWithIdOrCreate(meshId, () -> new MeshNode(meshId, "box.obj", body));
+        addMesh(doorMesh);
 
         _hingeTransform.translateBy(new Vector3(-doorMesh.boundingBox().width() * 50 / 2, 0.f, 0.f));
         body.translateBy(new Vector3(doorMesh.boundingBox().width()*50/2, 0.f, 0.f));
