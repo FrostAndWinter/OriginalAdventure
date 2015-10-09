@@ -1,8 +1,11 @@
 package swen.adventure.game.scenenodes;
 
+import swen.adventure.engine.Event;
 import swen.adventure.engine.scenegraph.GameObject;
+import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.TransformNode;
 
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -11,6 +14,9 @@ import java.util.Optional;
  * An AdventureGameObject is a specialisation of GameObject allowing for game-specific components.
  */
 public class AdventureGameObject extends GameObject {
+
+    public final Event<AdventureGameObject, Player> eventGameObjectLookedAt = new Event<>("eventGameObjectLookedAt", this);
+    public final Event<AdventureGameObject, Player> eventGameObjectLookedAwayFrom = new Event<>("eventGameObjectLookedAwayFrom", this);
 
     private Optional<Container> _container = Optional.empty();
 
@@ -26,6 +32,19 @@ public class AdventureGameObject extends GameObject {
         return _container;
     }
 
+    @Override
+    protected void addMesh(MeshNode mesh) {
+        super.addMesh(mesh);
+
+        mesh.eventMeshLookedAt.addAction(this, (eventObject, player, listener, data) -> {
+            listener.eventGameObjectLookedAt.trigger(player, Collections.emptyMap());
+        });
+
+        mesh.eventMeshLookedAwayFrom.addAction(this, (eventObject, player, listener, data) -> {
+            listener.eventGameObjectLookedAwayFrom.trigger(player, Collections.emptyMap());
+        });
+    }
+
     /**
      * Sets this object's container to be the specified container.
      * In the case of GameObjects that are represent container meshes, this should be overridden to
@@ -35,5 +54,10 @@ public class AdventureGameObject extends GameObject {
      */
     public void setContainer(Container container) {
         _container = Optional.ofNullable(container);
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
     }
 }
