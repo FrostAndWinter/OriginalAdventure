@@ -15,14 +15,20 @@ public class Container extends AdventureGameObject {
     private final List<Item> _items;
     private final int _capacity;
 
-    /** If this container should display its top item, then that item will be parented to this transform and made visible. */
-    private final boolean _showTopItem;
+    private boolean _showTopItem;
 
-    public Container(final String id, final TransformNode parent, final int capacity, final boolean showTopItem) {
+    public Container(final String id, final TransformNode parent, final int capacity) {
         super(id, parent);
         _capacity = capacity;
-        _showTopItem = showTopItem;
         _items = new ArrayList<>(capacity);
+    }
+
+
+
+    /** If this container should display its top item, then that item will be made visible. */
+    public void setShowTopItem(boolean showTopItem) {
+        _showTopItem = showTopItem;
+        this.setVisibilityOnContents();;
     }
 
     private void setVisibilityOnContents() {

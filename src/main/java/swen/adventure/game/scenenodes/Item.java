@@ -43,4 +43,12 @@ public class Item extends AdventureGameObject {
     public String getDescription() {
         return _description;
     }
+
+    @Override
+    public void setContainer(Container container) {
+        super.setContainer(container);
+        if (container != null) {
+            container.push(this);
+        }
+    }
 }

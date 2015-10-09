@@ -26,6 +26,13 @@ public class AdventureGameObject extends GameObject {
         return _container;
     }
 
+    /**
+     * Sets this object's container to be the specified container.
+     * In the case of GameObjects that are represent container meshes, this should be overridden to
+     * set up the connections required for the container to be modified when the object is interacted with.
+     * In the case of items, this should call pushItem on the container with the item as an argument.
+     * @param container
+     */
     public void setContainer(Container container) {
         _container = Optional.ofNullable(container);
     }

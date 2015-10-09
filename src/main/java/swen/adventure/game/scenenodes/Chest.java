@@ -99,4 +99,12 @@ public class Chest extends AdventureGameObject {
             this.close(animate);
         }
     }
+
+    @Override
+    public void setContainer(Container container) {
+        super.setContainer(container);
+        if (container != null) {
+            //Set up the interaction connections between this object's mesh being interacted with and the container.
+        }
+    }
 }
