@@ -20,7 +20,6 @@ public class Player extends AdventureGameObject {
 
     private float _playerSpeed = 600.f; //units per second
 
-    private Inventory _inventory = new Inventory(this);
     private Optional<CameraNode> _camera = Optional.empty();
 
     public static final Action<KeyInput, KeyInput, Player> actionMoveInDirection =
@@ -34,6 +33,8 @@ public class Player extends AdventureGameObject {
 
     public Player(String id, TransformNode parent) {
         super(id, parent);
+
+        this.setContainer(new Inventory(this));
     }
 
     public void setCamera(CameraNode camera) {
@@ -75,7 +76,7 @@ public class Player extends AdventureGameObject {
     }
 
     public Inventory inventory() {
-        return _inventory;
+        return (Inventory)this.container().get();
     }
 
     public Optional<CameraNode> camera() {

@@ -46,35 +46,15 @@ public class InventoryComponent extends UIComponent {
     private final List<Interaction> _interactionsForStep = new ArrayList<>();
 
     public InventoryComponent(Inventory inventory, int x, int y) {
-        super(x, y, Inventory.Capacity * BOX_SIZE, BOX_SIZE);
+        super(x, y, inventory.capacity() * BOX_SIZE, BOX_SIZE);
 
         _inventory = inventory;
 
         boxSize = BOX_SIZE;
     }
 
-    public static final Action<Inventory, Player, InventoryComponent> actionSelectSlot =
-            (playerInventory, triggeringObject, inventoryView, data) -> {
-                Integer item = (Integer) data.get(Inventory.SelectedSlot);
-                inventoryView.setSelectedItem(item);
-            };
-
-    public static final Action<Inventory, Player, InventoryComponent> actionProvideInteraction =
-            (playerInventory, triggeringObject, inventoryView, data) -> {
-                Integer item = (Integer) data.get(Inventory.SelectedSlot);
-                inventoryView.setSelectedItem(item);
-            };
-
     public void setBoxSize(int boxSize) {
         this.boxSize = boxSize;
-    }
-
-    public void setSelectedItem(int s) {
-        selectedItem = s;
-    }
-
-    public int getSelectedItem() {
-        return selectedItem;
     }
 
     public boolean getShowItem() {
@@ -82,7 +62,7 @@ public class InventoryComponent extends UIComponent {
     }
 
     public void setShowItem(boolean showItem) {
-        if (_inventory.getSelectedSlot() >= _inventory.items().size()) {
+        if (_inventory.selectedSlot() >= _inventory.itemCount()) {
             return;
         }
 
@@ -111,10 +91,15 @@ public class InventoryComponent extends UIComponent {
 
         if (showItem) {
             g.fill(255);
-            g.text(_inventory.items().get(_inventory.getSelectedSlot()).getDescription(), x * scaleX, y * scaleY + (height * scaleY)/2);
+            Item selectedItem = _inventory.itemAtIndex(_inventory.selectedSlot());
+
+            selectedItem.description.ifPresent(description -> {
+                g.text(description, x * scaleX, y * scaleY + (height * scaleY)/2);
+            });
+
         }
 
-        for (int i = 0; i < Inventory.Capacity; i++) {
+        for (int i = 0; i < _inventory.capacity(); i++) {
             g.fill(0);
             if (i == selectedItem) {
                 g.fill(180);
@@ -151,8 +136,8 @@ public class InventoryComponent extends UIComponent {
 
         List<MeshNode> nodesToRender = new ArrayList<>();
 
-        for (int i = 0; i < _inventory.items().size(); i++) {
-                Item item = _inventory.items().get(i);
+        for (int i = 0; i < _inventory.itemCount(); i++) {
+                Item item = _inventory.itemAtIndex(i);
 
                 final int current = i;
                 final float finalCurrentX = currentX;
@@ -175,7 +160,7 @@ public class InventoryComponent extends UIComponent {
 
                     TransformNode transformNode = meshNode.parent().get();
 
-                    if (current == _inventory.getSelectedSlot() && showItem) {
+                    if (current == _inventory.selectedSlot() && showItem) {
                         int w = (int) (width - 2 * dx);
                         int h = (int) (height - 2 * dy - this.height * scaleY * 3);
 

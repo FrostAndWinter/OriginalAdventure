@@ -24,9 +24,7 @@ import swen.adventure.engine.ui.components.ProgressBar;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class AdventureGame implements Game {
 
@@ -40,7 +38,7 @@ public class AdventureGame implements Game {
     private swen.adventure.engine.ui.components.Frame _frame;
     private swen.adventure.game.ui.components.InventoryComponent _inventory;
 
-    private Player player;
+    private Player _player;
 
     private AdventureGameKeyInput _keyInput = new AdventureGameKeyInput();
     private MouseInput _mouseInput = new MouseInput();
@@ -53,6 +51,8 @@ public class AdventureGame implements Game {
     private float virtualUIHeight;
 
     private Optional<MeshNode> _meshBeingLookedAt = Optional.empty();
+
+    private Map<Interaction.InteractionType, Interaction> _interactionsForStep = new HashMap<>();
 
     public AdventureGame(Client<EventBox> client) {
         _client = client;
@@ -67,8 +67,8 @@ public class AdventureGame implements Game {
             e.printStackTrace();
         }
 
-        this.player = (Player)_sceneGraph.nodeWithID("player").get();
-        this.player.setCamera((CameraNode)_sceneGraph.nodeWithID("playerCamera").get());
+        this._player = (Player)_sceneGraph.nodeWithID("player").get();
+        this._player.setCamera((CameraNode) _sceneGraph.nodeWithID("playerCamera").get());
 
         try {
             List<EventConnectionParser.EventConnection> connections = EventConnectionParser.parseFile(Utilities.readLinesFromFile(Utilities.pathForResource("EventConnections", "event")));
@@ -83,43 +83,42 @@ public class AdventureGame implements Game {
             _pickerRenderer = new PickerRenderer();
         }
 
-        _keyInput.eventMoveInDirection.addAction(this.player, Player.actionMoveInDirection);
+        _keyInput.eventMoveInDirection.addAction(this._player, Player.actionMoveInDirection);
 
-        _mouseInput.eventMouseButtonPressed.addAction(this, AdventureGame.pressAction);
-        _mouseInput.eventMouseButtonReleased.addAction(this, AdventureGame.releaseAction);
-        _keyInput.eventHideShowInventory.addAction(this, (eventObject, triggeringObject, listener, data) -> {
-            _inventory.setShowItem(!_inventory.getShowItem());
-        });
+        _mouseInput.eventMouseButtonPressed.addAction(this, AdventureGame.primaryActionFired);
+        _mouseInput.eventMouseButtonReleased.addAction(this, AdventureGame.secondaryActionFired);
 
         _keyInput.eventPrimaryAction.addAction(this, AdventureGame.primaryActionFired);
         _keyInput.eventSecondaryAction.addAction(this, AdventureGame.secondaryActionFired);
 
+        _keyInput.eventHideShowInventory.addAction(this, (eventObject, triggeringObject, listener, data) -> { //FIXME this should not be here.
+            _inventory.setShowItem(!_inventory.getShowItem());
+        });
+
+        Event.EventSet<AdventureGameObject, Player> interactionEvents = (Event.EventSet<AdventureGameObject, Player>) Event.eventSetForName("eventShouldProvideInteraction");
+        interactionEvents.addAction(this, (gameObject, player, adventureGame, data) -> {
+            Interaction interaction = (Interaction) data.get(EventDataKeys.Interaction);
+            _interactionsForStep.put(interaction.interactionType, interaction);
+        });
+
         this.setupUI(width, height);
     }
 
-    private static final Action<MouseInput, MouseInput, AdventureGame> pressAction = (eventObject, triggeringObject, listener, data) -> {
-        listener._meshBeingLookedAt.ifPresent(
-                            meshNode ->
-                                    meshNode.eventMeshPressed.trigger(listener.player, Collections.emptyMap())
-        );
+    private static final Action<Input, Input, AdventureGame> primaryActionFired = (eventObject, triggeringObject, adventureGame, data) -> {
+        List<Interaction.InteractionType> interactionTypes = Interaction.InteractionType.typesForActionType(Interaction.ActionType.Primary);
 
+        interactionTypes.stream()
+                .map(interactionType -> adventureGame._interactionsForStep.get(interactionType))
+                .filter(interaction -> interaction != null)
+                .forEach(interaction -> {
+                    interaction.performInteractionWithPlayer(adventureGame._player);
+                });
+    };
+
+    private static final Action<Input, Input, AdventureGame> secondaryActionFired = (eventObject, triggeringObject, listener, data) -> {
 
     };
 
-    private static final Action<MouseInput, MouseInput, AdventureGame> releaseAction = (eventObject, triggeringObject, listener, data) -> {
-        listener._meshBeingLookedAt.ifPresent(
-                meshNode ->
-                        meshNode.eventMeshReleased.trigger(listener.player, Collections.emptyMap())
-        );
-    };
-
-    private static final Action<KeyInput, KeyInput, AdventureGame> primaryActionFired = (eventObject, triggeringObject, listener, data) -> {
-
-    };
-
-    private static final Action<KeyInput, KeyInput, AdventureGame> secondaryActionFired = (eventObject, triggeringObject, listener, data) -> {
-
-    };
     private void setupUI(int width, int height) {
 
         virtualUIWidth = width;
@@ -138,10 +137,8 @@ public class AdventureGame implements Game {
         ProgressBar healthBar = new ProgressBar(100, 100, 30, 30);
         panel.addChild(healthBar);
 
-        _inventory = new InventoryComponent(this.player.inventory(), 275, 500);
+        _inventory = new InventoryComponent(this._player.inventory(), 275, 500);
         _inventory.setBoxSize(50);
-
-        player.inventory().eventItemSelected.addAction(_inventory, InventoryComponent.actionSelectSlot);
 
         panel.addChild(_inventory);
 
@@ -176,9 +173,12 @@ public class AdventureGame implements Game {
             e.trigger(source, event.eventData);
         }
 
-        player.parent().get().setRotation(Quaternion.makeWithAngleAndAxis(_viewAngleX / 500, 0, -1, 0).multiply(Quaternion.makeWithAngleAndAxis(_viewAngleY / 500, -1, 0, 0)));
+        //Set where the _player is looking.
+        _player.parent().get().setRotation(Quaternion.makeWithAngleAndAxis(_viewAngleX / 500, 0, -1, 0).multiply(Quaternion.makeWithAngleAndAxis(_viewAngleY / 500, -1, 0, 0)));
 
         this.render();
+
+        _interactionsForStep.clear();
     }
 
     private void render() {
@@ -186,11 +186,11 @@ public class AdventureGame implements Game {
             return;
         }
 
-        this.player.camera().ifPresent(cameraNode -> {
+        this._player.camera().ifPresent(cameraNode -> {
             List<MeshNode> meshNodesSortedByZ = DepthSorter.sortedMeshNodesByZ(_sceneGraph, cameraNode.worldToNodeSpaceTransform());
 
             _meshBeingLookedAt = _pickerRenderer.selectedNode(meshNodesSortedByZ, cameraNode.worldToNodeSpaceTransform());
-            _meshBeingLookedAt.ifPresent(meshNode -> meshNode.eventMeshLookedAt.trigger(this.player, Collections.singletonMap(EventDataKeys.Mesh, meshNode)));
+            _meshBeingLookedAt.ifPresent(meshNode -> meshNode.eventMeshLookedAt.trigger(this._player, Collections.singletonMap(EventDataKeys.Mesh, meshNode)));
 
             _glRenderer.render(meshNodesSortedByZ, _sceneGraph.allNodesOfType(Light.class), cameraNode.worldToNodeSpaceTransform(), cameraNode.fieldOfView(), cameraNode.hdrMaxIntensity());
         });
@@ -234,7 +234,7 @@ public class AdventureGame implements Game {
     }
 
     public static void main(String[] args) {
-        // Start with networking using CLI arguments <player id> <host> <port>
+        // Start with networking using CLI arguments <_player id> <host> <port>
         Client<EventBox> client;
         if (args.length == 3) {
             client = new NetworkClient("player" + Math.random());

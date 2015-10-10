@@ -34,9 +34,9 @@ public class Event<E, T> {
 
     private static class ActionData<E, T, L> {
         public final WeakReference<L> listener;
-        public final Action<E, T, L> action;
+        public final Action<? super E, ? super T, L> action;
 
-        public ActionData(L listener, Action<E, T, L> action) {
+        public ActionData(L listener, Action<? super E, ? super T, L> action) {
             this.listener = new WeakReference<>(listener);
             this.action = action;
         }
@@ -133,11 +133,11 @@ public class Event<E, T> {
         Event.addEventForName(this, name);
     }
 
-    public <L> void addAction(L listener, Action<E, T, L> action) {
+    public <L> void addAction(L listener, Action<? super E, ? super T, L> action) {
         _actions.add(new ActionData<>(listener, action));
     }
 
-    public <L> void removeAction(L listener, Action<E, T, L> action) {
+    public <L> void removeAction(L listener, Action<? super E, ? super T, L> action) {
         _actions.remove(new ActionData<>(listener, action));
     }
 
@@ -146,8 +146,9 @@ public class Event<E, T> {
      * @param triggeringObject The object that produced the event signal
      * @param data A dictionary of extraneous data that can be passed as an argument.
      */
-    public void trigger(final T triggeringObject, final Map<String, Object> data) {
+    public <U extends T> void trigger(final U triggeringObject, final Map<String, Object> data) {
         for (ActionData actionData : _actions) {
+            if (actionData.listener.get() == null) { continue; } //skip if the listener object has expired.
             actionData.action.execute(_eventObject, triggeringObject, actionData.listener.get(), data);
         }
     }

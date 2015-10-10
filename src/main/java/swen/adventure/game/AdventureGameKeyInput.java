@@ -2,6 +2,7 @@ package swen.adventure.game;
 
 import swen.adventure.engine.Action;
 import swen.adventure.engine.Event;
+import swen.adventure.engine.Input;
 import swen.adventure.engine.KeyInput;
 import swen.adventure.engine.rendering.maths.Vector3;
 
@@ -56,7 +57,7 @@ public class AdventureGameKeyInput extends KeyInput {
         }
         if (direction != null) {
             final Vector3 finalDirection = direction;
-            this.eventMoveInDirection.trigger(this, new HashMap(){{
+            this.eventMoveInDirection.trigger(this, new HashMap<String, Object>(){{
                 put(EventDataKeys.Direction, finalDirection);
                 put(EventDataKeys.ElapsedMillis, elapsedTime);
             }});

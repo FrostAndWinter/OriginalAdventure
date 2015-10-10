@@ -14,7 +14,7 @@ import org.lwjgl.glfw.GLFW;
  * Created by Thomas Roughton, Student ID 300313924, on 2/10/15.
  * Modified by Joseph Bennett.
  */
-public abstract class KeyInput {
+public abstract class KeyInput implements Input {
     protected Map<Character, Event<KeyInput, KeyInput>> onPressMappings = new HashMap<>();
     protected Map<Character, Event<KeyInput, KeyInput>> onHeldMappings = new HashMap<>();
     protected Map<Character, Event<KeyInput, KeyInput>> onReleasedMappings = new HashMap<>();
@@ -22,7 +22,7 @@ public abstract class KeyInput {
     public void pressKey(Character key) {
         Event<KeyInput, KeyInput> event = this.onPressMappings.get(key);
         if (event != null) {
-            event.trigger(this, new HashMap() {{
+            event.trigger(this, new HashMap<String, Object>() {{
                 put(EventDataKeys.Event, event);
             }});
         }
@@ -34,7 +34,7 @@ public abstract class KeyInput {
                 .filter(entry -> isKeyPressedFunc.apply(entry.getKey()))
                 .map(Map.Entry::getValue)
                 .forEach(event -> {
-                    event.trigger(this, new HashMap() {{
+                    event.trigger(this, new HashMap<String, Object>() {{
                         put(EventDataKeys.Event, event);
                         put(EventDataKeys.ElapsedMillis, elapsedTime);
                     }});
@@ -45,7 +45,7 @@ public abstract class KeyInput {
     public void releaseKey(Character key) {
         Event<KeyInput, KeyInput> event = this.onReleasedMappings.get(key);
         if (event != null) {
-            event.trigger(this, new HashMap() {{
+            event.trigger(this, new HashMap<String, Object>() {{
                 put(EventDataKeys.Event, event);
             }});
         }

@@ -2,7 +2,7 @@ package swen.adventure.engine;
 
 import java.util.*;
 
-public class MouseInput {
+public class MouseInput implements Input {
 
     public static final String DataMouseButton = "DataMouseButton";
 

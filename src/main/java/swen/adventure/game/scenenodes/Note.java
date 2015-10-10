@@ -12,7 +12,7 @@ public class Note extends Item {
     private static final String NoteDescription = "A mysterious note found hidden in a chest.";
 
     public Note(String id, TransformNode parent) {
-        super(id, parent, NoteDescription);
+        super(id, parent, "Note", NoteDescription);
 
         final String meshID = id + "Mesh";
 

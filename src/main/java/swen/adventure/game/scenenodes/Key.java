@@ -22,7 +22,7 @@ public class Key extends Item {
     };
 
     public Key(String id, TransformNode parent) {
-        super(id, parent, KeyDescription);
+        super(id, parent, "Key", KeyDescription);
 
         final String keyMeshId = id + "KeyMesh";
 

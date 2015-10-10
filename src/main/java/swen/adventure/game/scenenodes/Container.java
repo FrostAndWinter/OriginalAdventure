@@ -23,8 +23,6 @@ public class Container extends AdventureGameObject {
         _items = new ArrayList<>(capacity);
     }
 
-
-
     /** If this container should display its top item, then that item will be made visible. */
     public void setShowTopItem(boolean showTopItem) {
         _showTopItem = showTopItem;
@@ -38,6 +36,10 @@ public class Container extends AdventureGameObject {
             }
             this.peek().ifPresent(item -> item.setEnabled(true));
         }
+    }
+
+    public boolean isFull() {
+        return _items.size() == _capacity;
     }
 
     public boolean push(Item item) {
@@ -72,4 +74,11 @@ public class Container extends AdventureGameObject {
         return _items.get(index);
     }
 
+    public int itemCount() {
+        return _items.size();
+    }
+
+    public int capacity() {
+        return _capacity;
+    }
 }

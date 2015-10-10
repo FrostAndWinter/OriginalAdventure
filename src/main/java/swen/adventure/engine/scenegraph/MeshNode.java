@@ -32,8 +32,6 @@ public final class MeshNode extends SceneNode {
     private Vector3 _textureRepeat = Vector3.one;
     private Optional<CollisionNode> _collisionNode = Optional.empty();
 
-    public final Event<SceneNode, Player> eventMeshPressed = new Event<>("eventMeshPressed", this);
-    public Event<SceneNode, Player> eventMeshReleased = new Event<>("eventMeshReleased", this);
     public final Event<SceneNode, Player> eventMeshLookedAt = new Event<>("eventMeshLookedAt", this);
 
     public MeshNode(final String directory, final String fileName, final TransformNode parent) {
