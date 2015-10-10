@@ -28,6 +28,7 @@ public class AdventureGameObject extends GameObject {
     };
 
     public final Event<AdventureGameObject, Player> eventShouldProvideInteraction = new Event<>("eventShouldProvideInteraction", this);
+    public final Event<AdventureGameObject, Player> eventInteractionEnded = new Event<>("eventInteractionEnded", this);
 
     private Optional<Container> _container = Optional.empty();
 

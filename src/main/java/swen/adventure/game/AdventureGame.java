@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class AdventureGame implements Game {
 
@@ -36,7 +37,7 @@ public class AdventureGame implements Game {
     private swen.adventure.engine.ui.components.Frame _frame;
     private swen.adventure.game.ui.components.InventoryComponent _inventory;
 
-    private Panel controlls;
+    private Panel controls;
 
     private Player _player;
 
@@ -52,7 +53,9 @@ public class AdventureGame implements Game {
 
     private Optional<MeshNode> _meshBeingLookedAt = Optional.empty();
 
-    private Map<Interaction.InteractionType, Interaction> _interactionsForStep = new HashMap<>();
+    private Map<Interaction.InteractionType, Interaction> _possibleInteractionsForStep = new HashMap<>();
+
+    private Set<Interaction> _interactionsPerformedInStep = new HashSet<>();
 
     public AdventureGame(Client<EventBox> client) {
         _client = client;
@@ -96,27 +99,37 @@ public class AdventureGame implements Game {
         Event.EventSet<AdventureGameObject, Player> interactionEvents = (Event.EventSet<AdventureGameObject, Player>) Event.eventSetForName("eventShouldProvideInteraction");
         interactionEvents.addAction(this, (gameObject, player, adventureGame, data) -> {
             Interaction interaction = (Interaction) data.get(EventDataKeys.Interaction);
-            _interactionsForStep.put(interaction.interactionType, interaction);
+            _possibleInteractionsForStep.put(interaction.interactionType, interaction);
         });
 
         this.setupUI(width, height);
     }
 
     private static final Action<Input, Input, AdventureGame> primaryActionFired = (eventObject, triggeringObject, adventureGame, data) -> {
-        adventureGame.performInteractions(Interaction.ActionType.Primary);
+        Set<Interaction> interactions = adventureGame.performInteractions(Interaction.ActionType.Primary);
+        adventureGame._interactionsPerformedInStep.addAll(interactions);
     };
 
     private static final Action<Input, Input, AdventureGame> secondaryActionFired = (eventObject, triggeringObject, adventureGame, data) -> {
-        adventureGame.performInteractions(Interaction.ActionType.Secondary);
+        Set<Interaction> interactions = adventureGame.performInteractions(Interaction.ActionType.Secondary);
+        adventureGame._interactionsPerformedInStep.addAll(interactions);
     };
 
-    private void performInteractions(Interaction.ActionType actionType) {
+    /**
+     * Performs all interactions for the specified action type.
+     * @param actionType The action type to perform the interactions for.
+     * @return The set of all interactions that were performed.
+     */
+    private Set<Interaction> performInteractions(Interaction.ActionType actionType) {
         List<Interaction.InteractionType> interactionTypes = Interaction.InteractionType.typesForActionType(actionType);
 
-        interactionTypes.stream()
-                .map(_interactionsForStep::get)
+        Set<Interaction> interactions = interactionTypes.stream()
+                .map(_possibleInteractionsForStep::get)
                 .filter(interaction -> interaction != null)
-                .forEach(interaction -> interaction.performInteractionWithPlayer(_player));
+                .collect(Collectors.toSet());
+
+        interactions.forEach(interaction -> interaction.performInteractionWithPlayer(_player));
+        return interactions;
     }
 
     private void setupUI(int width, int height) {
@@ -148,30 +161,30 @@ public class AdventureGame implements Game {
 
         _frame.addChild(panel);
 
-        controlls = new  Panel(0, 0);
-        controlls.setColor(new Color(0,0,0,100));
-        controlls.setLayoutManager(new LinearLayout(LinearLayout.LINEAR_LAYOUT_VERTICAL));
-        controlls.setVisible(false);
+        controls = new Panel(0, 0);
+        controls.setColor(new Color(0, 0, 0, 100));
+        controls.setLayoutManager(new LinearLayout(LinearLayout.LINEAR_LAYOUT_VERTICAL));
+        controls.setVisible(false);
 
         TextBox moveFoward = new TextBox("W - move foward", 0, 0);
-        controlls.addChild(moveFoward);
+        controls.addChild(moveFoward);
 
         TextBox moveLeft = new TextBox("A - move left", 0, 0);
-        controlls.addChild(moveLeft);
+        controls.addChild(moveLeft);
 
         TextBox moveBack = new TextBox("S - move backwards", 0, 0);
-        controlls.addChild(moveBack);
+        controls.addChild(moveBack);
 
         TextBox moveRight = new TextBox("D - move right", 0, 0);
-        controlls.addChild(moveRight);
+        controls.addChild(moveRight);
 
         TextBox placeItem = new TextBox("U - place item", 0, 0);
-        controlls.addChild(placeItem);
+        controls.addChild(placeItem);
 
         TextBox takeItem = new TextBox("E - take item", 0, 0);
-        controlls.addChild(takeItem);
+        controls.addChild(takeItem);
 
-        _frame.addChild(controlls);
+        _frame.addChild(controls);
     }
 
     @Override
@@ -189,7 +202,9 @@ public class AdventureGame implements Game {
     public void update(long deltaMillis) {
         GameDelegate.pollInput();
 
-        _interactionsForStep.clear();
+        Set<Interaction> interactionsPerformedLastStep = _interactionsPerformedInStep;
+        _interactionsPerformedInStep = new HashSet<>();
+        _possibleInteractionsForStep.clear();
 
         Optional<EventBox> box;
         while ((box = _client.poll()).isPresent()) {
@@ -202,6 +217,14 @@ public class AdventureGame implements Game {
 
         //Set where the _player is looking.
         _player.parent().get().setRotation(Quaternion.makeWithAngleAndAxis(_viewAngleX / 500, 0, -1, 0).multiply(Quaternion.makeWithAngleAndAxis(_viewAngleY / 500, -1, 0, 0)));
+
+        //Find out what interactions stopped being performed this step.
+        Set<Interaction> endedInteractions = interactionsPerformedLastStep;
+        endedInteractions.removeAll(_interactionsPerformedInStep);
+
+        for (Interaction interaction : endedInteractions) {
+            interaction.interactionEndedByPlayer(_player);
+        }
 
         this.render();
     }
