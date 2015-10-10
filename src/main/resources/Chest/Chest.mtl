@@ -10,15 +10,14 @@ newmtl ChromeMaterialSG
 illum 4
 Kd 0.29 0.25 0.07
 Ks 0.6 0.5 0.14
-Ka 0.00 0.00 0.00
+Ka 0.29 0.25 0.07
 Tf 1.00 1.00 1.00
 Ni 1.00
-Ks 0.50 0.50 0.50
 Ns 4.00
 newmtl GoldMaterialSG
 illum 4
 Kd 0.64 0.42 0.14
-Ka 0.00 0.00 0.00
+Ka 0.64 0.42 0.14
 Tf 1.00 1.00 1.00
 Ni 1.00
 Ks 0.70 0.60 0.18
@@ -35,10 +34,9 @@ newmtl MetalLiningSG
 illum 4
 Kd 0.4 0.4 0.4
 Ks 1.2 1.2 1.2
-Ka 0.00 0.00 0.00
+Ka 0.4 0.4 0.4
 Tf 1.00 1.00 1.00
 Ni 1.00
-Ks 0.50 0.50 0.50
 Ns 4
 newmtl WoodSG
 illum 4

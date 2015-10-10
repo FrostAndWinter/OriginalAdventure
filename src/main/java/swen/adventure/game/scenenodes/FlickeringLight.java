@@ -76,15 +76,13 @@ public class FlickeringLight extends AdventureGameObject {
             this.light().ifPresent(lightNode -> {
                 lightNode.setIntensity(animableProperty.value());
                 this.setMaterialColour(_lightMaterial, lightNode.colour(), animableProperty.value());
-
-                if (this.id.equals("greenTorchFlame")) {System.out.println("Value changed to " + animableProperty.value() + " due to animation " + triggeringObject); }
             });
         });
     }
 
     private void setMaterialColour(Material material, final Vector3 colour, final float intensity) {
-        material.setDiffuseColour(colour.multiplyScalar(0.4f * intensity));
-        material.setAmbientColour(colour.multiplyScalar(0.6f * intensity));
+        material.setDiffuseColour(colour.multiplyScalar(0.6f * intensity));
+        material.setAmbientColour(colour.multiplyScalar(0.4f * intensity));
         if (this._isAnimatingToggle) {
             material.setOpacity(intensity / _baseIntensity);
         }
@@ -116,6 +114,18 @@ public class FlickeringLight extends AdventureGameObject {
         _lightIntensity.stopAnimating();
         _lightIntensity.setValue(lowIntensity);
         new Animation(_lightIntensity, highIntensity);
+    }
+
+    public void setOn(boolean isOn) {
+        _isOn = isOn;
+        if (isOn) {
+            this.setIntensity(_baseIntensity);
+            this.mesh().ifPresent(flameMesh -> flameMesh.setEnabled(true));
+        } else {
+            _lightIntensity.stopAnimating();
+            _lightIntensity.setValue(0.f);
+            this.mesh().ifPresent(meshNode -> meshNode.setEnabled(false));
+        }
     }
 
     public boolean isOn() {

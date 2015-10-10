@@ -73,8 +73,6 @@ public class PuzzleConditionParser {
             }
 
 
-
-
             Object desiredValue = ParserManager.convertFromString(components[index], typeClass);
 
             conditionsList.add(new Puzzle.PuzzleCondition(supplier, desiredValue));

@@ -13,24 +13,14 @@ public interface Action<E, T, L> {
     @SuppressWarnings("unchecked")
     /**
      * Takes a name for an action (e.g. OpenDoor) and tries to find the action corresponding to the name.
-     * The search pattern is thus: firstly, it looks in Actions for a field of the name action{name}.
-     * Next, it looks for a field on the listeningObject of the name action{name}.
-     * Finally, it looks for a concrete class implementing Action called {name}.
+     * Firstly, it looks for a field on the listeningObject of the name action{name}.
+     * Then, it looks for a concrete class implementing Action called {name}.
      * @param name A name in UpperCamelCase for the action (minus the action- prefix).
      * @return The action.
      * @throws RuntimeException if the action could not be found.
      */
     static <L> Action<?, ?, L> actionWithName(String name, L listeningObject) {
         String fieldName = "action" + name;
-
-        try {
-            Field field = Actions.class.getDeclaredField(fieldName);
-            //field.setAccessible(true);
-            return (Action<?, ?, L>) field.get(Actions.class);
-        } catch (IllegalAccessException e) {
-            System.err.println("Error accessing action with name " + name + ": " + e);
-        } catch (NoSuchFieldException ignored) {
-        }
 
         try {
             Field field = listeningObject.getClass().getField(fieldName);

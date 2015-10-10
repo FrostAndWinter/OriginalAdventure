@@ -2,6 +2,7 @@ package swen.adventure.game;
 
 import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.game.scenenodes.AdventureGameObject;
+import swen.adventure.game.scenenodes.Item;
 import swen.adventure.game.scenenodes.Player;
 
 import java.util.Arrays;
@@ -55,6 +56,23 @@ public final class Interaction {
 
     public void interactionEndedByPlayer(Player player) {
         this.gameObject.eventInteractionEnded.trigger(player, Collections.singletonMap(EventDataKeys.Interaction, this));
+    }
+
+    public String interactionMessageForObjectAndButton(Player player, String buttonName) {
+        switch (this.interactionType) {
+            case PickUp:
+                return String.format("Press %s to pick up %s", buttonName, ((Item) this.gameObject).name);
+                break;
+            case PlaceIn:
+
+                break;
+            case Open:
+                break;
+            case Close:
+                break;
+            case Pull:
+                break;
+        }
     }
 
     @Override

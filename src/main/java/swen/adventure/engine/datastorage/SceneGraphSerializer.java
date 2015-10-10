@@ -1,5 +1,6 @@
 package swen.adventure.engine.datastorage;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -174,6 +175,7 @@ public class SceneGraphSerializer {
         setAttribute("colour", flickeringLightNode.getColour(), Vector3.class, xmlElement);
         setAttribute("intensity", flickeringLightNode.getIntensity(), Float.class, xmlElement);
         setAttribute("falloff", flickeringLightNode.getFalloff().toString(), xmlElement);
+        setAttribute("isOn", flickeringLightNode.isOn(), Boolean.class, xmlElement);
         setAttribute("intensityVariation", flickeringLightNode.getIntensityVariation(), Float.class, xmlElement);
         return xmlElement;
     }
