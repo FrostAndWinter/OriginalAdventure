@@ -4,6 +4,9 @@ LightToggled; blueTorchFlame, redTorchFlame, greenTorchFlame; CheckPuzzle; keyPu
 PuzzleSolved; keyPuzzle; SetEnabled; key
 PuzzleUnsolved; keyPuzzle; SetDisabled; key
 
+//Make the lever go back up when interaction ends.
+InteractionEnded; lever; MoveUp; lever
+
 //Connections for the key and door.
 PlayerPickedUpItem; key; AllowPlayerToOpenDoor; door
 PlayerDroppedItem; key; DisallowPlayerFromOpeningDoor; door

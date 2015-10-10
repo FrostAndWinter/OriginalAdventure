@@ -71,4 +71,13 @@ public final class Interaction {
     public int hashCode() {
         return Objects.hash(interactionType, gameObject, meshNode);
     }
+
+    @Override
+    public String toString() {
+        return "Interaction{" +
+                "interactionType=" + interactionType +
+                ", gameObject=" + gameObject +
+                ", meshNode=" + meshNode +
+                '}';
+    }
 }

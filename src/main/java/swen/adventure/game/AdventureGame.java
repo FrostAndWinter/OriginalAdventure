@@ -53,9 +53,8 @@ public class AdventureGame implements Game {
 
     private Optional<MeshNode> _meshBeingLookedAt = Optional.empty();
 
-    private Map<Interaction.InteractionType, Interaction> _possibleInteractionsForStep = new HashMap<>();
-
-    private Set<Interaction> _interactionsPerformedInStep = new HashSet<>();
+    private EnumMap<Interaction.InteractionType, Interaction> _possibleInteractionsForStep = new EnumMap<>(Interaction.InteractionType.class);
+    private EnumMap<Interaction.ActionType, Interaction> _interactionInProgressForActionType = new EnumMap<>(Interaction.ActionType.class);
 
     public AdventureGame(Client<EventBox> client) {
         _client = client;
@@ -89,9 +88,12 @@ public class AdventureGame implements Game {
         _keyInput.eventMoveInDirection.addAction(this._player, Player.actionMoveInDirection);
 
         _mouseInput.eventMouseButtonPressed.addAction(this, AdventureGame.primaryActionFired);
+        _mouseInput.eventMouseButtonReleased.addAction(this, AdventureGame.primaryActionEnded);
 
         _keyInput.eventPrimaryAction.addAction(this, AdventureGame.primaryActionFired);
+        _keyInput.eventPrimaryActionEnded.addAction(this, AdventureGame.primaryActionEnded);
         _keyInput.eventSecondaryAction.addAction(this, AdventureGame.secondaryActionFired);
+        _keyInput.eventSecondaryActionEnded.addAction(this, AdventureGame.secondaryActionEnded);
 
         _keyInput.eventHideShowInventory.addAction(_inventory, InventoryComponent.actionToggleZoomItem);
 
@@ -106,30 +108,42 @@ public class AdventureGame implements Game {
     }
 
     private static final Action<Input, Input, AdventureGame> primaryActionFired = (eventObject, triggeringObject, adventureGame, data) -> {
-        Set<Interaction> interactions = adventureGame.performInteractions(Interaction.ActionType.Primary);
-        adventureGame._interactionsPerformedInStep.addAll(interactions);
+        adventureGame.performInteractions(Interaction.ActionType.Primary);
     };
 
     private static final Action<Input, Input, AdventureGame> secondaryActionFired = (eventObject, triggeringObject, adventureGame, data) -> {
-        Set<Interaction> interactions = adventureGame.performInteractions(Interaction.ActionType.Secondary);
-        adventureGame._interactionsPerformedInStep.addAll(interactions);
+        adventureGame.performInteractions(Interaction.ActionType.Secondary);
+    };
+
+    private static final Action<Input, Input, AdventureGame> primaryActionEnded = (eventObject, triggeringObject, adventureGame, data) -> {
+        adventureGame.endInteractions(Interaction.ActionType.Primary);
+    };
+
+    private static final Action<Input, Input, AdventureGame> secondaryActionEnded = (eventObject, triggeringObject, adventureGame, data) -> {
+        adventureGame.endInteractions(Interaction.ActionType.Secondary);
     };
 
     /**
      * Performs all interactions for the specified action type.
      * @param actionType The action type to perform the interactions for.
-     * @return The set of all interactions that were performed.
      */
-    private Set<Interaction> performInteractions(Interaction.ActionType actionType) {
+    private void performInteractions(Interaction.ActionType actionType) {
         List<Interaction.InteractionType> interactionTypes = Interaction.InteractionType.typesForActionType(actionType);
 
-        Set<Interaction> interactions = interactionTypes.stream()
+        interactionTypes.stream()
                 .map(_possibleInteractionsForStep::get)
                 .filter(interaction -> interaction != null)
-                .collect(Collectors.toSet());
+                .forEach(interaction -> {
+                    interaction.performInteractionWithPlayer(_player);
+                    _interactionInProgressForActionType.put(actionType, interaction);
+                });
+    }
 
-        interactions.forEach(interaction -> interaction.performInteractionWithPlayer(_player));
-        return interactions;
+    private void endInteractions(Interaction.ActionType actionType) {
+        Interaction interaction = _interactionInProgressForActionType.get(Interaction.ActionType.Primary);
+        if (interaction != null) {
+            interaction.interactionEndedByPlayer(_player);
+        }
     }
 
     private void setupUI(int width, int height) {
@@ -200,10 +214,6 @@ public class AdventureGame implements Game {
 
     @Override
     public void update(long deltaMillis) {
-        GameDelegate.pollInput();
-
-        Set<Interaction> interactionsPerformedLastStep = _interactionsPerformedInStep;
-        _interactionsPerformedInStep = new HashSet<>();
         _possibleInteractionsForStep.clear();
 
         Optional<EventBox> box;
@@ -215,16 +225,13 @@ public class AdventureGame implements Game {
             e.trigger(source, event.eventData);
         }
 
+        _meshBeingLookedAt.ifPresent(meshNode -> meshNode.eventMeshLookedAt.trigger(this._player, Collections.singletonMap(EventDataKeys.Mesh, meshNode)));
+
+        GameDelegate.pollInput();
+
         //Set where the _player is looking.
         _player.parent().get().setRotation(Quaternion.makeWithAngleAndAxis(_viewAngleX / 500, 0, -1, 0).multiply(Quaternion.makeWithAngleAndAxis(_viewAngleY / 500, -1, 0, 0)));
 
-        //Find out what interactions stopped being performed this step.
-        Set<Interaction> endedInteractions = interactionsPerformedLastStep;
-        endedInteractions.removeAll(_interactionsPerformedInStep);
-
-        for (Interaction interaction : endedInteractions) {
-            interaction.interactionEndedByPlayer(_player);
-        }
 
         this.render();
     }
@@ -238,7 +245,6 @@ public class AdventureGame implements Game {
             List<MeshNode> meshNodesSortedByZ = DepthSorter.sortedMeshNodesByZ(_sceneGraph, cameraNode.worldToNodeSpaceTransform());
 
             _meshBeingLookedAt = _pickerRenderer.selectedNode(meshNodesSortedByZ, cameraNode.worldToNodeSpaceTransform());
-            _meshBeingLookedAt.ifPresent(meshNode -> meshNode.eventMeshLookedAt.trigger(this._player, Collections.singletonMap(EventDataKeys.Mesh, meshNode)));
 
             _glRenderer.render(meshNodesSortedByZ, _sceneGraph.allNodesOfType(Light.class), cameraNode.worldToNodeSpaceTransform(), cameraNode.fieldOfView(), cameraNode.hdrMaxIntensity());
         });

@@ -23,9 +23,13 @@ public class Lever extends AdventureGameObject {
 
     public final Event<SceneNode, Player> eventLeverToggled = new Event<>("eventLeverToggled", this);
 
+    public static final Action<SceneNode, Player, Lever> actionMoveUp = (sceneNode, player, lever, data) ->  {
+        lever.moveUp(player);
+    };
+
     private TransformNode _hingeTransform;
 
-    private boolean _isDown = true;
+    private boolean _isDown = false;
 
     private AnimableProperty _leverRotationProgress = new AnimableProperty(0);
 
@@ -51,22 +55,22 @@ public class Lever extends AdventureGameObject {
 
     public void toggle(Player player) {
         if (_isDown) {
-            this.moveUp();
+            this.moveUp(player);
         } else {
-            this.moveDown();
+            this.moveDown(player);
         }
+    }
 
+    public void moveUp(Player player) {
+        _isDown = false;
+        new Animation(_leverRotationProgress, Math.abs(0.5f - _leverRotationProgress.value()), 0.0f);
         this.eventLeverToggled.trigger(player, Collections.emptyMap());
     }
 
-    public void moveUp() {
-        _isDown = false;
-        new Animation(_leverRotationProgress, Math.abs(0.5f - _leverRotationProgress.value()), 1.0f);
-    }
-
-    public void moveDown() {
+    public void moveDown(Player player) {
         _isDown = true;
-        new Animation(_leverRotationProgress, Math.abs(0.5f - _leverRotationProgress.value()), 0.0f);
+        new Animation(_leverRotationProgress, Math.abs(0.5f - _leverRotationProgress.value()), 1.0f);
+        this.eventLeverToggled.trigger(player, Collections.emptyMap());
     }
 
     @Override
