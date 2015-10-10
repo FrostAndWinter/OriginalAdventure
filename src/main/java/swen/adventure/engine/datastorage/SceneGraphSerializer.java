@@ -153,11 +153,6 @@ public class SceneGraphSerializer {
         return xmlElement;
     }
 
-    private Node serializeGameObjectNode(GameObject gameObject, Node xmlParentNode) {
-        // TODO serializeToStream different game objects
-        return createElementForNode(gameObject, xmlParentNode);
-    }
-
     private Node serializeAmbientLightNode(Light lightNode, Node xmlParentNode) {
         Element xmlElement = createElementForNode("AmbientLight", lightNode, xmlParentNode);
         setAttribute("colour", lightNode.getColour(), Vector3.class, xmlElement);
@@ -188,10 +183,8 @@ public class SceneGraphSerializer {
     private Node serializePlayerNode(Player playerNode, Node xmlParentNode) {
         Element xmlElement = createElementForNode(playerNode, xmlParentNode);
 
-        playerNode.collisionNode().ifPresent(collisionNode -> {
-            setAttribute("boundingBox", collisionNode.boundingBox(),
-                    BoundingBox.class, xmlElement);
-        });
+        playerNode.collisionNode().ifPresent(collisionNode ->
+                setAttribute("boundingBox", collisionNode.boundingBox(), BoundingBox.class, xmlElement));
 
         return xmlElement;
     }
