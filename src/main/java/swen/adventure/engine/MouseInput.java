@@ -1,47 +1,48 @@
 package swen.adventure.engine;
 
+import swen.adventure.game.EventDataKeys;
+
 import java.util.*;
+import java.util.function.Function;
 
 public class MouseInput implements Input {
-
-    public static final String DataMouseButton = "DataMouseButton";
-
     public enum Button {
         Left, Right
     }
 
-    private final static class MouseEvent {
-        public MouseEvent(Event<MouseInput, MouseInput> mouseInputEvent, Button button) {
-            this.mouseInputEvent = mouseInputEvent;
-            this.button = button;
-        }
-
-        public final Event<MouseInput, MouseInput> mouseInputEvent;
-        public final Button button;
-    }
-
-    private Queue<MouseEvent> mouseEventQueue = new LinkedList<>();
+    protected EnumMap<Button, Event<MouseInput, MouseInput>> onPressMappings = new EnumMap<>(Button.class);
+    protected EnumMap<Button, Event<MouseInput, MouseInput>> onHeldMappings = new EnumMap<>(Button.class);
+    protected EnumMap<Button, Event<MouseInput, MouseInput>> onReleasedMappings = new EnumMap<>(Button.class);
 
     public void pressButton(Button button) {
-        MouseEvent mouseEvent = new MouseEvent(eventMouseButtonPressed, button);
-        mouseEventQueue.add(mouseEvent);
-    }
-
-    public void releaseButton(Button button) {
-        MouseEvent mouseEvent = new MouseEvent(eventMouseButtonReleased, button);
-        mouseEventQueue.add(mouseEvent);
-    }
-
-    public void handleInput() {
-        while (!mouseEventQueue.isEmpty()) {
-            MouseEvent mouseEvent = mouseEventQueue.poll();
-            Map<String, Object> data = new HashMap<>();
-            data.put(DataMouseButton, mouseEvent.button);
-
-            mouseEvent.mouseInputEvent.trigger(this, data);
+        Event<MouseInput, MouseInput> event = this.onPressMappings.get(button);
+        if (event != null) {
+            event.trigger(this, new HashMap<String, Object>() {{
+                put(EventDataKeys.Event, event);
+            }});
         }
     }
 
-    public final Event<MouseInput, MouseInput> eventMouseButtonPressed = new Event<>("eventMouseButtonPressed", this);
-    public final Event<MouseInput, MouseInput> eventMouseButtonReleased = new Event<>("eventMouseButtonReleased", this);
+    public void checkHeldButtons(Function<Button, Boolean> isButtonPressedFunc, long elapsedTime) {
+        onHeldMappings.entrySet()
+                .stream()
+                .filter(entry -> isButtonPressedFunc.apply(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .forEach(event -> {
+                    event.trigger(this, new HashMap<String, Object>() {{
+                        put(EventDataKeys.Event, event);
+                        put(EventDataKeys.ElapsedMillis, elapsedTime);
+                    }});
+                });
+    }
+
+
+    public void releaseButton(Button button) {
+        Event<MouseInput, MouseInput> event = this.onReleasedMappings.get(button);
+        if (event != null) {
+            event.trigger(this, new HashMap<String, Object>() {{
+                put(EventDataKeys.Event, event);
+            }});
+        }
+    }
 }

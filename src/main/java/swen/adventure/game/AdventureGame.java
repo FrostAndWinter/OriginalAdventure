@@ -16,6 +16,8 @@ import swen.adventure.engine.scenegraph.*;
 import swen.adventure.engine.ui.color.Color;
 import swen.adventure.engine.ui.components.*;
 import swen.adventure.engine.ui.layoutmanagers.LinearLayout;
+import swen.adventure.game.input.AdventureGameKeyInput;
+import swen.adventure.game.input.AdventureGameMouseInput;
 import swen.adventure.game.scenenodes.*;
 import swen.adventure.game.ui.components.InventoryComponent;
 import swen.adventure.game.ui.components.UI;
@@ -24,7 +26,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class AdventureGame implements Game {
 
@@ -39,7 +40,7 @@ public class AdventureGame implements Game {
     private Player _player;
 
     private AdventureGameKeyInput _keyInput = new AdventureGameKeyInput();
-    private MouseInput _mouseInput = new MouseInput();
+    private AdventureGameMouseInput _mouseInput = new AdventureGameMouseInput();
 
     private float _mouseSensitivity = Settings.MouseSensitivity;
     private float _viewAngleX;
@@ -86,8 +87,10 @@ public class AdventureGame implements Game {
 
         _keyInput.eventMoveInDirection.addAction(this._player, Player.actionMoveInDirection);
 
-        _mouseInput.eventMouseButtonPressed.addAction(this, AdventureGame.primaryActionFired);
-        _mouseInput.eventMouseButtonReleased.addAction(this, AdventureGame.primaryActionEnded);
+        _mouseInput.eventMousePrimaryAction.addAction(this, AdventureGame.primaryActionFired);
+        _mouseInput.eventMousePrimaryActionEnded.addAction(this, AdventureGame.primaryActionEnded);
+        _mouseInput.eventMouseSecondaryAction.addAction(this, AdventureGame.secondaryActionFired);
+        _mouseInput.eventMouseSecondaryActionEnded.addAction(this, AdventureGame.secondaryActionEnded);
 
         _keyInput.eventPrimaryAction.addAction(this, AdventureGame.primaryActionFired);
         _keyInput.eventPrimaryActionEnded.addAction(this, AdventureGame.primaryActionEnded);
