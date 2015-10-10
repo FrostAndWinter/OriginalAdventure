@@ -65,7 +65,7 @@ public final class Puzzle extends GameObject {
         _puzzleSolved = this.isPuzzleSolved();
         this.triggerPuzzleStateEvent();
     }
-    
+
     public String getConditionSource() {
         return String.join(";", _conditions.stream().map(cond -> cond.source).collect(Collectors.toList()));
     }

@@ -11,7 +11,9 @@ import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.game.EventDataKeys;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by josephbennett on 19/09/15
@@ -72,18 +74,20 @@ public class Player extends AdventureGameObject {
 
         transformNode.translateBy(translation);
 
-        final boolean[] canMove = {true};
-        this.collisionNode().ifPresent(collisionNode -> {
-            this.allNodesOfType(CollisionNode.class).stream()
-                    .filter(otherCollisionNode ->
-                            collisionNode.isCollidingWith(otherCollisionNode))
-                    .forEach(otherCollisionNode -> {
-                transformNode.setTranslation(startingTranslation);
-                canMove[0] = false;
-            });
-        });
 
-        return canMove[0];
+        if (!this.collisionNode().isPresent())
+            return true;
+
+        CollisionNode selfCollisionNode = collisionNode().get();
+
+        boolean canMove = allNodesOfType(CollisionNode.class).stream()
+                .filter(otherCollisionNode -> selfCollisionNode != otherCollisionNode)
+                .noneMatch(selfCollisionNode::isCollidingWith);
+
+        if(!canMove)
+            transformNode.setTranslation(startingTranslation);
+
+        return canMove;
     }
 
     public Inventory inventory() {

@@ -9,10 +9,10 @@
 
     <TransformNode id="spawnPointTransform" translation="0, 60, 200" isDynamic="true">
         <SpawnNode id="spawnPoint" />
-        <TransformNode id="cameraTransform" translation="0, 40, 0">
+        <!--<TransformNode id="cameraTransform" translation="0, 40, 0">
             <Camera id="playerCamera"/>
         </TransformNode>
-        <Player id="player" boundingBox="-30, -60, -10, 30, 60, 10"/>
+        <Player id="player" boundingBox="-30, -60, -10, 30, 60, 10"/>-->
     </TransformNode>
     <AmbientLight id="ambientLight" colour="0.5, 0.5, 0.5" intensity="1.0"/>
 

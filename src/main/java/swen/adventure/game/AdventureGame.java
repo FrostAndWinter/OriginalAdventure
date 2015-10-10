@@ -6,6 +6,7 @@ import swen.adventure.engine.*;
 import swen.adventure.engine.animation.AnimableProperty;
 import swen.adventure.engine.animation.Animation;
 import swen.adventure.engine.datastorage.EventConnectionParser;
+import swen.adventure.engine.datastorage.ParserManager;
 import swen.adventure.engine.datastorage.SceneGraphParser;
 import swen.adventure.engine.network.Client;
 import swen.adventure.engine.network.DumbClient;
@@ -13,6 +14,7 @@ import swen.adventure.engine.network.EventBox;
 import swen.adventure.engine.network.NetworkClient;
 import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.rendering.PickerRenderer;
+import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
@@ -93,8 +95,14 @@ public class AdventureGame implements Game {
         TransformNode cameraTransform = new TransformNode(playerId + "CameraTranslation",
                 _player.parent().get(), false, new Vector3(0, 40, 0), new Quaternion(), Vector3.one);
         _player.setCamera(new CameraNode(playerId + "Camera", cameraTransform));
+        BoundingBox boundingBox = new BoundingBox(new Vector3(-30, -60, -10) , new Vector3(30, 60, 10));
+        String colliderID = playerId + "Collider";
+        CollisionNode collider = (CollisionNode)spawn.nodeWithID(colliderID).orElseGet(() -> new CollisionNode(colliderID, spawn.parent().get(), boundingBox));
+        collider.setParent(spawn.parent().get());
 
-        _keyInput.eventMoveInDirection.addAction(_player, Player.actionMoveInDirection);
+        _player.setCollisionNode(collider);
+
+
         _keyInput.eventMoveInDirection.addAction(_player, Player.actionMoveInDirection);
 
         try {
