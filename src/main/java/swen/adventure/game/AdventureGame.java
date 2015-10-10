@@ -87,21 +87,7 @@ public class AdventureGame implements Game {
     private void setupSceneGraph(TransformNode sceneGraph, String playerId) {
         _sceneGraph = sceneGraph;
 
-
-        SpawnNode spawn = (SpawnNode)_sceneGraph.nodeWithID(SpawnNode.ID).get();
-        spawn.spawnPlayerWithId(playerId);
-
-        _player = (Player)_sceneGraph.nodeWithID(playerId).get();
-        TransformNode cameraTransform = new TransformNode(playerId + "CameraTranslation",
-                _player.parent().get(), false, new Vector3(0, 40, 0), new Quaternion(), Vector3.one);
-        _player.setCamera(new CameraNode(playerId + "Camera", cameraTransform));
-        BoundingBox boundingBox = new BoundingBox(new Vector3(-30, -60, -10) , new Vector3(30, 60, 10));
-        String colliderID = playerId + "Collider";
-        CollisionNode collider = (CollisionNode)spawn.nodeWithID(colliderID).orElseGet(() -> new CollisionNode(colliderID, spawn.parent().get(), boundingBox));
-        collider.setParent(spawn.parent().get());
-
-        _player.setCollisionNode(collider);
-
+        createPlayer(playerId);
 
         _keyInput.eventMoveInDirection.addAction(_player, Player.actionMoveInDirection);
 
@@ -139,6 +125,30 @@ public class AdventureGame implements Game {
         });
 
         this.setupUI((int)virtualUIWidth, (int)virtualUIHeight);
+    }
+
+    private void createPlayer(String playerId) {
+        SpawnNode spawn = (SpawnNode)_sceneGraph.nodeWithID(SpawnNode.ID).get();
+        spawn.spawnPlayerWithId(playerId);
+
+        // FIXME: Add CollisionNode to player
+        Player newPlayer = (Player)_sceneGraph.nodeWithID(playerId).get();
+        if (_player == null || playerId.equals(_player.id)) {
+
+            TransformNode cameraTransform = new TransformNode(playerId + "CameraTranslation",
+                    newPlayer.parent().get(), false, new Vector3(0, 40, 0), new Quaternion(), Vector3.one);
+            newPlayer.setCamera(new CameraNode(playerId + "Camera", cameraTransform));
+            _player = newPlayer;
+        } else {
+            new MeshNode(playerId + "Mesh", "", "rocket.obj", newPlayer.parent().get());
+        }
+
+        BoundingBox boundingBox = new BoundingBox(new Vector3(-30, -60, -10) , new Vector3(30, 60, 10));
+        String colliderID = playerId + "Collider";
+        CollisionNode collider = (CollisionNode)spawn.nodeWithID(colliderID).orElseGet(() -> new CollisionNode(colliderID, newPlayer.parent().get(), boundingBox));
+        collider.setParent(newPlayer.parent().get());
+
+        newPlayer.setCollisionNode(collider);
     }
 
     private static final Action<Input, Input, AdventureGame> primaryActionFired = (eventObject, triggeringObject, adventureGame, data) -> {
@@ -214,8 +224,7 @@ public class AdventureGame implements Game {
             SceneNode source = _sceneGraph.nodeWithID(event.sourceId).get();
 
             if (event.eventName.equals("playerConnected")) {
-                SpawnNode spawn = (SpawnNode)source;
-                spawn.spawnPlayerWithId(event.targetId);
+                createPlayer(event.targetId);
                 continue;
             }
 
