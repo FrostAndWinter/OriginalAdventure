@@ -236,7 +236,7 @@ public class SceneGraphParser {
 
         player.setParent(parent);
 
-        CollisionNode collider = (CollisionNode)parent.nodeWithID(colliderID).orElseGet(() -> new CollisionNode(colliderID, parent, boundingBox));
+        CollisionNode collider = (CollisionNode)parent.nodeWithID(colliderID).orElseGet(() -> new CollisionNode(colliderID, parent, boundingBox, CollisionNode.CollisionFlag.Player));
         collider.setParent(parent);
 
         player.setCollisionNode(collider);

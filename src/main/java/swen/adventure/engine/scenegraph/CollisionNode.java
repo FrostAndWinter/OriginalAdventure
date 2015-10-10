@@ -12,6 +12,13 @@ import java.util.Optional;
  */
 public final class CollisionNode extends SceneNode {
 
+    public enum CollisionFlag {
+        Object,
+        Player
+    }
+
+    private final CollisionFlag _collisionFlag;
+
     private BoundingBox _worldSpaceBoundingBox = null;
     private BoundingBox _localSpaceBoundingBox = null;
 
@@ -23,6 +30,7 @@ public final class CollisionNode extends SceneNode {
     public CollisionNode(MeshNode meshNode) {
         super(meshNode.id + "Collider", meshNode.parent().get(), meshNode.isDynamic());
         _localSpaceBoundingBox = meshNode.boundingBox();
+        _collisionFlag = CollisionFlag.Object;
     }
 
     /**
@@ -31,18 +39,20 @@ public final class CollisionNode extends SceneNode {
      * @param parent The collision nodes parent, specifying its transform.
      * @param boundingBox The bounding box of the collision node.
      */
-    public CollisionNode(String id, TransformNode parent, BoundingBox boundingBox) {
+    public CollisionNode(String id, TransformNode parent, BoundingBox boundingBox, CollisionFlag collisionFlag) {
         super(id, parent, false);
         _localSpaceBoundingBox = boundingBox;
+        _collisionFlag = collisionFlag;
     }
 
     /**
-     * Performs an intersection test against the other node.
+     * Performs an intersection test against the other node. Returns false if both nodes are players.
      * @param node The node to test against.
      * @return Whether this node intersects with node.
      */
     public boolean isCollidingWith(CollisionNode node) {
         return node != this &&
+                !(_collisionFlag == CollisionFlag.Player && node._collisionFlag == CollisionFlag.Player) && //players shouldn't collide with each other.
                 this.worldSpaceBoundingBox().intersectsWith(node.worldSpaceBoundingBox());
     }
 
