@@ -1,10 +1,10 @@
-package swen.adventure.game;
+package swen.adventure.game.input;
 
 import swen.adventure.engine.Action;
 import swen.adventure.engine.Event;
-import swen.adventure.engine.Input;
 import swen.adventure.engine.KeyInput;
 import swen.adventure.engine.rendering.maths.Vector3;
+import swen.adventure.game.EventDataKeys;
 
 import java.util.HashMap;
 

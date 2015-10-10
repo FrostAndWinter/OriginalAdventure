@@ -183,7 +183,19 @@ public class GameDelegate {
         // invoked during this call.
         glfwPollEvents();
 
-        _game.mouseInput().handleInput();
+        _game.mouseInput().checkHeldButtons(button -> {
+            int glfwValue = -1;
+            switch (button) {
+                case Left:
+                    glfwValue = GLFW_MOUSE_BUTTON_LEFT;
+                    break;
+                case Right:
+                    glfwValue = GLFW_MOUSE_BUTTON_RIGHT;
+                    break;
+            }
+            return glfwGetMouseButton(_window, glfwValue) == GLFW_PRESS;
+        }, _elapsedTime);
+
         _game.keyInput().checkHeldKeys(character -> glfwGetKey(_window, character) == GLFW_PRESS, _elapsedTime);
     }
 
