@@ -91,6 +91,9 @@ public class AdventureGame implements Game {
             _inventory.setShowItem(!_inventory.getShowItem());
         });
 
+        _keyInput.eventPrimaryAction.addAction(this, AdventureGame.primaryActionFired);
+        _keyInput.eventSecondaryAction.addAction(this, AdventureGame.secondaryActionFired);
+
         this.setupUI(width, height);
     }
 
@@ -108,10 +111,15 @@ public class AdventureGame implements Game {
                 meshNode ->
                         meshNode.eventMeshReleased.trigger(listener.player, Collections.emptyMap())
         );
+    };
 
+    private static final Action<KeyInput, KeyInput, AdventureGame> primaryActionFired = (eventObject, triggeringObject, listener, data) -> {
 
     };
 
+    private static final Action<KeyInput, KeyInput, AdventureGame> secondaryActionFired = (eventObject, triggeringObject, listener, data) -> {
+
+    };
     private void setupUI(int width, int height) {
 
         virtualUIWidth = width;
