@@ -217,16 +217,4 @@ public final class TransformNode extends SceneNode {
                 ", _worldToNodeTransform=" + _worldToNodeTransform +
                 '}';
     }
-
-    public Vector3 getTranslation() {
-        return _translation;
-    }
-
-    public Quaternion getRotation() {
-        return _rotation;
-    }
-
-    public Vector3 getScale() {
-        return _scale;
-    }
 }

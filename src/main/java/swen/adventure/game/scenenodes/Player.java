@@ -29,12 +29,22 @@ public class Player extends AdventureGameObject {
                 player.move(direction.multiplyScalar(player._playerSpeed * elapsedMillis / 1000.f));
             };
 
+    public static final Action<Player, Player, Player> actionMoveToLocation =
+            (player, triggeringPlayer, ignored, data) -> {
+                if (player != triggeringPlayer) { //if we're not the player that moved in the first place.
+                    Vector3 location = (Vector3) data.get(EventDataKeys.Location);
+                    triggeringPlayer.parent().get().setTranslation(location);
+                }
+            };
+
     public final Event<Player, Player> eventPlayerMoved = new Event<>("eventPlayerMoved", this);
 
     public Player(String id, TransformNode parent) {
         super(id, parent);
 
         this.setContainer(new Inventory(this));
+
+        this.eventPlayerMoved.addAction(this, actionMoveToLocation);
     }
 
     public void setCamera(CameraNode camera) {
@@ -50,7 +60,7 @@ public class Player extends AdventureGameObject {
         successfullyMoved |= this.attemptMoveDirect(new Vector3(0.f, 0.f, lateralTranslation.z));
 
         if (successfullyMoved) {
-            eventPlayerMoved.trigger(this, Collections.emptyMap());
+            eventPlayerMoved.trigger(this, Collections.singletonMap(EventDataKeys.Location, transformNode.translation()));
         }
     }
 
