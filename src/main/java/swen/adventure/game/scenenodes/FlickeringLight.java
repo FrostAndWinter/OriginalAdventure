@@ -40,13 +40,14 @@ public class FlickeringLight extends AdventureGameObject {
             });
 
         } else {
-            light.mesh().ifPresent(flameMesh -> flameMesh.setEnabled(true));
             Animation animation = new Animation(light._lightIntensity, LightAnimationTime, light._baseIntensity);
             animation.eventAnimationDidComplete.addAction(light, (animation1, triggeringObject, light1, data1) -> {
                 light.setIntensity(light._baseIntensity);
                 light._isAnimatingToggle = false;
             });
             light._isOn = true;
+
+            light.mesh().ifPresent(flameMesh -> flameMesh.setEnabled(true));
         }
         light.eventLightToggled.trigger(player, Collections.emptyMap());
     };
@@ -75,6 +76,8 @@ public class FlickeringLight extends AdventureGameObject {
             this.light().ifPresent(lightNode -> {
                 lightNode.setIntensity(animableProperty.value());
                 this.setMaterialColour(_lightMaterial, lightNode.colour(), animableProperty.value());
+
+                if (this.id.equals("greenTorchFlame")) {System.out.println("Value changed to " + animableProperty.value() + " due to animation " + triggeringObject); }
             });
         });
     }
