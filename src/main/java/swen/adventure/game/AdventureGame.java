@@ -18,6 +18,7 @@ import swen.adventure.engine.ui.components.*;
 import swen.adventure.engine.ui.layoutmanagers.LinearLayout;
 import swen.adventure.game.scenenodes.*;
 import swen.adventure.game.ui.components.InventoryComponent;
+import swen.adventure.game.ui.components.UI;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,11 +34,7 @@ public class AdventureGame implements Game {
     private TransformNode _sceneGraph;
     private final Client<EventBox> _client;
 
-    // Elements of the UI
-    private swen.adventure.engine.ui.components.Frame _frame;
-    private swen.adventure.game.ui.components.InventoryComponent _inventory;
-
-    private Panel controls;
+    private UI ui;
 
     private Player _player;
 
@@ -85,6 +82,8 @@ public class AdventureGame implements Game {
             _pickerRenderer = new PickerRenderer();
         }
 
+        this.setupUI(width, height);
+
         _keyInput.eventMoveInDirection.addAction(this._player, Player.actionMoveInDirection);
 
         _mouseInput.eventMouseButtonPressed.addAction(this, AdventureGame.primaryActionFired);
@@ -95,7 +94,7 @@ public class AdventureGame implements Game {
         _keyInput.eventSecondaryAction.addAction(this, AdventureGame.secondaryActionFired);
         _keyInput.eventSecondaryActionEnded.addAction(this, AdventureGame.secondaryActionEnded);
 
-        _keyInput.eventHideShowInventory.addAction(_inventory, InventoryComponent.actionToggleZoomItem);
+        _keyInput.eventHideShowInventory.addAction(ui.getInventory(), InventoryComponent.actionToggleZoomItem);
 
         // get the possible interactions a player can make this step
         Event.EventSet<AdventureGameObject, Player> interactionEvents = (Event.EventSet<AdventureGameObject, Player>) Event.eventSetForName("eventShouldProvideInteraction");
@@ -103,8 +102,6 @@ public class AdventureGame implements Game {
             Interaction interaction = (Interaction) data.get(EventDataKeys.Interaction);
             _possibleInteractionsForStep.put(interaction.interactionType, interaction);
         });
-
-        this.setupUI(width, height);
     }
 
     private static final Action<Input, Input, AdventureGame> primaryActionFired = (eventObject, triggeringObject, adventureGame, data) -> {
@@ -155,50 +152,7 @@ public class AdventureGame implements Game {
         _pGraphics.setPrimary(true);
         _pGraphics.setSize(width, height);
 
-        // Set up the UI elements
-        _frame = new Frame(0, 0, width, height);
-
-        Panel panel = new Panel(0, 0, width, height);
-        panel.setColor(new Color(0, 0, 0, 0));
-
-        ProgressBar healthBar = new ProgressBar(100, 100, 30, 30);
-        panel.addChild(healthBar);
-
-        _inventory = new InventoryComponent(_player.inventory(), 275, 500);
-        _inventory.setBoxSize(50);
-
-        panel.addChild(_inventory);
-
-        int size = 5;
-        Reticule reticule = new Reticule(width/2, height/2, size);
-        panel.addChild(reticule);
-
-        _frame.addChild(panel);
-
-        controls = new Panel(0, 0);
-        controls.setColor(new Color(0, 0, 0, 100));
-        controls.setLayoutManager(new LinearLayout(LinearLayout.LINEAR_LAYOUT_VERTICAL));
-        controls.setVisible(false);
-
-        TextBox moveFoward = new TextBox("W - move foward", 0, 0);
-        controls.addChild(moveFoward);
-
-        TextBox moveLeft = new TextBox("A - move left", 0, 0);
-        controls.addChild(moveLeft);
-
-        TextBox moveBack = new TextBox("S - move backwards", 0, 0);
-        controls.addChild(moveBack);
-
-        TextBox moveRight = new TextBox("D - move right", 0, 0);
-        controls.addChild(moveRight);
-
-        TextBox placeItem = new TextBox("U - place item", 0, 0);
-        controls.addChild(placeItem);
-
-        TextBox takeItem = new TextBox("E - take item", 0, 0);
-        controls.addChild(takeItem);
-
-        _frame.addChild(controls);
+        ui = new UI(width, height, _player);
     }
 
     @Override
@@ -249,21 +203,7 @@ public class AdventureGame implements Game {
             _glRenderer.render(meshNodesSortedByZ, _sceneGraph.allNodesOfType(Light.class), cameraNode.worldToNodeSpaceTransform(), cameraNode.fieldOfView(), cameraNode.hdrMaxIntensity());
         });
 
-
-        float scaleX = _pGraphics.width / virtualUIWidth;
-        float scaleY = _pGraphics.height / virtualUIHeight;
-        float scale = Math.min(scaleX, scaleY);
-
-        float dw = (_pGraphics.width - (scale * virtualUIWidth))/2;
-        float dh = (_pGraphics.height - (scale * virtualUIHeight))/2;
-
-        _pGraphics.beginDraw();
-        _pGraphics.noStroke();
-        _pGraphics.translate(dw, dh);
-        _frame.draw(_pGraphics, scale, scale);
-        _pGraphics.endDraw();
-
-        _inventory.drawItems(_glRenderer, scale, scale, dw, dh, _pGraphics.width, _pGraphics.height);
+        ui.drawUI(_pGraphics, _glRenderer);
     }
 
     /**
