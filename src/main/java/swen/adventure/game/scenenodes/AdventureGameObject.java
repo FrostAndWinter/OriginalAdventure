@@ -18,6 +18,9 @@ public class AdventureGameObject extends GameObject {
     public final Event<AdventureGameObject, Player> eventGameObjectLookedAt = new Event<>("eventGameObjectLookedAt", this);
     public final Event<AdventureGameObject, Player> eventGameObjectLookedAwayFrom = new Event<>("eventGameObjectLookedAwayFrom", this);
 
+    public final Event<AdventureGameObject, Player> eventGameObjectPrimaryAction = new Event<>("eventGameObjectPrimaryAction", this);
+    public final Event<AdventureGameObject, Player> eventGameObjectSecondaryAction = new Event<>("eventGameObjectSecondaryAction", this);
+
     private Optional<Container> _container = Optional.empty();
 
     public AdventureGameObject(final String id, final TransformNode parent) {
