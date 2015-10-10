@@ -86,7 +86,6 @@ public class AdventureGame implements Game {
         _keyInput.eventMoveInDirection.addAction(this._player, Player.actionMoveInDirection);
 
         _mouseInput.eventMouseButtonPressed.addAction(this, AdventureGame.primaryActionFired);
-        _mouseInput.eventMouseButtonReleased.addAction(this, AdventureGame.secondaryActionFired);
 
         _keyInput.eventPrimaryAction.addAction(this, AdventureGame.primaryActionFired);
         _keyInput.eventSecondaryAction.addAction(this, AdventureGame.secondaryActionFired);
@@ -95,6 +94,7 @@ public class AdventureGame implements Game {
             _inventory.setShowItem(!_inventory.getShowItem());
         });
 
+        // get the possible interactions a player can make this step
         Event.EventSet<AdventureGameObject, Player> interactionEvents = (Event.EventSet<AdventureGameObject, Player>) Event.eventSetForName("eventShouldProvideInteraction");
         interactionEvents.addAction(this, (gameObject, player, adventureGame, data) -> {
             Interaction interaction = (Interaction) data.get(EventDataKeys.Interaction);
@@ -105,19 +105,21 @@ public class AdventureGame implements Game {
     }
 
     private static final Action<Input, Input, AdventureGame> primaryActionFired = (eventObject, triggeringObject, adventureGame, data) -> {
-        List<Interaction.InteractionType> interactionTypes = Interaction.InteractionType.typesForActionType(Interaction.ActionType.Primary);
+        adventureGame.performInteractions(Interaction.ActionType.Primary);
+    };
+
+    private static final Action<Input, Input, AdventureGame> secondaryActionFired = (eventObject, triggeringObject, adventureGame, data) -> {
+        adventureGame.performInteractions(Interaction.ActionType.Secondary);
+    };
+
+    private void performInteractions(Interaction.ActionType actionType) {
+        List<Interaction.InteractionType> interactionTypes = Interaction.InteractionType.typesForActionType(actionType);
 
         interactionTypes.stream()
-                .map(interactionType -> adventureGame._interactionsForStep.get(interactionType))
+                .map(_interactionsForStep::get)
                 .filter(interaction -> interaction != null)
-                .forEach(interaction -> {
-                    interaction.performInteractionWithPlayer(adventureGame._player);
-                });
-    };
-
-    private static final Action<Input, Input, AdventureGame> secondaryActionFired = (eventObject, triggeringObject, listener, data) -> {
-
-    };
+                .forEach(interaction -> interaction.performInteractionWithPlayer(_player));
+    }
 
     private void setupUI(int width, int height) {
 
@@ -137,7 +139,7 @@ public class AdventureGame implements Game {
         ProgressBar healthBar = new ProgressBar(100, 100, 30, 30);
         panel.addChild(healthBar);
 
-        _inventory = new InventoryComponent(this._player.inventory(), 275, 500);
+        _inventory = new InventoryComponent(_player.inventory(), 275, 500);
         _inventory.setBoxSize(50);
 
         panel.addChild(_inventory);
@@ -164,6 +166,8 @@ public class AdventureGame implements Game {
     public void update(long deltaMillis) {
         GameDelegate.pollInput();
 
+        _interactionsForStep.clear();
+
         Optional<EventBox> box;
         while ((box = _client.poll()).isPresent()) {
             EventBox event = box.get();
@@ -177,8 +181,6 @@ public class AdventureGame implements Game {
         _player.parent().get().setRotation(Quaternion.makeWithAngleAndAxis(_viewAngleX / 500, 0, -1, 0).multiply(Quaternion.makeWithAngleAndAxis(_viewAngleY / 500, -1, 0, 0)));
 
         this.render();
-
-        _interactionsForStep.clear();
     }
 
     private void render() {

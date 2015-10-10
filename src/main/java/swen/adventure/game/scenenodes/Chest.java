@@ -115,7 +115,7 @@ public class Chest extends AdventureGameObject {
     @Override
     public List<Interaction> possibleInteractions(MeshNode meshNode, Player player) {
         return Arrays.asList(
-                new Interaction(this.isOpen() ? Interaction.InteractionType.Close : Interaction.InteractionType.Open, this)
+                new Interaction(this.isOpen() ? Interaction.InteractionType.Close : Interaction.InteractionType.Open, this, meshNode)
         );
     }
 

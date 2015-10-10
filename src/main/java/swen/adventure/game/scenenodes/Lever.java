@@ -71,7 +71,7 @@ public class Lever extends AdventureGameObject {
 
     @Override
     public List<Interaction> possibleInteractions(final MeshNode meshNode, final Player player) {
-        return Collections.singletonList(new Interaction(Interaction.InteractionType.Pull, this));
+        return Collections.singletonList(new Interaction(Interaction.InteractionType.Pull, this, meshNode));
     }
 
     @Override
