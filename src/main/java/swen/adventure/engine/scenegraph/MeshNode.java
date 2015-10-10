@@ -35,7 +35,6 @@ public final class MeshNode extends SceneNode {
     public final Event<SceneNode, Player> eventMeshPressed = new Event<>("eventMeshPressed", this);
     public Event<SceneNode, Player> eventMeshReleased = new Event<>("eventMeshReleased", this);
     public final Event<SceneNode, Player> eventMeshLookedAt = new Event<>("eventMeshLookedAt", this);
-    public final Event<SceneNode, Player> eventMeshLookedAwayFrom = new Event<>("eventMeshLookedAwayFrom", this);
 
     public MeshNode(final String directory, final String fileName, final TransformNode parent) {
         this("mesh" + fileName, directory, fileName, parent);
@@ -85,7 +84,7 @@ public final class MeshNode extends SceneNode {
     public void setCollidable(boolean collidable) {
         if (collidable && !_collisionNode.isPresent()) {
             _collisionNode = Optional.of(new CollisionNode(this));
-        } else {
+        } else if (!collidable) {
             _collisionNode.ifPresent(collisionNode -> {
                 collisionNode.setParent(null);
             });

@@ -11,6 +11,10 @@ import java.util.function.Supplier;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 6/10/15.
+ *
+ * A puzzle is a component for triggering actions based on the state of properties in other game objects.
+ * The puzzle should be triggered to be checked by any event that may cause the solved/unsolved state of the puzzle to be changed
+ * and if the state /is/ changed by that action, then it will broadcast an event that it is solved or unsolved.
  */
 public final class Puzzle extends GameObject {
 
