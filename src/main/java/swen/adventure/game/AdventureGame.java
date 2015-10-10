@@ -89,7 +89,13 @@ public class AdventureGame implements Game {
 
         createPlayer(playerId);
 
+
+        _player.eventPlayerMoved.addAction(playerId , (eventObject1, triggeringObject1, listener1, data1) ->
+                        _client.send(new EventBox("eventPlayerMoved", triggeringObject1.id, _player.id, _player.id, data1))
+        );
+
         _keyInput.eventMoveInDirection.addAction(_player, Player.actionMoveInDirection);
+
 
         try {
             List<EventConnectionParser.EventConnection> connections = EventConnectionParser.parseFile(Utilities.readLinesFromFile(Utilities.pathForResource("EventConnections", "event")));

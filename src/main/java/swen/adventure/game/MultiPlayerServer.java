@@ -5,8 +5,11 @@ import swen.adventure.engine.datastorage.SceneGraphParser;
 import swen.adventure.engine.network.EventBox;
 import swen.adventure.engine.network.NetworkServer;
 import swen.adventure.engine.network.Server;
-import swen.adventure.engine.scenegraph.GameObject;
-import swen.adventure.engine.scenegraph.SceneNode;
+import swen.adventure.engine.rendering.maths.BoundingBox;
+import swen.adventure.engine.rendering.maths.Quaternion;
+import swen.adventure.engine.rendering.maths.Vector3;
+import swen.adventure.engine.scenegraph.*;
+import swen.adventure.game.scenenodes.Player;
 import swen.adventure.game.scenenodes.SpawnNode;
 
 import java.io.File;
@@ -47,9 +50,8 @@ public class MultiPlayerServer implements Runnable {
 
             if (event.eventName.equals("playerConnected")) {
                 server.sendSnapShot(event.from, root);
+                createPlayer(event.targetId);
 
-                SpawnNode spawn = (SpawnNode) source;
-                spawn.spawnPlayerWithId(event.targetId);
                 server.sendAll(event, event.from);
                 continue;
             }
@@ -59,7 +61,30 @@ public class MultiPlayerServer implements Runnable {
             e.trigger(source, event.eventData);
 
             server.sendAll(event, event.from);
+
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
         }
+    }
+
+    private void createPlayer(String playerId) {
+        SpawnNode spawn = (SpawnNode)root.nodeWithID(SpawnNode.ID).get();
+        spawn.spawnPlayerWithId(playerId);
+
+        // FIXME: Add CollisionNode to player
+        Player newPlayer = (Player)root.nodeWithID(playerId).get();
+        new MeshNode(playerId + "Mesh", "", "rocket.obj", newPlayer.parent().get());
+
+        BoundingBox boundingBox = new BoundingBox(new Vector3(-30, -60, -10) , new Vector3(30, 60, 10));
+        String colliderID = playerId + "Collider";
+        CollisionNode collider = (CollisionNode)spawn.nodeWithID(colliderID).orElseGet(() -> new CollisionNode(colliderID, newPlayer.parent().get(), boundingBox));
+        collider.setParent(newPlayer.parent().get());
+
+        newPlayer.setCollisionNode(collider);
+
     }
 
     public static void main(String[] args) {
