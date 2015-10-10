@@ -144,9 +144,10 @@ public class WavefrontParser {
 
     private void parseMaterial() {
         ensuredGobble(MATERIAL_PAT, "A material usage definition starts with 'usemtl'.");
-        Material material = this.materials.get(scanner.next());
+        String materialName = scanner.next();
+        Material material = this.materials.get(materialName);
         if (material == null) {
-            fail("Material was not defined before it was used.");
+            fail("Material " + material + " was not defined before it was used.");
         }
         _currentMaterial = material;
     }

@@ -3,49 +3,49 @@ package swen.adventure.game.scenenodes;
 import swen.adventure.engine.Action;
 import swen.adventure.engine.animation.AnimableProperty;
 import swen.adventure.engine.animation.Animation;
+import swen.adventure.engine.animation.AnimationCurve;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
-import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.SceneNode;
 import swen.adventure.engine.scenegraph.TransformNode;
+import swen.adventure.game.Interaction;
+
+import java.util.Collections;
+import java.util.List;
 
 
 public class Door extends AdventureGameObject {
 
-    private TransformNode _hingeTransform;
+    private boolean _isOpen = false;
 
-    private boolean open = false;
+    private static final float DoorAnimationDuration = 1.2f;
 
-    public final static Action<SceneNode, ?, Door> actionToggleDoor =
-            (eventObject, player, door, data) -> door.toggle();
-
-    private AnimableProperty _doorRotationProgress = new AnimableProperty(0);
+    private AnimableProperty _doorOpenPercentage = new AnimableProperty(0.f);
 
     public Door(String id, TransformNode parent) {
         super(id, parent);
 
-        final String hingeTransformId = id + "DoorHinge";
+        final String frameId = id + "DoorFrame";
         final String bodyTransformId = id + "DoorBody";
         final String meshId = id + "DoorMesh";
 
-        _hingeTransform = parent.findNodeWithIdOrCreate(hingeTransformId, () -> new TransformNode(hingeTransformId, parent, true, Vector3.zero, new Quaternion(), Vector3.one));
+        MeshNode doorFrame = parent.findNodeWithIdOrCreate(frameId, () -> new MeshNode(frameId, "MedievalModels", "DoorSetting.obj", parent));
+        doorFrame.setCollidable(false);
 
-        TransformNode body = parent.findNodeWithIdOrCreate(bodyTransformId, () -> new TransformNode(bodyTransformId, _hingeTransform, true, Vector3.zero, new Quaternion(), new Vector3(50, 100, 1)));
-        MeshNode doorMesh = parent.findNodeWithIdOrCreate(meshId, () -> new MeshNode(meshId, "box.obj", body));
+        TransformNode body = parent.findNodeWithIdOrCreate(bodyTransformId, () -> new TransformNode(bodyTransformId, parent, true, Vector3.zero, new Quaternion(), Vector3.one));
+        MeshNode doorMesh = parent.findNodeWithIdOrCreate(meshId, () -> new MeshNode(meshId, "MedievalModels", "Door.obj", body));
+        doorMesh.setCollidable(true);
         this.registerMeshForInteraction(doorMesh);
-
-        _hingeTransform.translateBy(new Vector3(-doorMesh.boundingBox().width() * 50 / 2, 0.f, 0.f));
-        body.translateBy(new Vector3(doorMesh.boundingBox().width()*50/2, 0.f, 0.f));
         
-        _doorRotationProgress.eventValueChanged.addAction(this, (eventObject, triggeringObject, listener, data) ->  {
-            listener._hingeTransform.setRotation(Quaternion.makeWithAngleAndAxis((float) (eventObject.value() * (Math.PI/2)), 0, 1, 0));
+        _doorOpenPercentage.eventValueChanged.addAction(this, (eventObject, triggeringObject, listener, data) ->  {
+            body.setTranslation(new Vector3(-_doorOpenPercentage.value() * doorMesh.boundingBox().width(), 0.f, 0.f));
         });
     }
 
     public void toggle() {
 
-        if (open) {
+        if (_isOpen) {
             close();
         } else {
             open();
@@ -53,13 +53,29 @@ public class Door extends AdventureGameObject {
     }
 
     public void open() {
-        open = true;
-        new Animation(_doorRotationProgress, Math.abs(0.5f - _doorRotationProgress.value()), 1.0f);
+        _isOpen = true;
+        new Animation(_doorOpenPercentage, AnimationCurve.Sine, DoorAnimationDuration, 0.9f);
     }
 
     public void close() {
-        open = false;
-        new Animation(_doorRotationProgress, Math.abs(0.5f - _doorRotationProgress.value()), 0.0f);
+        _isOpen = false;
+        new Animation(_doorOpenPercentage, AnimationCurve.Sine, DoorAnimationDuration, 0.0f);
     }
 
+    @Override
+    public List<Interaction> possibleInteractions(final MeshNode meshNode, final Player player) {
+        if (!_isOpen) {
+            return Collections.singletonList(new Interaction(Interaction.InteractionType.Open, this, meshNode));
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public void performInteraction(final Interaction interaction, final MeshNode meshNode, final Player player) {
+        switch (interaction.interactionType) {
+            case Open:
+                this.open();
+                break;
+        }
+    }
 }

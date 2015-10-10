@@ -48,6 +48,13 @@ public class AnimableProperty {
         }
     }
 
+    /**
+     * @return Whether the property's value is currently being altered by an animation.
+     */
+    public boolean isAnimating() {
+        return _currentAnimation.isPresent();
+    }
+
     /** Cancels an animation, causing it to stop immediately and be destroyed. */
     public void stopAnimating() {
         _currentAnimation.ifPresent(animation -> {
