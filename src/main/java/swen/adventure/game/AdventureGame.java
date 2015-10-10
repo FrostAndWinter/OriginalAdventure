@@ -90,9 +90,7 @@ public class AdventureGame implements Game {
         _keyInput.eventPrimaryAction.addAction(this, AdventureGame.primaryActionFired);
         _keyInput.eventSecondaryAction.addAction(this, AdventureGame.secondaryActionFired);
 
-        _keyInput.eventHideShowInventory.addAction(this, (eventObject, triggeringObject, listener, data) -> { //FIXME this should not be here.
-            _inventory.setShowItem(!_inventory.getShowItem());
-        });
+        _keyInput.eventHideShowInventory.addAction(_inventory, InventoryComponent.actionToggleZoomItem);
 
         // get the possible interactions a player can make this step
         Event.EventSet<AdventureGameObject, Player> interactionEvents = (Event.EventSet<AdventureGameObject, Player>) Event.eventSetForName("eventShouldProvideInteraction");
