@@ -67,7 +67,5 @@ public class AdventureGameObject extends GameObject {
         return Collections.emptyList();
     }
 
-    public void performInteraction(Interaction interaction, MeshNode meshNode, Player player) {
-
-    }
+    public void performInteraction(Interaction interaction, MeshNode meshNode, Player player) {}
 }

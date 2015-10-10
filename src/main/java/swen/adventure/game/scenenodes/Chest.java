@@ -1,19 +1,14 @@
 package swen.adventure.game.scenenodes;
 
-import swen.adventure.engine.Action;
 import swen.adventure.engine.animation.AnimableProperty;
 import swen.adventure.engine.animation.Animation;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
-import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.MeshNode;
-import swen.adventure.engine.scenegraph.SceneNode;
 import swen.adventure.engine.scenegraph.TransformNode;
-import swen.adventure.game.EventDataKeys;
 import swen.adventure.game.Interaction;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -63,15 +58,6 @@ public class Chest extends AdventureGameObject {
         this.close(false);
     }
 
-    public void toggle(boolean animated) {
-
-        if (_isOpen) {
-            this.close(animated);
-        } else {
-            this.open(animated);
-        }
-    }
-
     public void open(boolean animate) {
         _isOpen = true;
         if (animate) {
@@ -96,14 +82,6 @@ public class Chest extends AdventureGameObject {
         return _isOpen;
     }
 
-    public void setOpen(boolean isOpen, boolean animate) {
-        if (isOpen) {
-            this.open(animate);
-        } else {
-            this.close(animate);
-        }
-    }
-
     @Override
     public void setContainer(Container container) {
         super.setContainer(container);
@@ -114,9 +92,17 @@ public class Chest extends AdventureGameObject {
 
     @Override
     public List<Interaction> possibleInteractions(MeshNode meshNode, Player player) {
-        return Arrays.asList(
-                new Interaction(this.isOpen() ? Interaction.InteractionType.Close : Interaction.InteractionType.Open, this, meshNode)
-        );
+        List<Interaction> possibleInteractions = new ArrayList<>();
+        possibleInteractions.add(new Interaction(this.isOpen() ? Interaction.InteractionType.Close : Interaction.InteractionType.Open, this, meshNode));
+
+        container().ifPresent(container -> {
+            // if the container isn't full, allow placing items in
+            if (!container.isFull()) {
+                possibleInteractions.add(new Interaction(Interaction.InteractionType.PlaceIn, this, meshNode));
+            }
+        });
+
+        return possibleInteractions;
     }
 
     @Override
@@ -128,6 +114,10 @@ public class Chest extends AdventureGameObject {
             case Close:
                 this.close(true);
                 break;
+            case PlaceIn:
+                player.inventory().selectedItem().ifPresent(item -> {
+                    item.moveToContainer(container().get());
+                });
             default:
                 break;
         }

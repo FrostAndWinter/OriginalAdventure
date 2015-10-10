@@ -91,10 +91,12 @@ public class InventoryComponent extends UIComponent {
 
         if (showItem) {
             g.fill(255);
-            Item selectedItem = _inventory.itemAtIndex(_inventory.selectedSlot());
+            Optional<Item> selectedItemOptional = _inventory.selectedItem();
 
-            selectedItem.description.ifPresent(description -> {
-                g.text(description, x * scaleX, y * scaleY + (height * scaleY)/2);
+            selectedItemOptional.ifPresent(selectedItem -> {
+                selectedItem.description.ifPresent(description -> {
+                    g.text(description, x * scaleX, y * scaleY + (height * scaleY)/2);
+                });
             });
 
         }
@@ -137,48 +139,51 @@ public class InventoryComponent extends UIComponent {
         List<MeshNode> nodesToRender = new ArrayList<>();
 
         for (int i = 0; i < _inventory.itemCount(); i++) {
-                Item item = _inventory.itemAtIndex(i);
+                Optional<Item> itemOptional = _inventory.itemAtIndex(i);
 
-                final int current = i;
-                final float finalCurrentX = currentX;
+                    final int current = i;
+                    final float finalCurrentX = currentX;
 
-                item.mesh().ifPresent(itemMesh -> {
+                    itemOptional.ifPresent(item -> {
 
-                    Optional<SceneNode> meshNodeOpt = _toScreenTransform.nodeWithID(itemMesh.id);
-                    MeshNode meshNode;
-                    if (meshNodeOpt.isPresent()) {
-                        meshNode = (MeshNode) meshNodeOpt.get();
-                    } else {
-                        TransformNode transformNode = new TransformNode(itemMesh.id + "Transform", _toScreenTransform, true, Vector3.zero, new Quaternion(), Vector3.one);
-                        meshNode = new MeshNode(itemMesh.id, itemMesh.getDirectory(), itemMesh.getFileName(), transformNode);
-                        itemMesh.materialOverride().ifPresent(meshNode::setMaterialOverride);
-                    }
+                    item.mesh().ifPresent(itemMesh -> {
 
-                    meshNode.setEnabled(true);
+                        Optional<SceneNode> meshNodeOpt = _toScreenTransform.nodeWithID(itemMesh.id);
+                        MeshNode meshNode;
+                        if (meshNodeOpt.isPresent()) {
+                            meshNode = (MeshNode) meshNodeOpt.get();
+                        } else {
+                            TransformNode transformNode = new TransformNode(itemMesh.id + "Transform", _toScreenTransform, true, Vector3.zero, new Quaternion(), Vector3.one);
+                            meshNode = new MeshNode(itemMesh.id, itemMesh.getDirectory(), itemMesh.getFileName(), transformNode);
+                            itemMesh.materialOverride().ifPresent(meshNode::setMaterialOverride);
+                        }
 
-                    float meshMaxDimension = Math.max(meshNode.boundingBox().width(), meshNode.boundingBox().height());
+                        meshNode.setEnabled(true);
 
-                    TransformNode transformNode = meshNode.parent().get();
+                        float meshMaxDimension = Math.max(meshNode.boundingBox().width(), meshNode.boundingBox().height());
 
-                    if (current == _inventory.selectedSlot() && showItem) {
-                        int w = (int) (width - 2 * dx);
-                        int h = (int) (height - 2 * dy - this.height * scaleY * 3);
+                        TransformNode transformNode = meshNode.parent().get();
 
-                        float xScale = (w) / meshMaxDimension;
-                        float yScale = (h) / meshMaxDimension;
-                        float scale = Math.min(xScale, yScale);
+                        if (current == _inventory.selectedSlot() && showItem) {
+                            int w = (int) (width - 2 * dx);
+                            int h = (int) (height - 2 * dy - this.height * scaleY * 3);
 
-                        transformNode.setTranslation(new Vector3(dx + w/2, dy + h/2 + this.height * scaleY* 3, 0.f));
-                        transformNode.setScale(new Vector3(scale, scale, 1.f));
-                    } else {
-                        float xScale = (boxSize) * scaleX / meshMaxDimension;
-                        float yScale = (boxSize) * scaleY / meshMaxDimension;
+                            float xScale = (w) / meshMaxDimension;
+                            float yScale = (h) / meshMaxDimension;
+                            float scale = Math.min(xScale, yScale);
 
-                        transformNode.setTranslation(new Vector3(dx + (finalCurrentX + boxSize / 2) * scaleX, dy + (height) - (this.y + boxSize / 2) * scaleY, 0.f));
-                        transformNode.setScale(new Vector3(xScale, yScale, 1.f));
-                    }
+                            transformNode.setTranslation(new Vector3(dx + w / 2, dy + h / 2 + this.height * scaleY * 3, 0.f));
+                            transformNode.setScale(new Vector3(scale, scale, 1.f));
+                        } else {
+                            float xScale = (boxSize) * scaleX / meshMaxDimension;
+                            float yScale = (boxSize) * scaleY / meshMaxDimension;
 
-                    nodesToRender.add(meshNode);
+                            transformNode.setTranslation(new Vector3(dx + (finalCurrentX + boxSize / 2) * scaleX, dy + (height) - (this.y + boxSize / 2) * scaleY, 0.f));
+                            transformNode.setScale(new Vector3(xScale, yScale, 1.f));
+                        }
+
+                        nodesToRender.add(meshNode);
+                    });
                 });
 
             currentX += boxSize;

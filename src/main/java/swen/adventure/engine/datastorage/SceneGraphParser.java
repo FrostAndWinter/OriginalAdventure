@@ -9,8 +9,7 @@ import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
-import swen.adventure.game.scenenodes.FlickeringLight;
-import swen.adventure.game.scenenodes.Player;
+import swen.adventure.game.scenenodes.*;
 import swen.adventure.engine.scenegraph.Puzzle;
 
 import java.io.File;
@@ -42,6 +41,7 @@ public class SceneGraphParser {
     private static final String CAMERA_TAG = "Camera";
     private static final String PLAYER_TAG = "Player";
     private static final String PUZZLE_TAG = "Puzzle";
+    private static final String CONTAINER_TAG = "Container";
 
     public static TransformNode parseSceneGraph(String input) {
         InputStream is = Utilities.stringToInputStream(input);
@@ -102,6 +102,8 @@ public class SceneGraphParser {
                 return parseFlickeringLightNode(xmlNode, parent);
             case PUZZLE_TAG:
                 return parsePuzzle(xmlNode, parent);
+            case CONTAINER_TAG:
+                return parseContainer(xmlNode, parent);
             default:
                // fail("Unrecognised node: " + name);
                 return parseGameObject(xmlNode, parent);
@@ -126,8 +128,19 @@ public class SceneGraphParser {
             });
 
             gameObject.setEnabled(enabled);
-
             gameObject.setParent(parent);
+
+            if (gameObject instanceof Item) {
+                Optional<String> containerIdOptional = (Optional<String>)getAttribute("containerId", xmlNode, Optional::of, Optional.empty());
+
+                containerIdOptional.ifPresent(containerId -> {
+                    Optional<SceneNode> containerOptional =  parent.nodeWithID(containerId);
+                    containerOptional.ifPresent(container -> {
+                        ((Item) gameObject).moveToContainer((Container) container);
+                    });
+                });
+
+            }
 
             return gameObject;
         } catch (ClassNotFoundException e) {
@@ -302,6 +315,35 @@ public class SceneGraphParser {
 
         return node;
     }
+
+    private static Container parseContainer(Node xmlNode, TransformNode parent) {
+        String id = getAttribute("id", xmlNode, Function.identity());
+
+        int capacity = getAttribute("capacity", xmlNode, ParserManager.getFromStringFunction(Integer.class), 10);
+        boolean showTopItem = getAttribute("showTopItem", xmlNode, ParserManager.getFromStringFunction(Boolean.class), true);
+
+        Container container = parent.findNodeWithIdOrCreate(id, () -> new Container(id, parent, capacity));
+        container.setShowTopItem(showTopItem);
+
+        String selectionObjectId = getAttribute("selectionObject", xmlNode, ParserManager.getFromStringFunction(String.class));
+        Optional<SceneNode> selectionObjectOptional = parent.nodeWithID(selectionObjectId);
+
+
+        if (selectionObjectOptional.isPresent()) {
+            SceneNode selectionObject = selectionObjectOptional.get();
+            if (!(selectionObject instanceof AdventureGameObject)) {
+                throw new RuntimeException("selectionObject on container " + id + " must be an AdventureGameObject");
+            }
+
+            AdventureGameObject adventureGameObject = (AdventureGameObject) selectionObject;
+            adventureGameObject.setContainer(container);
+        } else {
+            throw new RuntimeException("The container " + id + "must have a selectionObject");
+        }
+
+        return container;
+    }
+
 
     private static void fail(String message) throws RuntimeException {
         throw new RuntimeException(message);

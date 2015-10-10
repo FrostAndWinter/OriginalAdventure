@@ -1,11 +1,10 @@
 package swen.adventure.game.scenenodes;
 
-import swen.adventure.engine.Event;
-import swen.adventure.engine.scenegraph.GameObject;
-import swen.adventure.engine.scenegraph.SceneNode;
 import swen.adventure.engine.scenegraph.TransformNode;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 8/10/15.
@@ -42,13 +41,12 @@ public class Container extends AdventureGameObject {
         return _items.size() == _capacity;
     }
 
+
     public boolean push(Item item) {
         if (_items.size() < _capacity) {
             _items.add(item);
-            item.setContainer(this);
 
             item.parent().get().setParent(this.parent().get());
-
             this.setVisibilityOnContents();
 
             return true;
@@ -64,14 +62,18 @@ public class Container extends AdventureGameObject {
         if (_items.isEmpty()) {
             return Optional.empty();
         }
+
         Item item = _items.remove(_items.size() - 1);
-        item.setContainer(null);
         this.setVisibilityOnContents();
         return Optional.of(item);
     }
 
-    public Item itemAtIndex(int index) {
-        return _items.get(index);
+    public Optional<Item> itemAtIndex(int index) {
+        if (index < itemCount()) {
+            return Optional.of(_items.get(index));
+        }
+
+        return Optional.empty();
     }
 
     public int itemCount() {

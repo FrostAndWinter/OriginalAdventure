@@ -21,7 +21,7 @@
         <TransformNode id="chestContentsTransform" translation="-0.4, 0.88, 0.5" rotation="-0.66753083, 0.074032836, 0.066976495, 0.73785895" scale="0.03333, 0.03333, 0.03333">
             <Container id="chestContainer" showTopItem="true" selectionObject="chest"/>
 
-            <TransformNode id="noteTransform" scale="10.0, 10.0, 10.0">
+            <TransformNode id="noteTransform" scale="10.0, 10.0, 10.0" isDynamic="true">
                 <Note id="note" inContainer="container"/>
             </TransformNode>
         </TransformNode>
@@ -77,7 +77,7 @@
 
     <TransformNode id="wallTorchesTransform" translation="0, -20, 840" rotation="0, 1, 0, 0">
 
-        <TransformNode id="keyT" translation="0, 165, -46" scale="5, 5, 5">
+        <TransformNode id="keyT" translation="0, 165, -46" scale="5, 5, 5" isDynamic="true">
             <Key id="key" enabled="false"/>
         </TransformNode>
 

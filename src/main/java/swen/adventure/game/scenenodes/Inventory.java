@@ -1,5 +1,7 @@
 package swen.adventure.game.scenenodes;
 
+import java.util.Optional;
+
 /**
  * Created by josephbennett on 29/09/15
  */
@@ -30,6 +32,10 @@ public class Inventory extends Container {
         }
 
         _selectedSlot = slot;
+    }
+
+    public Optional<Item> selectedItem() {
+        return itemAtIndex(_selectedSlot);
     }
 
     public int selectedSlot() {

@@ -27,13 +27,19 @@ public class Item extends AdventureGameObject {
         this.description = Optional.ofNullable(description);
     }
 
-
-    public void setContainingContainer(Container container) {
+    public void moveToContainer(Container container) {
         _containingContainer.ifPresent(Container::pop);
 
         if (container != null) {
             container.push(this);
+            _containingContainer = Optional.of(container);
         }
+    }
+
+    @Override
+    public void setMesh(MeshNode mesh) {
+        super.setMesh(mesh);
+        registerMeshForInteraction(mesh);
     }
 
     @Override
@@ -49,7 +55,7 @@ public class Item extends AdventureGameObject {
     public void performInteraction(final Interaction interaction, final MeshNode meshNode, final Player player) {
         switch (interaction.interactionType) {
             case PickUp:
-                this.setContainingContainer(player.inventory());
+                this.moveToContainer(player.inventory());
                 break;
         }
     }
