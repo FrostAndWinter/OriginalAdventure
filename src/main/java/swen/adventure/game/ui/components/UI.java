@@ -6,6 +6,8 @@ import swen.adventure.engine.ui.color.Color;
 import swen.adventure.engine.ui.components.Frame;
 import swen.adventure.engine.ui.components.Panel;
 import swen.adventure.engine.ui.components.Reticule;
+import swen.adventure.engine.ui.components.TextBox;
+import swen.adventure.engine.ui.layoutmanagers.LinearLayout;
 import swen.adventure.game.scenenodes.Inventory;
 import swen.adventure.game.scenenodes.Player;
 
@@ -16,6 +18,7 @@ public class UI extends Frame {
     Panel _container;
     InventoryComponent _inventory;
     ControlsOverlay _controlsOverlay;
+    TextBox _tooltip;
 
     public UI(int w, int h, Player p) {
         super(0, 0, w, h);
@@ -35,8 +38,22 @@ public class UI extends Frame {
 
         _controlsOverlay = new ControlsOverlay(0,0);
         _controlsOverlay.setVisible(false);
+        _container.addChild(_controlsOverlay);
+
+        _tooltip = new TextBox("TOOLTIP!!", 400, 400);
+        _tooltip.setVisible(false);
+        _container.addChild(_tooltip);
 
         addChild(_container);
+    }
+
+    public void setTooltip(String tip) {
+        _tooltip.setText(tip);
+        _tooltip.setVisible(true);
+    }
+
+    public void removeTooltip() {
+        _tooltip.setVisible(false);
     }
 
     public void setControlsOverlayVisibility(boolean b) {
@@ -62,7 +79,7 @@ public class UI extends Frame {
         draw(pg, scale, scale);
 
         pg.endDraw();
-        
+
         _inventory.drawItems(gr, scale, scale, dw, dh, pg.width, pg.height);
     }
 }

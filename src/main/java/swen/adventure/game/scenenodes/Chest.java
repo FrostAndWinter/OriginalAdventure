@@ -97,8 +97,7 @@ public class Chest extends AdventureGameObject {
         possibleInteractions.add(new Interaction(this.isOpen() ? Interaction.InteractionType.Close : Interaction.InteractionType.Open, this, meshNode));
 
         container().ifPresent(container -> {
-            // if the container isn't full, allow placing items in
-            if (!container.isFull()) {
+            if (!container.isFull() && this.isOpen()) {
                 possibleInteractions.add(new Interaction(Interaction.InteractionType.PlaceIn, this, meshNode));
             }
         });
@@ -115,6 +114,12 @@ public class Chest extends AdventureGameObject {
                 break;
             case Close:
                 this.close(true);
+                break;
+            case PlaceIn:
+                player.inventory().selectedItem().ifPresent(item -> {
+                    item.moveToContainer(container().get());
+                    item.eventPlayerDroppedItem.trigger(player, Collections.emptyMap());
+                });
                 break;
             default:
                 break;
