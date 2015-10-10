@@ -14,12 +14,10 @@ import swen.adventure.engine.rendering.PickerRenderer;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.scenegraph.*;
 import swen.adventure.engine.ui.color.Color;
-import swen.adventure.engine.ui.components.Frame;
-import swen.adventure.engine.ui.components.Reticule;
+import swen.adventure.engine.ui.components.*;
+import swen.adventure.engine.ui.layoutmanagers.LinearLayout;
 import swen.adventure.game.scenenodes.*;
 import swen.adventure.game.ui.components.InventoryComponent;
-import swen.adventure.engine.ui.components.Panel;
-import swen.adventure.engine.ui.components.ProgressBar;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -37,6 +35,8 @@ public class AdventureGame implements Game {
     // Elements of the UI
     private swen.adventure.engine.ui.components.Frame _frame;
     private swen.adventure.game.ui.components.InventoryComponent _inventory;
+
+    private Panel controlls;
 
     private Player _player;
 
@@ -147,6 +147,31 @@ public class AdventureGame implements Game {
         panel.addChild(reticule);
 
         _frame.addChild(panel);
+
+        controlls = new  Panel(0, 0);
+        controlls.setColor(new Color(0,0,0,100));
+        controlls.setLayoutManager(new LinearLayout(LinearLayout.LINEAR_LAYOUT_VERTICAL));
+        controlls.setVisible(false);
+
+        TextBox moveFoward = new TextBox("W - move foward", 0, 0);
+        controlls.addChild(moveFoward);
+
+        TextBox moveLeft = new TextBox("A - move left", 0, 0);
+        controlls.addChild(moveLeft);
+
+        TextBox moveBack = new TextBox("S - move backwards", 0, 0);
+        controlls.addChild(moveBack);
+
+        TextBox moveRight = new TextBox("D - move right", 0, 0);
+        controlls.addChild(moveRight);
+
+        TextBox placeItem = new TextBox("U - place item", 0, 0);
+        controlls.addChild(placeItem);
+
+        TextBox takeItem = new TextBox("E - take item", 0, 0);
+        controlls.addChild(takeItem);
+
+        _frame.addChild(controlls);
     }
 
     @Override
