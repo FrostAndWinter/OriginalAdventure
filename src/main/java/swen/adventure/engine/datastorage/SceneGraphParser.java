@@ -171,6 +171,9 @@ public class SceneGraphParser {
         materialFileName.ifPresent(matFileName ->
                 materialName.ifPresent(matName -> {
                     String matDirectory = materialDirectory.orElse("");
+                    node.setMaterialDirectory(matDirectory);
+                    node.setMaterialFileName(matFileName);
+                    node.setMaterialName(matName);
                     node.setMaterialOverride(MaterialLibrary.libraryWithName(matDirectory, matFileName).materialWithName(matName));
                 }));
 
@@ -181,7 +184,7 @@ public class SceneGraphParser {
 
         String id = getAttribute("id", xmlNode, Function.identity());
 
-        Puzzle puzzle = (Puzzle) parent.findNodeWithIdOrCreate(id, () -> {
+        Puzzle puzzle = parent.findNodeWithIdOrCreate(id, () -> {
             String conditionsList = getAttribute("conditions", xmlNode, Function.identity());
             List<Puzzle.PuzzleCondition> conditions = PuzzleConditionParser.parseConditionList(conditionsList, parent);
             return new Puzzle(id, parent, conditions);
@@ -202,7 +205,7 @@ public class SceneGraphParser {
         Light.LightFalloff falloff = getAttribute("falloff", xmlNode, Light.LightFalloff::fromString, Light.LightFalloff.Quadratic);
         boolean isOn = getAttribute("isOn", xmlNode, Boolean::valueOf, true);
 
-        FlickeringLight flickeringLight = (FlickeringLight) parent.findNodeWithIdOrCreate(id, () ->
+        FlickeringLight flickeringLight = parent.findNodeWithIdOrCreate(id, () ->
               new FlickeringLight(id, parent, fileName, directory, colour, intensity, falloff)
         );
 
@@ -220,7 +223,7 @@ public class SceneGraphParser {
     private static CameraNode parseCameraNode(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode, Function.identity());
 
-        CameraNode cameraNode = (CameraNode) parent.findNodeWithIdOrCreate(id, () ->
+        CameraNode cameraNode = parent.findNodeWithIdOrCreate(id, () ->
             new CameraNode(id, parent)
         );
 
@@ -234,7 +237,7 @@ public class SceneGraphParser {
         BoundingBox boundingBox = getAttribute("boundingBox", xmlNode, ParserManager.getFromStringFunction(BoundingBox.class), new BoundingBox(Vector3.zero, Vector3.zero));
         String colliderID = id + "Collider";
 
-        Player player = (Player) parent.findNodeWithIdOrCreate(id, () -> new Player(id, parent));
+        Player player = parent.findNodeWithIdOrCreate(id, () -> new Player(id, parent));
 
         player.setParent(parent);
 
@@ -251,7 +254,7 @@ public class SceneGraphParser {
         Vector3 colour = getAttribute("colour", xmlNode, ParserManager.getFromStringFunction(Vector3.class), Vector3.one);
         float intensity = getAttribute("intensity", xmlNode, Float::parseFloat, 1.f);
 
-        Light node = (Light) parent.findNodeWithIdOrCreate(id, () -> Light.createAmbientLight(id, parent, colour, intensity));
+        Light node = parent.findNodeWithIdOrCreate(id, () -> Light.createAmbientLight(id, parent, colour, intensity));
 
         node.setColour(colour);
         node.setIntensity(intensity);
@@ -266,7 +269,7 @@ public class SceneGraphParser {
         float intensity = getAttribute("intensity", xmlNode, Float::parseFloat, 1.f);
         Vector3 fromDirection = getAttribute("fromDirection", xmlNode, ParserManager.getFromStringFunction(Vector3.class));
 
-        Light node = (Light) parent.findNodeWithIdOrCreate(id, () -> Light.createDirectionalLight(id, parent, colour, intensity, fromDirection));
+        Light node = parent.findNodeWithIdOrCreate(id, () -> Light.createDirectionalLight(id, parent, colour, intensity, fromDirection));
 
         node.setColour(colour);
         node.setIntensity(intensity);
@@ -281,7 +284,7 @@ public class SceneGraphParser {
         float intensity = getAttribute("intensity", xmlNode, Float::parseFloat, 1.f);
         Light.LightFalloff falloff = getAttribute("falloff", xmlNode, Light.LightFalloff::fromString);
 
-        Light node = (Light) parent.findNodeWithIdOrCreate(id, () -> Light.createPointLight(id, parent, colour, intensity, falloff));
+        Light node = parent.findNodeWithIdOrCreate(id, () -> Light.createPointLight(id, parent, colour, intensity, falloff));
 
         node.setColour(colour);
         node.setIntensity(intensity);
@@ -299,7 +302,7 @@ public class SceneGraphParser {
 
         boolean isDynamic = getAttribute("isDynamic", xmlNode, ParserManager.getFromStringFunction(Boolean.class), false);
 
-        TransformNode node = (TransformNode)parent.findNodeWithIdOrCreate(id, () -> new TransformNode(id, parent, isDynamic, translation, rotation, scale));
+        TransformNode node = parent.findNodeWithIdOrCreate(id, () -> new TransformNode(id, parent, isDynamic, translation, rotation, scale));
         if (node.isDynamic()) {
             node.setTranslation(translation);
             node.setRotation(rotation);

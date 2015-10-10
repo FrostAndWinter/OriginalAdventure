@@ -27,6 +27,10 @@ public final class MeshNode extends SceneNode {
     private final String _directory;
     private final String _fileName;
 
+    private Optional<String> materialDirectory = Optional.empty();
+    private Optional<String> materialFileName = Optional.empty();
+    private Optional<String> materialName = Optional.empty();
+
     private GLMesh<Float> _mesh;
     private Optional<Material> _materialOverride = Optional.empty();
 
@@ -207,5 +211,29 @@ public final class MeshNode extends SceneNode {
 
     public boolean isCollidable() {
         return _collisionNode.isPresent();
+    }
+
+    public void setMaterialDirectory(String materialDirectory) {
+        this.materialDirectory = Optional.of(materialDirectory);
+    }
+
+    public void setMaterialFileName(String materialFileName) {
+        this.materialFileName = Optional.of(materialFileName);
+    }
+
+    public void setMaterialName(String materialName) {
+        this.materialName = Optional.of(materialName);
+    }
+
+    public Optional<String> getMaterialFileName() {
+        return materialFileName;
+    }
+
+    public Optional<String> getMaterialDirectory() {
+        return materialDirectory;
+    }
+
+    public Optional<String> getMaterialName() {
+        return materialName;
     }
 }

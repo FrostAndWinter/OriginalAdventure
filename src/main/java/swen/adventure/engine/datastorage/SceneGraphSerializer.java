@@ -4,6 +4,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import swen.adventure.engine.Utilities;
+import swen.adventure.engine.rendering.Material;
 import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
@@ -12,6 +13,7 @@ import swen.adventure.game.scenenodes.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 /**
  * Created by Liam O'Neill, Student ID 300312734, on 04/10/15.
@@ -94,17 +96,15 @@ public class SceneGraphSerializer {
         else if (sceneNode instanceof Chest)
             serializedNode = serializeChest((Chest) sceneNode, xmlParentNode);
 
-
-        else
-            serializedNode = null;
-            //throw new RuntimeException("Don't recognise node " + sceneNode);
+        else {
+            System.out.println("Don't recognise node " + sceneNode);
+            return;
+            //throw new RuntimeException("Don't recognise node " + sceneNode); // for testing
+        }
 
         sceneNode.children()
                 .forEach(node -> serializeSceneNode(node, serializedNode));
     }
-
-
-
 
     private boolean isRoot(SceneNode sceneNode) {
         return sceneNode instanceof TransformNode && sceneNode.id.equals("root");
@@ -146,6 +146,9 @@ public class SceneGraphSerializer {
         setAttribute("textureRepeat", meshNode.getTextureRepeat(), Vector3.class, xmlElement);
         setAttribute("isCollidable", meshNode.isCollidable(), Boolean.class, xmlElement);
 
+        setAttributeIfPresent("materialDirectory", meshNode.getMaterialDirectory(), xmlElement);
+        setAttributeIfPresent("materialFileName", meshNode.getMaterialFileName(), xmlElement);
+        setAttributeIfPresent("materialName", meshNode.getMaterialName(), xmlElement);
 
         return xmlElement;
     }
@@ -242,9 +245,16 @@ public class SceneGraphSerializer {
         return xmlElement;
     }
 
-
     private <T> String parseToString(T object, Class<T> class0) {
         return PARSER_MANAGER.getToStringFunction(class0).apply(object);
+    }
+
+    private void setAttributeIfPresent(String name, Optional<String> optionalValue, Element xmlElement) {
+        optionalValue.ifPresent(value -> setAttribute(name, value, xmlElement));
+    }
+
+    private <T> void setAttributeIfPresent(String name, Optional<T> optionalValue, Class<T> class0, Element xmlElement) {
+        optionalValue.ifPresent(value -> setAttribute(name, value, class0, xmlElement));
     }
 
     private void setAttribute(String name, String value, Element xmlElement) {
