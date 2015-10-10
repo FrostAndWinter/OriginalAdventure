@@ -9,6 +9,12 @@ import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.SceneNode;
 import swen.adventure.engine.scenegraph.TransformNode;
+import swen.adventure.game.EventDataKeys;
+import swen.adventure.game.Interaction;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 4/10/15.
@@ -21,9 +27,6 @@ public class Chest extends AdventureGameObject {
     private static final float ClosedAngle = (float)(Math.PI / 180.f * 68.f);
     private static final float AnimationDuration = 0.6f;
 
-    public final static Action<SceneNode, Player, Chest> actionToggleChest =
-            (eventObject, player, chest, data) -> chest.toggle(true);
-
     private AnimableProperty _lidRotationProgress = new AnimableProperty(ClosedAngle);
 
     public Chest(String id, TransformNode parent) {
@@ -32,7 +35,9 @@ public class Chest extends AdventureGameObject {
         final String chestMeshId = id + "ChestMesh";
 
         MeshNode chestMesh = parent.findNodeWithIdOrCreate(chestMeshId, () -> new MeshNode(chestMeshId, "Chest", "Chest.obj", parent));
-        addMesh(chestMesh);
+
+        this.registerMeshForInteraction(chestMesh);
+
         chestMesh.setCollidable(true);
         chestMesh.setParent(parent);
 
@@ -49,11 +54,7 @@ public class Chest extends AdventureGameObject {
         final String lidMeshId = id + "LidMesh";
 
         MeshNode lidMesh = parent.findNodeWithIdOrCreate(lidMeshId, () -> new MeshNode(id + "ChestLid", "Chest", "ChestLid.obj", lidTransform));
-        addMesh(lidMesh);
-
-        chestMesh.eventMeshPressed.addAction(this, actionToggleChest);
-        lidMesh.eventMeshPressed.addAction(this, actionToggleChest);
-
+        this.registerMeshForInteraction(lidMesh);
 
         _lidRotationProgress.eventValueChanged.addAction(this, (eventObject, triggeringObject, listener, data) ->  {
             listener._hingeTransform.setRotation(Quaternion.makeWithAngleAndAxis(eventObject.value() * (ClosedAngle), 1, 0, 0));
@@ -108,6 +109,27 @@ public class Chest extends AdventureGameObject {
         super.setContainer(container);
         if (container != null) {
             //Set up the interaction connections between this object's mesh being interacted with and the container.
+        }
+    }
+
+    @Override
+    public List<Interaction> possibleInteractions(MeshNode meshNode, Player player) {
+        return Arrays.asList(
+                new Interaction(this.isOpen() ? Interaction.InteractionType.Close : Interaction.InteractionType.Open, this)
+        );
+    }
+
+    @Override
+    public void performInteraction(Interaction interaction, MeshNode meshNode, Player player) {
+        switch (interaction.interactionType) {
+            case Open:
+                this.open(true);
+                break;
+            case Close:
+                this.close(true);
+                break;
+            default:
+                break;
         }
     }
 }

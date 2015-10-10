@@ -1,11 +1,16 @@
 package swen.adventure.game.scenenodes;
 
+import swen.adventure.engine.Action;
 import swen.adventure.engine.Event;
 import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.MeshNode;
+import swen.adventure.engine.scenegraph.SceneNode;
 import swen.adventure.engine.scenegraph.TransformNode;
+import swen.adventure.game.EventDataKeys;
+import swen.adventure.game.Interaction;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -15,7 +20,13 @@ import java.util.Optional;
  */
 public class AdventureGameObject extends GameObject {
 
-    protected final Event<AdventureGameObject, Player> eventGameObjectLookedAt = new Event<>("eventGameObjectLookedAt", this);
+    public static final Action<SceneNode, Player, AdventureGameObject> actionEnableInteractions = (sceneNode, player, gameObject, data) -> {
+        MeshNode mesh = (MeshNode)data.get(EventDataKeys.Mesh);
+        for (Interaction interaction : gameObject.possibleInteractions(mesh, player)) {
+            gameObject.eventShouldProvideInteraction.trigger(player, Collections.singletonMap(EventDataKeys.Interaction, interaction));
+        }
+    };
+
     public final Event<AdventureGameObject, Player> eventShouldProvideInteraction = new Event<>("eventShouldProvideInteraction", this);
 
     private Optional<Container> _container = Optional.empty();
@@ -32,13 +43,8 @@ public class AdventureGameObject extends GameObject {
         return _container;
     }
 
-    @Override
-    protected void addMesh(MeshNode mesh) {
-        super.addMesh(mesh);
-
-        mesh.eventMeshLookedAt.addAction(this, (eventObject, player, listener, data) -> {
-            listener.eventGameObjectLookedAt.trigger(player, Collections.emptyMap());
-        });
+    protected void registerMeshForInteraction(MeshNode mesh) {
+        mesh.eventMeshLookedAt.addAction(this, actionEnableInteractions);
     }
 
     /**
@@ -55,5 +61,13 @@ public class AdventureGameObject extends GameObject {
     @Override
     public String toString() {
         return this.getClass().getSimpleName();
+    }
+
+    public List<Interaction> possibleInteractions(MeshNode meshNode, Player player) {
+        return Collections.emptyList();
+    }
+
+    public void performInteraction(Interaction interaction, MeshNode meshNode, Player player) {
+
     }
 }

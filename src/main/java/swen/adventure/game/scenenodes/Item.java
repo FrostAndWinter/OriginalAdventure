@@ -25,8 +25,8 @@ public class Item extends AdventureGameObject {
     }
 
     @Override
-    public void setMainMesh(MeshNode mesh) {
-        super.setMainMesh(mesh);
+    public void setMesh(MeshNode mesh) {
+        super.setMesh(mesh);
         mesh.eventMeshPressed.addAction(this, (eventObject, player, listener, data) -> {
             if (_interactionEnabled) {
                 eventItemPickup.trigger(player, Collections.emptyMap());

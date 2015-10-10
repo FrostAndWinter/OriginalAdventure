@@ -27,7 +27,7 @@ public class Key extends Item {
         final String keyMeshId = id + "KeyMesh";
 
         MeshNode keyMesh = parent.findNodeWithIdOrCreate(keyMeshId, () -> new MeshNode(keyMeshId, null, "Key_B_02.obj", parent));
-        this.setMainMesh(keyMesh);
+        this.setMesh(keyMesh);
     }
 
 }
