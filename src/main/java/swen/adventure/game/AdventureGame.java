@@ -143,7 +143,7 @@ public class AdventureGame implements Game {
     }
 
     private void endInteractions(Interaction.ActionType actionType) {
-        Interaction interaction = _interactionInProgressForActionType.get(Interaction.ActionType.Primary);
+        Interaction interaction = _interactionInProgressForActionType.get(actionType);
         if (interaction != null) {
             interaction.interactionEndedByPlayer(_player);
         }

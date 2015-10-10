@@ -116,6 +116,12 @@ public class Chest extends AdventureGameObject {
             case Close:
                 this.close(true);
                 break;
+            case PlaceIn:
+                player.inventory().selectedItem().ifPresent(item -> {
+                    item.moveToContainer(container().get());
+                    item.eventPlayerDroppedItem.trigger(player, Collections.emptyMap());
+                });
+                break;
             default:
                 break;
         }
