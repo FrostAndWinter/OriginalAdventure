@@ -2,7 +2,7 @@ package swen.adventure.game.ui.components;
 
 import processing.core.PGraphics;
 import swen.adventure.engine.Action;
-import swen.adventure.engine.animation.AnimableProperty;
+import swen.adventure.engine.Input;
 import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.rendering.maths.Matrix4;
 import swen.adventure.engine.rendering.maths.Quaternion;
@@ -16,7 +16,6 @@ import swen.adventure.engine.ui.layoutmanagers.LayoutManager;
 import swen.adventure.game.Interaction;
 import swen.adventure.game.scenenodes.Inventory;
 import swen.adventure.game.scenenodes.Item;
-import swen.adventure.game.scenenodes.Player;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,10 +30,14 @@ public class InventoryComponent extends UIComponent {
     private static final int BOX_SIZE = 30;
     private static final int INNER_PADDING = 6;
 
+    public static final Action<Input, Input, InventoryComponent> actionToggleZoomItem = (input, ignored, inventoryComponent, data) -> {
+        inventoryComponent.setSelectedItemZoomed(!inventoryComponent.selectedItemIsZoomed());
+    };
+
     private int boxSize;
 
     private int selectedItem = 0;
-    private boolean showItem;
+    private boolean _selectedItemIsZoomed;
 
     private final Inventory _inventory;
     private final TransformNode _rootSceneNode = new TransformNode("root", Vector3.zero, new Quaternion(), Vector3.one);
@@ -57,16 +60,16 @@ public class InventoryComponent extends UIComponent {
         this.boxSize = boxSize;
     }
 
-    public boolean getShowItem() {
-        return showItem;
+    public boolean selectedItemIsZoomed() {
+        return _selectedItemIsZoomed;
     }
 
-    public void setShowItem(boolean showItem) {
+    public void setSelectedItemZoomed(boolean zoomSelectedItem) {
         if (_inventory.selectedSlot() >= _inventory.itemCount()) {
             return;
         }
 
-        this.showItem = showItem;
+        _selectedItemIsZoomed = zoomSelectedItem;
     }
 
     @Override
@@ -89,7 +92,7 @@ public class InventoryComponent extends UIComponent {
         int currentX = x;
         int currentY = y;
 
-        if (showItem) {
+        if (_selectedItemIsZoomed) {
             g.fill(255);
             Optional<Item> selectedItemOptional = _inventory.selectedItem();
 
@@ -107,13 +110,13 @@ public class InventoryComponent extends UIComponent {
                 g.fill(180);
             }
 
-            if (showItem) {
+            if (_selectedItemIsZoomed) {
                 g.fill(0,0,0,0);
             }
 
             g.rect(currentX * scaleX, currentY * scaleY, boxSize * scaleX, boxSize * scaleY);
 
-            if (!showItem) {
+            if (!_selectedItemIsZoomed) {
                 g.fill(34, 50, 90);
             }
             g.rect((currentX + (INNER_PADDING/2)) * scaleX, (currentY + (INNER_PADDING/2)) * scaleY, (boxSize - INNER_PADDING) * scaleX, (boxSize - INNER_PADDING) * scaleY);
@@ -164,9 +167,10 @@ public class InventoryComponent extends UIComponent {
 
                         TransformNode transformNode = meshNode.parent().get();
 
-                        if (current == _inventory.selectedSlot() && showItem) {
-                            int w = (int) (width - 2 * dx);
-                            int h = (int) (height - 2 * dy - this.height * scaleY * 3);
+
+                    if (current == _inventory.selectedSlot() && _selectedItemIsZoomed) {
+                        int w = (int) (width - 2 * dx);
+                        int h = (int) (height - 2 * dy - this.height * scaleY * 3);
 
                             float xScale = (w) / meshMaxDimension;
                             float yScale = (h) / meshMaxDimension;

@@ -72,7 +72,9 @@ newmtl woodSG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
+Ks 0.40 0.40 0.40
 Tf 1.00 1.00 1.00
 map_Kd -o 0 -1 wood-1.png
+map_bump wood-1.png
 Ns 2.0
 Ni 1.00
