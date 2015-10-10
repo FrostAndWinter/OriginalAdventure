@@ -1,8 +1,11 @@
 package swen.adventure.game.scenenodes;
 
+import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.TransformNode;
+import swen.adventure.game.Interaction;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,5 +85,20 @@ public class Container extends AdventureGameObject {
 
     public int capacity() {
         return _capacity;
+    }
+
+    @Override
+    public void performInteraction(Interaction interaction, MeshNode meshNode, Player player) {
+        super.performInteraction(interaction, meshNode, player);
+        switch (interaction.interactionType) {
+            case PlaceIn:
+                player.inventory().selectedItem().ifPresent(item -> {
+                    item.moveToContainer(container().get());
+                    item.eventPlayerDroppedItem.trigger(player, Collections.emptyMap());
+                });
+                break;
+            default:
+                break;
+        }
     }
 }

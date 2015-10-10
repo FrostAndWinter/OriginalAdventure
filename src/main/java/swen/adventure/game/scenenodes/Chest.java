@@ -9,6 +9,7 @@ import swen.adventure.engine.scenegraph.TransformNode;
 import swen.adventure.game.Interaction;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -107,6 +108,7 @@ public class Chest extends AdventureGameObject {
 
     @Override
     public void performInteraction(Interaction interaction, MeshNode meshNode, Player player) {
+        super.performInteraction(interaction, meshNode, player);
         switch (interaction.interactionType) {
             case Open:
                 this.open(true);
@@ -114,10 +116,6 @@ public class Chest extends AdventureGameObject {
             case Close:
                 this.close(true);
                 break;
-            case PlaceIn:
-                player.inventory().selectedItem().ifPresent(item -> {
-                    item.moveToContainer(container().get());
-                });
             default:
                 break;
         }

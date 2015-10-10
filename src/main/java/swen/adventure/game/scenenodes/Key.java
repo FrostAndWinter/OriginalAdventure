@@ -1,6 +1,7 @@
 package swen.adventure.game.scenenodes;
 
 import swen.adventure.engine.Action;
+import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.Puzzle;
 import swen.adventure.engine.scenegraph.TransformNode;
@@ -13,11 +14,11 @@ public class Key extends Item {
 
     private static final String KeyDescription = "A key. Perhaps it opens a door?";
 
-    public Action<Puzzle, Puzzle, Key> actionSetEnabled = (puzzle, ignored, key, data) -> {
+    public Action<Puzzle, Puzzle, GameObject> actionSetEnabled = (puzzle, ignored, key, data) -> {
         this.setEnabled(true);
     };
 
-    public Action<Puzzle, Puzzle, Key> actionSetDisabled = (puzzle, ignored, key, data) -> {
+    public Action<Puzzle, Puzzle, GameObject> actionSetDisabled = (puzzle, ignored, key, data) -> {
         this.setEnabled(false);
     };
 

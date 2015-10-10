@@ -11,8 +11,7 @@ import swen.adventure.engine.scenegraph.SceneNode;
 import swen.adventure.engine.scenegraph.TransformNode;
 import swen.adventure.game.Interaction;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 
 public class Door extends AdventureGameObject {
@@ -22,6 +21,16 @@ public class Door extends AdventureGameObject {
     private static final float DoorAnimationDuration = 1.2f;
 
     private AnimableProperty _doorOpenPercentage = new AnimableProperty(0.f);
+
+    private Set<Player> _playersThatCanOpenDoor = new HashSet<>();
+
+    public static final Action<Item, Player, Door> actionAllowPlayerToOpenDoor = (item, player, door, data) -> {
+        door._playersThatCanOpenDoor.add(player);
+    };
+
+    public static final Action<Item, Player, Door> actionDisallowPlayerFromOpeningDoor = (item, player, door, data) -> {
+        door._playersThatCanOpenDoor.remove(player);
+    };
 
     public Door(String id, TransformNode parent) {
         super(id, parent);
@@ -64,7 +73,7 @@ public class Door extends AdventureGameObject {
 
     @Override
     public List<Interaction> possibleInteractions(final MeshNode meshNode, final Player player) {
-        if (!_isOpen) {
+        if (!_isOpen && _playersThatCanOpenDoor.contains(player)) {
             return Collections.singletonList(new Interaction(Interaction.InteractionType.Open, this, meshNode));
         }
         return Collections.emptyList();

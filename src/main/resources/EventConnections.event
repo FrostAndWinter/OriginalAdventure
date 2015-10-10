@@ -3,3 +3,7 @@ LeverToggled; lever; ToggleLight; greenTorchFlame
 LightToggled; blueTorchFlame, redTorchFlame, greenTorchFlame; CheckPuzzle; keyPuzzle
 PuzzleSolved; keyPuzzle; SetEnabled; key
 PuzzleUnsolved; keyPuzzle; SetDisabled; key
+
+//Connections for the key and door.
+PlayerPickedUpItem; key; AllowPlayerToOpenDoor; door
+PlayerDroppedItem; key; DisallowPlayerFromOpeningDoor; door
