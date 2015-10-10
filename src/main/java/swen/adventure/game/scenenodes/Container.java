@@ -32,10 +32,10 @@ public class Container extends AdventureGameObject {
     }
 
     private void setVisibilityOnContents() {
+        for (Item item : _items) {
+            item.setEnabled(false);
+        }
         if (_showTopItem) {
-            for (Item item : _items) {
-                item.setEnabled(false);
-            }
             this.peek().ifPresent(item -> item.setEnabled(true));
         }
     }

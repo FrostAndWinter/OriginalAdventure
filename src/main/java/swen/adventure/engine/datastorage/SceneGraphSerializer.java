@@ -110,9 +110,9 @@ public class SceneGraphSerializer {
 
     private Node serializeTransformNode(TransformNode transformNode, Node xmlParentNode) {
         Element xmlElement = createElementForNode(transformNode, xmlParentNode);
-        setAttribute("translation", transformNode.getTranslation(), Vector3.class, xmlElement);
-        setAttribute("rotation", transformNode.getRotation(), Quaternion.class, xmlElement);
-        setAttribute("scale", transformNode.getScale(), Vector3.class, xmlElement);
+        setAttribute("translation", transformNode.translation(), Vector3.class, xmlElement);
+        setAttribute("rotation", transformNode.rotation(), Quaternion.class, xmlElement);
+        setAttribute("scale", transformNode.scale(), Vector3.class, xmlElement);
         setAttribute("isDynamic", transformNode.isDynamic(), Boolean.class, xmlElement);
         return xmlElement;
     }

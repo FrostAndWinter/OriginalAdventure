@@ -145,6 +145,10 @@ public final class TransformNode extends SceneNode {
         return _rotation;
     }
 
+    public Vector3 scale() {
+        return _scale;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

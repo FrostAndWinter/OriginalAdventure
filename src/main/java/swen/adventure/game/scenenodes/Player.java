@@ -74,7 +74,7 @@ public class Player extends AdventureGameObject {
         final boolean[] canMove = {true};
         this.collisionNode().ifPresent(collisionNode -> {
             this.allNodesOfType(CollisionNode.class).stream()
-                    .filter(otherCollisionNode -> otherCollisionNode != collisionNode &&
+                    .filter(otherCollisionNode ->
                             collisionNode.isCollidingWith(otherCollisionNode))
                     .forEach(otherCollisionNode -> {
                 transformNode.setTranslation(startingTranslation);

@@ -42,7 +42,8 @@ public final class CollisionNode extends SceneNode {
      * @return Whether this node intersects with node.
      */
     public boolean isCollidingWith(CollisionNode node) {
-        return this.worldSpaceBoundingBox().intersectsWith(node.worldSpaceBoundingBox());
+        return node != this &&
+                this.worldSpaceBoundingBox().intersectsWith(node.worldSpaceBoundingBox());
     }
 
     /**

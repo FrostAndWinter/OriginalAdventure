@@ -12,11 +12,6 @@ import java.util.Optional;
  */
 public class Material {
 
-    //Format:
-
-//
-//    }
-
     public static final int NumFloats = 4 * 3; //3 vec4s.
     public static final int BufferSizeInBytes = 4 * NumFloats + 4; //4 bytes per float and one integer mask containing the boolean values.
 
