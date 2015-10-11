@@ -1,5 +1,8 @@
 package swen.adventure.engine.rendering;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 30/09/15.
  *
@@ -11,11 +14,20 @@ public enum TextureUnit {
     DiffuseColourUnit(1),
     SpecularColourUnit(2),
     SpecularityUnit(3),
-    NormalMapUnit(4);
+
+    //Units for deferred shading.
+    NormalMapUnit(4),
+    PositionUnit(5),
+    VertexNormalUnit(6),
+    TextureCoordinateUnit(7);
 
     public final int glUnit;
 
     TextureUnit(int glUnit) {
         this.glUnit = glUnit;
+    }
+
+    public static List<TextureUnit> deferredShadingTextureUnits() {
+        return Arrays.asList(DiffuseColourUnit, NormalMapUnit, PositionUnit, TextureCoordinateUnit);
     }
 }

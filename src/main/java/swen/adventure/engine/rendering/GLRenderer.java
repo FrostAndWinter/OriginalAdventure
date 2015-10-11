@@ -3,14 +3,10 @@ package swen.adventure.engine.rendering;
 import swen.adventure.engine.rendering.maths.Matrix3;
 import swen.adventure.engine.rendering.maths.Matrix4;
 import swen.adventure.engine.rendering.shaders.GaussianMaterialsNormalMapsShader;
-import swen.adventure.engine.rendering.shaders.GaussianPerObjectMaterialShader;
-import swen.adventure.engine.scenegraph.CameraNode;
 import swen.adventure.engine.scenegraph.Light;
 import swen.adventure.engine.scenegraph.MeshNode;
-import swen.adventure.engine.scenegraph.SceneNode;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.lwjgl.opengl.GL11.*;

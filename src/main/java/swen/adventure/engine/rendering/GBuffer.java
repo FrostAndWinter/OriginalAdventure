@@ -13,26 +13,11 @@ import static org.lwjgl.opengl.GL30.*;
  */
 public class GBuffer {
 
-    enum TextureType {
-        Position(0),
-        Diffuse(1),
-        Normal(2),
-        TextureCoordinate(3);
-
-        public final int glIndex;
-
-        TextureType(final int glIndex) {
-            this.glIndex = glIndex;
-        }
-    }
-
     private final int _frameBufferObject;
-    private final int[] _glTextures = new int[TextureType.values().length];
+    private final int[] _glTextures = new int[TextureUnit.deferredShadingTextureUnits().size()];
     private final int _depthTexture;
 
     public GBuffer(int width, int height) {
-
-        //this.setSize(width, height);
 
         // Create the FBO
         _frameBufferObject = glGenFramebuffers();
@@ -65,7 +50,7 @@ public class GBuffer {
         int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
         if (status != GL_FRAMEBUFFER_COMPLETE) {
-            System.err.println("FB error, status: 0x%x\n", Status);
+            System.err.printf("FB error, status: 0x%x\n", status);
         }
 
         // restore default FBO
@@ -80,8 +65,8 @@ public class GBuffer {
         glBindFramebuffer(GL_READ_FRAMEBUFFER, _frameBufferObject);
     }
 
-    void setReadBuffer(TextureType textureType)
+    void setReadBuffer(TextureUnit textureType)
     {
-        glReadBuffer(GL_COLOR_ATTACHMENT0 + textureType.glIndex);
+        glReadBuffer(GL_COLOR_ATTACHMENT0 + textureType.glUnit);
     }
 }

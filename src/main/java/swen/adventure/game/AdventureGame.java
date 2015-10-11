@@ -9,6 +9,7 @@ import swen.adventure.engine.network.Client;
 import swen.adventure.engine.network.DumbClient;
 import swen.adventure.engine.network.EventBox;
 import swen.adventure.engine.network.NetworkClient;
+import swen.adventure.engine.rendering.GLDeferredRenderer;
 import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.rendering.PickerRenderer;
 import swen.adventure.engine.rendering.maths.Quaternion;
@@ -29,7 +30,7 @@ import java.util.*;
 
 public class AdventureGame implements Game {
 
-    private GLRenderer _glRenderer;
+    private GLDeferredRenderer _glRenderer;
     private PickerRenderer _pickerRenderer;
     private PGraphics2D _pGraphics;
     private TransformNode _sceneGraph;
@@ -79,7 +80,7 @@ public class AdventureGame implements Game {
         }
 
         if (!Utilities.isHeadlessMode) {
-            _glRenderer = new GLRenderer(width, height);
+            _glRenderer = new GLDeferredRenderer(width, height);
             _pickerRenderer = new PickerRenderer();
         }
 
@@ -224,7 +225,7 @@ public class AdventureGame implements Game {
         }
         ui.setTooltip(tooltip);
 
-        ui.drawUI(_pGraphics, _glRenderer);
+        //ui.drawUI(_pGraphics, _glRenderer);
     }
 
     /**

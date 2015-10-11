@@ -20,13 +20,13 @@ import static org.lwjgl.opengl.GL31.*;
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 26/09/15.
  *
- * GaussianPerObjectMaterialShader describes a shader that implements materials (set via a uniform),
+ * PerObjectMaterialShader describes a shader that implements materials (set via a uniform),
  * gaussian specular shading, diffuse shading, and textures for specularity, specular colour,
  * diffuse colour, and ambient colour.
  * It also provides functionality to repeat a texture in the U or V direction.
  * Up to 32 light sources are supported.
  */
-public class GaussianPerObjectMaterialShader extends ShaderProgram implements MaterialShader {
+public class PerObjectMaterialShader extends ShaderProgram implements MaterialShader {
     private final int _modelToCameraMatrixUniformRef;
     private final int _cameraToClipMatrixUniformRef;
     private final int _normalModelToCameraMatrixUniformRef;
@@ -58,7 +58,7 @@ public class GaussianPerObjectMaterialShader extends ShaderProgram implements Ma
         return null;
     }
 
-    public GaussianPerObjectMaterialShader(String vertexShaderText, String fragmentShaderText) {
+    public PerObjectMaterialShader(String vertexShaderText, String fragmentShaderText) {
         super(vertexShaderText, fragmentShaderText);
         //Retrieve the uniforms
         _modelToCameraMatrixUniformRef = glGetUniformLocation(this.glProgramRef(), "modelToCameraMatrixUniform");
@@ -105,7 +105,7 @@ public class GaussianPerObjectMaterialShader extends ShaderProgram implements Ma
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
     }
 
-    public GaussianPerObjectMaterialShader() {
+    public PerObjectMaterialShader() {
         this(vertexShaderText(), fragmentShaderText());
     }
 
