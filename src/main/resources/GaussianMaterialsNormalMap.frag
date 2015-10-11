@@ -4,7 +4,7 @@ smooth in vec3 vertexNormal;
 smooth in vec2 textureCoordinate;
 smooth in vec3 cameraSpacePosition;
 
-smooth in mat3 cameraToTangentSpaceMatrix;
+smooth in mat3 tangentToCameraSpaceMatrix;
 
 out vec4 outputColor;
 
@@ -109,18 +109,12 @@ float ComputeAngleNormalHalf(in PerLightData lightData, out float cosAngIncidenc
             lightData.positionInCameraSpace.xyz, lightData.lightIntensity.w, lightDirection);
         lightIntensity = attenuation * lightData.lightIntensity.rgb;
     }
-    vec3 viewDirection;
+    vec3 viewDirection = normalize(-cameraSpacePosition);
     vec3 surfaceNormal;
     if (useNormalMap()) {
-
-        lightDirection = cameraToTangentSpaceMatrix * lightDirection;
-        surfaceNormal = normalize(texture(normalMapSampler, textureCoordinate).rgb*2.0 - 1.0);
-        viewDirection = normalize(cameraToTangentSpaceMatrix * -cameraSpacePosition);
-
-
+        surfaceNormal = normalize(tangentToCameraSpaceMatrix * (texture(normalMapSampler, textureCoordinate).rgb*2.0 - 1.0));
     } else {
         surfaceNormal = normalize(vertexNormal);
-        viewDirection = normalize(-cameraSpacePosition);
     }
 
     float cosAngIncidenceTemp = dot(surfaceNormal, lightDirection);
@@ -171,4 +165,5 @@ void main() {
     totalLighting = totalLighting / maxIntensity;
 
     outputColor = vec4(totalLighting, diffuse.a);
+
 }
