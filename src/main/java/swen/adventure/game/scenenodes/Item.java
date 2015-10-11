@@ -28,13 +28,22 @@ public class Item extends AdventureGameObject {
         this.description = Optional.ofNullable(description);
     }
 
+    /**
+     * Move this item to the given container. Note that this will also remove it from
+     * the previous container it was in.
+     *
+     * @param container the container to move this item to
+     * @throws NullPointerException if the given container is null
+     */
     public void moveToContainer(Container container) {
-        _containingContainer.ifPresent(Container::pop);
-
-        if (container != null) {
-            container.push(this);
-            _containingContainer = Optional.of(container);
+        if (container == null) {
+            throw new NullPointerException("Cannot move to a null container");
         }
+
+        _containingContainer.ifPresent(Container::pop);
+        _containingContainer = Optional.of(container);
+
+        container.push(this);
     }
 
     @Override
@@ -60,5 +69,9 @@ public class Item extends AdventureGameObject {
                 this.eventPlayerPickedUpItem.trigger(player, Collections.emptyMap());
                 break;
         }
+    }
+
+    public Optional<Container> containingContainer() {
+        return _containingContainer;
     }
 }

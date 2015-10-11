@@ -3,6 +3,8 @@ package swen.adventure.game;
 import processing.opengl.PGraphics2D;
 import swen.adventure.Settings;
 import swen.adventure.engine.*;
+import swen.adventure.engine.animation.AnimableProperty;
+import swen.adventure.engine.animation.Animation;
 import swen.adventure.engine.datastorage.EventConnectionParser;
 import swen.adventure.engine.datastorage.SceneGraphParser;
 import swen.adventure.engine.network.Client;
@@ -219,7 +221,10 @@ public class AdventureGame implements Game {
                     character = _keyInput.characterForEvent(_keyInput.eventSecondaryAction);
                     break;
             }
-            tips.add(interaction.interactionMessage(_player, character));
+            String interactionString = interaction.interactionMessage(_player, character);
+            if (interactionString != null) {
+                tips.add(interactionString);
+            }
         }
 
         ui.setTooltip(tips);

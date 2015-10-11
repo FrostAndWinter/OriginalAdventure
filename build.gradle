@@ -14,6 +14,7 @@ repositories {
 buildscript {
     repositories {
         mavenCentral()
+        jcenter()
     }
 
     dependencies {
@@ -29,6 +30,7 @@ project.ext.lwjglVersion = "3.0.0a"
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile "org.mockito:mockito-core:1.10.19"
 }
 
 jacocoTestReport {
