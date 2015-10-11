@@ -15,7 +15,6 @@ import java.util.Optional;
  */
 public class Item extends AdventureGameObject {
 
-    public final String name;
     public final Optional<String> description;
 
     private Optional<Container> _containingContainer = Optional.empty();
@@ -25,8 +24,7 @@ public class Item extends AdventureGameObject {
 
     /** An Item's parent transform must directly bring the item into world space (including centering the mesh at the origin); any extra translations must be done in a separate transform. */
     public Item(String id, TransformNode parent, String name, String description) {
-        super(id, parent);
-        this.name = name;
+        super(id, parent, name);
         this.description = Optional.ofNullable(description);
     }
 

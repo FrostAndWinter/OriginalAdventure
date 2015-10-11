@@ -206,17 +206,21 @@ public class AdventureGame implements Game {
             _glRenderer.render(meshNodesSortedByZ, _sceneGraph.allNodesOfType(Light.class), cameraNode.worldToNodeSpaceTransform(), cameraNode.fieldOfView(), cameraNode.hdrMaxIntensity());
         });
 
-        for (Interaction.InteractionType t : _possibleInteractionsForStep.keySet()) {
-            if (_possibleInteractionsForStep.containsKey(t)) {
-                Interaction i = _possibleInteractionsForStep.get(t);
-
-                ui.setTooltip(String.format("Press %s to %s %s", "{{key}}", i.interactionType.toString(), i.gameObject.id));
+        String tooltip = "";
+        for (Interaction interaction : _possibleInteractionsForStep.values()) {
+            Interaction.ActionType actionType = interaction.interactionType.actionType;
+            Character character = null;
+            switch (actionType) {
+                case Primary:
+                    character = _keyInput.characterForEvent(_keyInput.eventPrimaryAction);
+                    break;
+                case Secondary:
+                    character = _keyInput.characterForEvent(_keyInput.eventSecondaryAction);
+                    break;
             }
+            tooltip += interaction.interactionMessageForObjectAndButton(_player, character) + "\n";
         }
-
-        if (_possibleInteractionsForStep.isEmpty()) {
-            ui.removeTooltip();
-        }
+        ui.setTooltip(tooltip);
 
         ui.drawUI(_pGraphics, _glRenderer);
     }

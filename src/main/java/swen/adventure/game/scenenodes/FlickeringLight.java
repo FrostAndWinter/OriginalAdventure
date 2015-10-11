@@ -55,7 +55,7 @@ public class FlickeringLight extends AdventureGameObject {
     public FlickeringLight(final String id, final TransformNode parent,
                            final String meshName, final String meshDirectory,
                            final Vector3 colour, final float intensity, final Light.LightFalloff falloff) {
-        super(id, parent);
+        super(id, parent, id);
 
         _baseIntensity = intensity;
         _lightIntensity = new AnimableProperty(intensity);

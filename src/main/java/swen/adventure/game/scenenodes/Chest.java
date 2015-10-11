@@ -26,7 +26,7 @@ public class Chest extends AdventureGameObject {
     private AnimableProperty _lidRotationProgress = new AnimableProperty(ClosedAngle);
 
     public Chest(String id, TransformNode parent) {
-        super(id, parent);
+        super(id, parent, "chest");
 
         final String chestMeshId = id + "ChestMesh";
 
@@ -97,7 +97,7 @@ public class Chest extends AdventureGameObject {
         possibleInteractions.add(new Interaction(this.isOpen() ? Interaction.InteractionType.Close : Interaction.InteractionType.Open, this, meshNode));
 
         container().ifPresent(container -> {
-            if (!container.isFull() && this.isOpen()) {
+            if (!container.isFull() && this.isOpen() && player.inventory().selectedItem().isPresent()) {
                 possibleInteractions.add(new Interaction(Interaction.InteractionType.PlaceIn, this, meshNode));
             }
         });

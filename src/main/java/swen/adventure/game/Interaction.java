@@ -5,10 +5,7 @@ import swen.adventure.game.scenenodes.AdventureGameObject;
 import swen.adventure.game.scenenodes.Item;
 import swen.adventure.game.scenenodes.Player;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 10/10/15.
@@ -21,22 +18,30 @@ public final class Interaction {
     }
 
     public enum InteractionType {
-        PickUp,
-        PlaceIn,
-        Open,
-        Close,
-        Pull;
+        PickUp(ActionType.Primary),
+        PlaceIn(ActionType.Secondary),
+        Open(ActionType.Primary),
+        Close(ActionType.Primary),
+        Pull(ActionType.Primary);
 
+        public final ActionType actionType;
+
+        InteractionType(ActionType actionType) {
+            this.actionType = actionType;
+        }
+
+        private static EnumMap<ActionType, List<InteractionType>> _actionTypesToInteractionTypes = new EnumMap<>(ActionType.class);
+        static {
+            for (InteractionType interactionType : InteractionType.values()) {
+                List<InteractionType> interactionTypes = _actionTypesToInteractionTypes.get(interactionType.actionType);
+                if (interactionTypes == null) { interactionTypes = new ArrayList<>(); _actionTypesToInteractionTypes.put(interactionType.actionType, interactionTypes); }
+                interactionTypes.add(interactionType);
+            }
+
+        }
 
         public static List<InteractionType> typesForActionType(ActionType actionType) {
-            switch (actionType) {
-                case Primary:
-                    return Arrays.asList(PickUp, Open, Close, Pull);
-                case Secondary:
-                    return Collections.singletonList(PlaceIn);
-                default:
-                    return Collections.emptyList();
-            }
+            return _actionTypesToInteractionTypes.getOrDefault(actionType, Collections.emptyList());
         }
     }
 
@@ -58,21 +63,24 @@ public final class Interaction {
         this.gameObject.eventInteractionEnded.trigger(player, Collections.singletonMap(EventDataKeys.Interaction, this));
     }
 
-    public String interactionMessageForObjectAndButton(Player player, String buttonName) {
+    public String interactionMessageForObjectAndButton(Player player, Character buttonName) {
         switch (this.interactionType) {
             case PickUp:
-                return String.format("Press %s to pick up %s", buttonName, ((Item) this.gameObject).name);
-                break;
+                return String.format("Press %c to pick up %s", buttonName, this.gameObject.name);
             case PlaceIn:
-
-                break;
+                final String[] message = {null};
+                player.inventory().selectedItem().ifPresent(item -> {
+                    message[0] = String.format("Press %s to place %s in %s", buttonName, item.name, this.gameObject.name);
+                });
+                return message[0];
             case Open:
-                break;
+                return String.format("Press %c to open %s", buttonName, this.gameObject.name);
             case Close:
-                break;
+                return String.format("Press %c to close %s", buttonName, this.gameObject.name);
             case Pull:
-                break;
+                return String.format("Press %c to pull %s", buttonName, this.gameObject.name);
         }
+        return null; //Should never happen if switch statement is exhaustive.
     }
 
     @Override

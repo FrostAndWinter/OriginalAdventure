@@ -178,7 +178,7 @@ public class InventoryComponent extends UIComponent {
 
                             transformNode.setTranslation(new Vector3(dx + w / 2, dy + h / 2 + this.height * scaleY * 3, 0.f));
                             transformNode.setScale(new Vector3(scale, scale, 1.f));
-                        } else {
+                        } else if (!_selectedItemIsZoomed) {
                             float xScale = (boxSize) * scaleX / meshMaxDimension;
                             float yScale = (boxSize) * scaleY / meshMaxDimension;
 
