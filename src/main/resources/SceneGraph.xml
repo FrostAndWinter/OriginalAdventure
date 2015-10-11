@@ -36,7 +36,7 @@
             <Container id="chestContainer" showTopItem="true" selectionObject="chest"/>
 
             <TransformNode id="noteTransform" scale="10.0, 10.0, 10.0" isDynamic="true">
-                <Note id="note" inContainer="container"/>
+                <Note id="note" inContainer="chestContainer"/>
             </TransformNode>
         </TransformNode>
 
