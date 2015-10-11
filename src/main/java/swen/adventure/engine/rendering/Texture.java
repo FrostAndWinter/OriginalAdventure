@@ -141,7 +141,7 @@ public final class Texture {
 
             STBImage.stbi_set_flip_vertically_on_load(1);
 
-            ByteBuffer image = STBImage.stbi_load_from_memory(encodedImageDataBuffer, widthBuffer, heightBuffer, numPixelComponentsBuffer, 0);
+            ByteBuffer image = STBImage.stbi_load_from_memory(encodedImageDataBuffer, widthBuffer, heightBuffer, numPixelComponentsBuffer, 4);
 
             if (image == null) {
                 throw new RuntimeException("Error loading image with name " + fileName + ": " + STBImage.stbi_failure_reason());
