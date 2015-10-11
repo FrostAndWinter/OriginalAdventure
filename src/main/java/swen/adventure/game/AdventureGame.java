@@ -213,7 +213,7 @@ public class AdventureGame implements Game {
             if (_possibleInteractionsForStep.containsKey(t)) {
                 Interaction i = _possibleInteractionsForStep.get(t);
 
-                tips.add(String.format("Press %s to %s %s", "{{key}}", i.interactionType.toString(), i.gameObject.id));
+                tips.add(i.interactionMessageForObjectAndButton(_player, 'q'));
             }
         }
 
