@@ -1,5 +1,7 @@
 package swen.adventure.engine.scenegraph;
 
+import javafx.scene.Scene;
+import swen.adventure.engine.Action;
 import swen.adventure.engine.Event;
 import swen.adventure.engine.datastorage.BundleObject;
 import swen.adventure.engine.datastorage.BundleSerializable;
@@ -35,6 +37,14 @@ public abstract class SceneNode implements BundleSerializable {
     public final String id;
     protected Map<String, SceneNode> _idsToNodesMap;
     protected Map<Class<? extends SceneNode>, List<? extends SceneNode>> _nodesOfTypeMap;
+
+    public static Action<SceneNode, SceneNode, SceneNode> actionSetEnabled = (ignored, ignored1, sceneNode, data) -> {
+        sceneNode.setEnabled(true);
+    };
+
+    public Action<SceneNode, SceneNode, SceneNode> actionSetDisabled = (ignored, ignored1, sceneNode, data) -> {
+        sceneNode.setEnabled(false);
+    };
 
     @Override
     public BundleObject toBundle() {
@@ -223,7 +233,7 @@ public abstract class SceneNode implements BundleSerializable {
         _parent = Optional.ofNullable(newParent);
     }
 
-    public Set<SceneNode> getChildren() {
+    public Set<SceneNode> children() {
         return Collections.unmodifiableSet(_childNodes);
     }
 
@@ -231,7 +241,9 @@ public abstract class SceneNode implements BundleSerializable {
         return _isEnabled;
     }
 
+    /** Recursively sets isEnabled on this node's children and itself. */
     public void setEnabled(boolean isEnabled) {
+        this.children().forEach(node -> node.setEnabled(isEnabled));
         _isEnabled = isEnabled;
     }
 

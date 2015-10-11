@@ -1,6 +1,5 @@
 package swen.adventure.engine.datastorage;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -81,7 +80,7 @@ public class SceneGraphSerializer {
         else
             throw new RuntimeException("Don't recognise node " + sceneNode);
 
-        sceneNode.getChildren()
+        sceneNode.children()
                 .forEach(node -> serializeSceneNode(node, serializedNode));
     }
 

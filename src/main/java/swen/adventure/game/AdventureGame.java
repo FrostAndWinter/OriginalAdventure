@@ -3,6 +3,8 @@ package swen.adventure.game;
 import processing.opengl.PGraphics2D;
 import swen.adventure.Settings;
 import swen.adventure.engine.*;
+import swen.adventure.engine.animation.AnimableProperty;
+import swen.adventure.engine.animation.Animation;
 import swen.adventure.engine.datastorage.EventConnectionParser;
 import swen.adventure.engine.datastorage.SceneGraphParser;
 import swen.adventure.engine.network.Client;
@@ -14,9 +16,6 @@ import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.rendering.PickerRenderer;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.scenegraph.*;
-import swen.adventure.engine.ui.color.Color;
-import swen.adventure.engine.ui.components.*;
-import swen.adventure.engine.ui.layoutmanagers.LinearLayout;
 import swen.adventure.game.input.AdventureGameKeyInput;
 import swen.adventure.game.input.AdventureGameMouseInput;
 import swen.adventure.game.scenenodes.*;
@@ -99,6 +98,8 @@ public class AdventureGame implements Game {
         _keyInput.eventSecondaryActionEnded.addAction(this, AdventureGame.secondaryActionEnded);
 
         _keyInput.eventHideShowInventory.addAction(ui.getInventory(), InventoryComponent.actionToggleZoomItem);
+
+        _keyInput.eventHideShowControlls.addAction(ui, UI.actionToggleControlls);
 
         // get the possible interactions a player can make this step
         Event.EventSet<AdventureGameObject, Player> interactionEvents = (Event.EventSet<AdventureGameObject, Player>) Event.eventSetForName("eventShouldProvideInteraction");
@@ -209,7 +210,7 @@ public class AdventureGame implements Game {
             _glRenderer.render(meshNodesSortedByZ, _sceneGraph.allNodesOfType(Light.class), cameraNode.worldToNodeSpaceTransform(), cameraNode.fieldOfView(), cameraNode.hdrMaxIntensity());
         });
 
-        String tooltip = "";
+        ArrayList<String> tips = new ArrayList<>();
         for (Interaction interaction : _possibleInteractionsForStep.values()) {
             Interaction.ActionType actionType = interaction.interactionType.actionType;
             Character character = null;
@@ -221,9 +222,13 @@ public class AdventureGame implements Game {
                     character = _keyInput.characterForEvent(_keyInput.eventSecondaryAction);
                     break;
             }
-            tooltip += interaction.interactionMessageForObjectAndButton(_player, character) + "\n";
+            String interactionString = interaction.interactionMessage(_player, character);
+            if (interactionString != null) {
+                tips.add(interactionString);
+            }
         }
-        ui.setTooltip(tooltip);
+
+        ui.setTooltip(tips);
 
         //ui.drawUI(_pGraphics, _glRenderer);
     }

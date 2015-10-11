@@ -63,7 +63,7 @@ public final class Interaction {
         this.gameObject.eventInteractionEnded.trigger(player, Collections.singletonMap(EventDataKeys.Interaction, this));
     }
 
-    public String interactionMessageForObjectAndButton(Player player, Character buttonName) {
+    public String interactionMessage(Player player, Character buttonName) {
         switch (this.interactionType) {
             case PickUp:
                 return String.format("Press %c to pick up %s", buttonName, this.gameObject.name);
@@ -80,7 +80,7 @@ public final class Interaction {
             case Pull:
                 return String.format("Press %c to pull %s", buttonName, this.gameObject.name);
         }
-        return null; //Should never happen if switch statement is exhaustive.
+        throw new RuntimeException("Interaction type not implemented for message: " + interactionType); //Should never happen if switch statement is exhaustive.
     }
 
     @Override

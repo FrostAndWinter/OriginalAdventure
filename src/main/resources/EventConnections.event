@@ -3,8 +3,8 @@ LeverToggled; greenLightLever; ToggleLight; greenTorchFlame
 LeverToggled; redLightLever; ToggleLight; redTorchFlame
 LeverToggled; blueLightLever; ToggleLight; blueTorchFlame
 LightToggled; blueTorchFlame, redTorchFlame, greenTorchFlame; CheckPuzzle; keyPuzzle
-PuzzleSolved; keyPuzzle; SetEnabled; key
-PuzzleUnsolved; keyPuzzle; SetDisabled; key
+PuzzleSolved; keyPuzzle; SetEnabled; keyLocationT
+PuzzleUnsolved; keyPuzzle; SetDisabled; keyLocationT
 
 //Make the lever go back up when interaction ends.
 InteractionEnded; greenLightLever; MoveUp; greenLightLever
