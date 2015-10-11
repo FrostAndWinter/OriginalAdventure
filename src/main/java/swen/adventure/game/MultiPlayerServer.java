@@ -1,12 +1,13 @@
 package swen.adventure.game;
 
 import swen.adventure.engine.Event;
+import swen.adventure.engine.Utilities;
+import swen.adventure.engine.datastorage.EventConnectionParser;
 import swen.adventure.engine.datastorage.SceneGraphParser;
 import swen.adventure.engine.network.EventBox;
 import swen.adventure.engine.network.NetworkServer;
 import swen.adventure.engine.network.Server;
 import swen.adventure.engine.rendering.maths.BoundingBox;
-import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
 import swen.adventure.game.scenenodes.Player;
@@ -14,6 +15,7 @@ import swen.adventure.game.scenenodes.SpawnNode;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -31,6 +33,15 @@ public class MultiPlayerServer implements Runnable {
             System.out.println("Loading map");
             root = SceneGraphParser.parseSceneGraph(new File(map));
             System.out.println("Completed loading map");
+            System.out.println("Setting up event connections");
+            // setup event connections
+            try {
+                List<EventConnectionParser.EventConnection> connections = EventConnectionParser.parseFile(Utilities.readLinesFromFile(Utilities.pathForResource("EventConnections", "event")));
+                EventConnectionParser.setupConnections(connections, root);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.out.println("Completed event connections");
             server.start(port);
             System.out.println("Accepting connections");
         } catch (IOException ex) {
@@ -47,33 +58,29 @@ public class MultiPlayerServer implements Runnable {
             EventBox event = isEvent.get();
 
             GameObject source = (GameObject)root.nodeWithID(event.sourceId).get();
-
-            if (event.eventName.equals("playerConnected")) {
-                server.sendSnapShot(event.from, root);
-                createPlayer(event.targetId);
-
-                server.sendAll(event, event.from);
-                continue;
-            }
-
-            if (event.eventName.equals("eventPlayerMoved")) {
-                Player target = (Player)root.nodeWithID(event.targetId).get();
-                target.parent().get().setTranslation((Vector3) event.eventData.get(EventDataKeys.Location));
-                server.sendAll(event, event.from);
-                continue;
-            }
             try {
-                GameObject target = (GameObject) root.nodeWithID(event.targetId).get();
-                Event e = target.eventWithName(event.eventName);
-                e.trigger(source, event.eventData);
-
+                switch (event.eventName) {
+                    case "playerConnected":
+                        server.sendSnapShot(event.from, root);
+                        createPlayer(event.targetId);
+                        break;
+                    case "eventPlayerMoved":
+                        Player playerTarget = (Player)root.nodeWithID(event.targetId).get();
+                        playerTarget.parent().get().setTranslation((Vector3) event.eventData.get(EventDataKeys.Location));
+                        break;
+                    default:
+                        GameObject target = (GameObject) root.nodeWithID(event.targetId).get();
+                        Event e = target.eventWithName(event.eventName);
+                        e.trigger(source, event.eventData);
+                        break;
+                }
                 server.sendAll(event, event.from);
             } catch (Error ex) {
                 System.out.println("Error occurred in Multilayer server: " + ex.toString());
             }
 
             try {
-                Thread.sleep(10);
+                Thread.sleep(1);
             } catch (InterruptedException e1) {
                 e1.printStackTrace();
             }
