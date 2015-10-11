@@ -33,7 +33,7 @@ public class Door extends AdventureGameObject {
     };
 
     public Door(String id, TransformNode parent) {
-        super(id, parent);
+        super(id, parent, "door");
 
         final String frameId = id + "DoorFrame";
         final String bodyTransformId = id + "DoorBody";

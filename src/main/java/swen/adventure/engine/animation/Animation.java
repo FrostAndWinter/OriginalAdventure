@@ -26,6 +26,7 @@ public class Animation {
     private AnimationCurve _curve = AnimationCurve.Linear;
 
     public final Event<Animation, Animation> eventAnimationDidComplete = new Event<>("eventAnimationDidComplete", this);
+    public final Event<Animation, Animation> eventAnimationDidCancel = new Event<>("eventAnimationDidCancel", this);
 
     public Animation(AnimableProperty animableProperty, AnimationCurve curve, double duration, double delay, double toValue, boolean repeats) {
         _animableProperty = animableProperty;
@@ -96,16 +97,22 @@ public class Animation {
     protected void update(double currentTime) {
         double value = this.currentValue(currentTime);
 
-        _animableProperty.setValueFromAnimation((float)value);
+        _animableProperty.setValueFromAnimation(this, (float)value);
 
         if (!_repeats && value == _finalValue) {
-            _complete = true;
+            this.setComplete(true);
+            this.eventAnimationDidComplete.trigger(this, Collections.emptyMap());
         }
     }
 
-    /** Stops the animation so it ceases to update any properties. */
-    public void stop() {
-        _complete = true;
+    /** Cancels the animation so it ceases to update any properties. */
+    public void cancel() {
+        this.setComplete(true);
+        this.eventAnimationDidCancel.trigger(this, Collections.emptyMap());
+    }
+
+    private void setComplete(boolean complete) {
+        _complete = complete;
     }
 
     /** @return Whether the animation is still in progress. */
@@ -116,14 +123,6 @@ public class Animation {
     /** Stops the animation from repeating again after this cycle. */
     public void stopRepeating() {
         _shouldStopRepeating = true;
-    }
-
-    /**
-     * Cancels the animation, triggers that it's complete, and removes it from the animation system.
-     */
-    protected void destroy() {
-        _complete = true;
-        this.eventAnimationDidComplete.trigger(this, Collections.emptyMap());
     }
 
 }

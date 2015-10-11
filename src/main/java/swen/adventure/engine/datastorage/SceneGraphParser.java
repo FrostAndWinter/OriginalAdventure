@@ -200,6 +200,7 @@ public class SceneGraphParser {
         Vector3 colour = getAttribute("colour", xmlNode, ParserManager.getFromStringFunction(Vector3.class), Vector3.one);
         float intensity = getAttribute("intensity", xmlNode, Float::parseFloat, 1.f);
         Light.LightFalloff falloff = getAttribute("falloff", xmlNode, Light.LightFalloff::fromString, Light.LightFalloff.Quadratic);
+        boolean isOn = getAttribute("isOn", xmlNode, Boolean::valueOf, true);
 
         FlickeringLight flickeringLight = (FlickeringLight) parent.findNodeWithIdOrCreate(id, () ->
               new FlickeringLight(id, parent, fileName, directory, colour, intensity, falloff)
@@ -209,6 +210,7 @@ public class SceneGraphParser {
         flickeringLight.setColour(colour);
         float intensityVariation = getAttribute("intensityVariation", xmlNode, Float::parseFloat, 0.f);
         flickeringLight.setIntensityVariation(intensityVariation);
+        flickeringLight.setOn(isOn);
 
         flickeringLight.setParent(parent);
 

@@ -1,0 +1,11 @@
+newmtl Top
+map_Ka elbrus_top.jpg
+
+newmtl Left
+map_Ka elbrus_left.jpg
+
+newmtl Right
+map_Ka elbrus_right.jpg
+
+newmtl Bottom
+map_Ka elbrus_bottom.jpg

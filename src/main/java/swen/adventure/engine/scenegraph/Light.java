@@ -53,7 +53,7 @@ public final class Light extends SceneNode {
 
     private static final int MaxLights = 32;
     private static final int PerLightDataSize = 32;
-    private static final float LightAttenuationFactor = 0.00006f;
+    private static final float LightAttenuationFactor = 0.00002f;
 
     public static final int BufferSizeInBytes = Vector4.sizeInBytes + //ambient light
             4 + //num dynamic lights
@@ -115,16 +115,42 @@ public final class Light extends SceneNode {
         return new Light(id, parent, isDynamic, lightType, colour, intensity, direction, lightFalloff);
     }
 
+    /**
+     * Creates a new ambient light.
+     * @param id The light's id.
+     * @param parent The light's parent.
+     * @param colour The light's colour. This is normalised, and then intensity is multiplied by its magnitude.
+     * @param intensity The light's intensity.
+     * @return A new light.
+     */
     public static Light createAmbientLight(final String id, final TransformNode parent, final Vector3 colour, final float intensity) {
         return new Light(id, parent, false, LightType.Ambient, colour, intensity, Optional.empty(), LightFalloff.None);
     }
 
+    /**
+     * Creates a new directional light.
+     * @param id The light's id.
+     * @param parent The light's parent.
+     * @param colour The light's colour. This is normalised, and then intensity is multiplied by its magnitude.
+     * @param intensity The light's intensity.
+     * @param fromDirection The direction in the world from which the light is coming.
+     * @return A new directional light.
+     */
     public static Light createDirectionalLight(final String id, final TransformNode parent,
                                                final Vector3 colour, final float intensity,
                                                final Vector3 fromDirection) {
         return new Light(id, parent, false, LightType.Directional, colour, intensity, Optional.of(fromDirection), LightFalloff.None);
     }
 
+    /**
+     * Creates a new point light.
+     * @param id The light's id.
+     * @param parent The light's parent.
+     * @param colour The light's colour. This is normalised, and then intensity is multiplied by its magnitude.
+     * @param intensity The light's intensity.
+     * @param falloff The light's falloff, indicating how quickly the light's intensity attenuates over distance. Can be None, Linear, or Quadratic.
+     * @return A new point light.
+     */
     public static Light createPointLight(final String id, final TransformNode parent,
                                                final Vector3 colour, final float intensity,
                                                final LightFalloff falloff) {
@@ -163,6 +189,11 @@ public final class Light extends SceneNode {
         return this._colour.multiplyScalar(_intensity);
     }
 
+    /**
+     * Adds the data for this light to a specified buffer, transforming its position using worldToCameraMatrix.
+     * @param buffer The byte buffer to add the light data to.
+     * @param worldToCameraMatrix The matrix to use in transforming this light's position/direction into world space.
+     */
     private void addLightDataToBuffer(ByteBuffer buffer, Matrix4 worldToCameraMatrix) {
         if (this.type == LightType.Ambient) {
             throw new RuntimeException("Ambient light with id " + id + " should not be converted to a ByteBuffer.\n " +

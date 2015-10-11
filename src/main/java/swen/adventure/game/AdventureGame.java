@@ -128,6 +128,7 @@ public class AdventureGame implements Game {
      * @param actionType The action type to perform the interactions for.
      */
     private void performInteractions(Interaction.ActionType actionType) {
+        this.endInteractions(actionType);
         List<Interaction.InteractionType> interactionTypes = Interaction.InteractionType.typesForActionType(actionType);
 
         interactionTypes.stream()
@@ -144,6 +145,7 @@ public class AdventureGame implements Game {
         if (interaction != null) {
             interaction.interactionEndedByPlayer(_player);
         }
+        _interactionInProgressForActionType.put(actionType, null);
     }
 
     private void setupUI(int width, int height) {
@@ -206,17 +208,16 @@ public class AdventureGame implements Game {
             _glRenderer.render(meshNodesSortedByZ, _sceneGraph.allNodesOfType(Light.class), cameraNode.worldToNodeSpaceTransform(), cameraNode.fieldOfView(), cameraNode.hdrMaxIntensity());
         });
 
+        ArrayList<String> tips = new ArrayList<>();
         for (Interaction.InteractionType t : _possibleInteractionsForStep.keySet()) {
             if (_possibleInteractionsForStep.containsKey(t)) {
                 Interaction i = _possibleInteractionsForStep.get(t);
 
-                ui.setTooltip(String.format("Press %s to %s %s", "{{key}}", i.interactionType.toString(), i.gameObject.id));
+                tips.add(i.interactionMessageForObjectAndButton(_player, 'q'));
             }
         }
 
-        if (_possibleInteractionsForStep.isEmpty()) {
-            ui.removeTooltip();
-        }
+        ui.setTooltip(tips);
 
         ui.drawUI(_pGraphics, _glRenderer);
     }

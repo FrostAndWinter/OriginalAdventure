@@ -30,10 +30,12 @@ public class AdventureGameObject extends GameObject {
     public final Event<AdventureGameObject, Player> eventShouldProvideInteraction = new Event<>("eventShouldProvideInteraction", this);
     public final Event<AdventureGameObject, Player> eventInteractionEnded = new Event<>("eventInteractionEnded", this);
 
+    public final String name;
     private Optional<Container> _container = Optional.empty();
 
-    public AdventureGameObject(final String id, final TransformNode parent) {
+    public AdventureGameObject(final String id, final TransformNode parent, final String name) {
         super(id, parent);
+        this.name = name;
     }
 
     /**

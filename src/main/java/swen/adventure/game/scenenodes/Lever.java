@@ -34,7 +34,7 @@ public class Lever extends AdventureGameObject {
     private AnimableProperty _leverRotationProgress = new AnimableProperty(0);
 
     public Lever(String id, TransformNode parent) {
-        super(id, parent);
+        super(id, parent, "lever");
 
         final String leverBaseMeshId = id + "LeverBase";
         final String leverHingeId = id + "LeverHinge";

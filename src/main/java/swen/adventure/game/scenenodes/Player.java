@@ -41,7 +41,7 @@ public class Player extends AdventureGameObject {
     public final Event<Player, Player> eventPlayerMoved = new Event<>("eventPlayerMoved", this);
 
     public Player(String id, TransformNode parent) {
-        super(id, parent);
+        super(id, parent, id);
 
         this.setContainer(new Inventory(this));
 

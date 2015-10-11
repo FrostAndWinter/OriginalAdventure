@@ -7,6 +7,7 @@ import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.game.EventDataKeys;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class AdventureGameKeyInput extends KeyInput {
 
@@ -67,4 +68,32 @@ public class AdventureGameKeyInput extends KeyInput {
             }});
         }
     });
+
+    /**
+     * Given a particular event, finds the character to press to trigger that event by searching through the key mappings.
+     * @param event The event to look for.
+     * @return The character to press in order to trigger that event.
+     */
+    public final Character characterForEvent(Event<KeyInput, KeyInput> event) {
+
+        for (Map.Entry<Character, Event<KeyInput, KeyInput>> entry : this.onPressMappings.entrySet()) {
+            if (entry.getValue() == event) {
+                return entry.getKey();
+            }
+        }
+
+        for (Map.Entry<Character, Event<KeyInput, KeyInput>> entry : this.onHeldMappings.entrySet()) {
+            if (entry.getValue() == event) {
+                return entry.getKey();
+            }
+        }
+
+        for (Map.Entry<Character, Event<KeyInput, KeyInput>> entry : this.onReleasedMappings.entrySet()) {
+            if (entry.getValue() == event) {
+                return entry.getKey();
+            }
+        }
+
+        return null;
+    }
 }

@@ -11,6 +11,8 @@ import java.util.function.Function;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 15/09/15.
+ *
+ * A TransformNode represents a transform between some local space and world space.
  */
 public final class TransformNode extends SceneNode {
     private Vector3 _translation;
@@ -23,6 +25,13 @@ public final class TransformNode extends SceneNode {
     private Matrix4 _nodeToWorldTransform; //formed by translating, scaling, then rotating.
     private Matrix4 _worldToNodeTransform;
 
+    /**
+     * Constructs a new root transform node with the specified rotation, translation and scale.
+     * @param id The id of the transform.
+     * @param translation The translation, in its parent's coordinate system, of this node.
+     * @param rotation The rotation of this transform about its own axis.
+     * @param scale The scale of this object in relation to its own axes, before rotation.
+     */
     public TransformNode(final String id, Vector3 translation, Quaternion rotation, Vector3 scale) {
         super(id);
         _translation = Objects.requireNonNull(translation);
@@ -30,6 +39,14 @@ public final class TransformNode extends SceneNode {
         _scale = Objects.requireNonNull(scale);
     }
 
+    /**
+     * Constructs a new transform node with the specified rotation, translation and scale.
+     * @param id The id of the transform.
+     * @param parent The parent transform to this transform.
+     * @param translation The translation, in its parent's coordinate system, of this node.
+     * @param rotation The rotation of this transform about its own axis.
+     * @param scale The scale of this object in relation to its own axes, before rotation.
+     */
     public TransformNode(final String id, final TransformNode parent, boolean isDynamic, Vector3 translation, Quaternion rotation, Vector3 scale) {
         super(id, parent, isDynamic);
         _translation = Objects.requireNonNull(translation);
@@ -44,10 +61,16 @@ public final class TransformNode extends SceneNode {
         _needsRecalculateTransformWorldNodeTransform = true;
     }
 
+    /**
+     * Causes this transform node to regenerate its transformation matrix and call transformDidChange on all of its children.
+     */
     private void setNeedsRecalculateTransform() {
         this.traverse(SceneNode::transformDidChange);
     }
 
+    /**
+     * @return a matrix that converts from local space to world space (i.e. the space of the root node.)
+     */
     private Matrix4 calculateNodeToWorldTransform() {
         Matrix4 transform = this.parent().isPresent() ? this.parent().get().nodeToWorldSpaceTransform() : new Matrix4();
 
@@ -58,6 +81,9 @@ public final class TransformNode extends SceneNode {
         return transform;
     }
 
+    /**
+     * @return a matrix that converts from world space (i.e. the space of the root node) to local space.
+     */
     private Matrix4 calculateWorldToNodeTransform() {
         Matrix4 transform = this.parent().isPresent() ? this.parent().get().worldToNodeSpaceTransform() : new Matrix4();
         transform = transform.scale(new Vector3(1.f, 1.f, 1.f).divide(_scale));
@@ -91,34 +117,60 @@ public final class TransformNode extends SceneNode {
         }
     }
 
+    /**
+     * @param translation This node's translation, specified in its parent's coordinate space.
+     */
     public void setTranslation(Vector3 translation) {
         this.checkForModificationOfStaticNode();
         _translation = translation;
         this.setNeedsRecalculateTransform();
     }
 
+    /**
+     * Translates this node by translation, specified in its parent's coordinate space.
+     * @param translation the translation, specified in this node's parent's coordinate space.
+     */
     public void translateBy(Vector3 translation) {
         this.setTranslation(_translation.add(translation));
     }
 
+    /**
+     * @param rotation The rotation of this transform about its own axis.
+     */
     public void setRotation(Quaternion rotation) {
         this.checkForModificationOfStaticNode();
         _rotation = rotation;
         this.setNeedsRecalculateTransform();
     }
 
+    /**
+     * Rotates the node by rotation (performs quaternion multiplication with rotation on the right).
+     * @param rotation The rotation to rotate by.
+     */
     public void rotateBy(Quaternion rotation) {
         this.setRotation(_rotation.multiply(rotation));
     }
 
+    /**
+     * Rotates by an angle about the x axis.
+     * @param xRotationRadians The angle to rotate by.
+     */
     public void rotateX(float xRotationRadians) {
         this.setRotation(_rotation.rotateByAngleX(xRotationRadians));
     }
 
+    /**
+     * Rotates by an angle about the y axis.
+     * @param yRotationRadians The angle to rotate by.
+     */
     public void rotateY(float yRotationRadians) {
         this.setRotation(_rotation.rotateByAngleY(yRotationRadians));
     }
 
+    /**
+     * Rotates by an angle about the z axis.
+     * @param zRotationRadians The angle to rotate by.
+     */
     public void rotateZ(float zRotationRadians) {
         this.setRotation(_rotation.rotateByAngleZ(zRotationRadians));
     }
@@ -137,14 +189,23 @@ public final class TransformNode extends SceneNode {
         this.setScale(_scale.multiplyScalar(scale));
     }
 
+    /**
+     * @return This node's translation, specified in its parent's coordinate space.
+     */
     public Vector3 translation() {
         return _translation;
     }
 
+    /**
+     * @return The rotation of this transform about its own axis.
+     */
     public Quaternion rotation() {
         return _rotation;
     }
 
+    /**
+     * @return The scale of this object in relation to its own axes, before rotation.
+     */
     public Vector3 scale() {
         return _scale;
     }

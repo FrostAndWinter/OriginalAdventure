@@ -36,7 +36,6 @@ public class AnimationSystem {
         while (iterator.hasNext()) {
             Animation animation = iterator.next();
             if (animation.isComplete()) {
-                animation.destroy();
                 animationsToRemove.add(animation);
                 continue;
             }

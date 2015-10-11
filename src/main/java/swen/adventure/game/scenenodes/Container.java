@@ -1,6 +1,7 @@
 package swen.adventure.game.scenenodes;
 
 import swen.adventure.engine.scenegraph.MeshNode;
+import swen.adventure.engine.scenegraph.SceneNode;
 import swen.adventure.engine.scenegraph.TransformNode;
 import swen.adventure.game.Interaction;
 
@@ -12,7 +13,7 @@ import java.util.Optional;
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 8/10/15.
  */
-public class Container extends AdventureGameObject {
+public class Container extends SceneNode {
 
     private final List<Item> _items;
     private final int _capacity;
@@ -20,7 +21,7 @@ public class Container extends AdventureGameObject {
     private boolean _showTopItem;
 
     public Container(final String id, final TransformNode parent, final int capacity) {
-        super(id, parent);
+        super(id, parent, true);
         _capacity = capacity;
         _items = new ArrayList<>(capacity);
     }

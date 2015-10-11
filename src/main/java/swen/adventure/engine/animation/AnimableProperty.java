@@ -59,14 +59,14 @@ public class AnimableProperty {
     public void stopAnimating() {
         _currentAnimation.ifPresent(animation -> {
             _currentAnimation = Optional.empty();
-            animation.stop();
+            animation.cancel();
         });
 
     }
 
-    protected void setValueFromAnimation(float value) {
+    protected void setValueFromAnimation(Animation animation, float value) {
         _value = value;
-        eventValueChanged.trigger(_currentAnimation.get(), Collections.emptyMap());
+        this.eventValueChanged.trigger(animation, Collections.emptyMap());
     }
 
     /**
@@ -79,7 +79,7 @@ public class AnimableProperty {
             return;
         }
         _value = value;
-        eventValueChanged.trigger(null, Collections.emptyMap());
+        this.eventValueChanged.trigger(null, Collections.emptyMap());
     }
 
     public float value() {

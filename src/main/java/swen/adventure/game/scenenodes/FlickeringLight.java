@@ -40,13 +40,14 @@ public class FlickeringLight extends AdventureGameObject {
             });
 
         } else {
-            light.mesh().ifPresent(flameMesh -> flameMesh.setEnabled(true));
             Animation animation = new Animation(light._lightIntensity, LightAnimationTime, light._baseIntensity);
             animation.eventAnimationDidComplete.addAction(light, (animation1, triggeringObject, light1, data1) -> {
                 light.setIntensity(light._baseIntensity);
                 light._isAnimatingToggle = false;
             });
             light._isOn = true;
+
+            light.mesh().ifPresent(flameMesh -> flameMesh.setEnabled(true));
         }
         light.eventLightToggled.trigger(player, Collections.emptyMap());
     };
@@ -54,7 +55,7 @@ public class FlickeringLight extends AdventureGameObject {
     public FlickeringLight(final String id, final TransformNode parent,
                            final String meshName, final String meshDirectory,
                            final Vector3 colour, final float intensity, final Light.LightFalloff falloff) {
-        super(id, parent);
+        super(id, parent, id);
 
         _baseIntensity = intensity;
         _lightIntensity = new AnimableProperty(intensity);
@@ -80,8 +81,8 @@ public class FlickeringLight extends AdventureGameObject {
     }
 
     private void setMaterialColour(Material material, final Vector3 colour, final float intensity) {
-        material.setDiffuseColour(colour.multiplyScalar(0.4f * intensity));
-        material.setAmbientColour(colour.multiplyScalar(0.6f * intensity));
+        material.setDiffuseColour(colour.multiplyScalar(0.6f * intensity));
+        material.setAmbientColour(colour.multiplyScalar(0.4f * intensity));
         if (this._isAnimatingToggle) {
             material.setOpacity(intensity / _baseIntensity);
         }
@@ -113,6 +114,18 @@ public class FlickeringLight extends AdventureGameObject {
         _lightIntensity.stopAnimating();
         _lightIntensity.setValue(lowIntensity);
         new Animation(_lightIntensity, highIntensity);
+    }
+
+    public void setOn(boolean isOn) {
+        _isOn = isOn;
+        if (isOn) {
+            this.setIntensity(_baseIntensity);
+            this.mesh().ifPresent(flameMesh -> flameMesh.setEnabled(true));
+        } else {
+            _lightIntensity.stopAnimating();
+            _lightIntensity.setValue(0.f);
+            this.mesh().ifPresent(meshNode -> meshNode.setEnabled(false));
+        }
     }
 
     public boolean isOn() {

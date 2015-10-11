@@ -1,11 +1,13 @@
 //Connections for the lever/light/key puzzle.
-LeverToggled; lever; ToggleLight; greenTorchFlame
+LeverToggled; greenLightLever; ToggleLight; greenTorchFlame
+LeverToggled; redLightLever; ToggleLight; redTorchFlame
+LeverToggled; blueLightLever; ToggleLight; blueTorchFlame
 LightToggled; blueTorchFlame, redTorchFlame, greenTorchFlame; CheckPuzzle; keyPuzzle
 PuzzleSolved; keyPuzzle; SetEnabled; key
 PuzzleUnsolved; keyPuzzle; SetDisabled; key
 
 //Make the lever go back up when interaction ends.
-InteractionEnded; lever; MoveUp; lever
+InteractionEnded; greenLightLever; MoveUp; greenLightLever
 
 //Connections for the key and door.
 PlayerPickedUpItem; key; AllowPlayerToOpenDoor; door
