@@ -17,6 +17,7 @@ import java.util.*;
 public class Door extends AdventureGameObject {
 
     private boolean _isOpen = false;
+    private boolean _requiresKey = false;
 
     private static final float DoorAnimationDuration = 1.2f;
 
@@ -44,7 +45,7 @@ public class Door extends AdventureGameObject {
 
         TransformNode body = parent.findNodeWithIdOrCreate(bodyTransformId, () -> new TransformNode(bodyTransformId, parent, true, Vector3.zero, new Quaternion(), Vector3.one));
         MeshNode doorMesh = parent.findNodeWithIdOrCreate(meshId, () -> new MeshNode(meshId, "MedievalModels", "Door.obj", body));
-    //    doorMesh.setCollidable(true);
+        doorMesh.setCollidable(true);
         this.registerMeshForInteraction(doorMesh);
         
         _doorOpenPercentage.eventValueChanged.addAction(this, (eventObject, triggeringObject, listener, data) ->  {
@@ -71,9 +72,13 @@ public class Door extends AdventureGameObject {
         new Animation(_doorOpenPercentage, AnimationCurve.Sine, DoorAnimationDuration, 0.0f);
     }
 
+    public void setRequiresKey(boolean requiresKey) {
+        _requiresKey = requiresKey;
+    }
+
     @Override
     public List<Interaction> possibleInteractions(final MeshNode meshNode, final Player player) {
-        if (!_isOpen && _playersThatCanOpenDoor.contains(player)) {
+        if (!_isOpen && (!_requiresKey ||  _playersThatCanOpenDoor.contains(player))) {
             return Collections.singletonList(new Interaction(Interaction.InteractionType.Open, this, meshNode));
         }
         return Collections.emptyList();

@@ -139,7 +139,9 @@ public class SceneGraphParser {
                         ((Item) gameObject).moveToContainer((Container) container);
                     });
                 });
-
+            } else if (gameObject instanceof Door) {
+                boolean requiresKey = getAttribute("requiresKey", xmlNode, Boolean::valueOf, false);
+                ((Door) gameObject).setRequiresKey(requiresKey);
             }
 
             return gameObject;

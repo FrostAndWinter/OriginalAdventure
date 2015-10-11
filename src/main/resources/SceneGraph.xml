@@ -56,7 +56,7 @@
 
         <TransformNode id="frontWallTransform" translation="0, 0, -900">
             <TransformNode id="doorTransform" scale="1.4, 1, 1.7" translation="230, 0.3, 0"> <!-- width is 140 units. -->
-                <Door id="door"/>
+                <Door id="door" requiresKey="true"/>
             </TransformNode>
 
             <TransformNode id="frontWallLeftTransform" translation="-490, 0, 0" scale="13, 1, 1">
@@ -209,11 +209,15 @@
         </TransformNode>
 
         <TransformNode id="corridorsBackWalls" translation="0, 0, -2760">
-            <TransformNode id="corridorsBackWallLeft" translation="-360, 0, 0" scale="4.8, 1.4, 1">
+            <TransformNode id="corridorsBackWallLeft" translation="-300, 0, 0" scale="5.3, 1.4, 1">
                 <MeshNode id="corridorsBackWallLeftMesh" directory="MedievalModels" fileName="Wall.obj" textureRepeat="4.8, 1.4, 1" isCollidable="true"/>
             </TransformNode>
-            <TransformNode id="corridorsBackWallRight" translation="360, 0, 0" scale="4.8, 1.4, 1">
+            <TransformNode id="corridorsBackWallRight" translation="300, 0, 0" scale="5.3, 1.4, 1">
                 <MeshNode id="corridorsBackWallLightMesh" directory="MedievalModels" fileName="Wall.obj" textureRepeat="4.8, 1.4, 1" isCollidable="true"/>
+            </TransformNode>
+
+            <TransformNode id="corridorEndDoorTransform" scale="1.4, 1.4, 1.4">
+                <Door id="corridorEndDoor"/>
             </TransformNode>
         </TransformNode>
 
