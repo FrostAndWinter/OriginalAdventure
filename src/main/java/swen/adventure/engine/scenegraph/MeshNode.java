@@ -18,6 +18,8 @@ import java.util.function.Function;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 25/09/15.
+ *
+ * A MeshNode represents an object mesh and its associated materials.
  */
 public final class MeshNode extends SceneNode {
 
@@ -34,10 +36,23 @@ public final class MeshNode extends SceneNode {
 
     public final Event<SceneNode, Player> eventMeshLookedAt = new Event<>("eventMeshLookedAt", this);
 
+    /**
+     * Loads a mesh from the specified location and parents it to parent. The id will be set to mesh{fileName}
+     * @param directory The directory, relative to the root resources directory, in which to look for the mesh.
+     * @param fileName The mesh's file name (e.g. mesh.obj)
+     * @param parent The transform node to parent the node to.
+     */
     public MeshNode(final String directory, final String fileName, final TransformNode parent) {
         this("mesh" + fileName, directory, fileName, parent);
     }
 
+    /**
+     * Loads a mesh from the specified location and parents it to parent.
+     * @param id The id the MeshNode is to have in the scene graph.
+     * @param directory The directory, relative to the root resources directory, in which to look for the mesh.
+     * @param fileName The mesh's file name (e.g. mesh.obj)
+     * @param parent The transform node to parent the node to.
+     */
     public MeshNode(String id, final String directory, final String fileName, final TransformNode parent) {
         super(id, parent, false);
 
@@ -67,18 +82,33 @@ public final class MeshNode extends SceneNode {
         return new MeshNode(id, fileName, parent);
     }
 
+    /**
+     * A material override ignores the default per-face material specified for an object in its GLMesh, and instead applies this material for the entire object.
+     * @return the material override, if it's present.
+     */
     public Optional<Material> materialOverride() {
         return _materialOverride;
     }
 
+    /**
+     * A material override ignores the default per-face material specified for an object in its GLMesh, and instead applies this material for the entire object.
+     * @param materialOverride The material override to set.
+     */
     public void setMaterialOverride(final Material materialOverride) {
         _materialOverride = Optional.of(materialOverride);
     }
 
+    /**
+     * @return The bounding box of this mesh in local space.
+     */
     public BoundingBox boundingBox() {
         return _localSpaceBoundingBox;
     }
 
+    /**
+     * Sets whether the mesh is collidable. If collidable is true, it will set this MeshNode's collision node to a new collision node.
+     * @param collidable whether the mesh is collidable.
+     */
     public void setCollidable(boolean collidable) {
         if (collidable && !_collisionNode.isPresent()) {
             _collisionNode = Optional.of(new CollisionNode(this));
@@ -91,7 +121,7 @@ public final class MeshNode extends SceneNode {
     }
 
     /**
-     * Renders the mesh, applying its own material to the shader. If a material override is set, then that override is used.
+     * Renders the mesh, applying its own materials to the shader. If a material override is set, then that override is used.
      * @param shader The Material Shader on which to set the materials.
      */
     public void render(MaterialShader shader) {
@@ -138,6 +168,13 @@ public final class MeshNode extends SceneNode {
 
     private static Map<String, GLMesh<Float>> _loadedMeshes = new HashMap<>();
 
+    /**
+     * Loads a mesh with a given directory and file name. Will return a cached mesh if it has already been loaded.
+     * @param directory The directory the mesh is in.
+     * @param fileName the name of the mesh.
+     * @return The GLMesh object for the mesh with that name and directory
+     * @throws FileNotFoundException if the mesh file could not be found at that location.
+     */
     private static GLMesh<Float> loadMeshWithFileName(String directory, String fileName) throws FileNotFoundException {
         GLMesh<Float> mesh = _loadedMeshes.get(fileName);
 

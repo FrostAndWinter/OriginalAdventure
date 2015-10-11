@@ -5,9 +5,18 @@ import java.util.Map;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 16/09/15.
+ *
+ * An action is a lambda that can be triggered in response to an Event.
  */
 @FunctionalInterface
 public interface Action<E, T, L> {
+    /**
+     * Executes a lambda with the specified parameters.
+     * @param eventObject The object on which the event was triggered.
+     * @param triggeringObject The object that triggered the event.
+     * @param listener The object that was listening to the event (since Actions may be declared statically, this functions as the 'this' parameter).
+     * @param data A data dictionary that contains extra information specified by the object that triggered the event.
+     */
     void execute(E eventObject, T triggeringObject, L listener, Map<String, Object> data);
 
     @SuppressWarnings("unchecked")

@@ -88,10 +88,16 @@ public abstract class SceneNode implements BundleSerializable {
         list.add((T)node);
     }
 
+    /**
+     * @return This node's parent, if it is not a root node.
+     */
     public Optional<TransformNode> parent() {
         return _parent;
     }
 
+    /**
+     * @return All SceneNodes that sit alongside this node in the scene graph.
+     */
     public Set<SceneNode> siblings() {
         if (_parent.isPresent()) {
             Set<SceneNode> children = _parent.get()._childNodes;
@@ -102,6 +108,9 @@ public abstract class SceneNode implements BundleSerializable {
         return Collections.emptySet();
     }
 
+    /**
+     * @return whether the node is dynamic i.e. whether any of its properties can change; for instance, this must be true if a node can be moved or reparented.
+     */
     public boolean isDynamic() {
         return _isDynamic;
     }
@@ -176,7 +185,7 @@ public abstract class SceneNode implements BundleSerializable {
     }
 
     /**
-     * Calculates if necessary and returns the world space transform of the nearest transform node, looking towards the root.
+     * Calculates if necessary and returns a matrix that converts from local space to world space (the space of the root node).
      * @return The world space transform of the nearest transform node.
      */
     public Matrix4 nodeToWorldSpaceTransform() {
@@ -184,7 +193,7 @@ public abstract class SceneNode implements BundleSerializable {
     }
 
     /**
-     * Calculates if necessary and returns the world space transform of the nearest transform node, looking towards the root.
+     * Calculates if necessary and returns a matrix that converts from world space (the space of the root node) to local space.
      * @return The world space transform of the nearest transform node.
      */
     public Matrix4 worldToNodeSpaceTransform() {

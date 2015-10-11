@@ -128,6 +128,7 @@ public class AdventureGame implements Game {
      * @param actionType The action type to perform the interactions for.
      */
     private void performInteractions(Interaction.ActionType actionType) {
+        this.endInteractions(actionType);
         List<Interaction.InteractionType> interactionTypes = Interaction.InteractionType.typesForActionType(actionType);
 
         interactionTypes.stream()
@@ -144,6 +145,7 @@ public class AdventureGame implements Game {
         if (interaction != null) {
             interaction.interactionEndedByPlayer(_player);
         }
+        _interactionInProgressForActionType.put(actionType, null);
     }
 
     private void setupUI(int width, int height) {

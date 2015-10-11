@@ -32,6 +32,12 @@ import java.util.*;
  */
 public class Event<E, T> {
 
+    /**
+     * ActionData is used to internally store records of registered actions.
+     * @param <E> The type of object that the event is attached to.
+     * @param <T> The type of object that may trigger the event.
+     * @param <L> The type of object that is listening to the event.
+     */
     private static class ActionData<E, T, L> {
         public final WeakReference<L> listener;
         public final Action<? super E, ? super T, L> action;
@@ -60,6 +66,12 @@ public class Event<E, T> {
         }
     }
 
+    /**
+     * An EventSet provides access to all events by a given name.
+     * It can be used when you want to listen to an event, but you don't know which specific objects the event will be on.
+     * @param <E> The type of objects the events are attached to.
+     * @param <T> The type of object that may trigger the event.
+     */
     public static class EventSet<E, T> {
         public final String eventName;
         private List<Event<E, T>> _events = new ArrayList<>();
@@ -69,6 +81,12 @@ public class Event<E, T> {
             this.eventName = eventName;
         }
 
+        /**
+         * Adds an action to be performed when the events collected by this event set trigger.
+         * @param listener The object that is listening to the action.
+         * @param action The action to perform.
+         * @param <L> The type of object that is listening to the action.
+         */
         public <L> void addAction(L listener, Action<E, T, L> action) {
             for (Event<E, T> event  : _events) {
                 event.addAction(listener, action);
@@ -76,6 +94,12 @@ public class Event<E, T> {
             _actions.add(new ActionData<>(listener, action));
         }
 
+        /**
+         * Removes an action from being performed when the events collected by this event set trigger.
+         * @param listener The object that is listening to the action.
+         * @param action The action to perform.
+         * @param <L> The type of object that is listening to the action.
+         */
         public <L> void removeAction(L listener, Action<E, T, L> action) {
             for (Event<E, T> event  : _events) {
                 event.removeAction(listener, action);
@@ -83,6 +107,10 @@ public class Event<E, T> {
             _actions.remove(new ActionData<>(listener, action));
         }
 
+        /**
+         * Adds an event to this object's internal list of events.
+         * @param event the event to add.
+         */
         private void addEvent(Event<E, T> event) {
             _events.add(event);
             for (ActionData action : _actions) {
@@ -98,16 +126,24 @@ public class Event<E, T> {
     private final E _eventObject;
     public final String name;
 
-
-    public EventSet<?, ?> onAllObjects() {
+    /**
+     * Given an event attached to an object, this will return the event set that encompassing this event occuring on any object.
+     * @return The event set of this event occurring on any object.
+     */
+    public EventSet<E, T> onAllObjects() {
         EventSet<?, ?> events = _eventNamesToEvents.get(this.name);
         if (events == null) {
             events = new EventSet<>(this.name);
             _eventNamesToEvents.put(this.name, events);
         }
-        return events;
+        return (EventSet<E, T>)events;
     }
 
+    /**
+     * Finds and returns the event set for events with a given name.
+     * @param name The name of the events in the event set.
+     * @return The event set for that name.
+     */
     public static EventSet<?, ?> eventSetForName(String name) {
         EventSet<?, ?> events = _eventNamesToEvents.get(name);
         if (events == null) {
@@ -117,6 +153,9 @@ public class Event<E, T> {
         return events;
     }
 
+    /**
+     * Adds an event with a given name to the event set for that name.
+     */
     private static <E, T> void addEventForName(Event<E, T> event, String name) {
         EventSet<E, T> events = _eventNamesToEvents.get(name);
         if (events == null) {
@@ -126,6 +165,11 @@ public class Event<E, T> {
         events.addEvent(event);
     }
 
+    /**
+     * Constructs a new event with the given name on the given object.
+     * @param name The name of the event.
+     * @param eventObject The object that the event is attached to.
+     */
     public Event(String name, E eventObject) {
         this.name = name;
         _eventObject = eventObject;
@@ -133,16 +177,28 @@ public class Event<E, T> {
         Event.addEventForName(this, name);
     }
 
+    /**
+     * Adds an action to be performed when this event triggers.
+     * @param listener The object that is listening to the action.
+     * @param action The action to perform.
+     * @param <L> The type of object that is listening to the action.
+     */
     public <L> void addAction(L listener, Action<? super E, ? super T, L> action) {
         _actions.add(new ActionData<>(listener, action));
     }
 
+    /**
+     * Removes an action from being performed when this event triggers.
+     * @param listener The object that is listening to the action.
+     * @param action The action to perform.
+     * @param <L> The type of object that is listening to the action.
+     */
     public <L> void removeAction(L listener, Action<? super E, ? super T, L> action) {
         _actions.remove(new ActionData<>(listener, action));
     }
 
     /**
-     *
+     * Trigger this event.
      * @param triggeringObject The object that produced the event signal
      * @param data A dictionary of extraneous data that can be passed as an argument.
      */

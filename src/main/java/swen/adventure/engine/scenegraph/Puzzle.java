@@ -18,6 +18,11 @@ import java.util.function.Supplier;
  */
 public final class Puzzle extends GameObject {
 
+    /**
+     * A puzzle condition is a simple boolean expression that will return true if the value returned by its getter
+     * is equal to its required state.
+     * @param <T> The type of the object to compare.
+     */
     public static class PuzzleCondition<T> {
         public final Supplier<T> getter;
         public final T requiredState;
@@ -39,12 +44,18 @@ public final class Puzzle extends GameObject {
     public final Event<Puzzle, Puzzle> eventPuzzleSolved = new Event<>("eventPuzzleSolved", this);
     public final Event<Puzzle, Puzzle> eventPuzzleUnsolved = new Event<>("eventPuzzleUnsolved", this);
 
-    public static final Action<FlickeringLight, Player, Puzzle> actionCheckPuzzle = (light, player, puzzle, data) -> {
+    public static final Action<SceneNode, Player, Puzzle> actionCheckPuzzle = (sceneNode, player, puzzle, data) -> {
         puzzle.checkForStateChange();
     };
 
-    public Puzzle(final String id, final TransformNode parent, List<PuzzleCondition> conditions) {
-        super(id, parent);
+    /**
+     * Creates a new puzzle with the specified id, scene graph, and conditions.
+     * @param id The id of the puzzle.
+     * @param sceneGraph The scene graph to add the puzzle to.
+     * @param conditions The conditions that must be met for the puzzle to be solved.
+     */
+    public Puzzle(final String id, final TransformNode sceneGraph, List<PuzzleCondition> conditions) {
+        super(id, sceneGraph);
 
         _conditions = conditions;
 
@@ -52,6 +63,9 @@ public final class Puzzle extends GameObject {
         this.triggerPuzzleStateEvent();
     }
 
+    /**
+     * @return Whether all of this puzzle's conditions are met.
+     */
     private boolean isPuzzleSolved() {
         boolean puzzleSolved = true;
         for (PuzzleCondition condition : _conditions) {
@@ -62,6 +76,9 @@ public final class Puzzle extends GameObject {
         return puzzleSolved;
     }
 
+    /**
+     * Triggers the event that accompanies this player's state.
+     */
     private void triggerPuzzleStateEvent() {
         if (_puzzleSolved) {
             this.eventPuzzleSolved.trigger(this, Collections.emptyMap());
@@ -70,6 +87,9 @@ public final class Puzzle extends GameObject {
         }
     }
 
+    /**
+     * Checks whether the puzzle has become solved or unsolved.
+     */
     private void checkForStateChange() {
         boolean isPuzzleSolved = this.isPuzzleSolved();
         if (isPuzzleSolved != _puzzleSolved) {
