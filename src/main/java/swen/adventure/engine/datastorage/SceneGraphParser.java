@@ -131,7 +131,7 @@ public class SceneGraphParser {
             gameObject.setParent(parent);
 
             if (gameObject instanceof Item) {
-                Optional<String> containerIdOptional = (Optional<String>)getAttribute("containerId", xmlNode, Optional::of, Optional.empty());
+                Optional<String> containerIdOptional = (Optional<String>)getAttribute("inContainer", xmlNode, Optional::of, Optional.empty());
 
                 containerIdOptional.ifPresent(containerId -> {
                     Optional<SceneNode> containerOptional =  parent.nodeWithID(containerId);
