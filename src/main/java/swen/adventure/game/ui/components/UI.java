@@ -71,8 +71,8 @@ public class UI extends Frame {
     }
 
     public void drawUI(PGraphics pg, GLRenderer gr) {
-        float scaleX = pg.width / width;
-        float scaleY = pg.height / height;
+        float scaleX = pg.width / (float) width;
+        float scaleY = pg.height / (float) height;
         float scale = Math.min(scaleX, scaleY);
 
         float dw = (pg.width - (scale * width))/2;
@@ -87,14 +87,14 @@ public class UI extends Frame {
 
         // Draw the tool tips
         pg.fill(255);
-        float tooltipX = pg.width/2f;
-        float tooltipY = pg.height/2f + _reticule.getWidth(pg)* 2;
+        float tooltipX = width/2f;
+        float tooltipY = height/2f + _reticule.getWidth(pg)* 2;
 
         float h = pg.textAscent() + pg.textDescent();
         for (String s : _tooltips) {
             float w = pg.textWidth(s);
 
-            pg.text(s, tooltipX - w/2, tooltipY);
+            pg.text(s, tooltipX * scale - w/2, tooltipY * scale);
             tooltipY += h;
         }
 
