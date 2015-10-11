@@ -56,7 +56,7 @@
 
         <TransformNode id="frontWallTransform" translation="0, 0, -900">
             <TransformNode id="doorTransform" scale="1.4, 1, 1.7" translation="230, 0.3, 0"> <!-- width is 140 units. -->
-                <Door id="door"/>
+                <Door id="door" requiresKey="true"/>
             </TransformNode>
 
             <TransformNode id="frontWallLeftTransform" translation="-490, 0, 0" scale="13, 1, 1">
@@ -180,11 +180,44 @@
 
         <TransformNode id="corridorsCentreColumns" rotation="0, -0.7071067812, 0, 0.7071067812">
             <TransformNode id="corridorsLeftColumn" scale="55.2, 0.8, 1" translation="0, 0, 120">
-                <MeshNode id="corridorsLeftColumnBottomMesh" directory="MedievalModels" fileName="WallColumnMiddle.obj" textureRepeat="27.6, 0.8, 1" isCollidable="true"/>
+                <MeshNode id="corridorsLeftColumnBottomMesh" directory="MedievalModels" fileName="WallColumnMiddle.obj" textureRepeat="55.2, 0.8, 1" isCollidable="true"/>
+                <TransformNode id="corridorsLeftColumnCapT" translation="50, 0, 0" rotation="0, 1, 0, 0" scale="0.018115942028986, 1, 1.02">
+                    <MeshNode id="corridorsLeftColumnCapMesh" directory="MedievalModels" fileName="WallColumnEnd.obj" textureRepeat="1, 0.8, 1" isCollidable="true"/>
+                </TransformNode>
+            </TransformNode>
+
+            <TransformNode id="corridorsLeftWall" scale="55.2, 1.4, 1" rotation="0, 1, 0, 0" translation="0, 0, 600">
+                <MeshNode id="corridorsLeftColumnWallMesh" directory="MedievalModels" fileName="Wall.obj" textureRepeat="55.2, 1.4, 1" isCollidable="true"/>
+                <TransformNode id="corridorsLeftColumnWallCapT" translation="-50, 0, 0" scale="0.018115942028986, 1, 1">
+                    <MeshNode id="corridorsLeftColumnWallCapMesh" directory="MedievalModels" fileName="Column2.obj" textureRepeat="1, 1.4, 1" isCollidable="true"/>
+                </TransformNode>
             </TransformNode>
 
             <TransformNode id="corridorsRightColumn" scale="55.2, 0.8, 1" translation="0, 0, -120">
-                <MeshNode id="corridorsRightColumnBottomMesh" directory="MedievalModels" fileName="WallColumnMiddle.obj" textureRepeat="27.6, 0.8, 1" isCollidable="true"/>
+                <MeshNode id="corridorsRightColumnBottomMesh" directory="MedievalModels" fileName="WallColumnMiddle.obj" textureRepeat="55.2, 0.8, 1" isCollidable="true"/>
+                <TransformNode id="corridorsRightColumnCapT" translation="50, 0, 0" rotation="0, 1, 0, 0" scale="0.018115942028986, 1, 1.02">
+                    <MeshNode id="corridorsRightColumnCapMesh" directory="MedievalModels" fileName="WallColumnEnd.obj" textureRepeat="1, 0.8, 1" isCollidable="true"/>
+                </TransformNode>
+            </TransformNode>
+
+            <TransformNode id="corridorsRightWall" scale="55.2, 1.4, 1" translation="0, 0, -600">
+                <MeshNode id="corridorsRightColumnWallMesh" directory="MedievalModels" fileName="Wall.obj" textureRepeat="55.2, 1.4, 1" isCollidable="true"/>
+                <TransformNode id="corridorsRightColumnWallCapT" translation="50, 0, 0" scale="0.018115942028986, 1, 1">
+                    <MeshNode id="corridorsRightColumnWallCapMesh" directory="MedievalModels" fileName="Column2.obj" textureRepeat="1, 1.4, 1" isCollidable="true"/>
+                </TransformNode>
+            </TransformNode>
+        </TransformNode>
+
+        <TransformNode id="corridorsBackWalls" translation="0, 0, -2760">
+            <TransformNode id="corridorsBackWallLeft" translation="-300, 0, 0" scale="5.3, 1.4, 1">
+                <MeshNode id="corridorsBackWallLeftMesh" directory="MedievalModels" fileName="Wall.obj" textureRepeat="4.8, 1.4, 1" isCollidable="true"/>
+            </TransformNode>
+            <TransformNode id="corridorsBackWallRight" translation="300, 0, 0" scale="5.3, 1.4, 1">
+                <MeshNode id="corridorsBackWallLightMesh" directory="MedievalModels" fileName="Wall.obj" textureRepeat="4.8, 1.4, 1" isCollidable="true"/>
+            </TransformNode>
+
+            <TransformNode id="corridorEndDoorTransform" scale="1.4, 1.4, 1.4">
+                <Door id="corridorEndDoor"/>
             </TransformNode>
         </TransformNode>
 

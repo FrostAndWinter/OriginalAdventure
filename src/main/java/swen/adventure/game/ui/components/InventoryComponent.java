@@ -17,10 +17,7 @@ import swen.adventure.game.Interaction;
 import swen.adventure.game.scenenodes.Inventory;
 import swen.adventure.game.scenenodes.Item;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by danielbraithwt on 9/18/15.
@@ -42,7 +39,8 @@ public class InventoryComponent extends UIComponent {
     private final Inventory _inventory;
     private final TransformNode _rootSceneNode = new TransformNode("root", Vector3.zero, new Quaternion(), Vector3.one);
     private final TransformNode _toScreenTransform = new TransformNode("toScreenTransform", _rootSceneNode, true, new Vector3(0.f, 0.f, -1.f), new Quaternion(), Vector3.one);
-    private final Light _modelLight = Light.createDirectionalLight("directionalLight", _rootSceneNode, Vector3.one.normalise(), 0.5f, new Vector3(0.5f, 0.5f, 0.5f));
+    private final Light _modelLight = Light.createDirectionalLight("directionalLight", _rootSceneNode, Vector3.one, 1.f, new Vector3(0.5f, 0.5f, 0.5f));
+    private final Light _modelAmbient = Light.createAmbientLight("ambientLight", _rootSceneNode, Vector3.one, 0.3f);
 
     private final Matrix4 _projectionMatrix = Matrix4.makeOrtho(-1.f, 1.f, -1.f, 1.f, 1.f, 1000.f);
 
@@ -193,7 +191,7 @@ public class InventoryComponent extends UIComponent {
             currentX += boxSize;
         }
 
-        renderer.render(nodesToRender, Collections.singletonList(_modelLight), Matrix4.identity, _projectionMatrix, 1.5f);
+        renderer.render(nodesToRender, Arrays.asList(_modelLight, _modelAmbient), Matrix4.identity, _projectionMatrix, 1.5f);
     }
 
 
