@@ -1,5 +1,7 @@
 package swen.adventure.game.scenenodes;
 
+import swen.adventure.engine.rendering.maths.Quaternion;
+import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.TransformNode;
 import swen.adventure.game.scenenodes.Player;
@@ -15,6 +17,6 @@ public class SpawnNode extends GameObject {
     }
 
     public void spawnPlayerWithId(String id) {
-        new Player(id, parent().get());
+        new Player(id, new TransformNode(id + "Transform", parent().get(), true, Vector3.zero, new Quaternion(), Vector3.one));
     }
 }

@@ -56,11 +56,21 @@ public class MultiPlayerServer implements Runnable {
                 continue;
             }
 
-            GameObject target = (GameObject)root.nodeWithID(event.targetId).get();
-            Event e = target.eventWithName(event.eventName);
-            e.trigger(source, event.eventData);
+            if (event.eventName.equals("eventPlayerMoved")) {
+                Player target = (Player)root.nodeWithID(event.targetId).get();
+                target.parent().get().setTranslation((Vector3) event.eventData.get(EventDataKeys.Location));
+                server.sendAll(event, event.from);
+                continue;
+            }
+            try {
+                GameObject target = (GameObject) root.nodeWithID(event.targetId).get();
+                Event e = target.eventWithName(event.eventName);
+                e.trigger(source, event.eventData);
 
-            server.sendAll(event, event.from);
+                server.sendAll(event, event.from);
+            } catch (Error ex) {
+                System.out.println("Error occurred in Multilayer server: " + ex.toString());
+            }
 
             try {
                 Thread.sleep(10);
@@ -80,7 +90,7 @@ public class MultiPlayerServer implements Runnable {
 
         BoundingBox boundingBox = new BoundingBox(new Vector3(-30, -60, -10) , new Vector3(30, 60, 10));
         String colliderID = playerId + "Collider";
-        CollisionNode collider = (CollisionNode)spawn.nodeWithID(colliderID).orElseGet(() -> new CollisionNode(colliderID, newPlayer.parent().get(), boundingBox));
+        CollisionNode collider = (CollisionNode)spawn.nodeWithID(colliderID).orElseGet(() -> new CollisionNode(colliderID, newPlayer.parent().get(), boundingBox, CollisionNode.CollisionFlag.Player));
         collider.setParent(newPlayer.parent().get());
 
         newPlayer.setCollisionNode(collider);

@@ -100,28 +100,9 @@ public class AdventureGame implements Game {
         try {
             List<EventConnectionParser.EventConnection> connections = EventConnectionParser.parseFile(Utilities.readLinesFromFile(Utilities.pathForResource("EventConnections", "event")));
             EventConnectionParser.setupConnections(connections, _sceneGraph);
-            if (false) {
-                throw new IOException();
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        _keyInput.eventMoveInDirection.addAction(this._player, Player.actionMoveInDirection);
-
-        _mouseInput.eventMousePrimaryAction.addAction(this, AdventureGame.primaryActionFired);
-        _mouseInput.eventMousePrimaryActionEnded.addAction(this, AdventureGame.primaryActionEnded);
-        _mouseInput.eventMouseSecondaryAction.addAction(this, AdventureGame.secondaryActionFired);
-        _mouseInput.eventMouseSecondaryActionEnded.addAction(this, AdventureGame.secondaryActionEnded);
-
-        _keyInput.eventPrimaryAction.addAction(this, AdventureGame.primaryActionFired);
-        _keyInput.eventPrimaryActionEnded.addAction(this, AdventureGame.primaryActionEnded);
-        _keyInput.eventSecondaryAction.addAction(this, AdventureGame.secondaryActionFired);
-        _keyInput.eventSecondaryActionEnded.addAction(this, AdventureGame.secondaryActionEnded);
-
-        _keyInput.eventHideShowInventory.addAction(ui.getInventory(), InventoryComponent.actionToggleZoomItem);
-
-        _keyInput.eventHideShowControlls.addAction(ui, UI.actionToggleControlls);
 
         // get the possible interactions a player can make this step
         Event.EventSet<AdventureGameObject, Player> interactionEvents = (Event.EventSet<AdventureGameObject, Player>) Event.eventSetForName("eventShouldProvideInteraction");
@@ -151,7 +132,7 @@ public class AdventureGame implements Game {
 
         BoundingBox boundingBox = new BoundingBox(new Vector3(-30, -60, -10) , new Vector3(30, 60, 10));
         String colliderID = playerId + "Collider";
-        CollisionNode collider = (CollisionNode)spawn.nodeWithID(colliderID).orElseGet(() -> new CollisionNode(colliderID, newPlayer.parent().get(), boundingBox));
+        CollisionNode collider = (CollisionNode)spawn.nodeWithID(colliderID).orElseGet(() -> new CollisionNode(colliderID, newPlayer.parent().get(), boundingBox, CollisionNode.CollisionFlag.Player));
         collider.setParent(newPlayer.parent().get());
 
         newPlayer.setCollisionNode(collider);
@@ -207,6 +188,22 @@ public class AdventureGame implements Game {
         _pGraphics.setSize(width, height);
 
         ui = new UI(width, height, _player);
+
+        _keyInput.eventMoveInDirection.addAction(this._player, Player.actionMoveInDirection);
+
+        _mouseInput.eventMousePrimaryAction.addAction(this, AdventureGame.primaryActionFired);
+        _mouseInput.eventMousePrimaryActionEnded.addAction(this, AdventureGame.primaryActionEnded);
+        _mouseInput.eventMouseSecondaryAction.addAction(this, AdventureGame.secondaryActionFired);
+        _mouseInput.eventMouseSecondaryActionEnded.addAction(this, AdventureGame.secondaryActionEnded);
+
+        _keyInput.eventPrimaryAction.addAction(this, AdventureGame.primaryActionFired);
+        _keyInput.eventPrimaryActionEnded.addAction(this, AdventureGame.primaryActionEnded);
+        _keyInput.eventSecondaryAction.addAction(this, AdventureGame.secondaryActionFired);
+        _keyInput.eventSecondaryActionEnded.addAction(this, AdventureGame.secondaryActionEnded);
+
+        _keyInput.eventHideShowInventory.addAction(ui.getInventory(), InventoryComponent.actionToggleZoomItem);
+
+        _keyInput.eventHideShowControlls.addAction(ui, UI.actionToggleControlls);
     }
 
     @Override
@@ -231,6 +228,13 @@ public class AdventureGame implements Game {
 
             if (event.eventName.equals("playerConnected")) {
                 createPlayer(event.targetId);
+                continue;
+            }
+
+            if (event.eventName.equals("eventPlayerMoved")) {
+                Player target = (Player)_sceneGraph.nodeWithID(event.targetId).get();
+                target.parent().get().setTranslation((Vector3)event.eventData.get(EventDataKeys.Location));
+                System.out.println(event.targetId + " moved to " + event.eventData.get(EventDataKeys.Location));
                 continue;
             }
 
@@ -304,6 +308,11 @@ public class AdventureGame implements Game {
     public void onMouseDeltaChange(float deltaX, float deltaY) {
         _viewAngleX = (_viewAngleX + deltaX / _mouseSensitivity);
         _viewAngleY = (_viewAngleY + deltaY / _mouseSensitivity);
+    }
+
+    @Override
+    public void cleanup() {
+        _client.disconnect();
     }
 
     public static void main(String[] args) {

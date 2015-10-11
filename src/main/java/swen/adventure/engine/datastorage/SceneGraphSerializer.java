@@ -96,15 +96,21 @@ public class SceneGraphSerializer {
         else if (sceneNode instanceof Chest)
             serializedNode = serializeChest((Chest) sceneNode, xmlParentNode);
 
+        else if (sceneNode instanceof Door)
+            serializedNode = serializeDoor((Door) sceneNode, xmlParentNode);
+
         else {
             System.out.println("Don't recognise node " + sceneNode);
             return;
+
             //throw new RuntimeException("Don't recognise node " + sceneNode); // for testing
         }
 
         sceneNode.children()
                 .forEach(node -> serializeSceneNode(node, serializedNode));
     }
+
+
 
     private boolean isRoot(SceneNode sceneNode) {
         return sceneNode instanceof TransformNode && sceneNode.id.equals("root");
@@ -235,6 +241,14 @@ public class SceneGraphSerializer {
     private Node serializeNote(Note sceneNode, Node xmlParentNode) {
         Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
         setAttribute("id", sceneNode.id, xmlElement);
+        return xmlElement;
+    }
+
+    private Node serializeDoor(Door sceneNode, Node xmlParentNode) {
+        Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
+        setAttribute("id", sceneNode.id, xmlElement);
+        // FIXME: need to serialize state of door
+        setAttribute("enabled", Boolean.toString(sceneNode.isEnabled()), xmlElement);
         return xmlElement;
     }
 
