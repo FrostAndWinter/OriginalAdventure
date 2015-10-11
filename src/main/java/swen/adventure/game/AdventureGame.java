@@ -96,6 +96,8 @@ public class AdventureGame implements Game {
 
         _keyInput.eventHideShowInventory.addAction(ui.getInventory(), InventoryComponent.actionToggleZoomItem);
 
+        _keyInput.eventHideShowControlls.addAction(ui, UI.actionToggleControlls);
+
         // get the possible interactions a player can make this step
         Event.EventSet<AdventureGameObject, Player> interactionEvents = (Event.EventSet<AdventureGameObject, Player>) Event.eventSetForName("eventShouldProvideInteraction");
         interactionEvents.addAction(this, (gameObject, player, adventureGame, data) -> {
