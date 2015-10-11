@@ -26,10 +26,7 @@ public class ControlsOverlay extends Panel {
         TextBox moveRight = new TextBox("D - move right", 0, 0);
         addChild(moveRight);
 
-        TextBox placeItem = new TextBox("U - place item", 0, 0);
+        TextBox placeItem = new TextBox("Q - peform action", 0, 0);
         addChild(placeItem);
-
-        TextBox takeItem = new TextBox("E - take item", 0, 0);
-        addChild(takeItem);
     }
 }

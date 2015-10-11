@@ -63,7 +63,7 @@ public final class Interaction {
         this.gameObject.eventInteractionEnded.trigger(player, Collections.singletonMap(EventDataKeys.Interaction, this));
     }
 
-    public String interactionMessageForObjectAndButton(Player player, Character buttonName) {
+    public String interactionMessage(Player player, Character buttonName) {
         switch (this.interactionType) {
             case PickUp:
                 return String.format("Press %c to pick up %s", buttonName, this.gameObject.name);

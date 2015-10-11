@@ -33,7 +33,7 @@ public class DepthSorter {
          * @return -1 if this object's maximum z is closer to the camera than other's, 0 if they are equal, or 1 if it is further from the camera.
          */
         public int compareTo(SortableMesh other) {
-            return (int)(other.boundingBox.maxPoint.z - this.boundingBox.maxPoint.z);
+            return Float.compare(other.boundingBox.maxPoint.z, this.boundingBox.maxPoint.z);
         }
     }
 

@@ -1,6 +1,8 @@
 package swen.adventure.game.ui.components;
 
 import processing.core.PGraphics;
+import swen.adventure.engine.Action;
+import swen.adventure.engine.Input;
 import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.ui.color.Color;
 import swen.adventure.engine.ui.components.Frame;
@@ -17,6 +19,10 @@ import java.util.ArrayList;
  * Created by danielbraithwt on 10/10/15.
  */
 public class UI extends Frame {
+    public static final Action<Input, Input, UI> actionToggleControlls = (input, ignored, ui, data) -> {
+        ui.setControlsOverlayVisibility(!ui.getControlsOverlayVisibility());
+    };
+
     private Panel _container;
     private InventoryComponent _inventory;
     private ControlsOverlay _controlsOverlay;
@@ -29,7 +35,7 @@ public class UI extends Frame {
         _tooltips = new ArrayList<>();
 
         _container = new Panel(x,y,w,h);
-        _container.setColor(new Color(0,0,0,0));
+        _container.setColor(new Color(0, 0, 0, 0));
 
         // Create the reticule so the user can see where they are looking
         int size = 5;
@@ -64,6 +70,10 @@ public class UI extends Frame {
 
     public void setControlsOverlayVisibility(boolean b) {
         _controlsOverlay.setVisible(b);
+    }
+
+    public boolean getControlsOverlayVisibility() {
+        return _controlsOverlay.getVisible();
     }
 
     public InventoryComponent getInventory() {
