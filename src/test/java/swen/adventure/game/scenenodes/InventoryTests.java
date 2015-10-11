@@ -58,7 +58,7 @@ public class InventoryTests {
         inventory.selectSlot(-1);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void canGetPlayer() {
         Inventory inventory = new Inventory(player);
         assertEquals(player, inventory.player());
