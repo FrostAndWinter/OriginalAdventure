@@ -11,25 +11,30 @@ import swen.adventure.engine.ui.layoutmanagers.LinearLayout;
 import swen.adventure.game.scenenodes.Inventory;
 import swen.adventure.game.scenenodes.Player;
 
+import java.util.ArrayList;
+
 /**
  * Created by danielbraithwt on 10/10/15.
  */
 public class UI extends Frame {
-    Panel _container;
-    InventoryComponent _inventory;
-    ControlsOverlay _controlsOverlay;
-    TextBox _tooltip;
+    private Panel _container;
+    private InventoryComponent _inventory;
+    private ControlsOverlay _controlsOverlay;
+    private ArrayList<String> _tooltips;
+    private Reticule _reticule;
 
     public UI(int w, int h, Player p) {
         super(0, 0, w, h);
+
+        _tooltips = new ArrayList<>();
 
         _container = new Panel(x,y,w,h);
         _container.setColor(new Color(0,0,0,0));
 
         // Create the reticule so the user can see where they are looking
         int size = 5;
-        Reticule reticule = new Reticule(width/2, height/2, size);
-        _container.addChild(reticule);
+        _reticule = new Reticule(width/2, height/2, size);
+        _container.addChild(_reticule);
 
         // Set up the inventory
         _inventory = new InventoryComponent(p.inventory(), 275, 500);
@@ -40,20 +45,21 @@ public class UI extends Frame {
         _controlsOverlay.setVisible(false);
         _container.addChild(_controlsOverlay);
 
-        _tooltip = new TextBox("TOOLTIP!!", 400, 400);
-        _tooltip.setVisible(false);
-        _container.addChild(_tooltip);
-
         addChild(_container);
     }
 
-    public void setTooltip(String tip) {
-        _tooltip.setText(tip);
-        _tooltip.setVisible(true);
+    public void setTooltip(ArrayList<String> tips) {
+        removeTooltip();
+
+        if (tips == null) {
+            return;
+        }
+
+        _tooltips.addAll(tips);
     }
 
     public void removeTooltip() {
-        _tooltip.setVisible(false);
+        _tooltips.clear();
     }
 
     public void setControlsOverlayVisibility(boolean b) {
@@ -76,7 +82,21 @@ public class UI extends Frame {
         pg.noStroke();
         pg.translate(dw, dh);
 
+        // Draw the components
         draw(pg, scale, scale);
+
+        // Draw the tool tips
+        pg.fill(255);
+        float tooltipX = pg.width/2f;
+        float tooltipY = pg.height/2f + _reticule.getWidth(pg)* 2;
+
+        float h = pg.textAscent() + pg.textDescent();
+        for (String s : _tooltips) {
+            float w = pg.textWidth(s);
+
+            pg.text(s, tooltipX - w/2, tooltipY);
+            tooltipY += h;
+        }
 
         pg.endDraw();
 
