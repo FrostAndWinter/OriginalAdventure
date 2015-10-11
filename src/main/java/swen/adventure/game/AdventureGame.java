@@ -13,9 +13,6 @@ import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.rendering.PickerRenderer;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.scenegraph.*;
-import swen.adventure.engine.ui.color.Color;
-import swen.adventure.engine.ui.components.*;
-import swen.adventure.engine.ui.layoutmanagers.LinearLayout;
 import swen.adventure.game.input.AdventureGameKeyInput;
 import swen.adventure.game.input.AdventureGameMouseInput;
 import swen.adventure.game.scenenodes.*;
@@ -209,12 +206,17 @@ public class AdventureGame implements Game {
         });
 
         ArrayList<String> tips = new ArrayList<>();
-        for (Interaction.InteractionType t : _possibleInteractionsForStep.keySet()) {
-            if (_possibleInteractionsForStep.containsKey(t)) {
-                Interaction i = _possibleInteractionsForStep.get(t);
-
-                tips.add(i.interactionMessageForObjectAndButton(_player, 'q'));
+        for (Interaction interaction : _possibleInteractionsForStep.values()) {
+            Interaction.ActionType actionType = interaction.interactionType.actionType;
+            Character character = null;
+            switch (actionType) {
+                case Primary:
+                    character = _keyInput.characterForEvent(_keyInput.eventPrimaryAction);break;
+                case Secondary:
+                    character = _keyInput.characterForEvent(_keyInput.eventSecondaryAction);
+                    break;
             }
+            tips.add(interaction.interactionMessage(_player, character));
         }
 
         ui.setTooltip(tips);

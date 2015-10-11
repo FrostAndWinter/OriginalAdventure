@@ -14,14 +14,6 @@ public class Key extends Item {
 
     private static final String KeyDescription = "A key. Perhaps it opens a door?";
 
-    public Action<Puzzle, Puzzle, GameObject> actionSetEnabled = (puzzle, ignored, key, data) -> {
-        this.setEnabled(true);
-    };
-
-    public Action<Puzzle, Puzzle, GameObject> actionSetDisabled = (puzzle, ignored, key, data) -> {
-        this.setEnabled(false);
-    };
-
     public Key(String id, TransformNode parent) {
         super(id, parent, "Key", KeyDescription);
 
