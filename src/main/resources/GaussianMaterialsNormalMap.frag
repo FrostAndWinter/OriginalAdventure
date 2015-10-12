@@ -100,7 +100,7 @@ float ComputeAttenuation(in vec3 objectPosition,
 
 float ComputeAngleNormalHalf(in PerLightData lightData, out float cosAngIncidence, out vec3 lightIntensity) {
     vec3 lightDirection;
-    if (lightData.positionInCameraSpace.w < 0.0001) {
+    if (lightData.positionInCameraSpace.w < 0.0001) { //DirectionalLight
         lightDirection = lightData.positionInCameraSpace.xyz;
         lightIntensity = lightData.lightIntensity.rgb;
     }

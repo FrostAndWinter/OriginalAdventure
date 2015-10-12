@@ -4,12 +4,13 @@ smooth in vec3 vertexNormal;
 smooth in vec2 textureCoordinate;
 smooth in vec3 cameraSpacePosition;
 
-smooth in mat3 cameraToTangentSpaceMatrix;
+smooth in mat3 tangentToCameraSpaceMatrix;
 
 layout (location = 0) out vec3 cameraSpacePositionOut;
-layout (location = 1) out vec3 diffuseColourOut;
-layout (location = 2) out vec3 vertexNormalOut;
-layout (location = 3) out vec2 textureCoordinateOut;
+layout (location = 1) out vec3 vertexNormalOut;
+layout (location = 2) out vec4 ambientColourOut;
+layout (location = 3) out vec4 diffuseColourOut;
+layout (location = 4) out vec4 specularColourOut;
 
 uniform Material {
     vec4 ambientColour; //of which xyz are the colour and w is a 0/1 as to whether ambient self-illumination is enabled.
@@ -24,6 +25,10 @@ uniform sampler2D specularColourSampler;
 uniform sampler2D specularitySampler;
 uniform sampler2D normalMapSampler;
 
+bool useNormalMap() {
+    return (material.booleanMask & (1 << 4)) != 0;
+}
+
 vec4 diffuseColour() {
     if ((material.booleanMask & (1 << 1)) != 0) {
         return texture(diffuseColourSampler, textureCoordinate);
@@ -31,11 +36,43 @@ vec4 diffuseColour() {
         return material.diffuseColour;
     }
 }
+
+vec4 ambientColour() {
+
+    if ((material.booleanMask & (1)) != 0) {
+        return texture(ambientColourSampler, textureCoordinate);
+    } else {
+        return material.ambientColour;
+    }
+}
+
+vec4 specularColour() {
+    if ((material.booleanMask & (1 << 2)) != 0) {
+        return texture(specularColourSampler, textureCoordinate);
+    } else {
+        return material.specularColour;
+    }
+}
+
+float specularity() {
+    if ((material.booleanMask & (1 << 3)) != 0) {
+        return 1.f/min(texture(specularitySampler, textureCoordinate).r, 1.f);
+    } else {
+        return material.specularColour.a;
+    }
+}
 											
 void main()									
 {											
 	cameraSpacePositionOut = cameraSpacePosition;
-	diffuseColourOut = diffuseColour().rgb;
-	vertexNormalOut = vertexNormal;
-	textureCoordinateOut = textureCoordinate;
+
+    if (useNormalMap()) {
+        vertexNormalOut = normalize(tangentToCameraSpaceMatrix * (texture(normalMapSampler, textureCoordinate).rgb*2.0 - 1.0));
+    } else {
+        vertexNormalOut = normalize(vertexNormal);
+    }
+
+    diffuseColourOut = diffuseColour();
+    ambientColourOut = vec4(ambientColour().rgb, material.ambientColour.a);
+    specularColourOut = vec4(specularColour().rgb, specularity());
 }

@@ -2,11 +2,20 @@ package swen.adventure.engine.rendering;
 
 import swen.adventure.engine.rendering.maths.Matrix3;
 import swen.adventure.engine.rendering.maths.Matrix4;
+import swen.adventure.engine.rendering.maths.Quaternion;
+import swen.adventure.engine.rendering.maths.Vector3;
+import swen.adventure.engine.rendering.shaders.deferredrendering.DirectionalLightPassShader;
 import swen.adventure.engine.rendering.shaders.deferredrendering.GeometryPassShader;
+import swen.adventure.engine.rendering.shaders.deferredrendering.LightPassShader;
+import swen.adventure.engine.rendering.shaders.deferredrendering.PointLightPassShader;
 import swen.adventure.engine.scenegraph.Light;
 import swen.adventure.engine.scenegraph.MeshNode;
+import swen.adventure.engine.scenegraph.SceneNode;
+import swen.adventure.engine.scenegraph.TransformNode;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL14.*;
@@ -18,6 +27,8 @@ import static org.lwjgl.opengl.GL30.*;
 public class GLDeferredRenderer {
 
     private GeometryPassShader _geometryPassShader;
+    private LightPassShader _pointLightPassShader;
+    private DirectionalLightPassShader _directionalLightPassShader;
     private int _width, _height;
     private float _currentFOV = (float)Math.PI/3.f;
     private Matrix4 _currentProjectionMatrix;
@@ -27,6 +38,8 @@ public class GLDeferredRenderer {
     public GLDeferredRenderer(int width, int height) {
 
         _geometryPassShader = new GeometryPassShader();
+        _pointLightPassShader = new PointLightPassShader();
+        _directionalLightPassShader = new DirectionalLightPassShader();
         _gBuffer = new GBuffer(width, height);
         this.setSize(width, height);
     }
@@ -42,6 +55,14 @@ public class GLDeferredRenderer {
     public void setSize(int width, int height) {
         _width = width; _height = height;
         _currentProjectionMatrix = this.perspectiveMatrix(_width, _height, _currentFOV);
+
+        _directionalLightPassShader.useProgram();
+        _directionalLightPassShader.setScreenSize(width, height);
+        _directionalLightPassShader.endUseProgram();
+
+        _pointLightPassShader.useProgram();
+        _pointLightPassShader.setScreenSize(width, height);
+        _pointLightPassShader.endUseProgram();
     }
 
     /**
@@ -73,7 +94,10 @@ public class GLDeferredRenderer {
     public void render(List<MeshNode> nodes, List<Light> lights, Matrix4 worldToCameraMatrix, Matrix4 projectionMatrix, float hdrMaxIntensity) {
 
         this.performGeometryPass(nodes, worldToCameraMatrix, projectionMatrix);
-        this.performLightPass();
+        this.beginLightPasses();
+        this.performPointLightPass(lights, worldToCameraMatrix, projectionMatrix, hdrMaxIntensity);
+        this.performDirectionalLightPasses(lights, worldToCameraMatrix);
+
 
     }
 
@@ -123,30 +147,74 @@ public class GLDeferredRenderer {
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
-    private void performPointLightPass() {
+    private float calculatePointLightSphereRadius(Light pointLight, float hdrMaxIntensity) {
+        Vector3 colourVector = pointLight.colourVector();
+        float maxChannel = Math.max(Math.max(colourVector.x, colourVector.y), colourVector.z) * 256;
+        float maxChannelNormalised = maxChannel/hdrMaxIntensity;
 
+        float exponential = pointLight.falloff == Light.LightFalloff.Quadratic ? Light.LightAttenuationFactor : 0;
+        float linear = pointLight.falloff == Light.LightFalloff.Linear ? Light.LightAttenuationFactor : 0;
+        float constant = 0;
+
+        float radius = (-linear + (float)Math.sqrt(linear * linear - 4 * exponential *(constant - maxChannelNormalised)))/2*exponential;
+        return radius;
     }
 
-    private void performLightPass() {
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    private void performPointLightPass(List<Light> lights, Matrix4 worldToCameraMatrix, Matrix4 projectionMatrix, float hdrMaxIntensity) {
+        if (lights.isEmpty()) { return; }
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        TransformNode sceneGraph = lights.get(0).parent().get(); //Get a part of the scene graph.
+        final String pointLightSphereTransformId = "RENDERERPointLightSphereTransform";
+        final String pointLightSphereMeshId = "RENDERERPointLightSphereMesh";
+        TransformNode sphereTransform = sceneGraph.findNodeWithIdOrCreate(pointLightSphereTransformId, () -> { //create the sphere transform if we haven't already.
+            TransformNode transformNode = new TransformNode(pointLightSphereTransformId, sceneGraph, true, Vector3.zero, new Quaternion(), Vector3.one);
+            new MeshNode(pointLightSphereMeshId, null, "sphere.obj", transformNode);
+            return transformNode;
+        });
+        sphereTransform.setEnabled(true);
+        MeshNode sphereMesh = (MeshNode)sceneGraph.nodeWithID(pointLightSphereMeshId).get();
 
-        _gBuffer.bindForReading();
+        _pointLightPassShader.useProgram();
 
-        int halfWidth = (int)(_width / 2.0f);
-        int halfHeight = (int)(_height / 2.0f);
+        _pointLightPassShader.setCameraToClipMatrix(projectionMatrix);
 
-        _gBuffer.setReadBuffer(TextureUnit.PositionUnit);
-        glBlitFramebuffer(0, 0, _width, _height, 0, 0, halfWidth, halfHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+        lights.stream().filter(light -> light.type == Light.LightType.Point).forEach(light -> {
+            _pointLightPassShader.setLightData(Light.toLightBlock(Collections.singletonList(light), worldToCameraMatrix));
 
-        _gBuffer.setReadBuffer(TextureUnit.DiffuseColourUnit);
-        glBlitFramebuffer(0, 0, _width, _height, 0, halfHeight, halfWidth, _height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+            float sphereScale = this.calculatePointLightSphereRadius(light, hdrMaxIntensity);
 
-        _gBuffer.setReadBuffer(TextureUnit.VertexNormalUnit);
-        glBlitFramebuffer(0, 0, _width, _height, halfWidth, halfHeight, _width, _height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+            sphereTransform.setParent(light.parent().get());
+            sphereTransform.setScale(new Vector3(sphereScale, sphereScale, sphereScale));
 
-        _gBuffer.setReadBuffer(TextureUnit.TextureCoordinateUnit);
-        glBlitFramebuffer(0, 0, _width, _height, halfWidth, 0, _width, halfHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+            Matrix4 nodeToCameraSpaceTransform = worldToCameraMatrix.multiply(sphereTransform.nodeToWorldSpaceTransform());
+            _pointLightPassShader.setModelToCameraMatrix(nodeToCameraSpaceTransform);
+
+            sphereMesh.render();
+        });
+
+        sphereTransform.setEnabled(false);
+    }
+
+    private void performDirectionalLightPasses(List<Light> lights, Matrix4 worldToCameraMatrix) {
+        if (lights.isEmpty()) { return; }
+
+        TransformNode sceneGraph = lights.get(0).parent().get(); //Get a part of the scene graph.
+        final String directionalLightQuadMeshId = "RENDERERDirectionalLightQuadMesh";
+        MeshNode quadMesh = sceneGraph.findNodeWithIdOrCreate(directionalLightQuadMeshId, () -> { //create the sphere transform if we haven't already.
+            return new MeshNode(directionalLightQuadMeshId, null, "Plane.obj", sceneGraph);
+        });
+        quadMesh.setEnabled(true);
+
+        List<Light> filteredLights = lights.stream()
+                .filter(light -> light.type == Light.LightType.Directional || light.type == Light.LightType.Ambient)
+                .collect(Collectors.toList());
+
+        _directionalLightPassShader.setLightData(Light.toLightBlock(filteredLights, worldToCameraMatrix));
+
+        quadMesh.render();
+
+        quadMesh.setEnabled(false);
+
+        _directionalLightPassShader.endUseProgram();
     }
 }
