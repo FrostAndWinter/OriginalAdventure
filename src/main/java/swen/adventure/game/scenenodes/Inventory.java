@@ -1,12 +1,36 @@
 package swen.adventure.game.scenenodes;
 
+import swen.adventure.engine.Action;
+import swen.adventure.engine.Input;
+
 import java.util.Optional;
 
 /**
  * Created by josephbennett on 29/09/15
+ * Modefied by Daniel Braithwaite id: 300313770
  */
 public class Inventory extends Container {
     public static final int InventoryCapacity = 5;
+
+    public static final Action<Input, Input, Inventory> actionSelectSlot1 = (eventObject, triggeringObject, listener, data) -> {
+        listener.selectSlot(0);
+    };
+
+    public static final Action<Input, Input, Inventory> actionSelectSlot2 = (eventObject, triggeringObject, listener, data) -> {
+        listener.selectSlot(1);
+    };
+
+    public static final Action<Input, Input, Inventory> actionSelectSlot3 = (eventObject, triggeringObject, listener, data) -> {
+        listener.selectSlot(2);
+    };
+
+    public static final Action<Input, Input, Inventory> actionSelectSlot4 = (eventObject, triggeringObject, listener, data) -> {
+        listener.selectSlot(3);
+    };
+
+    public static final Action<Input, Input, Inventory> actionSelectSlot5 = (eventObject, triggeringObject, listener, data) -> {
+        listener.selectSlot(4);
+    };
 
     /**
      * The slot that is currently selected
