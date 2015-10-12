@@ -16,16 +16,16 @@ import static org.lwjgl.opengl.GL32.*;
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 19/09/15.
  *
- * GLRenderer provides mechanisms to render MeshNodes under lighting defined by a set of Lights and using a given camera matrix.
+ * GLForwardRenderer provides mechanisms to render MeshNodes under lighting defined by a set of Lights and using a given camera matrix.
  */
-public class GLRenderer {
+public class GLForwardRenderer {
 
     private GaussianMaterialsNormalMapsShader _defaultShader;
     private int _width, _height;
     private float _currentFOV = (float)Math.PI/3.f;
     private Matrix4 _currentProjectionMatrix;
 
-    public GLRenderer(int width, int height) {
+    public GLForwardRenderer(int width, int height) {
         _defaultShader = new GaussianMaterialsNormalMapsShader();
 
         this.setSize(width, height);

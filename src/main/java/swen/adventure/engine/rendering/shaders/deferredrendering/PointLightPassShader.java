@@ -1,8 +1,12 @@
 package swen.adventure.engine.rendering.shaders.deferredrendering;
 
 import swen.adventure.engine.Utilities;
+import swen.adventure.engine.rendering.TextureUnit;
 
 import java.io.IOException;
+
+import static org.lwjgl.opengl.GL20.glGetUniformLocation;
+import static org.lwjgl.opengl.GL20.glUniform1i;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 12/10/15.

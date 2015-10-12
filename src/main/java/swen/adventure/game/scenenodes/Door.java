@@ -45,7 +45,7 @@ public class Door extends AdventureGameObject {
 
         TransformNode body = parent.findNodeWithIdOrCreate(bodyTransformId, () -> new TransformNode(bodyTransformId, parent, true, Vector3.zero, new Quaternion(), Vector3.one));
         MeshNode doorMesh = parent.findNodeWithIdOrCreate(meshId, () -> new MeshNode(meshId, "MedievalModels", "Door.obj", body));
-        doorMesh.setCollidable(true);
+      //  doorMesh.setCollidable(true);
         this.registerMeshForInteraction(doorMesh);
         
         _doorOpenPercentage.eventValueChanged.addAction(this, (eventObject, triggeringObject, listener, data) ->  {

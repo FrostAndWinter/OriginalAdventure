@@ -96,11 +96,8 @@ public class GLDeferredRenderer {
         this.performGeometryPass(nodes, worldToCameraMatrix, projectionMatrix);
         this.beginLightPasses();
         this.performPointLightPass(lights, worldToCameraMatrix, projectionMatrix, hdrMaxIntensity);
-        this.performDirectionalLightPasses(lights, worldToCameraMatrix);
-
-
+        this.performDirectionalLightPasses(lights, worldToCameraMatrix, hdrMaxIntensity);
     }
-
 
     private void performGeometryPass(List<MeshNode> nodes, Matrix4 worldToCameraMatrix, Matrix4 projectionMatrix) {
         _geometryPassShader.useProgram();
@@ -149,14 +146,13 @@ public class GLDeferredRenderer {
 
     private float calculatePointLightSphereRadius(Light pointLight, float hdrMaxIntensity) {
         Vector3 colourVector = pointLight.colourVector();
-        float maxChannel = Math.max(Math.max(colourVector.x, colourVector.y), colourVector.z) * 256;
-        float maxChannelNormalised = maxChannel/hdrMaxIntensity;
+        float maxChannel = Math.max(Math.max(colourVector.x, colourVector.y), colourVector.z) * 256 / hdrMaxIntensity;
 
         float exponential = pointLight.falloff == Light.LightFalloff.Quadratic ? Light.LightAttenuationFactor : 0;
         float linear = pointLight.falloff == Light.LightFalloff.Linear ? Light.LightAttenuationFactor : 0;
         float constant = 0;
 
-        float radius = (-linear + (float)Math.sqrt(linear * linear - 4 * exponential *(constant - maxChannelNormalised)))/2*exponential;
+        float radius = (-linear + (float)Math.sqrt(linear * linear - 4 * exponential * (constant - maxChannel)))/(2*exponential);
         return radius;
     }
 
@@ -177,6 +173,7 @@ public class GLDeferredRenderer {
         _pointLightPassShader.useProgram();
 
         _pointLightPassShader.setCameraToClipMatrix(projectionMatrix);
+        _pointLightPassShader.setMaxIntensity(hdrMaxIntensity);
 
         lights.stream().filter(light -> light.type == Light.LightType.Point).forEach(light -> {
             _pointLightPassShader.setLightData(Light.toLightBlock(Collections.singletonList(light), worldToCameraMatrix));
@@ -195,8 +192,10 @@ public class GLDeferredRenderer {
         sphereTransform.setEnabled(false);
     }
 
-    private void performDirectionalLightPasses(List<Light> lights, Matrix4 worldToCameraMatrix) {
+    private void performDirectionalLightPasses(List<Light> lights, Matrix4 worldToCameraMatrix, float hdrMaxIntensity) {
         if (lights.isEmpty()) { return; }
+
+        _directionalLightPassShader.useProgram();
 
         TransformNode sceneGraph = lights.get(0).parent().get(); //Get a part of the scene graph.
         final String directionalLightQuadMeshId = "RENDERERDirectionalLightQuadMesh";
@@ -209,6 +208,7 @@ public class GLDeferredRenderer {
                 .filter(light -> light.type == Light.LightType.Directional || light.type == Light.LightType.Ambient)
                 .collect(Collectors.toList());
 
+        _directionalLightPassShader.setMaxIntensity(hdrMaxIntensity);
         _directionalLightPassShader.setLightData(Light.toLightBlock(filteredLights, worldToCameraMatrix));
 
         quadMesh.render();

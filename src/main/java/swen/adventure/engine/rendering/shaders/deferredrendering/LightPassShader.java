@@ -19,16 +19,18 @@ public class LightPassShader extends PerObjectMaterialShader {
     public LightPassShader(String vertexShader, String fragmentShader) {
         super(vertexShader, fragmentShader);
 
-        _screenSizeUniformRef = glGetUniformLocation(this.glProgramRef(), "screenSize");
+        _screenSizeUniformRef = glGetUniformLocation(this.glProgramRef(), "screenSizeUniform");
 
-        final int positionsSamplerRef = glGetUniformLocation(this.glProgramRef(), "positionsSampler");
-        final int vertexNormalsSamplerRef = glGetUniformLocation(this.glProgramRef(), "vertexNormalsSampler");
+        final int positionsSamplerRef = glGetUniformLocation(this.glProgramRef(), "cameraSpacePositionSampler");
+        final int vertexNormalsSamplerRef = glGetUniformLocation(this.glProgramRef(), "cameraSpaceNormalSampler");
         final int diffuseColourSamplerRef = glGetUniformLocation(this.glProgramRef(), "diffuseColourSampler");
+        final int specularColourSamplerRef = glGetUniformLocation(this.glProgramRef(), "specularColourSampler");
 
         this.useProgram();
         glUniform1i(positionsSamplerRef, TextureUnit.PositionUnit.glUnit);
-        glUniform1i(positionsSamplerRef, TextureUnit.DiffuseColourUnit.glUnit);
+        glUniform1i(diffuseColourSamplerRef, TextureUnit.DiffuseColourUnit.glUnit);
         glUniform1i(vertexNormalsSamplerRef, TextureUnit.VertexNormalUnit.glUnit);
+        glUniform1i(specularColourSamplerRef, TextureUnit.SpecularColourUnit.glUnit);
         this.endUseProgram();
     }
 

@@ -36,8 +36,8 @@ public class PerObjectMaterialShader extends ShaderProgram implements MaterialSh
     private static final int LightBlockIndex = 0;
     private static final int MaterialBlockIndex = 1;
 
-    private final int _lightUniformBufferRef;
-    private final int _materialUniformBufferRef;
+    private int _lightUniformBufferRef;
+    private int _materialUniformBufferRef;
     private final int _textureRepeatUniformBufferRef;
 
     private static String vertexShaderText() {
@@ -85,22 +85,24 @@ public class PerObjectMaterialShader extends ShaderProgram implements MaterialSh
         int lightBlock = glGetUniformBlockIndex(this.glProgramRef(), "Light");
         int materialBlock = glGetUniformBlockIndex(this.glProgramRef(), "Material");
 
-        glUniformBlockBinding(this.glProgramRef(), lightBlock, LightBlockIndex);
-        glUniformBlockBinding(this.glProgramRef(), materialBlock, MaterialBlockIndex);
+        if (lightBlock != -1) {
+            glUniformBlockBinding(this.glProgramRef(), lightBlock, LightBlockIndex);
+            _lightUniformBufferRef = glGenBuffers();
+            glBindBuffer(GL_UNIFORM_BUFFER, _lightUniformBufferRef);
+            glBufferData(GL_UNIFORM_BUFFER, Light.BufferSizeInBytes, GL_DYNAMIC_DRAW);
 
-        _lightUniformBufferRef = glGenBuffers();
-        glBindBuffer(GL_UNIFORM_BUFFER, _lightUniformBufferRef);
-        glBufferData(GL_UNIFORM_BUFFER, Light.BufferSizeInBytes, GL_DYNAMIC_DRAW);
+            //Bind the static buffer
+            glBindBufferRange(GL_UNIFORM_BUFFER, LightBlockIndex, _lightUniformBufferRef, 0, Light.BufferSizeInBytes);
+        }
 
-        //Bind the static buffer
-        glBindBufferRange(GL_UNIFORM_BUFFER, LightBlockIndex, _lightUniformBufferRef, 0, Light.BufferSizeInBytes);
+        if (materialBlock != -1) { glUniformBlockBinding(this.glProgramRef(), materialBlock, MaterialBlockIndex);
+            _materialUniformBufferRef = glGenBuffers();
+            glBindBuffer(GL_UNIFORM_BUFFER, _materialUniformBufferRef);
+            glBufferData(GL_UNIFORM_BUFFER, Material.BufferSizeInBytes, GL_DYNAMIC_DRAW);
 
-        _materialUniformBufferRef = glGenBuffers();
-        glBindBuffer(GL_UNIFORM_BUFFER, _materialUniformBufferRef);
-        glBufferData(GL_UNIFORM_BUFFER, Material.BufferSizeInBytes, GL_DYNAMIC_DRAW);
-
-        //Bind the static buffer
-        glBindBufferRange(GL_UNIFORM_BUFFER, MaterialBlockIndex, _materialUniformBufferRef, 0, Material.BufferSizeInBytes);
+            //Bind the static buffer
+            glBindBufferRange(GL_UNIFORM_BUFFER, MaterialBlockIndex, _materialUniformBufferRef, 0, Material.BufferSizeInBytes);
+        }
 
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
     }

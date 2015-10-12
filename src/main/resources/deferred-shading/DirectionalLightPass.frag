@@ -20,6 +20,8 @@ uniform Light {
     PerLightData lights[MaxLights];
 } lighting;
 
+uniform float maxIntensity;
+uniform vec2 screenSizeUniform;
 
 uniform sampler2D ambientColourSampler;
 uniform sampler2D diffuseColourSampler;
@@ -27,9 +29,6 @@ uniform sampler2D specularColourSampler;
 
 uniform sampler2D cameraSpacePositionSampler;
 uniform sampler2D cameraSpaceNormalSampler;
-
-uniform float maxIntensity;
-uniform vec2 screenSize;
 
 float ComputeAngleNormalHalf(in PerLightData lightData, in vec3 cameraSpacePosition, in vec3 surfaceNormal, out float cosAngIncidence, out vec3 lightIntensity) {
     vec3 lightDirection = lightData.positionInCameraSpace.xyz;
@@ -57,14 +56,14 @@ vec3 ComputeLighting(in PerLightData lightData, in vec3 cameraSpacePosition, in 
     gaussianTerm = cosAngIncidence != 0.0f ? gaussianTerm : 0.0;
 
     vec3 lighting = diffuse.rgb * lightIntensity * cosAngIncidence;
-    lighting = specular.rgb * lightIntensity * gaussianTerm;
+    lighting += specular.rgb * lightIntensity * gaussianTerm;
 
     return lighting;
 }
 
 
 vec2 CalcTexCoord() {
-   return gl_FragCoord.xy / screenSize;
+   return gl_FragCoord.xy / screenSizeUniform;
 }
 
 void main() {
@@ -94,6 +93,6 @@ void main() {
 
     totalLighting = totalLighting / maxIntensity;
 
-    outputColor = vec4(1.f, 0.f, 0.f, 1.f);//vec4(totalLighting, diffuseColour.a);
+    outputColor = vec4(totalLighting, diffuseColour.a);
 
 }
