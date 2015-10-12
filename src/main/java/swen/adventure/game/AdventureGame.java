@@ -96,6 +96,12 @@ public class AdventureGame implements Game {
         _keyInput.eventSecondaryAction.addAction(this, AdventureGame.secondaryActionFired);
         _keyInput.eventSecondaryActionEnded.addAction(this, AdventureGame.secondaryActionEnded);
 
+        _keyInput.eventSelectInventorySlot1.addAction(_player.inventory(), Inventory.actionSelectSlot1);
+        _keyInput.eventSelectInventorySlot2.addAction(_player.inventory(), Inventory.actionSelectSlot2);
+        _keyInput.eventSelectInventorySlot3.addAction(_player.inventory(), Inventory.actionSelectSlot3);
+        _keyInput.eventSelectInventorySlot4.addAction(_player.inventory(), Inventory.actionSelectSlot4);
+        _keyInput.eventSelectInventorySlot5.addAction(_player.inventory(), Inventory.actionSelectSlot5);
+
         _keyInput.eventHideShowInventory.addAction(ui.getInventory(), InventoryComponent.actionToggleZoomItem);
 
         _keyInput.eventHideShowControlls.addAction(ui, UI.actionToggleControlls);

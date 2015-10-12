@@ -35,8 +35,6 @@ public class InventoryComponent extends UIComponent {
     };
 
     private int boxSize;
-
-    private int selectedItem = 0;
     private boolean _selectedItemIsZoomed;
 
     private final Inventory _inventory;
@@ -106,7 +104,7 @@ public class InventoryComponent extends UIComponent {
 
         for (int i = 0; i < _inventory.capacity(); i++) {
             g.fill(0);
-            if (i == selectedItem) {
+            if (i == _inventory.selectedSlot()) {
                 g.fill(180);
             }
 
