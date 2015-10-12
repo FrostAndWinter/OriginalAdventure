@@ -84,15 +84,29 @@ public class AdventureGame implements Game {
         setupSceneGraph(SceneGraphParser.parseSceneGraph(event.eventData.get("scenegraph").toString()), event.targetId);
     }
 
+
+    private List<String> networkEvents = new ArrayList<String>(){{
+        add("PlayerMoved");
+        add("LeverToggled");
+        add("LeverToggled");
+    }};
+
     private void setupSceneGraph(TransformNode sceneGraph, String playerId) {
         _sceneGraph = sceneGraph;
 
         createPlayer(playerId);
 
-
-        _player.eventPlayerMoved.addAction(playerId , (eventObject1, triggeringObject1, listener1, data1) ->
-                        _client.send(new EventBox("PlayerMoved", triggeringObject1.id, _player.id, _player.id, data1))
-        );
+        for (String networkEvent : networkEvents) {
+            Event.EventSet eventSet = Event.eventSetForName(networkEvent);
+            eventSet.addAction(playerId, ((eventObject, triggeringObject, listener, data) -> {
+                SceneNode triggerNode = (SceneNode) triggeringObject;
+                SceneNode eventNode = (SceneNode) eventObject;
+                if (playerId.equals(triggerNode.id)) {
+                    _client.send(new EventBox(networkEvent, triggerNode.id, eventNode.id, playerId, data));
+                    System.out.println("Sending event " + networkEvent + " t: " + triggerNode.id + " e:" + eventNode.id + " pid: " + playerId);
+                }
+            }));
+        }
 
         _keyInput.eventMoveInDirection.addAction(_player, Player.actionMoveInDirection);
 
