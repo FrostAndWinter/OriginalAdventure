@@ -23,8 +23,8 @@ public class EventBoxTest extends TestCase {
                 box.targetId);
         assertEquals("from",
                 box.from);
-        assertEquals("v",
-                box.eventData.get("k"));
+        assertEquals("k",
+                box.eventData.get("v"));
     }
 
     @Test
