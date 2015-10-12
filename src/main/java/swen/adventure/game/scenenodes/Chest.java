@@ -84,14 +84,6 @@ public class Chest extends AdventureGameObject {
     }
 
     @Override
-    public void setContainer(Container container) {
-        super.setContainer(container);
-        if (container != null) {
-            //Set up the interaction connections between this object's mesh being interacted with and the container.
-        }
-    }
-
-    @Override
     public List<Interaction> possibleInteractions(MeshNode meshNode, Player player) {
         List<Interaction> possibleInteractions = new ArrayList<>();
         possibleInteractions.add(new Interaction(this.isOpen() ? Interaction.InteractionType.Close : Interaction.InteractionType.Open, this, meshNode));
@@ -117,7 +109,7 @@ public class Chest extends AdventureGameObject {
                 break;
             case PlaceIn:
                 player.inventory().selectedItem().ifPresent(item -> {
-                    item.moveToContainer(container().get());
+                    item.moveToContainer(this.container().get());
                     item.eventPlayerDroppedItem.trigger(player, Collections.emptyMap());
                 });
                 break;
