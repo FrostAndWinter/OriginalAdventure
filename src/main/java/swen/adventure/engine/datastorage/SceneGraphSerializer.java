@@ -107,6 +107,7 @@ public class SceneGraphSerializer {
     private Node serializeContainerNode(Container containerNode, Node xmlParentNode) {
         Element xmlElement = createElementForNode(containerNode, xmlParentNode);
         setAttribute("capacity", containerNode.capacity(), Integer.class, xmlElement);
+        setAttribute("showTopItem", containerNode.getShowTopItem(), Boolean.class, xmlElement);
         return xmlElement;
     }
 
@@ -117,6 +118,9 @@ public class SceneGraphSerializer {
                 .map(container -> container.id)
                 .ifPresent(id -> setAttribute("inContainer", id, xmlElement)
         );
+
+        itemNode.description
+                .ifPresent(description -> setAttribute("description", description, xmlElement));
 
         return xmlElement;
     }

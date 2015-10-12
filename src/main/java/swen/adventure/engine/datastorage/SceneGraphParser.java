@@ -122,8 +122,10 @@ public class SceneGraphParser {
     private static Inventory parseInventory(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode);
         int selectedSlot = getAttribute("selectedSlot", xmlNode, Integer.class);
+        boolean showTopItem = getAttribute("showTopItem", xmlNode, Boolean.class);
         Inventory inventory = new Inventory(id, parent);
         inventory.selectSlot(selectedSlot);
+        inventory.setShowTopItem(showTopItem);
         return inventory;
     }
 
@@ -164,14 +166,16 @@ public class SceneGraphParser {
             gameObject.setParent(parent);
 
             if (gameObject instanceof Item) {
-                Optional<String> containerIdOptional = getOptionalAttribute("inContainer", xmlNode);
+                Item item = (Item) gameObject;
 
-                containerIdOptional.ifPresent(containerId -> {
-                    Optional<SceneNode> containerOptional =  parent.nodeWithID(containerId);
-                    containerOptional.ifPresent(container -> {
-                        ((Item) gameObject).moveToContainer((Container) container);
-                    });
-                });
+                getOptionalAttribute("inContainer", xmlNode)
+                        .flatMap(parent::nodeWithID)
+                        .map(Container.class::cast)
+                        .ifPresent(item::moveToContainer);
+
+                getOptionalAttribute("description", xmlNode)
+                        .ifPresent(item::setDescription);
+
             } else if (gameObject instanceof Door) {
                 boolean requiresKey = getAttribute("requiresKey", xmlNode, Boolean::valueOf, false);
                 ((Door) gameObject).setRequiresKey(requiresKey);
