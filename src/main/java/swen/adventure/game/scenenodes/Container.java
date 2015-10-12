@@ -70,9 +70,17 @@ public class Container extends SceneNode {
             return Optional.empty();
         }
 
-        Item item = _items.remove(_items.size() - 1);
+        return Optional.of(this.removeItemAtIndex(_items.size() - 1));
+    }
+
+    public Item removeItemAtIndex(int index) {
+        if (index < 0 || index >= _items.size()) {
+            throw new RuntimeException("Impossible index given for container. " + index  + " is greater than size.");
+        }
+
+        Item item = _items.remove(index);
         this.setVisibilityOnContents();
-        return Optional.of(item);
+        return item;
     }
 
     public Optional<Item> itemAtIndex(int index) {

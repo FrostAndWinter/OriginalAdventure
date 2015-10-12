@@ -182,15 +182,13 @@ public abstract class SceneNode implements BundleSerializable {
     }
 
     /**
-     * Recursively applies a function to this node and then its children. Skips any disabled nodes
+     * Recursively applies a function to this node and then its children.
      * @param traversalFunction The function to apply to each node.
      */
     public void traverse(NodeTraversalFunction traversalFunction) {
-        if (_isEnabled) {
-            traversalFunction.visit(this);
-            for (SceneNode child : _childNodes) {
-                child.traverse(traversalFunction);
-            }
+        traversalFunction.visit(this);
+        for (SceneNode child : _childNodes) {
+            child.traverse(traversalFunction);
         }
     }
 

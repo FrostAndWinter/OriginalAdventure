@@ -9,7 +9,7 @@ smooth out vec3 vertexNormal;
 smooth out vec3 cameraSpacePosition;
 smooth out vec2 textureCoordinate;
 
-smooth out mat3 cameraToTangentSpaceMatrix;
+smooth out mat3 tangentToCameraSpaceMatrix;
 
 uniform mat4 modelToCameraMatrixUniform;
 uniform mat4 cameraToClipMatrixUniform;
@@ -28,9 +28,9 @@ void main() {
 
 	vec3 mBPrime = tangent.w * (cross(normal, tangent.xyz));
 
-	cameraToTangentSpaceMatrix = transpose(mat3(
+	tangentToCameraSpaceMatrix = mat3(
 	          normalize(nodeToCamera3x3MatrixUniform * tangent.xyz),
 	          normalize(nodeToCamera3x3MatrixUniform * mBPrime),
 	          normalize(nodeToCamera3x3MatrixUniform * normal)
-	));
+	);
 }

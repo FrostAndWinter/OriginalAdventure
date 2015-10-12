@@ -273,7 +273,8 @@ public class AdventureGame implements Game {
             Character character = null;
             switch (actionType) {
                 case Primary:
-                    character = _keyInput.characterForEvent(_keyInput.eventPrimaryAction);break;
+                    character = _keyInput.characterForEvent(_keyInput.eventPrimaryAction);
+                    break;
                 case Secondary:
                     character = _keyInput.characterForEvent(_keyInput.eventSecondaryAction);
                     break;

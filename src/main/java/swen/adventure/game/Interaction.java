@@ -80,7 +80,7 @@ public final class Interaction {
             case Pull:
                 return String.format("Press %c to pull %s", buttonName, this.gameObject.name);
         }
-        return null; //Should never happen if switch statement is exhaustive.
+        throw new RuntimeException("Interaction type not implemented for message: " + interactionType); //Should never happen if switch statement is exhaustive.
     }
 
     @Override

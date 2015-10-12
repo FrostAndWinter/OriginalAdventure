@@ -17,6 +17,7 @@ import java.util.*;
 public class Door extends AdventureGameObject {
 
     private boolean _isOpen = false;
+    private boolean _requiresKey = false;
 
     private static final float DoorAnimationDuration = 1.2f;
 
@@ -71,12 +72,19 @@ public class Door extends AdventureGameObject {
         new Animation(_doorOpenPercentage, AnimationCurve.Sine, DoorAnimationDuration, 0.0f);
     }
 
+    public void setRequiresKey(boolean requiresKey) {
+        _requiresKey = requiresKey;
+    }
+
     @Override
     public List<Interaction> possibleInteractions(final MeshNode meshNode, final Player player) {
-        if (!_isOpen && _playersThatCanOpenDoor.contains(player)) {
-            return Collections.singletonList(new Interaction(Interaction.InteractionType.Open, this, meshNode));
+        boolean canInteract = (!_requiresKey || _playersThatCanOpenDoor.contains(player));
+
+        if (canInteract) {
+            return Collections.singletonList(new Interaction(_isOpen ? Interaction.InteractionType.Close : Interaction.InteractionType.Open, this, meshNode));
+        } else {
+            return Collections.emptyList();
         }
-        return Collections.emptyList();
     }
 
     @Override
@@ -84,6 +92,9 @@ public class Door extends AdventureGameObject {
         switch (interaction.interactionType) {
             case Open:
                 this.open();
+                break;
+            case Close:
+                this.close();
                 break;
         }
     }
