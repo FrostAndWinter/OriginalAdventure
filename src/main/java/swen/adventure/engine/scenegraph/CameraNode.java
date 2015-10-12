@@ -8,7 +8,7 @@ package swen.adventure.engine.scenegraph;
 public final class CameraNode extends SceneNode {
 
     private float _fieldOfView = (float)Math.PI/3.f;
-    private float _hdrMaxIntensity = 12.f;
+    private float _hdrMaxIntensity = 16.f;
 
     public CameraNode(String id, TransformNode parent) {
         super(id, parent, false);

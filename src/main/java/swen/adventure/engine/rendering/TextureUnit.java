@@ -18,7 +18,8 @@ public enum TextureUnit {
 
     //Units for deferred shading.
     PositionUnit(5),
-    VertexNormalUnit(6);
+    VertexNormalUnit(6),
+    FinalUnit(7);
 
     public final int glUnit;
 
@@ -27,6 +28,6 @@ public enum TextureUnit {
     }
 
     public static List<TextureUnit> deferredShadingTextureUnits() {
-        return Arrays.asList(PositionUnit, VertexNormalUnit, AmbientColourUnit, DiffuseColourUnit, SpecularColourUnit);
+        return Arrays.asList(PositionUnit, VertexNormalUnit, DiffuseColourUnit, SpecularColourUnit);
     }
 }

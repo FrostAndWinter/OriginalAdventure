@@ -54,7 +54,7 @@ public final class Light extends SceneNode {
 
     private static final int MaxLights = 32;
     private static final int PerLightDataSize = 32;
-    public static final float LightAttenuationFactor = 0.0002f;
+    public static final float LightAttenuationFactor = 0.00002f;
 
     public static final int BufferSizeInBytes = Vector4.sizeInBytes + //ambient light
             4 + //num dynamic lights
@@ -194,10 +194,10 @@ public final class Light extends SceneNode {
 
     /**
      * Converts this point light to a buffer to be passed to GLDeferredRenderer.
-     * @param worldToCameraMatrix The matrix to convert from world space to camera space.
+     * @param lightToCameraMatrix The matrix to convert from node space to camera space.
      * @return A ByteBuffer representation of the data required to display this light.
      */
-    public ByteBuffer pointLightDataBuffer(Matrix4 worldToCameraMatrix) {
+    public ByteBuffer pointLightDataBuffer(Matrix4 lightToCameraMatrix) {
         if (this.type != LightType.Point) {
             throw new RuntimeException("pointLightDataBuffer cannot be used for light types other than point lights.");
         }
@@ -215,7 +215,7 @@ public final class Light extends SceneNode {
         buffer.putFloat(this.falloff == LightFalloff.Quadratic ? LightAttenuationFactor : 0.f); //quadratic attenuation
         buffer.putFloat(0.f);
 
-        Vector3 positionInCameraSpace = worldToCameraMatrix.multiply(this.nodeToWorldSpaceTransform().multiplyWithTranslation(Vector3.zero));
+        Vector3 positionInCameraSpace = lightToCameraMatrix.multiplyWithTranslation(Vector3.zero);
 
         buffer.putFloat(positionInCameraSpace.x);
         buffer.putFloat(positionInCameraSpace.y);

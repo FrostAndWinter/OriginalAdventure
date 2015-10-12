@@ -83,10 +83,6 @@ void main() {
 
     vec3 totalLighting = diffuseColour.rgb * lighting.ambientIntensity.rgb;
 
-    if (ambientColour.a > 0.9f) { // ~= 1
-        totalLighting += ambientColour.rgb;
-    }
-
     for (int light = 0; light < lighting.numDynamicLights; light++) {
         totalLighting += ComputeLighting(lighting.lights[light], cameraSpacePosition, surfaceNormal, diffuseColour, specularColour);
     }

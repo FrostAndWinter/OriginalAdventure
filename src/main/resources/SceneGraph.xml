@@ -14,7 +14,6 @@
         <Player id="player" boundingBox="-30, -60, -10, 30, 60, 10"/>
     </TransformNode>
     <AmbientLight id="ambientLight" colour="0.5, 0.5, 0.5" intensity="1.0"/>
-    <DirectionalLight id="directionalLight" colour="0.6, 0.6, 0.6" intensity="5.0" fromDirection="1, 1, 1"/>
 
     <!-- Room 1 starts here. Centred at origin, dimensions are 1200 x 1800. -->
     
@@ -113,21 +112,21 @@
         <TransformNode id="redTorchT" translation="-40.0, -10.0, 0.0">
             <MeshNode id="redTorchM" directory="MedievalModels" fileName="Torch.obj" isCollidable="true"/>
             <TransformNode id="redTorchFlameT" translation="2, 152, -33" scale="16, 24, 16">
-                <FlickeringLight id="redTorchFlame" directory="Flame" fileName="flame.obj" colour="1.0, 0.0, 0.0" intensity="9.0" intensityVariation="2.0" isOn="false"/>
+                <FlickeringLight id="redTorchFlame" directory="Flame" fileName="flame.obj" colour="1.0, 0.0, 0.0" intensity="5.0" intensityVariation="2.0" isOn="false"/>
             </TransformNode>
         </TransformNode>
 
         <TransformNode id="greenTorchT" translation="40.0, -10.0, 0.0">
             <MeshNode id="greenTorchM" directory="MedievalModels" fileName="Torch.obj" isCollidable="true"/>
             <TransformNode id="greenTorchFlameT" translation="2, 152, -33" scale="16, 24, 16">
-                <FlickeringLight id="greenTorchFlame" directory="Flame" fileName="flame.obj" colour="0.0, 1.0, 0.0" intensity="9.0" intensityVariation="2.0"/>
+                <FlickeringLight id="greenTorchFlame" directory="Flame" fileName="flame.obj" colour="0.0, 1.0, 0.0" intensity="5.0" intensityVariation="2.0"/>
             </TransformNode>
         </TransformNode>
 
         <TransformNode id="blueTorchT" translation="0.0, 70.0, 0.0">
             <MeshNode id="blueTorchM" directory="MedievalModels" fileName="Torch.obj" isCollidable="true"/>
             <TransformNode id="blueTorchFlameT" translation="2, 152, -33" scale="16, 24, 16">
-                <FlickeringLight id="blueTorchFlame" directory="Flame" fileName="flame.obj" colour="0.0, 0.0, 1.0" intensity="9.0" intensityVariation="2.0" isOn="false"/>
+                <FlickeringLight id="blueTorchFlame" directory="Flame" fileName="flame.obj" colour="0.0, 0.0, 1.0" intensity="5.0" intensityVariation="2.0" isOn="false"/>
             </TransformNode>
 
         </TransformNode>

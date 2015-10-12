@@ -8,9 +8,10 @@ smooth in mat3 tangentToCameraSpaceMatrix;
 
 layout (location = 0) out vec3 cameraSpacePositionOut;
 layout (location = 1) out vec3 vertexNormalOut;
-layout (location = 2) out vec4 ambientColourOut;
-layout (location = 3) out vec4 diffuseColourOut;
-layout (location = 4) out vec4 specularColourOut;
+layout (location = 2) out vec4 diffuseColourOut;
+layout (location = 3) out vec4 specularColourOut;
+layout (location = 4) out vec4 ambientColourOut;
+
 
 uniform Material {
     vec4 ambientColour; //of which xyz are the colour and w is a 0/1 as to whether ambient self-illumination is enabled.

@@ -92,6 +92,6 @@ void main() {
 
     totalLighting = totalLighting / maxIntensity;
 
-    outputColor = vec4(totalLighting, 1.f);
+    outputColor = vec4(totalLighting, diffuseColour.a);
 
 }
