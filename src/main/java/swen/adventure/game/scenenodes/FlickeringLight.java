@@ -27,19 +27,12 @@ public class FlickeringLight extends AdventureGameObject {
 
     private final Material _lightMaterial;
 
-    public final Event<FlickeringLight, Player> eventLightToggled = new Event<>("LightToggled", this);
+    public final Event<FlickeringLight, Player> eventLightTurnedOn = new Event<>("LightTurnedOn", this);
+    public final Event<FlickeringLight, Player> eventLightTurnedOff = new Event<>("LightTurnedOff", this);
 
-    public static final Action<SceneNode, Player, FlickeringLight> actionToggleLight = (eventObject, player, light, data) -> {
-        light._isAnimatingToggle = true;
-        if (light.isOn()) {
-            Animation animation = new Animation(light._lightIntensity, LightAnimationTime, 0.f);
-            light._isOn = false;
-            animation.eventAnimationDidComplete.addAction(light, (animation1, animation2, light1, data1) -> {
-                light.mesh().ifPresent(meshNode -> meshNode.setEnabled(false));
-                light._isAnimatingToggle = false;
-            });
-
-        } else {
+    public static final Action<SceneNode, Player, FlickeringLight> actionTurnLightOn = (eventObject, player, light, data) -> {
+        if  (!light.isOn()) {
+            light._isAnimatingToggle = true;
             Animation animation = new Animation(light._lightIntensity, LightAnimationTime, light._baseIntensity);
             animation.eventAnimationDidComplete.addAction(light, (animation1, triggeringObject, light1, data1) -> {
                 light.setIntensity(light._baseIntensity);
@@ -48,8 +41,21 @@ public class FlickeringLight extends AdventureGameObject {
             light._isOn = true;
 
             light.mesh().ifPresent(flameMesh -> flameMesh.setEnabled(true));
+            light.eventLightTurnedOn.trigger(player, Collections.emptyMap());
         }
-        light.eventLightToggled.trigger(player, Collections.emptyMap());
+    };
+
+    public static final Action<SceneNode, Player, FlickeringLight> actionTurnLightOff = (eventObject, player, light, data) -> {
+        if (light.isOn()) {
+            light._isAnimatingToggle = true;
+            Animation animation = new Animation(light._lightIntensity, LightAnimationTime, 0.f);
+            light._isOn = false;
+            animation.eventAnimationDidComplete.addAction(light, (animation1, animation2, light1, data1) -> {
+                light.mesh().ifPresent(meshNode -> meshNode.setEnabled(false));
+                light._isAnimatingToggle = false;
+            });
+            light.eventLightTurnedOff.trigger(player, Collections.emptyMap());
+        }
     };
 
     public FlickeringLight(final String id, final TransformNode parent,
