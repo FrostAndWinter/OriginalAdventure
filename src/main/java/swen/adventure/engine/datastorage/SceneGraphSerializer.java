@@ -1,5 +1,6 @@
 package swen.adventure.engine.datastorage;
 
+import org.lwjgl.system.libffi.Closure;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -87,11 +88,20 @@ public class SceneGraphSerializer {
         else if (isInstanceOf(sceneNode, Item.class))
             serializedNode = serializeItemNode((Item) sceneNode, xmlParentNode);
 
+        else if (isInstanceOf(sceneNode, Inventory.class))
+            serializedNode = serializedInventoryNode((Inventory) sceneNode, xmlParentNode);
+
         else
             throw new RuntimeException("Don't recognise node " + sceneNode);
 
         sceneNode.children()
                 .forEach(node -> serializeSceneNode(node, serializedNode));
+    }
+
+    private Node serializedInventoryNode(Inventory sceneNode, Node xmlParentNode) {
+        Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
+        setAttribute("selectedSlot", sceneNode.selectedSlot(), Integer.class, xmlElement);
+        return xmlElement;
     }
 
     private Node serializeContainerNode(Container containerNode, Node xmlParentNode) {

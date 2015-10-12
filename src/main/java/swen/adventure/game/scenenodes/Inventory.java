@@ -2,6 +2,7 @@ package swen.adventure.game.scenenodes;
 
 import swen.adventure.engine.Action;
 import swen.adventure.engine.Input;
+import swen.adventure.engine.scenegraph.TransformNode;
 
 import java.util.Optional;
 
@@ -37,17 +38,14 @@ public class Inventory extends Container {
      */
     private int _selectedSlot = 0;
 
-    private Player _player;
-
     public Inventory(Player player) {
         super(player.id + "Inventory", player.parent().get(), InventoryCapacity);
-        _player = player;
-
         this.setShowTopItem(false);
     }
 
-    public Player player() {
-        return _player;
+    public Inventory(String id, TransformNode parent) {
+        super(id, parent, InventoryCapacity);
+        this.setShowTopItem(false);
     }
 
     public void selectSlot(int slot) {
