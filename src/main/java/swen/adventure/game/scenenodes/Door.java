@@ -78,10 +78,13 @@ public class Door extends AdventureGameObject {
 
     @Override
     public List<Interaction> possibleInteractions(final MeshNode meshNode, final Player player) {
-        if (!_isOpen && (!_requiresKey ||  _playersThatCanOpenDoor.contains(player))) {
-            return Collections.singletonList(new Interaction(Interaction.InteractionType.Open, this, meshNode));
+        boolean canInteract = (!_requiresKey || _playersThatCanOpenDoor.contains(player));
+
+        if (canInteract) {
+            return Collections.singletonList(new Interaction(_isOpen ? Interaction.InteractionType.Close : Interaction.InteractionType.Open, this, meshNode));
+        } else {
+            return Collections.emptyList();
         }
-        return Collections.emptyList();
     }
 
     @Override
@@ -89,6 +92,9 @@ public class Door extends AdventureGameObject {
         switch (interaction.interactionType) {
             case Open:
                 this.open();
+                break;
+            case Close:
+                this.close();
                 break;
         }
     }
