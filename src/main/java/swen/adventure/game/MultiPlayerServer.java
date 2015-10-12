@@ -56,6 +56,8 @@ public class MultiPlayerServer implements Runnable {
                 continue;
             }
             EventBox event = isEvent.get();
+            System.out.println(String.format("Got: %s source: %s target: %s data: %s", event.eventName, event.sourceId, event.targetId, event.eventData));
+
 
             GameObject source = (GameObject)root.nodeWithID(event.sourceId).get();
             try {
@@ -91,6 +93,10 @@ public class MultiPlayerServer implements Runnable {
         collider.setParent(newPlayer.parent().get());
 
         newPlayer.setCollisionNode(collider);
+
+        newPlayer.eventPlayerMoved.addAction(this, (eventObject, triggeringObject, listener, data) ->
+                        eventObject.parent().get().setTranslation((Vector3)data.get(EventDataKeys.Location))
+        );
 
     }
 

@@ -43,8 +43,6 @@ public class Player extends AdventureGameObject {
         super(id, parent, id);
 
         this.setContainer(new Inventory(this));
-
-        this.eventPlayerMoved.addAction(this, actionMoveToLocation);
     }
 
     public void setCamera(CameraNode camera) {

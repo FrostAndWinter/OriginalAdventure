@@ -101,12 +101,19 @@ public class AdventureGame implements Game {
             eventSet.addAction(playerId, ((eventObject, triggeringObject, listener, data) -> {
                 SceneNode triggerNode = (SceneNode) triggeringObject;
                 SceneNode eventNode = (SceneNode) eventObject;
-                if (playerId.equals(triggerNode.id)) {
+                if (playerId.equals(triggerNode.id) &&
+                    !data.containsKey("Networked")) {
                     _client.send(new EventBox(networkEvent, triggerNode.id, eventNode.id, playerId, data));
-                    System.out.println("Sending event " + networkEvent + " t: " + triggerNode.id + " e:" + eventNode.id + " pid: " + playerId);
+                    System.out.println("Sending event " + networkEvent + " t: " + triggerNode.id + " e:" + eventNode.id + " pid: " + playerId + " data: " + data);
+                } else {
+                    System.out.println("Ignored event " + networkEvent + " t: " + triggerNode.id + " e:" + eventNode.id + " pid: " + playerId + " data: " + data);
                 }
             }));
         }
+
+        Event.EventSet playerMovedSet = Event.eventSetForName("PlayerMoved");
+        playerMovedSet.addAction(this, playerMoved);
+
 
         _keyInput.eventMoveInDirection.addAction(_player, Player.actionMoveInDirection);
 
@@ -132,10 +139,8 @@ public class AdventureGame implements Game {
         SpawnNode spawn = (SpawnNode)_sceneGraph.nodeWithID(SpawnNode.ID).get();
         spawn.spawnPlayerWithId(playerId);
 
-        // FIXME: Add CollisionNode to player
         Player newPlayer = (Player)_sceneGraph.nodeWithID(playerId).get();
         if (_player == null || playerId.equals(_player.id)) {
-
             TransformNode cameraTransform = new TransformNode(playerId + "CameraTranslation",
                     newPlayer.parent().get(), false, new Vector3(0, 40, 0), new Quaternion(), Vector3.one);
             newPlayer.setCamera(new CameraNode(playerId + "Camera", cameraTransform));
@@ -144,6 +149,8 @@ public class AdventureGame implements Game {
             new MeshNode(playerId + "Mesh", "", "rocket.obj", newPlayer.parent().get());
         }
 
+        newPlayer.eventPlayerMoved.addAction(this, playerMoved);
+
         BoundingBox boundingBox = new BoundingBox(new Vector3(-30, -60, -10) , new Vector3(30, 60, 10));
         String colliderID = playerId + "Collider";
         CollisionNode collider = (CollisionNode)spawn.nodeWithID(colliderID).orElseGet(() -> new CollisionNode(colliderID, newPlayer.parent().get(), boundingBox, CollisionNode.CollisionFlag.Player));
@@ -151,6 +158,15 @@ public class AdventureGame implements Game {
 
         newPlayer.setCollisionNode(collider);
     }
+
+    private static final Action<Player, Player, AdventureGame> playerMoved = (eventObject, triggeringObject, listener, data) -> {
+        System.out.println("Update " + eventObject.id + " position: " + data);
+        if (data.containsKey("Networked")) {
+            eventObject.parent().get().setTranslation((Vector3) data.get(EventDataKeys.Location));
+            System.out.println("Forcefully set position of " + eventObject.id);
+
+        }
+    };
 
     private static final Action<Input, Input, AdventureGame> primaryActionFired = (eventObject, triggeringObject, adventureGame, data) -> {
         adventureGame.performInteractions(Interaction.ActionType.Primary);
@@ -217,7 +233,7 @@ public class AdventureGame implements Game {
 
         _keyInput.eventHideShowInventory.addAction(ui.getInventory(), InventoryComponent.actionToggleZoomItem);
 
-        _keyInput.eventHideShowControlls.addAction(ui, UI.actionToggleControlls);
+        _keyInput.eventHideShowControls.addAction(ui, UI.actionToggleControlls);
     }
 
     @Override
@@ -238,19 +254,13 @@ public class AdventureGame implements Game {
         Optional<EventBox> box;
         while ((box = _client.poll()).isPresent()) {
             EventBox event = box.get();
+            event.eventData.put("Networked", true);
             SceneNode source = _sceneGraph.nodeWithID(event.sourceId).get();
 
             if (event.eventName.equals("playerConnected")) {
                 createPlayer(event.targetId);
                 continue;
             }
-
-//            if (event.eventName.equals("PlayerMoved")) {
-//                Player target = (Player)_sceneGraph.nodeWithID(event.targetId).get();
-//                target.parent().get().setTranslation((Vector3)event.eventData.get(EventDataKeys.Location));
-//                System.out.println(event.targetId + " moved to " + event.eventData.get(EventDataKeys.Location));
-//                continue;
-//            }
 
             SceneNode target = _sceneGraph.nodeWithID(event.targetId).get();
             Event e = target.eventWithName(event.eventName);
