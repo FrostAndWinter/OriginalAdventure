@@ -91,7 +91,7 @@ public class AdventureGame implements Game {
 
 
         _player.eventPlayerMoved.addAction(playerId , (eventObject1, triggeringObject1, listener1, data1) ->
-                        _client.send(new EventBox("eventPlayerMoved", triggeringObject1.id, _player.id, _player.id, data1))
+                        _client.send(new EventBox("PlayerMoved", triggeringObject1.id, _player.id, _player.id, data1))
         );
 
         _keyInput.eventMoveInDirection.addAction(_player, Player.actionMoveInDirection);
@@ -105,7 +105,7 @@ public class AdventureGame implements Game {
         }
 
         // get the possible interactions a player can make this step
-        Event.EventSet<AdventureGameObject, Player> interactionEvents = (Event.EventSet<AdventureGameObject, Player>) Event.eventSetForName("eventShouldProvideInteraction");
+        Event.EventSet<AdventureGameObject, Player> interactionEvents = (Event.EventSet<AdventureGameObject, Player>) Event.eventSetForName("ShouldProvideInteraction");
         interactionEvents.addAction(this, (gameObject, player, adventureGame, data) -> {
             Interaction interaction = (Interaction) data.get(EventDataKeys.Interaction);
             _possibleInteractionsForStep.put(interaction.interactionType, interaction);
@@ -231,12 +231,12 @@ public class AdventureGame implements Game {
                 continue;
             }
 
-            if (event.eventName.equals("eventPlayerMoved")) {
-                Player target = (Player)_sceneGraph.nodeWithID(event.targetId).get();
-                target.parent().get().setTranslation((Vector3)event.eventData.get(EventDataKeys.Location));
-                System.out.println(event.targetId + " moved to " + event.eventData.get(EventDataKeys.Location));
-                continue;
-            }
+//            if (event.eventName.equals("PlayerMoved")) {
+//                Player target = (Player)_sceneGraph.nodeWithID(event.targetId).get();
+//                target.parent().get().setTranslation((Vector3)event.eventData.get(EventDataKeys.Location));
+//                System.out.println(event.targetId + " moved to " + event.eventData.get(EventDataKeys.Location));
+//                continue;
+//            }
 
             SceneNode target = _sceneGraph.nodeWithID(event.targetId).get();
             Event e = target.eventWithName(event.eventName);

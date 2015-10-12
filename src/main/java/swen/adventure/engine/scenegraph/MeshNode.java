@@ -38,7 +38,7 @@ public final class MeshNode extends SceneNode {
     private Vector3 _textureRepeat = Vector3.one;
     private Optional<CollisionNode> _collisionNode = Optional.empty();
 
-    public final Event<SceneNode, Player> eventMeshLookedAt = new Event<>("eventMeshLookedAt", this);
+    public final Event<SceneNode, Player> eventMeshLookedAt = new Event<>("MeshLookedAt", this);
 
     /**
      * Loads a mesh from the specified location and parents it to parent. The id will be set to mesh{fileName}

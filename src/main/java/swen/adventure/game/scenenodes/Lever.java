@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class Lever extends AdventureGameObject {
 
-    public final Event<SceneNode, Player> eventLeverToggled = new Event<>("eventLeverToggled", this);
+    public final Event<SceneNode, Player> eventLeverToggled = new Event<>("LeverToggled", this);
 
     public static final Action<SceneNode, Player, Lever> actionMoveUp = (sceneNode, player, lever, data) ->  {
         lever.moveUp(player);

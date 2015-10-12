@@ -19,8 +19,8 @@ public class Item extends AdventureGameObject {
 
     private Optional<Container> _containingContainer = Optional.empty();
 
-    public final Event<Item, Player> eventPlayerPickedUpItem = new Event<>("eventPlayerPickedUpItem", this);
-    public final Event<Item, Player> eventPlayerDroppedItem = new Event<>("eventPlayerDroppedItem", this);
+    public final Event<Item, Player> eventPlayerPickedUpItem = new Event<>("PlayerPickedUpItem", this);
+    public final Event<Item, Player> eventPlayerDroppedItem = new Event<>("PlayerDroppedItem", this);
 
     /** An Item's parent transform must directly bring the item into world space (including centering the mesh at the origin); any extra translations must be done in a separate transform. */
     public Item(String id, TransformNode parent, String name, String description) {

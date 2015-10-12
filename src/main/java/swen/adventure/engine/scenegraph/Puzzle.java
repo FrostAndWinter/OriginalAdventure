@@ -44,8 +44,8 @@ public final class Puzzle extends GameObject {
 
     private List<PuzzleCondition> _conditions;
 
-    public final Event<Puzzle, Puzzle> eventPuzzleSolved = new Event<>("eventPuzzleSolved", this);
-    public final Event<Puzzle, Puzzle> eventPuzzleUnsolved = new Event<>("eventPuzzleUnsolved", this);
+    public final Event<Puzzle, Puzzle> eventPuzzleSolved = new Event<>("PuzzleSolved", this);
+    public final Event<Puzzle, Puzzle> eventPuzzleUnsolved = new Event<>("PuzzleUnsolved", this);
 
     public static final Action<SceneNode, Player, Puzzle> actionCheckPuzzle = (sceneNode, player, puzzle, data) -> {
         puzzle.checkForStateChange();

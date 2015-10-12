@@ -27,7 +27,7 @@ public class FlickeringLight extends AdventureGameObject {
 
     private final Material _lightMaterial;
 
-    public final Event<FlickeringLight, Player> eventLightToggled = new Event<>("eventLightToggled", this);
+    public final Event<FlickeringLight, Player> eventLightToggled = new Event<>("LightToggled", this);
 
     public static final Action<SceneNode, Player, FlickeringLight> actionToggleLight = (eventObject, player, light, data) -> {
         light._isAnimatingToggle = true;
