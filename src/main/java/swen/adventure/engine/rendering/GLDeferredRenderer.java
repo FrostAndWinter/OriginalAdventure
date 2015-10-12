@@ -1,5 +1,6 @@
 package swen.adventure.engine.rendering;
 
+import javafx.scene.shape.Mesh;
 import swen.adventure.engine.rendering.maths.Matrix3;
 import swen.adventure.engine.rendering.maths.Matrix4;
 import swen.adventure.engine.rendering.maths.Quaternion;
@@ -13,6 +14,8 @@ import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.SceneNode;
 import swen.adventure.engine.scenegraph.TransformNode;
 
+import java.awt.*;
+import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +30,7 @@ import static org.lwjgl.opengl.GL30.*;
 public class GLDeferredRenderer {
 
     private GeometryPassShader _geometryPassShader;
-    private LightPassShader _pointLightPassShader;
+    private PointLightPassShader _pointLightPassShader;
     private DirectionalLightPassShader _directionalLightPassShader;
     private int _width, _height;
     private float _currentFOV = (float)Math.PI/3.f;
@@ -156,40 +159,41 @@ public class GLDeferredRenderer {
         return radius;
     }
 
+    private Matrix4 calculatePointLightSphereNodeToCameraTransform(Light light, Matrix4 worldToCameraMatrix, float hdrMaxIntensity) {
+        Matrix4 nodeToCameraSpaceTransform = worldToCameraMatrix.multiply(light.nodeToWorldSpaceTransform());
+
+        Vector3 translationInWorldSpace = nodeToCameraSpaceTransform.multiplyWithTranslation(Vector3.zero);
+
+        float scale = this.calculatePointLightSphereRadius(light, hdrMaxIntensity);
+        Matrix4 scaleMatrix = Matrix4.makeScale(scale, scale, scale);
+        return Matrix4.makeTranslation(translationInWorldSpace.x, translationInWorldSpace.y, translationInWorldSpace.z).multiply(scaleMatrix);
+    }
+
     private void performPointLightPass(List<Light> lights, Matrix4 worldToCameraMatrix, Matrix4 projectionMatrix, float hdrMaxIntensity) {
         if (lights.isEmpty()) { return; }
 
-        TransformNode sceneGraph = lights.get(0).parent().get(); //Get a part of the scene graph.
-        final String pointLightSphereTransformId = "RENDERERPointLightSphereTransform";
-        final String pointLightSphereMeshId = "RENDERERPointLightSphereMesh";
-        TransformNode sphereTransform = sceneGraph.findNodeWithIdOrCreate(pointLightSphereTransformId, () -> { //create the sphere transform if we haven't already.
-            TransformNode transformNode = new TransformNode(pointLightSphereTransformId, sceneGraph, true, Vector3.zero, new Quaternion(), Vector3.one);
-            new MeshNode(pointLightSphereMeshId, null, "sphere.obj", transformNode);
-            return transformNode;
-        });
-        sphereTransform.setEnabled(true);
-        MeshNode sphereMesh = (MeshNode)sceneGraph.nodeWithID(pointLightSphereMeshId).get();
+        GLMesh<Float> sphereMesh = null;
+        try {
+            sphereMesh = MeshNode.loadMeshWithFileName(null, "sphere.obj");
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Missing sphere mesh: " + e);
+        }
 
         _pointLightPassShader.useProgram();
 
         _pointLightPassShader.setCameraToClipMatrix(projectionMatrix);
         _pointLightPassShader.setMaxIntensity(hdrMaxIntensity);
 
+        final GLMesh<Float> finalSphereMesh = sphereMesh;
         lights.stream().filter(light -> light.type == Light.LightType.Point).forEach(light -> {
-            _pointLightPassShader.setLightData(Light.toLightBlock(Collections.singletonList(light), worldToCameraMatrix));
+            _pointLightPassShader.setPointLightData(light.pointLightDataBuffer(worldToCameraMatrix));
 
-            float sphereScale = this.calculatePointLightSphereRadius(light, hdrMaxIntensity);
+            Matrix4 nodeToCameraSpaceTransform = this.calculatePointLightSphereNodeToCameraTransform(light, worldToCameraMatrix, hdrMaxIntensity);
 
-            sphereTransform.setParent(light.parent().get());
-            sphereTransform.setScale(new Vector3(sphereScale, sphereScale, sphereScale));
-
-            Matrix4 nodeToCameraSpaceTransform = worldToCameraMatrix.multiply(sphereTransform.nodeToWorldSpaceTransform());
             _pointLightPassShader.setModelToCameraMatrix(nodeToCameraSpaceTransform);
 
-            sphereMesh.render();
+            finalSphereMesh.render();
         });
-
-        sphereTransform.setEnabled(false);
     }
 
     private void performDirectionalLightPasses(List<Light> lights, Matrix4 worldToCameraMatrix, float hdrMaxIntensity) {
@@ -197,12 +201,12 @@ public class GLDeferredRenderer {
 
         _directionalLightPassShader.useProgram();
 
-        TransformNode sceneGraph = lights.get(0).parent().get(); //Get a part of the scene graph.
-        final String directionalLightQuadMeshId = "RENDERERDirectionalLightQuadMesh";
-        MeshNode quadMesh = sceneGraph.findNodeWithIdOrCreate(directionalLightQuadMeshId, () -> { //create the sphere transform if we haven't already.
-            return new MeshNode(directionalLightQuadMeshId, null, "Plane.obj", sceneGraph);
-        });
-        quadMesh.setEnabled(true);
+        GLMesh<Float> quadMesh = null;
+        try {
+            quadMesh = MeshNode.loadMeshWithFileName(null, "Plane.obj");
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Missing quad mesh: " + e);
+        }
 
         List<Light> filteredLights = lights.stream()
                 .filter(light -> light.type == Light.LightType.Directional || light.type == Light.LightType.Ambient)
@@ -212,8 +216,6 @@ public class GLDeferredRenderer {
         _directionalLightPassShader.setLightData(Light.toLightBlock(filteredLights, worldToCameraMatrix));
 
         quadMesh.render();
-
-        quadMesh.setEnabled(false);
 
         _directionalLightPassShader.endUseProgram();
     }

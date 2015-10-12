@@ -175,7 +175,7 @@ public final class MeshNode extends SceneNode {
      * @return The GLMesh object for the mesh with that name and directory
      * @throws FileNotFoundException if the mesh file could not be found at that location.
      */
-    private static GLMesh<Float> loadMeshWithFileName(String directory, String fileName) throws FileNotFoundException {
+    public static GLMesh<Float> loadMeshWithFileName(String directory, String fileName) throws FileNotFoundException {
         GLMesh<Float> mesh = _loadedMeshes.get(fileName);
 
         if (mesh == null) {

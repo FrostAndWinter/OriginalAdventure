@@ -6,6 +6,7 @@ import swen.adventure.engine.rendering.maths.Matrix4;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.rendering.maths.Vector4;
 
+import java.awt.*;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Optional;
@@ -53,13 +54,15 @@ public final class Light extends SceneNode {
 
     private static final int MaxLights = 32;
     private static final int PerLightDataSize = 32;
-    public static final float LightAttenuationFactor = 0.00002f;
+    public static final float LightAttenuationFactor = 0.0002f;
 
     public static final int BufferSizeInBytes = Vector4.sizeInBytes + //ambient light
             4 + //num dynamic lights
             4 +  //light attenuation factor
             4 * 2 + //padding
             PerLightDataSize * MaxLights;
+
+    public static final int PointLightBufferSizeInBytes = Vector4.sizeInBytes * 3; //three vec4s.
 
     public final LightType type;
 
@@ -187,6 +190,46 @@ public final class Light extends SceneNode {
     /** @return this light's colour multiplied by its intensity. */
     public Vector3 colourVector() {
         return this._colour.multiplyScalar(_intensity);
+    }
+
+    /**
+     * Converts this point light to a buffer to be passed to GLDeferredRenderer.
+     * @param worldToCameraMatrix The matrix to convert from world space to camera space.
+     * @return A ByteBuffer representation of the data required to display this light.
+     */
+    public ByteBuffer pointLightDataBuffer(Matrix4 worldToCameraMatrix) {
+        if (this.type != LightType.Point) {
+            throw new RuntimeException("pointLightDataBuffer cannot be used for light types other than point lights.");
+        }
+
+        //Structure:
+//        struct PointLight {
+//            vec4 attenuation; //where [0] is constant, [1] is linear, and [2] is the quadratic coefficient
+//            vec4 positionInCameraSpace;
+//            vec4 intensity;
+//        }
+
+        ByteBuffer buffer = BufferUtils.createByteBuffer(PointLightBufferSizeInBytes);
+        buffer.putFloat(0.f); //constant attenuation
+        buffer.putFloat(this.falloff == LightFalloff.Linear ? LightAttenuationFactor : 0.f); //linear attenuation
+        buffer.putFloat(this.falloff == LightFalloff.Quadratic ? LightAttenuationFactor : 0.f); //quadratic attenuation
+        buffer.putFloat(0.f);
+
+        Vector3 positionInCameraSpace = worldToCameraMatrix.multiply(this.nodeToWorldSpaceTransform().multiplyWithTranslation(Vector3.zero));
+
+        buffer.putFloat(positionInCameraSpace.x);
+        buffer.putFloat(positionInCameraSpace.y);
+        buffer.putFloat(positionInCameraSpace.z);
+        buffer.putFloat(1.f);
+
+        Vector3 intensityVector = this.colourVector();
+        buffer.putFloat(intensityVector.x);
+        buffer.putFloat(intensityVector.y);
+        buffer.putFloat(intensityVector.z);
+        buffer.putFloat(0.f);
+        buffer.flip();
+
+        return buffer;
     }
 
     /**
