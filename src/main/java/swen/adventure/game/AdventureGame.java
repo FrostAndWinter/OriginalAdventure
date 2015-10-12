@@ -88,7 +88,7 @@ public class AdventureGame implements Game {
     private List<String> networkEvents = new ArrayList<String>(){{
         add("PlayerMoved");
         add("LeverToggled");
-        add("LeverToggled");
+        add("DoorToggled");
     }};
 
     private void setupSceneGraph(TransformNode sceneGraph, String playerId) {

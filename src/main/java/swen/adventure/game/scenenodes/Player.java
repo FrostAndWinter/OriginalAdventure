@@ -33,11 +33,8 @@ public class Player extends AdventureGameObject {
 
     public static final Action<Player, Player, Player> actionMoveToLocation =
             (player, triggeringPlayer, ignored, data) -> {
-                TransformNode parent = triggeringPlayer.parent().get();
                 Vector3 location = (Vector3) data.get(EventDataKeys.Location);
-                if (!parent.translation().equals(location)) { //we don't need to recalculate the position if we haven't moved (i.e. if we're the client that triggered the translation.)
-                    parent.setTranslation(location);
-                }
+                player.move(location);
             };
 
     public final Event<Player, Player> eventPlayerMoved = new Event<>("PlayerMoved", this);

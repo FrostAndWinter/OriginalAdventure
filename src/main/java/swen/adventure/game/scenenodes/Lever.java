@@ -27,6 +27,10 @@ public class Lever extends AdventureGameObject {
         lever.moveUp(player);
     };
 
+    public static final Action<SceneNode, Player, Lever> actionToggleLever = (sceneNode, player, lever, data) -> {
+        lever.toggle(player);
+    };
+
     private TransformNode _hingeTransform;
 
     private boolean _isDown = false;
@@ -48,9 +52,11 @@ public class Lever extends AdventureGameObject {
         MeshNode leverMesh = parent.findNodeWithIdOrCreate(leverMeshId, () -> new MeshNode(id + "Lever", "Lever", "Lever.obj", _hingeTransform));
         this.registerMeshForInteraction(leverMesh);
 
-        _leverRotationProgress.eventValueChanged.addAction(this, (eventObject, triggeringObject, listener, data) ->  {
-            listener._hingeTransform.setRotation(Quaternion.makeWithAngleAndAxis((float) (eventObject.value() * (-Math.PI/3)), 0, 0, 1));
+        _leverRotationProgress.eventValueChanged.addAction(this, (eventObject, triggeringObject, listener, data) -> {
+            listener._hingeTransform.setRotation(Quaternion.makeWithAngleAndAxis((float) (eventObject.value() * (-Math.PI / 3)), 0, 0, 1));
         });
+
+        this.eventLeverToggled.addAction(this, actionToggleLever);
     }
 
     public void toggle(Player player) {
