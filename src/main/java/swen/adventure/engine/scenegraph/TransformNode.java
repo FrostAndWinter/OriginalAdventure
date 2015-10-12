@@ -241,6 +241,13 @@ public final class TransformNode extends SceneNode {
                 .put("worldToNodeTransform", _worldToNodeTransform);
     }
 
+
+    @Override
+    public void setParent(TransformNode newParent) {
+        super.setParent(newParent);
+        this.setNeedsRecalculateTransform();
+    }
+
     private static TransformNode createSceneNodeFromBundle(BundleObject bundle,
                                                            Function<String, TransformNode> findParentFunction) {
         String id = bundle.getString("id");

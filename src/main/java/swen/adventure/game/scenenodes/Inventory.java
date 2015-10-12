@@ -58,6 +58,16 @@ public class Inventory extends Container {
         _selectedSlot = slot;
     }
 
+
+    @Override
+    public Optional<Item> pop() {
+        if (this.itemCount() == 0) {
+            return Optional.empty();
+        }
+
+        return Optional.of(this.removeItemAtIndex(_selectedSlot));
+    }
+
     public Optional<Item> selectedItem() {
         return itemAtIndex(_selectedSlot);
     }
