@@ -64,10 +64,6 @@ public class MultiPlayerServer implements Runnable {
                         server.sendSnapShot(event.from, root);
                         createPlayer(event.targetId);
                         break;
-                    case "eventPlayerMoved":
-                        Player playerTarget = (Player)root.nodeWithID(event.targetId).get();
-                        playerTarget.parent().get().setTranslation((Vector3) event.eventData.get(EventDataKeys.Location));
-                        break;
                     default:
                         GameObject target = (GameObject) root.nodeWithID(event.targetId).get();
                         Event e = target.eventWithName(event.eventName);
