@@ -139,6 +139,17 @@ public class NetworkServer implements Server<String, EventBox>, Session.SessionS
         if (!this.isRunning()) {
             throw new RuntimeException("Cannot poll a server which is not running");
         }
+
+        // block until woken, persumably when queue gets a new element
+        if (queue.isEmpty()) {
+            try {
+                synchronized (queue) {
+                    queue.wait();
+                }
+            } catch (InterruptedException e) {
+            }
+        }
+
         EventBox event = queue.poll();
         if (event != null) {
             return Optional.of(event);
@@ -172,6 +183,11 @@ public class NetworkServer implements Server<String, EventBox>, Session.SessionS
                 break;
         }
         } catch (IOException ex) { ex.printStackTrace(); }
+        if (!queue.isEmpty()) {
+            synchronized (queue) {
+                queue.notifyAll();
+            }
+        }
     }
 
     @Override

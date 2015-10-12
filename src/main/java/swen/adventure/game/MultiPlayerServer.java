@@ -78,12 +78,6 @@ public class MultiPlayerServer implements Runnable {
             } catch (Error ex) {
                 System.out.println("Error occurred in Multilayer server: " + ex.toString());
             }
-
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e1) {
-                e1.printStackTrace();
-            }
         }
     }
 
