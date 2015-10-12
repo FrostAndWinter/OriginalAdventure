@@ -8,6 +8,7 @@ import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.SceneNode;
 import swen.adventure.engine.scenegraph.TransformNode;
+import swen.adventure.game.scenenodes.Container;
 
 import java.io.IOException;
 
@@ -23,25 +24,13 @@ public class SceneGraphParserTest {
 
     @Test
     public void testSingleTransformNode() throws Exception {
-        TransformNode expected = new TransformNode(
-                "root",
-                Vector3.zero,
-                new Quaternion(),
-                Vector3.one
-        );
-        testAgainstFile("testSingleTransformNode", expected);
+        testAgainstFile("testSingleTransformNode", createRoot());
     }
 
     @Test
     public void testNestedTransformNodes() throws Exception {
-        TransformNode root = new TransformNode(
-                "root",
-                Vector3.zero,
-                new Quaternion(),
-                Vector3.one
-        );
-
-        TransformNode child = new TransformNode(
+        TransformNode root = createRoot();
+        new TransformNode(
                 "id2",
                 root,
                 false,
@@ -55,16 +44,19 @@ public class SceneGraphParserTest {
 
     @Test
     public void testGameObjectInTransformNode() throws Exception {
-        TransformNode root = new TransformNode(
+        TransformNode root = createRoot();
+        new GameObject("id2", root);
+
+        testAgainstFile("testNestedTransformNodes", root);
+    }
+
+    private static TransformNode createRoot() {
+        return new TransformNode(
                 "root",
                 Vector3.zero,
                 new Quaternion(),
                 Vector3.one
         );
-
-        GameObject child = new GameObject("id2", root);
-
-        testAgainstFile("testNestedTransformNodes", root);
     }
 
     private static void testAgainstFile(String fileName, SceneNode expected) throws IOException {
@@ -73,10 +65,9 @@ public class SceneGraphParserTest {
         assertEquals(expected, result);
     }
 
-
     private static String readFile(String fileName) {
         try {
-            return Utilities.readFile(DIRECTORY + fileName);
+            return Utilities.readFile(DIRECTORY + fileName + ".xml");
         } catch (IOException e) {
             assumeNoException(e);
             return null; // dead code

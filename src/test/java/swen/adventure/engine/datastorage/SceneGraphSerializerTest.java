@@ -5,6 +5,7 @@ import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.SceneNode;
 import swen.adventure.engine.scenegraph.TransformNode;
+import swen.adventure.game.scenenodes.Container;
 
 import static org.junit.Assert.assertEquals;
 
@@ -27,6 +28,17 @@ public class SceneGraphSerializerTest {
         assertXmlEqual(
                 "<root>\n" +
                 "<TransformNode id=\"id-37636\" isDynamic=\"true\" rotation=\"4.0, 0.4, 0.1, 1.0\" scale=\"1.0, 1.0, 1.0\" translation=\"2.0, 3.0, 4.0\"/>\n" +
+                "</root>",
+                root);
+    }
+
+    @Test public void
+    empty_container_should_be_able_to_be_serialized() throws Exception {
+        TransformNode root = createRoot();
+        new Container("container1", root, 45);
+        assertXmlEqual(
+                "<root>\n" +
+                "<Container capacity=\"45\" id=\"container1\"/>\n" +
                 "</root>",
                 root);
     }

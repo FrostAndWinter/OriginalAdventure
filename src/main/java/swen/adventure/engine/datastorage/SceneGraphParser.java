@@ -42,6 +42,9 @@ public class SceneGraphParser {
     private static final String PLAYER_TAG = "Player";
     private static final String PUZZLE_TAG = "Puzzle";
     private static final String CONTAINER_TAG = "Container";
+    private static final String LEVER_TAG = "Lever";
+    private static final String DOOR_TAG = "Door";
+    private static final String INVENTORY_TAG = "Inventory";
 
     public static TransformNode parseSceneGraph(String input) {
         InputStream is = Utilities.stringToInputStream(input);
@@ -85,7 +88,7 @@ public class SceneGraphParser {
             case TRANSFORM_NODE_TAG:
                 return parseTransformNode(xmlNode, parent);
             case GAME_OBJECT_TAG:
-                return parseGameObject(xmlNode, parent);
+                return parseGameObject(xmlNode, parent, SceneNode.class);
             case MESH_NODE_TAG:
                 return parseMeshNode(xmlNode, parent);
             case AMBIENT_LIGHT_TAG:
@@ -104,13 +107,45 @@ public class SceneGraphParser {
                 return parsePuzzle(xmlNode, parent);
             case CONTAINER_TAG:
                 return parseContainer(xmlNode, parent);
+            case LEVER_TAG:
+                return parseLever(xmlNode, parent);
+            case DOOR_TAG:
+                return parseDoor(xmlNode, parent);
+            case INVENTORY_TAG:
+                return parseInventory(xmlNode, parent);
             default:
                // fail("Unrecognised node: " + name);
-                return parseGameObject(xmlNode, parent);
+                return parseGameObject(xmlNode, parent, SceneNode.class);
         }
     }
 
-    private static SceneNode parseGameObject(Node xmlNode, TransformNode parent) {
+    private static Inventory parseInventory(Node xmlNode, TransformNode parent) {
+        String id = getAttribute("id", xmlNode);
+        int selectedSlot = getAttribute("selectedSlot", xmlNode, Integer.class);
+        boolean showTopItem = getAttribute("showTopItem", xmlNode, Boolean.class);
+        Inventory inventory = new Inventory(id, parent);
+        inventory.selectSlot(selectedSlot);
+        inventory.setShowTopItem(showTopItem);
+        return inventory;
+    }
+
+    private static SceneNode parseLever(Node xmlNode, TransformNode parent) {
+        Lever lever = parseGameObject(xmlNode, parent, Lever.class);
+        boolean isDown = getAttribute("isDown", xmlNode, Boolean.class);
+        lever.setIsDown(isDown);
+        return lever;
+    }
+
+    private static SceneNode parseDoor(Node xmlNode, TransformNode parent) {
+        Door door = parseGameObject(xmlNode, parent, Door.class);
+        boolean isOpen = getAttribute("isOpen", xmlNode, Boolean.class, false);
+        boolean requiresKey = getAttribute("requiresKey", xmlNode, Boolean.class, false);
+        door.setIsOpen(isOpen);
+        door.setRequiresKey(requiresKey);
+        return door;
+    }
+
+    private static <T extends SceneNode> T parseGameObject(Node xmlNode, TransformNode parent, Class<T> class0) {
         try {
             Class<?> gameObjectClass = Class.forName("swen.adventure.game.scenenodes." + xmlNode.getNodeName());
             Constructor<?> constructor = gameObjectClass.getConstructor(String.class, TransformNode.class);
@@ -131,25 +166,24 @@ public class SceneGraphParser {
             gameObject.setParent(parent);
 
             if (gameObject instanceof Item) {
-                Optional<String> containerIdOptional = (Optional<String>)getAttribute("inContainer", xmlNode, Optional::of, Optional.empty());
+                Item item = (Item) gameObject;
 
-                containerIdOptional.ifPresent(containerId -> {
-                    Optional<SceneNode> containerOptional =  parent.nodeWithID(containerId);
-                    containerOptional.ifPresent(container -> {
-                        ((Item) gameObject).moveToContainer((Container) container);
-                    });
-                });
+                getOptionalAttribute("inContainer", xmlNode)
+                        .flatMap(parent::nodeWithID)
+                        .map(Container.class::cast)
+                        .ifPresent(item::moveToContainer);
+
+                getOptionalAttribute("description", xmlNode)
+                        .ifPresent(item::setDescription);
+
             } else if (gameObject instanceof Door) {
                 boolean requiresKey = getAttribute("requiresKey", xmlNode, Boolean::valueOf, false);
                 ((Door) gameObject).setRequiresKey(requiresKey);
             }
 
-            return gameObject;
-        } catch (ClassNotFoundException e) {
-            return null;
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-            return null;
+            return class0.cast(gameObject);
+        } catch (ClassNotFoundException | NoSuchMethodException e) {
+            throw new RuntimeException("Game object doesn't have default constructor: " + xmlNode);
         }
     }
 
@@ -160,9 +194,9 @@ public class SceneGraphParser {
         Vector3 textureRepeat = getAttribute("textureRepeat", xmlNode, ParserManager.getFromStringFunction(Vector3.class), Vector3.one);
         boolean isCollidable = getAttribute("isCollidable", xmlNode, Boolean::parseBoolean, false);
 
-        Optional<String> materialDirectory = (Optional<String>) getAttribute("materialDirectory", xmlNode, Optional::of, Optional.empty());
-        Optional<String> materialFileName = (Optional<String>)getAttribute("materialFileName", xmlNode, Optional::of, Optional.empty());
-        Optional<String> materialName = (Optional<String>)getAttribute("materialName", xmlNode, Optional::of, Optional.empty());
+        Optional<String> materialDirectory = getOptionalAttribute("materialDirectory", xmlNode);
+        Optional<String> materialFileName = getOptionalAttribute("materialFileName", xmlNode);
+        Optional<String> materialName = getOptionalAttribute("materialName", xmlNode);
 
         MeshNode node = parent.findNodeWithIdOrCreate(id, () -> new MeshNode(id, directory, fileName, parent));
         node.setTextureRepeat(textureRepeat);
@@ -371,5 +405,28 @@ public class SceneGraphParser {
 
     private static <T> T getAttribute(String name, Node node, Function<String, T> converter) {
        return getAttribute(name, node, converter, null);
+    }
+
+    private static String getAttribute(String name, Node node) {
+        return getAttribute(name, node, Function.identity(), null);
+    }
+
+    private static <T> T getAttribute(String name, Node node, Class<T> class0) {
+        return getAttribute(name, node, ParserManager.getFromStringFunction(class0), null);
+    }
+
+    private static <T> T getAttribute(String name, Node node, Class<T> class0, T defaultValue) {
+        return getAttribute(name, node, ParserManager.getFromStringFunction(class0), defaultValue);
+    }
+
+    private static <T> Optional<T> getOptionalAttribute(String name, Node node, Class<T> class0) {
+        Function<T, Optional<T>> toOptional = Optional::of;
+        Function<String, T> fromString = ParserManager.getFromStringFunction(class0);
+        Function<String, Optional<T>> convert =  toOptional.compose(fromString);
+        return getAttribute(name, node, convert, Optional.empty());
+    }
+
+    private static Optional<String> getOptionalAttribute(String name, Node node) {
+        return getOptionalAttribute(name, node, String.class);
     }
 }

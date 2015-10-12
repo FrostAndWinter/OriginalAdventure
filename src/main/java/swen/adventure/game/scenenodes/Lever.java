@@ -76,6 +76,14 @@ public class Lever extends AdventureGameObject {
         this.eventLeverMovedDown.trigger(player, Collections.emptyMap());
     }
 
+    public boolean isDown() {
+        return _isDown;
+    }
+
+    public void setIsDown(boolean isDown) {
+        _isDown = isDown;
+    }
+
     @Override
     public List<Interaction> possibleInteractions(final MeshNode meshNode, final Player player) {
         return Collections.singletonList(new Interaction(Interaction.InteractionType.Pull, this, meshNode));

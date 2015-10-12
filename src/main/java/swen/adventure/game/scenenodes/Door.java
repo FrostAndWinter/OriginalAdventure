@@ -98,4 +98,8 @@ public class Door extends AdventureGameObject {
                 break;
         }
     }
+
+    public void setIsOpen(boolean isOpen) {
+        _isOpen = isOpen;
+    }
 }

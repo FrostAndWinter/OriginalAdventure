@@ -114,10 +114,6 @@ public class AdventureGame implements Game {
         Event.EventSet playerMovedSet = Event.eventSetForName("PlayerMoved");
         playerMovedSet.addAction(this, playerMoved);
 
-
-        _keyInput.eventMoveInDirection.addAction(_player, Player.actionMoveInDirection);
-
-
         try {
             List<EventConnectionParser.EventConnection> connections = EventConnectionParser.parseFile(Utilities.readLinesFromFile(Utilities.pathForResource("EventConnections", "event")));
             EventConnectionParser.setupConnections(connections, _sceneGraph);
@@ -230,6 +226,14 @@ public class AdventureGame implements Game {
         _keyInput.eventPrimaryActionEnded.addAction(this, AdventureGame.primaryActionEnded);
         _keyInput.eventSecondaryAction.addAction(this, AdventureGame.secondaryActionFired);
         _keyInput.eventSecondaryActionEnded.addAction(this, AdventureGame.secondaryActionEnded);
+
+        _keyInput.eventMoveInDirection.addAction(_player, Player.actionMoveInDirection);
+
+        _keyInput.eventSelectInventorySlot1.addAction(_player.inventory(), Inventory.actionSelectSlot1);
+        _keyInput.eventSelectInventorySlot2.addAction(_player.inventory(), Inventory.actionSelectSlot2);
+        _keyInput.eventSelectInventorySlot3.addAction(_player.inventory(), Inventory.actionSelectSlot3);
+        _keyInput.eventSelectInventorySlot4.addAction(_player.inventory(), Inventory.actionSelectSlot4);
+        _keyInput.eventSelectInventorySlot5.addAction(_player.inventory(), Inventory.actionSelectSlot5);
 
         _keyInput.eventHideShowInventory.addAction(ui.getInventory(), InventoryComponent.actionToggleZoomItem);
 

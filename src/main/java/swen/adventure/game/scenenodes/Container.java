@@ -102,4 +102,8 @@ public class Container extends SceneNode {
     public int capacity() {
         return _capacity;
     }
+
+    public Boolean getShowTopItem() {
+        return _showTopItem;
+    }
 }

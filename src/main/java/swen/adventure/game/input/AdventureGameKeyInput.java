@@ -6,6 +6,7 @@ import swen.adventure.engine.KeyInput;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.game.EventDataKeys;
 
+import javax.security.auth.kerberos.KerberosKey;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +29,12 @@ public class AdventureGameKeyInput extends KeyInput {
             this.onReleasedMappings.put('E', this.eventPrimaryActionEnded);
             this.onReleasedMappings.put('Q', this.eventSecondaryActionEnded);
 
+            this.onReleasedMappings.put('1', eventSelectInventorySlot1);
+            this.onReleasedMappings.put('2', eventSelectInventorySlot2);
+            this.onReleasedMappings.put('3', eventSelectInventorySlot3);
+            this.onReleasedMappings.put('4', eventSelectInventorySlot4);
+            this.onReleasedMappings.put('5', eventSelectInventorySlot5);
+
             this.eventMoveBackwardKeyPressed.addAction(this, actionMoveKeyPressed);
             this.eventMoveForwardKeyPressed.addAction(this, actionMoveKeyPressed);
             this.eventMoveLeftKeyPressed.addAction(this, actionMoveKeyPressed);
@@ -40,7 +47,14 @@ public class AdventureGameKeyInput extends KeyInput {
     public final Event<KeyInput, KeyInput> eventPrimaryActionEnded = new Event<>("PrimaryActionEnded", this);
     public final Event<KeyInput, KeyInput> eventSecondaryActionEnded = new Event<>("SecondaryActionEnded", this);
 
-    public final Event<KeyInput, KeyInput> eventHideShowInventory = new Event<>("HideShowInventory", this);
+
+    public final Event<KeyInput, KeyInput> eventSelectInventorySlot1 = new Event<>("eventSelectInventorySlot1", this);
+    public final Event<KeyInput, KeyInput> eventSelectInventorySlot2 = new Event<>("eventSelectInventorySlot2", this);
+    public final Event<KeyInput, KeyInput> eventSelectInventorySlot3 = new Event<>("eventSelectInventorySlot3", this);
+    public final Event<KeyInput, KeyInput> eventSelectInventorySlot4 = new Event<>("eventSelectInventorySlot4", this);
+    public final Event<KeyInput, KeyInput> eventSelectInventorySlot5 = new Event<>("eventSelectInventorySlot5", this);
+
+    public final Event<KeyInput, KeyInput> eventHideShowInventory = new Event<>("eventHideShowInventory", this);
 
     public final Event<KeyInput, KeyInput> eventHideShowControls = new Event<>("HideShowControls", this);
 
