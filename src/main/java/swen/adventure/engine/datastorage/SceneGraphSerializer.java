@@ -9,6 +9,7 @@ import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
 import swen.adventure.game.scenenodes.FlickeringLight;
+import swen.adventure.game.scenenodes.Lever;
 import swen.adventure.game.scenenodes.Player;
 
 import java.io.*;
@@ -77,11 +78,20 @@ public class SceneGraphSerializer {
         else if (sceneNode instanceof Player)
             serializedNode = serializePlayerNode((Player) sceneNode, xmlParentNode);
 
+        else if (sceneNode instanceof Lever)
+            serializedNode = serializeLeverNode((Lever) sceneNode, xmlParentNode);
+
         else
             throw new RuntimeException("Don't recognise node " + sceneNode);
 
         sceneNode.children()
                 .forEach(node -> serializeSceneNode(node, serializedNode));
+    }
+
+    private Node serializeLeverNode(Lever leverNode, Node xmlParentNode) {
+        Element xmlElement = createElementForNode(leverNode, xmlParentNode);
+        setAttribute("isDown", leverNode.isDown(), Boolean.class, xmlElement);
+        return xmlElement;
     }
 
     private boolean isRoot(SceneNode sceneNode) {
@@ -123,14 +133,7 @@ public class SceneGraphSerializer {
         setAttribute("directory", meshNode.getDirectory(), xmlElement);
         setAttribute("textureRepeat", meshNode.getTextureRepeat(), Vector3.class, xmlElement);
         setAttribute("isCollidable", meshNode.isCollidable(), Boolean.class, xmlElement);
-
-
         return xmlElement;
-    }
-
-    private Node serializeGameObjectNode(GameObject gameObject, Node xmlParentNode) {
-        // TODO serializeToStream different game objects
-        return createElementForNode(gameObject, xmlParentNode);
     }
 
     private Node serializeAmbientLightNode(Light lightNode, Node xmlParentNode) {

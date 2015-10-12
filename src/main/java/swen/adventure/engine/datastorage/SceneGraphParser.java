@@ -42,6 +42,8 @@ public class SceneGraphParser {
     private static final String PLAYER_TAG = "Player";
     private static final String PUZZLE_TAG = "Puzzle";
     private static final String CONTAINER_TAG = "Container";
+    private static final String LEVER_TAG = "Lever";
+    private static final String DOOR_TAG = "Door";
 
     public static TransformNode parseSceneGraph(String input) {
         InputStream is = Utilities.stringToInputStream(input);
@@ -85,7 +87,7 @@ public class SceneGraphParser {
             case TRANSFORM_NODE_TAG:
                 return parseTransformNode(xmlNode, parent);
             case GAME_OBJECT_TAG:
-                return parseGameObject(xmlNode, parent);
+                return parseGameObject(xmlNode, parent, SceneNode.class);
             case MESH_NODE_TAG:
                 return parseMeshNode(xmlNode, parent);
             case AMBIENT_LIGHT_TAG:
@@ -104,13 +106,33 @@ public class SceneGraphParser {
                 return parsePuzzle(xmlNode, parent);
             case CONTAINER_TAG:
                 return parseContainer(xmlNode, parent);
+            case LEVER_TAG:
+                return parseLever(xmlNode, parent);
+            case DOOR_TAG:
+                return parseDoor(xmlNode, parent);
             default:
                // fail("Unrecognised node: " + name);
-                return parseGameObject(xmlNode, parent);
+                return parseGameObject(xmlNode, parent, SceneNode.class);
         }
     }
 
-    private static SceneNode parseGameObject(Node xmlNode, TransformNode parent) {
+    private static SceneNode parseLever(Node xmlNode, TransformNode parent) {
+        Lever lever = parseGameObject(xmlNode, parent, Lever.class);
+        boolean isDown = getAttribute("isDown", xmlNode, Boolean.class);
+        lever.setIsDown(isDown);
+        return lever;
+    }
+
+    private static SceneNode parseDoor(Node xmlNode, TransformNode parent) {
+        Door door = parseGameObject(xmlNode, parent, Door.class);
+        boolean isOpen = getAttribute("isOpen", xmlNode, Boolean.class, false);
+        boolean requiresKey = getAttribute("requiresKey", xmlNode, Boolean.class, false);
+        door.setIsOpen(isOpen);
+        door.setRequiresKey(requiresKey);
+        return door;
+    }
+
+    private static <T extends SceneNode> T parseGameObject(Node xmlNode, TransformNode parent, Class<T> class0) {
         try {
             Class<?> gameObjectClass = Class.forName("swen.adventure.game.scenenodes." + xmlNode.getNodeName());
             Constructor<?> constructor = gameObjectClass.getConstructor(String.class, TransformNode.class);
@@ -144,7 +166,7 @@ public class SceneGraphParser {
                 ((Door) gameObject).setRequiresKey(requiresKey);
             }
 
-            return gameObject;
+            return class0.cast(gameObject);
         } catch (ClassNotFoundException e) {
             return null;
         } catch (NoSuchMethodException e) {
@@ -368,5 +390,17 @@ public class SceneGraphParser {
 
     private static <T> T getAttribute(String name, Node node, Function<String, T> converter) {
        return getAttribute(name, node, converter, null);
+    }
+
+    private static String getAttribute(String name, Node node) {
+        return getAttribute(name, node, Function.identity(), null);
+    }
+
+    private static <T> T getAttribute(String name, Node node, Class<T> class0) {
+        return getAttribute(name, node, ParserManager.getFromStringFunction(class0), null);
+    }
+
+    private static <T> T getAttribute(String name, Node node, Class<T> class0, T defaultValue) {
+        return getAttribute(name, node, ParserManager.getFromStringFunction(class0), defaultValue);
     }
 }
