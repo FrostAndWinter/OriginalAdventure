@@ -104,11 +104,9 @@ public class GLForwardRenderer {
 
         _defaultShader.useProgram();
 
-        _defaultShader.setMaxIntensity(hdrMaxIntensity);
-
         _defaultShader.setCameraToClipMatrix(projectionMatrix);
 
-        _defaultShader.setLightData(Light.toLightBlock(lights.stream().filter(Light::isOn).collect(Collectors.toList()), worldToCameraMatrix));
+        _defaultShader.setLightData(Light.toLightBlock(lights.stream().filter(Light::isOn).collect(Collectors.toList()), worldToCameraMatrix, hdrMaxIntensity));
 
         nodes.forEach(node -> {
             Matrix4 nodeToCameraSpaceTransform = worldToCameraMatrix.multiply(node.nodeToWorldSpaceTransform());

@@ -31,10 +31,8 @@ public class PerObjectMaterialShader extends ShaderProgram implements MaterialSh
     private final int _cameraToClipMatrixUniformRef;
     private final int _normalModelToCameraMatrixUniformRef;
 
-    private final int _maxIntensityUniformRef;
-
-    private static final int LightBlockIndex = 0;
-    private static final int MaterialBlockIndex = 1;
+    private static final int LightBlockIndex = 3;
+    private static final int MaterialBlockIndex = 4;
 
     private int _lightUniformBufferRef;
     private int _materialUniformBufferRef;
@@ -65,8 +63,6 @@ public class PerObjectMaterialShader extends ShaderProgram implements MaterialSh
         _cameraToClipMatrixUniformRef = glGetUniformLocation(this.glProgramRef(), "cameraToClipMatrixUniform");
         _normalModelToCameraMatrixUniformRef = glGetUniformLocation(this.glProgramRef(), "normalModelToCameraMatrixUniform");
         _textureRepeatUniformBufferRef = glGetUniformLocation(this.glProgramRef(), "textureRepeatUniform");
-
-        _maxIntensityUniformRef = glGetUniformLocation(this.glProgramRef(), "maxIntensity");
 
         final int ambientColourSamplerRef = glGetUniformLocation(this.glProgramRef(), "ambientColourSampler");
         final int diffuseColourSamplerRef = glGetUniformLocation(this.glProgramRef(), "diffuseColourSampler");
@@ -137,10 +133,6 @@ public class PerObjectMaterialShader extends ShaderProgram implements MaterialSh
 
     public void setNormalModelToCameraMatrix(Matrix3 matrix) {
         glUniformMatrix3fv(_normalModelToCameraMatrixUniformRef, false, matrix.toFloatBuffer());
-    }
-
-    public void setMaxIntensity(float maxIntensity) {
-        glUniform1f(_maxIntensityUniformRef, maxIntensity);
     }
 
 }

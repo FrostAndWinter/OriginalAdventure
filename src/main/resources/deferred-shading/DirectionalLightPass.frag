@@ -20,7 +20,6 @@ uniform Light {
     PerLightData lights[MaxLights];
 } lighting;
 
-uniform float maxIntensity;
 uniform vec2 screenSizeUniform;
 
 uniform sampler2D ambientColourSampler;
@@ -86,8 +85,6 @@ void main() {
     for (int light = 0; light < lighting.numDynamicLights; light++) {
         totalLighting += ComputeLighting(lighting.lights[light], cameraSpacePosition, surfaceNormal, diffuseColour, specularColour);
     }
-
-    totalLighting = totalLighting / maxIntensity;
 
     outputColor = vec4(totalLighting, diffuseColour.a);
 

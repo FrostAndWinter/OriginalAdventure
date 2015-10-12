@@ -9,9 +9,11 @@ import swen.adventure.engine.scenegraph.SceneNode;
 
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.*;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL12.*;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL32.*;
 
@@ -48,7 +50,7 @@ public class PickerRenderer {
         _depthStencilBuffer = glGenRenderbuffers();
 
         glBindRenderbuffer(GL_RENDERBUFFER, _colourRenderBuffer);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, 1, 1);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_UNSIGNED_INT_8_8_8_8_REV, 1, 1);
 
         glBindRenderbuffer(GL_RENDERBUFFER, _depthStencilBuffer);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1, 1);
@@ -109,11 +111,11 @@ public class PickerRenderer {
         glDisable(GL_CULL_FACE);
         glDisable(GL_DEPTH_TEST);
 
-        ByteBuffer idBuffer = BufferUtils.createByteBuffer(4);
+        IntBuffer idBuffer = BufferUtils.createIntBuffer(1);
         glReadBuffer(GL_COLOR_ATTACHMENT0);
-        glReadPixels(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, idBuffer);
+        glReadPixels(0, 0, 1, 1, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, idBuffer);
 
-        int id = PickerShader.colourToID(idBuffer.get(), idBuffer.get(), idBuffer.get());
+        int id = PickerShader.colourToID(idBuffer.get());
         _highlightedMesh = _idsToNodes[id] != null ? _idsToNodes[id].get() : null;
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);

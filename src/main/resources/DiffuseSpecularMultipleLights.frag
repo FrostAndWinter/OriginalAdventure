@@ -25,7 +25,6 @@ uniform Light {
 	PerLightData lights[MaxLights];
 } lighting;
 
-uniform float maxIntensity;
 uniform float specularity;
 
 float ComputeAttenuation(in vec3 objectPosition,
@@ -86,8 +85,6 @@ void main() {
 	for (int light = 0; light < lighting.numDynamicLights; light++) {
 		totalLighting += ComputeLighting(lighting.lights[light]);
 	}
-
-	totalLighting = totalLighting / maxIntensity;
 
 	outputColor = vec4(totalLighting, diffuseColour.w);
 }

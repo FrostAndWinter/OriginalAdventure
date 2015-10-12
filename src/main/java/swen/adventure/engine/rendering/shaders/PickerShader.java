@@ -58,7 +58,10 @@ public class PickerShader extends ShaderProgram {
         glUniform3f(_colourUniformRef, r / 255.f, g / 255.f, b / 255.f);
     }
 
-    public static int colourToID(byte r, byte g, byte b) {
+    public static int colourToID(int colour) {
+        byte b = (byte)(colour & 0xFF);
+        byte g = (byte)((colour >>> 8) & 0xFF);
+        byte r = (byte)((colour >>> 16) & 0xFF);
 
         return ((r << 16) | (g << 8) | b) & 0xFFFFFF;
     }

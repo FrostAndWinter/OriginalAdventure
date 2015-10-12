@@ -17,7 +17,7 @@ struct PerLightData {
 
 const int MaxLights = 32;
 
-uniform Light {
+layout(location = 3) uniform Light {
     vec4 ambientIntensity;
     int numDynamicLights;
     int padding1;
@@ -26,7 +26,7 @@ uniform Light {
     PerLightData lights[MaxLights];
 } lighting;
 
-uniform Material {
+layout(location = 4) uniform Material {
     vec4 ambientColour; //of which xyz are the colour and w is a 0/1 as to whether ambient self-illumination is enabled.
     vec4 diffuseColour; //r,g,b,a
     vec4 specularColour; //of which xyz are the colour and w is the specularity.
@@ -38,8 +38,6 @@ uniform sampler2D diffuseColourSampler;
 uniform sampler2D specularColourSampler;
 uniform sampler2D specularitySampler;
 uniform sampler2D normalMapSampler;
-
-uniform float maxIntensity;
 
 vec4 diffuseColour() {
     if ((material.booleanMask & (1 << 1)) != 0) {
@@ -161,8 +159,6 @@ void main() {
     for (int light = 0; light < lighting.numDynamicLights; light++) {
         totalLighting += ComputeLighting(lighting.lights[light], diffuse, specular, specularity);
     }
-
-    totalLighting = totalLighting / maxIntensity;
 
     outputColor = vec4(totalLighting, diffuse.a);
 

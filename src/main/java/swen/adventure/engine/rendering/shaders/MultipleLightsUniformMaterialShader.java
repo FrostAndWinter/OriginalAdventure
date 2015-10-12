@@ -25,8 +25,6 @@ public class MultipleLightsUniformMaterialShader extends ShaderProgram {
     private final int _cameraToClipMatrixUniformRef;
     private final int _normalModelToCameraMatrixUniformRef;
     private final int _colourUniformRef;
-
-    private final int _maxIntensityUniformRef;
     private final int _specularityUniformRef;
 
     private static final int LightBlockIndex = 0;
@@ -60,7 +58,6 @@ public class MultipleLightsUniformMaterialShader extends ShaderProgram {
         _cameraToClipMatrixUniformRef = glGetUniformLocation(this.glProgramRef(), "cameraToClipMatrixUniform");
         _normalModelToCameraMatrixUniformRef = glGetUniformLocation(this.glProgramRef(), "normalModelToCameraMatrixUniform");
 
-        _maxIntensityUniformRef = glGetUniformLocation(this.glProgramRef(), "maxIntensity");
         _specularityUniformRef = glGetUniformLocation(this.glProgramRef(), "specularity");
 
         //Setup the uniform buffer
@@ -97,10 +94,6 @@ public class MultipleLightsUniformMaterialShader extends ShaderProgram {
 
     public void setColour(Vector4 colour) {
         glUniform4fv(_colourUniformRef, colour.toFloatBuffer());
-    }
-
-    public void setMaxIntensity(float maxIntensity) {
-        glUniform1f(_maxIntensityUniformRef, maxIntensity);
     }
 
     public void setSpecularity(float specularity) {

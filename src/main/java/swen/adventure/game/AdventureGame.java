@@ -10,6 +10,7 @@ import swen.adventure.engine.network.DumbClient;
 import swen.adventure.engine.network.EventBox;
 import swen.adventure.engine.network.NetworkClient;
 import swen.adventure.engine.rendering.GLDeferredRenderer;
+import swen.adventure.engine.rendering.GLForwardRenderer;
 import swen.adventure.engine.rendering.PickerRenderer;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.scenegraph.*;
@@ -26,7 +27,8 @@ import java.util.*;
 
 public class AdventureGame implements Game {
 
-    private GLDeferredRenderer _glRenderer;
+    private GLForwardRenderer _forwardRenderer;
+    private GLDeferredRenderer _deferredRenderer;
     private PickerRenderer _pickerRenderer;
     private PGraphics2D _pGraphics;
     private TransformNode _sceneGraph;
@@ -56,6 +58,11 @@ public class AdventureGame implements Game {
     }
 
     @Override
+    public String title() {
+        return "Original Adventure";
+    }
+
+    @Override
     public void setup(int width, int height) {
 
         try {
@@ -76,7 +83,8 @@ public class AdventureGame implements Game {
         }
 
         if (!Utilities.isHeadlessMode) {
-            _glRenderer = new GLDeferredRenderer(width, height);
+            _deferredRenderer = new GLDeferredRenderer(width, height);
+           // _forwardRenderer = new GLForwardRenderer(width, height);
             _pickerRenderer = new PickerRenderer();
         }
 
@@ -161,13 +169,19 @@ public class AdventureGame implements Game {
 
     @Override
     public void setSize(int width, int height) {
-        _glRenderer.setSize(width, height);
-        _pGraphics.setSize(width, height);
+        if (_deferredRenderer != null) {
+            _deferredRenderer.setSize(width, height);
+        }
+        if (_pGraphics != null) {
+            _pGraphics.setSize(width, height);
+        }
+      //  _forwardRenderer.setSize(width, height);
     }
 
     @Override
     public void setSizeInPixels(int width, int height) {
         _pGraphics.setPixelDimensions(width, height);
+        _deferredRenderer.setSizeInPixels(width, height);
     }
 
     @Override
@@ -204,7 +218,7 @@ public class AdventureGame implements Game {
 
             _meshBeingLookedAt = _pickerRenderer.selectedNode(meshNodesSortedByZ, cameraNode.worldToNodeSpaceTransform());
 
-            _glRenderer.render(meshNodesSortedByZ, _sceneGraph.allNodesOfType(Light.class), cameraNode.worldToNodeSpaceTransform(), cameraNode.fieldOfView(), cameraNode.hdrMaxIntensity());
+            _deferredRenderer.render(meshNodesSortedByZ, _sceneGraph.allNodesOfType(Light.class), cameraNode.worldToNodeSpaceTransform(), cameraNode.fieldOfView(), cameraNode.hdrMaxIntensity());
         });
 
         ArrayList<String> tips = new ArrayList<>();
@@ -227,7 +241,7 @@ public class AdventureGame implements Game {
 
         ui.setTooltip(tips);
 
-        //ui.drawUI(_pGraphics, _glRenderer);
+      //  ui.drawUI(_pGraphics, _forwardRenderer);
     }
 
     /**

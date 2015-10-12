@@ -17,7 +17,6 @@ uniform sampler2D specularColourSampler;
 uniform sampler2D cameraSpacePositionSampler;
 uniform sampler2D cameraSpaceNormalSampler;
 
-uniform float maxIntensity;
 uniform vec2 screenSizeUniform;
 
 float ComputeAttenuation(in vec3 objectPosition,
@@ -89,8 +88,6 @@ void main() {
     }
 
     vec3 totalLighting = ComputeLighting(cameraSpacePosition, surfaceNormal, diffuseColour, specularColour);
-
-    totalLighting = totalLighting / maxIntensity;
 
     outputColor = vec4(totalLighting, diffuseColour.a);
 

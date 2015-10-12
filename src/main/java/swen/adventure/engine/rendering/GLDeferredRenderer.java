@@ -30,7 +30,7 @@ public class GLDeferredRenderer {
     private PointLightPassShader _pointLightPassShader;
     private DirectionalLightPassShader _directionalLightPassShader;
     private NullShader _nullShader;
-    private int _width, _height;
+    private int _width, _height, _widthPixels, _heightPixels;
     private float _currentFOV = (float)Math.PI/3.f;
     private Matrix4 _currentProjectionMatrix;
 
@@ -42,7 +42,6 @@ public class GLDeferredRenderer {
         _pointLightPassShader = new PointLightPassShader();
         _directionalLightPassShader = new DirectionalLightPassShader();
         _nullShader = new NullShader();
-        _gBuffer = new GBuffer(width, height);
         this.setSize(width, height);
     }
 
@@ -57,6 +56,17 @@ public class GLDeferredRenderer {
     public void setSize(int width, int height) {
         _width = width; _height = height;
         _currentProjectionMatrix = this.perspectiveMatrix(_width, _height, _currentFOV);
+    }
+
+    public void setSizeInPixels(int width, int height) {
+        _widthPixels = width;
+        _heightPixels = height;
+
+        if (_gBuffer != null) {
+            _gBuffer.destroy(); //delete any old framebuffers.
+        }
+
+        _gBuffer = new GBuffer(width, height);
 
         _directionalLightPassShader.useProgram();
         _directionalLightPassShader.setScreenSize(width, height);
@@ -94,6 +104,9 @@ public class GLDeferredRenderer {
      * @param hdrMaxIntensity The maximum light intensity in the scene.
      */
     public void render(List<MeshNode> nodes, List<Light> lights, Matrix4 worldToCameraMatrix, Matrix4 projectionMatrix, float hdrMaxIntensity) {
+        if (_gBuffer == null) {
+            return;
+        }
 
         glEnable(GL_FRAMEBUFFER_SRGB);
         _gBuffer.startFrame();
@@ -219,9 +232,8 @@ public class GLDeferredRenderer {
         glCullFace(GL_FRONT);
 
         _pointLightPassShader.setCameraToClipMatrix(projectionMatrix);
-        _pointLightPassShader.setMaxIntensity(hdrMaxIntensity);
 
-        _pointLightPassShader.setPointLightData(light.pointLightDataBuffer(lightToCameraMatrix));
+        _pointLightPassShader.setPointLightData(light.pointLightDataBuffer(lightToCameraMatrix, hdrMaxIntensity));
 
         _pointLightPassShader.setModelToCameraMatrix(lightToCameraMatrix);
 
@@ -243,8 +255,7 @@ public class GLDeferredRenderer {
                 .filter(light -> light.type == Light.LightType.Directional || light.type == Light.LightType.Ambient)
                 .collect(Collectors.toList());
 
-        _directionalLightPassShader.setMaxIntensity(hdrMaxIntensity);
-        _directionalLightPassShader.setLightData(Light.toLightBlock(filteredLights, worldToCameraMatrix));
+        _directionalLightPassShader.setLightData(Light.toLightBlock(filteredLights, worldToCameraMatrix, hdrMaxIntensity));
 
         glDisable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
@@ -261,8 +272,8 @@ public class GLDeferredRenderer {
     private void performFinalPass() {
         _gBuffer.bindForFinalPass();
 
-        glBlitFramebuffer(0, 0, _width, _height,
-                0, 0, _width, _height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+        glBlitFramebuffer(0, 0, _widthPixels, _heightPixels,
+                0, 0, _widthPixels, _heightPixels, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 
     }
 

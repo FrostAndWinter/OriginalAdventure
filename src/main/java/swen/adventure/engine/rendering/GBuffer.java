@@ -23,7 +23,7 @@ class GBuffer {
 
     private final int _finalBufferAttachment;
 
-    public GBuffer(int width, int height) {
+    public GBuffer(int pixelWidth, int pixelHeight) {
 
         // Create the FBO
         _frameBufferObject = glGenFramebuffers();
@@ -40,7 +40,7 @@ class GBuffer {
         int i = 0;
         for (; i < _glTextures.length ; i++) {
             glBindTexture(GL_TEXTURE_2D, _glTextures[i]);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, (ByteBuffer)null);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, pixelWidth, pixelHeight, 0, GL_RGBA, GL_FLOAT, (ByteBuffer)null);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, _glTextures[i], 0);
@@ -48,12 +48,12 @@ class GBuffer {
 
         // depth
         glBindTexture(GL_TEXTURE_2D, _depthTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH32F_STENCIL8, width, height, 0, GL_DEPTH_STENCIL, GL_FLOAT_32_UNSIGNED_INT_24_8_REV, (ByteBuffer)null);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH32F_STENCIL8, pixelWidth, pixelHeight, 0, GL_DEPTH_STENCIL, GL_FLOAT_32_UNSIGNED_INT_24_8_REV, (ByteBuffer)null);
         glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, _depthTexture, 0);
 
         // final
         glBindTexture(GL_TEXTURE_2D, _finalTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8_ALPHA8, width, height, 0, GL_RGBA, GL_FLOAT, (ByteBuffer)null);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8_ALPHA8, pixelWidth, pixelHeight, 0, GL_RGBA, GL_FLOAT, (ByteBuffer)null);
         glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, _finalTexture, 0);
 
         _finalBufferAttachment = GL_COLOR_ATTACHMENT0 + i;
@@ -107,5 +107,26 @@ class GBuffer {
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
         glBindFramebuffer(GL_READ_FRAMEBUFFER, _frameBufferObject);
         glReadBuffer(_finalBufferAttachment);
+    }
+
+    public void destroy() {
+        if (_frameBufferObject != 0) {
+            glDeleteFramebuffers(_frameBufferObject);
+        }
+
+        if (_glTextures[0] != 0) {
+            IntBuffer textureBuffer = BufferUtils.createIntBuffer(_glTextures.length);
+            textureBuffer.put(_glTextures);
+            textureBuffer.flip();
+            glDeleteTextures(textureBuffer);
+        }
+
+        if (_depthTexture != 0) {
+            glDeleteTextures(_depthTexture);
+        }
+
+        if (_finalTexture != 0) {
+            glDeleteTextures(_finalTexture);
+        }
     }
 }

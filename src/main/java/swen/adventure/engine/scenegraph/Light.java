@@ -195,9 +195,10 @@ public final class Light extends SceneNode {
     /**
      * Converts this point light to a buffer to be passed to GLDeferredRenderer.
      * @param lightToCameraMatrix The matrix to convert from node space to camera space.
+     * @param hdrMaxIntensity The light intensity in the scene per channel that should be considered to be the maximum.
      * @return A ByteBuffer representation of the data required to display this light.
      */
-    public ByteBuffer pointLightDataBuffer(Matrix4 lightToCameraMatrix) {
+    public ByteBuffer pointLightDataBuffer(Matrix4 lightToCameraMatrix, float hdrMaxIntensity) {
         if (this.type != LightType.Point) {
             throw new RuntimeException("pointLightDataBuffer cannot be used for light types other than point lights.");
         }
@@ -222,11 +223,11 @@ public final class Light extends SceneNode {
         buffer.putFloat(positionInCameraSpace.z);
         buffer.putFloat(1.f);
 
-        Vector3 intensityVector = this.colourVector();
+        Vector3 intensityVector = this.colourVector().divideScalar(hdrMaxIntensity);
         buffer.putFloat(intensityVector.x);
         buffer.putFloat(intensityVector.y);
         buffer.putFloat(intensityVector.z);
-        buffer.putFloat(0.f);
+        buffer.putFloat(1.f);
         buffer.flip();
 
         return buffer;
@@ -235,9 +236,10 @@ public final class Light extends SceneNode {
     /**
      * Adds the data for this light to a specified buffer, transforming its position using worldToCameraMatrix.
      * @param buffer The byte buffer to add the light data to.
+     * @param hdrMaxIntensity The light intensity in the scene per channel that should be considered to be the maximum.
      * @param worldToCameraMatrix The matrix to use in transforming this light's position/direction into world space.
      */
-    private void addLightDataToBuffer(ByteBuffer buffer, Matrix4 worldToCameraMatrix) {
+    private void addLightDataToBuffer(ByteBuffer buffer, Matrix4 worldToCameraMatrix, float hdrMaxIntensity) {
         if (this.type == LightType.Ambient) {
             throw new RuntimeException("Ambient light with id " + id + " should not be converted to a ByteBuffer.\n " +
                     "Use method Light.toLightBlock instead.");
@@ -252,7 +254,7 @@ public final class Light extends SceneNode {
 
         //The position vector will have a 0 w component if it's directional.
         Vector4 positionInCameraSpace = worldToCameraMatrix.multiply(this.nodeToWorldSpaceTransform().multiply(localSpacePosition));
-        Vector3 intensity = this.colourVector();
+        Vector3 intensity = this.colourVector().divideScalar(hdrMaxIntensity);
 
 //        Structure:
 //        struct PerLightData {
@@ -279,13 +281,15 @@ public final class Light extends SceneNode {
      * Converts a set of lights to a ByteBuffer that can be passed as a uniform block to the shader program.
      * @param lights The set of lights in the scene.
      * @param worldToCameraMatrix A transformation to convert a world position to a camera space position.
+     * @param hdrMaxIntensity The light intensity in the scene per channel that should be considered to be the maximum.
      * @return A byte buffer representing the GL uniform block.
      */
-    public static ByteBuffer toLightBlock(List<Light> lights, Matrix4 worldToCameraMatrix) {
+    public static ByteBuffer toLightBlock(List<Light> lights, Matrix4 worldToCameraMatrix, float hdrMaxIntensity) {
         Vector3 ambientIntensity = lights.stream()
                 .filter((light) -> light.type == LightType.Ambient)
                 .map(Light::colourVector)
                 .reduce(Vector3::add)
+                .map(light -> light.divideScalar(hdrMaxIntensity))
                 .orElse(new Vector3(0.f, 0.f, 0.f));
 
         List<Light> otherLights = lights.stream()
@@ -319,7 +323,7 @@ public final class Light extends SceneNode {
         buffer.putFloat(0.f); //padding2
 
         for (Light dynamicLight : otherLights) {
-            dynamicLight.addLightDataToBuffer(buffer, worldToCameraMatrix);
+            dynamicLight.addLightDataToBuffer(buffer, worldToCameraMatrix, hdrMaxIntensity);
         }
 
         buffer.rewind();
