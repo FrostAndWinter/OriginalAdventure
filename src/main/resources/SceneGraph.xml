@@ -31,16 +31,15 @@
     </TransformNode>
     
     <TransformNode id="chestTransform" translation="580, 0, -400" rotation="0, -0.7071067812, 0, 0.7071067812" scale="30, 30, 30">
-        <Chest id="chest"/>
-
         <TransformNode id="chestContentsTransform" translation="-0.4, 0.88, 0.5" rotation="-0.66753083, 0.074032836, 0.066976495, 0.73785895" scale="0.03333, 0.03333, 0.03333">
-            <Container id="chestContainer" showTopItem="true" selectionObject="chest"/>
+            <Container id="chestContainer" showTopItem="true" />
 
             <TransformNode id="noteTransform" scale="10.0, 10.0, 10.0" isDynamic="true">
                 <Note id="note" inContainer="chestContainer"/>
             </TransformNode>
         </TransformNode>
 
+        <Chest id="chest" container="chestContainer"/>
     </TransformNode>
 
     <TransformNode id="wallsTransform" scale="1, 1.4, 1">
