@@ -15,30 +15,31 @@ class Packet {
     public enum Operation {
         // FIXME: awful names
         // packets coming from the server
+        /**
+         * Represents a client has connected to the server
+         */
         CLIENT_CONNECT,
+        /**
+         * Represents a client been removed by the server
+         */
         CLIENT_KICK,
+        /**
+         * Represents data from a client
+         */
         CLIENT_DATA,
 
-        // Mutual packet types
-        PING,
-        PONG,
-
         // Server packets going out
+        /**
+         * Represents data from the server
+         */
         SERVER_DATA,
         SERVER_KILL,
         SNAPSHOT;
 
         public byte toByte() {
-            byte b = 0;
-            for (Operation op :Operation.values()) {
-                if (this == op) {
-                    break;
-                }
-                b++;
-
-            }
-            return b;
+            return (byte)this.ordinal();
         }
+
         public static Operation fromByte(byte b) {
             return Operation.values()[b]; // should be ffiinnee
         }
@@ -60,7 +61,7 @@ class Packet {
     /**
      * Create a packet to be sent over the network
      *
-     * The maximum length of the pay load is 65535 bytes due to the implementation of the header
+     * The maximum length of the pay load is 2^31-1 bytes due to the implementation of the header
      * It is advised to use have the payload smaller than the maximum to keep in bounds of TCP send/recieve
      * buffers
      *
@@ -74,6 +75,12 @@ class Packet {
         this.payload = payload;
     }
 
+    /**
+     * Convert the a given Packet to a byte array ready to be sent
+     * over the network or saved.
+     *
+     * @return a byte array that Packet.fromBytes can covert to a Packet
+     */
     public byte[] toBytes() {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         try {
@@ -88,7 +95,7 @@ class Packet {
             bytes.write(lengthBytes);
             bytes.write(payload);
         } catch (IOException ex) {
-            ex.printStackTrace();
+            // muffu muffu~
         }
         return bytes.toByteArray();
     }
@@ -125,24 +132,32 @@ class Packet {
 
         void append(byte b) {
             if (!op.isPresent()) {
-                // Got OP code
+                // Get OP code
                 op = Optional.of(Operation.fromByte(b));
             } else if (lengthCounter < 4) {
+
+                // Get the length of the buffer
                 lengthBytes[lengthCounter] = b;
 
                 lengthCounter++;
                 if (lengthCounter == 4) {
+                    // got all the bytes of the integer
                     // BigInt for the rescue
                     length = new BigInteger(lengthBytes).intValue();
                     payload = new byte[length];
                 }
             } else if (processed < length) {
+                // build payload
                 payload[processed++] = b;
             } else {
                 overflow.add(b);
             }
         }
 
+        /**
+         * The data in the builder that was not used to build the packet
+         * @return List of bytes that was added to the builder in order of arrival
+         */
         List<Byte> overflow() {
            return overflow;
         }
@@ -151,7 +166,16 @@ class Packet {
             return lengthCounter == 4 && processed == length && op.isPresent();
         }
 
+        /**
+         * Build the packet from the data
+         *
+         * @throws IllegalStateException if the builder is not ready to build the packet
+         * @return A built packet from the data given
+         */
         Packet build() {
+            if (!isReady()) {
+                throw new IllegalStateException("Cannot build a packet when it is not ready");
+            }
             return new Packet(op.get(), payload);
         }
 

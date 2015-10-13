@@ -13,24 +13,42 @@ import java.util.Arrays;
 /**
  * Package private network session use by both client and server side
  */
-class Session implements Runnable { // FIXME
+class Session implements Runnable {
     private final Socket socket;
     private final OutputStream outputStream;
     private final SessionStrategy strategy;
 
-
+    /**
+     * Create a network session that wraps a connected socket
+     *
+     * @note after making a session the socket should <b>NOT</b> be used afterwards
+     *       any use of the socket creating the Session is undefined behaviour
+     *
+     * @param socket the socket to be wrapped
+     * @param strategy
+     * @throws IOException
+     */
     public Session(Socket socket, SessionStrategy strategy) throws IOException {
         this.socket = socket;
         this.strategy = strategy;
         outputStream = socket.getOutputStream();
-
-        strategy.connected(this);
     }
 
+    /**
+     * Send a packet through the socket
+     *
+     * @param msg message to be sent
+     * @throws IOException
+     */
     public void send(Packet msg) throws IOException {
         outputStream.write(msg.toBytes());
     }
 
+    /**
+     * Close the session
+     *
+     * @throws IOException
+     */
     public void close() throws IOException {
         socket.close();
     }
@@ -40,6 +58,8 @@ class Session implements Runnable { // FIXME
     }
 
     public void run() {
+        strategy.connected(this);
+
         InputStream input;
         byte[] buffer;
         Packet.Builder builder = new Packet.Builder();
@@ -51,7 +71,6 @@ class Session implements Runnable { // FIXME
             return;
         }
 
-
         System.out.println(strategy + "@" + socket.getLocalSocketAddress() + " started loop");
         while (!socket.isClosed() && socket.isConnected()) {
             try {
@@ -61,7 +80,6 @@ class Session implements Runnable { // FIXME
                     break;
                 }
 
-                // TODO: Make sure packet boundaries are correct
                 byte[] recv = Arrays.copyOf(buffer, len);
                 builder.append(recv);
                 while (builder.isReady()) {
