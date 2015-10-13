@@ -81,8 +81,8 @@ public class FlickeringLight extends AdventureGameObject {
     }
 
     private void setMaterialColour(Material material, final Vector3 colour, final float intensity) {
-        material.setDiffuseColour(colour.multiplyScalar(0.6f * intensity));
-        material.setAmbientColour(colour.multiplyScalar(0.4f * intensity));
+        material.setDiffuseColour(colour.multiplyScalar(0.25f));
+        material.setAmbientColour(colour.multiplyScalar(intensity));
         if (this._isAnimatingToggle) {
             material.setOpacity(intensity / _baseIntensity);
         }

@@ -29,14 +29,12 @@ public class LightPassShader extends PerObjectMaterialShader {
         _modelToClipMatrixUniformRef = glGetUniformLocation(this.glProgramRef(), "modelToClipMatrixUniform");
         _depthRangeUniformRef = glGetUniformLocation(this.glProgramRef(), "depthRangeUniform");
 
-        final int positionsSamplerRef = glGetUniformLocation(this.glProgramRef(), "cameraSpacePositionSampler");
         final int vertexNormalsSamplerRef = glGetUniformLocation(this.glProgramRef(), "cameraSpaceNormalSampler");
         final int diffuseColourSamplerRef = glGetUniformLocation(this.glProgramRef(), "diffuseColourSampler");
         final int specularColourSamplerRef = glGetUniformLocation(this.glProgramRef(), "specularColourSampler");
         final int depthSamplerRef = glGetUniformLocation(this.glProgramRef(), "depthSampler");
 
         this.useProgram();
-        glUniform1i(positionsSamplerRef, TextureUnit.PositionUnit.glUnit);
         glUniform1i(diffuseColourSamplerRef, TextureUnit.DiffuseColourUnit.glUnit);
         glUniform1i(vertexNormalsSamplerRef, TextureUnit.VertexNormalUnit.glUnit);
         glUniform1i(specularColourSamplerRef, TextureUnit.SpecularColourUnit.glUnit);

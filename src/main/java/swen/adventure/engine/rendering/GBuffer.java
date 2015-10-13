@@ -33,8 +33,6 @@ class GBuffer {
                 return GL_RGB8;
             case SpecularColourUnit:
                 return GL_RGBA8_SNORM;
-            case PositionUnit:
-                return GL_RGB16F;
             case VertexNormalUnit:
                 return GL_R11F_G11F_B10F; //This is a positive-only format, so we need to modify the values in the shader.
         }
@@ -104,7 +102,7 @@ class GBuffer {
 
     public void bindForGeometryPass() {
 
-        int[] drawBuffers = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, _finalBufferAttachment };
+        int[] drawBuffers = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, _finalBufferAttachment }; //Normals, diffuse, specular, ambient.
         IntBuffer drawBuffersBuffer = BufferUtils.createIntBuffer(drawBuffers.length);
         drawBuffersBuffer.put(drawBuffers);
         drawBuffersBuffer.flip();
@@ -130,9 +128,6 @@ class GBuffer {
 
         glActiveTexture(GL_TEXTURE0 + TextureUnit.DepthTextureUnit.glUnit);
         glBindTexture(GL_TEXTURE_2D, _depthTexture);
-
-        glActiveTexture(GL_TEXTURE0 + TextureUnit.FinalUnit.glUnit);
-        glBindTexture(GL_TEXTURE_2D, _finalTexture);
     }
 
     public void bindForFinalPass() {
