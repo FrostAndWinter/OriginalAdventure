@@ -74,6 +74,6 @@ void main()
     }
 
     diffuseColourOut = diffuseColour();
-    ambientColourOut = vec4(ambientColour().rgb, material.ambientColour.a);
+    ambientColourOut = ambientColour();
     specularColourOut = vec4(specularColour().rgb, specularity());
 }

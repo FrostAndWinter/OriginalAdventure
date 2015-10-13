@@ -211,7 +211,7 @@ public final class Light extends SceneNode {
 //        }
 
         ByteBuffer buffer = BufferUtils.createByteBuffer(PointLightBufferSizeInBytes);
-        buffer.putFloat(0.f); //constant attenuation
+        buffer.putFloat(1.f); //constant attenuation
         buffer.putFloat(this.falloff == LightFalloff.Linear ? LightAttenuationFactor : 0.f); //linear attenuation
         buffer.putFloat(this.falloff == LightFalloff.Quadratic ? LightAttenuationFactor : 0.f); //quadratic attenuation
         buffer.putFloat(0.f);

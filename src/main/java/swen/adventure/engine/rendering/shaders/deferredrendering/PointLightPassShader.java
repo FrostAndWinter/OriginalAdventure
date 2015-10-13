@@ -1,6 +1,7 @@
 package swen.adventure.engine.rendering.shaders.deferredrendering;
 
 import swen.adventure.engine.Utilities;
+import swen.adventure.engine.rendering.ShaderProgram;
 import swen.adventure.engine.rendering.TextureUnit;
 import swen.adventure.engine.scenegraph.Light;
 
@@ -20,8 +21,6 @@ import static org.lwjgl.opengl.GL31.glUniformBlockBinding;
  * Created by Thomas Roughton, Student ID 300313924, on 12/10/15.
  */
 public class PointLightPassShader extends LightPassShader {
-
-    private static final int LightBlockIndex = 2;
 
     private int _lightUniformBufferRef;
 
@@ -49,13 +48,14 @@ public class PointLightPassShader extends LightPassShader {
         //Setup the uniform buffers
         int lightBlock = glGetUniformBlockIndex(this.glProgramRef(), "PointLight");
 
-            glUniformBlockBinding(this.glProgramRef(), lightBlock, LightBlockIndex);
+        int lightBlockIndex = ShaderProgram.nextUniformBlockIndex();
+            glUniformBlockBinding(this.glProgramRef(), lightBlock, lightBlockIndex);
             _lightUniformBufferRef = glGenBuffers();
             glBindBuffer(GL_UNIFORM_BUFFER, _lightUniformBufferRef);
             glBufferData(GL_UNIFORM_BUFFER, Light.PointLightBufferSizeInBytes, GL_DYNAMIC_DRAW);
 
             //Bind the static buffer
-            glBindBufferRange(GL_UNIFORM_BUFFER, LightBlockIndex, _lightUniformBufferRef, 0, Light.PointLightBufferSizeInBytes);
+            glBindBufferRange(GL_UNIFORM_BUFFER, lightBlockIndex, _lightUniformBufferRef, 0, Light.PointLightBufferSizeInBytes);
 
     }
 

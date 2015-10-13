@@ -1,9 +1,11 @@
 package swen.adventure.game.ui.components;
 
 import processing.core.PGraphics;
+import processing.opengl.PGL;
 import swen.adventure.engine.Action;
 import swen.adventure.engine.Input;
 import swen.adventure.engine.rendering.GLForwardRenderer;
+import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.ui.color.Color;
 import swen.adventure.engine.ui.components.Frame;
 import swen.adventure.engine.ui.components.Panel;
@@ -11,6 +13,10 @@ import swen.adventure.engine.ui.components.Reticule;
 import swen.adventure.game.scenenodes.Player;
 
 import java.util.ArrayList;
+
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL14.*;
+import static org.lwjgl.opengl.GL20.*;
 
 /**
  * Created by danielbraithwt on 10/10/15.
@@ -77,7 +83,7 @@ public class UI extends Frame {
         return _inventory;
     }
 
-    public void drawUI(PGraphics pg, GLForwardRenderer gr) {
+    public void drawUI(PGraphics pg, GLRenderer gr) {
         float scaleX = pg.width / (float) width;
         float scaleY = pg.height / (float) height;
         float scale = Math.min(scaleX, scaleY);
@@ -86,6 +92,7 @@ public class UI extends Frame {
         float dh = (pg.height - (scale * height))/2;
 
         pg.beginDraw();
+
         pg.noStroke();
         pg.translate(dw, dh);
 

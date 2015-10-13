@@ -84,7 +84,7 @@ public class AdventureGame implements Game {
 
         if (!Utilities.isHeadlessMode) {
             _deferredRenderer = new GLDeferredRenderer(width, height);
-           // _forwardRenderer = new GLForwardRenderer(width, height);
+            _forwardRenderer = new GLForwardRenderer(width, height);
             _pickerRenderer = new PickerRenderer();
         }
 
@@ -175,13 +175,14 @@ public class AdventureGame implements Game {
         if (_pGraphics != null) {
             _pGraphics.setSize(width, height);
         }
-      //  _forwardRenderer.setSize(width, height);
+        _forwardRenderer.setSize(width, height);
     }
 
     @Override
     public void setSizeInPixels(int width, int height) {
         _pGraphics.setPixelDimensions(width, height);
         _deferredRenderer.setSizeInPixels(width, height);
+        _forwardRenderer.setSizeInPixels(width, height);
     }
 
     @Override
@@ -241,7 +242,7 @@ public class AdventureGame implements Game {
 
         ui.setTooltip(tips);
 
-      //  ui.drawUI(_pGraphics, _forwardRenderer);
+        ui.drawUI(_pGraphics, _forwardRenderer);
     }
 
     /**

@@ -50,7 +50,7 @@ public class PickerRenderer {
         _depthStencilBuffer = glGenRenderbuffers();
 
         glBindRenderbuffer(GL_RENDERBUFFER, _colourRenderBuffer);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_UNSIGNED_INT_8_8_8_8_REV, 1, 1);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, 1, 1);
 
         glBindRenderbuffer(GL_RENDERBUFFER, _depthStencilBuffer);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1, 1);

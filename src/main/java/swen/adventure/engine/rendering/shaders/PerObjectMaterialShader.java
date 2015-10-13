@@ -31,9 +31,6 @@ public class PerObjectMaterialShader extends ShaderProgram implements MaterialSh
     private final int _cameraToClipMatrixUniformRef;
     private final int _normalModelToCameraMatrixUniformRef;
 
-    private static final int LightBlockIndex = 3;
-    private static final int MaterialBlockIndex = 4;
-
     private int _lightUniformBufferRef;
     private int _materialUniformBufferRef;
     private final int _textureRepeatUniformBufferRef;
@@ -82,22 +79,26 @@ public class PerObjectMaterialShader extends ShaderProgram implements MaterialSh
         int materialBlock = glGetUniformBlockIndex(this.glProgramRef(), "Material");
 
         if (lightBlock != -1) {
-            glUniformBlockBinding(this.glProgramRef(), lightBlock, LightBlockIndex);
+            int lightBlockIndex = ShaderProgram.nextUniformBlockIndex();
+
+            glUniformBlockBinding(this.glProgramRef(), lightBlock, lightBlockIndex);
             _lightUniformBufferRef = glGenBuffers();
             glBindBuffer(GL_UNIFORM_BUFFER, _lightUniformBufferRef);
             glBufferData(GL_UNIFORM_BUFFER, Light.BufferSizeInBytes, GL_DYNAMIC_DRAW);
 
             //Bind the static buffer
-            glBindBufferRange(GL_UNIFORM_BUFFER, LightBlockIndex, _lightUniformBufferRef, 0, Light.BufferSizeInBytes);
+            glBindBufferRange(GL_UNIFORM_BUFFER, lightBlockIndex, _lightUniformBufferRef, 0, Light.BufferSizeInBytes);
         }
 
-        if (materialBlock != -1) { glUniformBlockBinding(this.glProgramRef(), materialBlock, MaterialBlockIndex);
+        if (materialBlock != -1) {
+            int materialBlockIndex = ShaderProgram.nextUniformBlockIndex();
+            glUniformBlockBinding(this.glProgramRef(), materialBlock, materialBlockIndex);
             _materialUniformBufferRef = glGenBuffers();
             glBindBuffer(GL_UNIFORM_BUFFER, _materialUniformBufferRef);
             glBufferData(GL_UNIFORM_BUFFER, Material.BufferSizeInBytes, GL_DYNAMIC_DRAW);
 
             //Bind the static buffer
-            glBindBufferRange(GL_UNIFORM_BUFFER, MaterialBlockIndex, _materialUniformBufferRef, 0, Material.BufferSizeInBytes);
+            glBindBufferRange(GL_UNIFORM_BUFFER, materialBlockIndex, _materialUniformBufferRef, 0, Material.BufferSizeInBytes);
         }
 
         glBindBuffer(GL_UNIFORM_BUFFER, 0);

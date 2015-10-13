@@ -18,13 +18,14 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL14.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.GL32.GL_DEPTH_CLAMP;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 11/10/15.
  *
  * Implementation adapted from http://ogldev.atspace.co.uk/www/tutorial37/tutorial37.html
  */
-public class GLDeferredRenderer {
+public class GLDeferredRenderer implements GLRenderer {
 
     private GeometryPassShader _geometryPassShader;
     private PointLightPassShader _pointLightPassShader;
@@ -53,11 +54,13 @@ public class GLDeferredRenderer {
         return Matrix4.makePerspective(fieldOfView, cameraAspect, cameraNear, cameraFar);
     }
 
+    @Override
     public void setSize(int width, int height) {
         _width = width; _height = height;
         _currentProjectionMatrix = this.perspectiveMatrix(_width, _height, _currentFOV);
     }
 
+    @Override
     public void setSizeInPixels(int width, int height) {
         _widthPixels = width;
         _heightPixels = height;
@@ -85,6 +88,7 @@ public class GLDeferredRenderer {
      * @param fieldOfView The field of view of the camera
      * @param hdrMaxIntensity The maximum light intensity in the scene.
      */
+    @Override
     public void render(List<MeshNode> nodes, List<Light> lights, Matrix4 worldToCameraMatrix, float fieldOfView, float hdrMaxIntensity) {
 
         if (fieldOfView != _currentFOV) {
@@ -103,15 +107,16 @@ public class GLDeferredRenderer {
      * @param projectionMatrix The projection matrix to use
      * @param hdrMaxIntensity The maximum light intensity in the scene.
      */
+    @Override
     public void render(List<MeshNode> nodes, List<Light> lights, Matrix4 worldToCameraMatrix, Matrix4 projectionMatrix, float hdrMaxIntensity) {
         if (_gBuffer == null) {
             return;
         }
 
-        glEnable(GL_FRAMEBUFFER_SRGB);
+        this.preRender();
+
         _gBuffer.startFrame();
         this.performGeometryPass(nodes, worldToCameraMatrix, projectionMatrix);
-
 
         // We need stencil to be enabled in the stencil pass to get the stencil buffer
         // updated and we also need it in the light pass because we render the light
@@ -131,7 +136,42 @@ public class GLDeferredRenderer {
 
         this.performFinalPass();
 
+        this.postRender();
+    }
+
+    /**
+     * Setup GL state for rendering.
+     */
+    private void preRender() {
+        glEnable(GL_FRAMEBUFFER_SRGB);
+
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glFrontFace(GL_CCW);
+
+        glEnable(GL_DEPTH_TEST);
+        glDepthMask(true);
+        glDepthFunc(GL_LEQUAL);
+        glDepthRange(0.0f, 1.0f);
+        glEnable(GL_DEPTH_CLAMP);
+
+        glClear(GL_DEPTH_BUFFER_BIT);
+
+        glDisable(GL_BLEND);
+    }
+
+    /**
+     * Revert changed GL state.
+     */
+    private void postRender() {
         glDisable(GL_FRAMEBUFFER_SRGB);
+        glDisable(GL_CULL_FACE);
+        glDisable(GL_DEPTH_TEST);
+
+        glEnable(GL_BLEND);
+
+        glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+        glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
     }
 
     private void performGeometryPass(List<MeshNode> nodes, Matrix4 worldToCameraMatrix, Matrix4 projectionMatrix) {
@@ -197,7 +237,7 @@ public class GLDeferredRenderer {
 
         float exponential = pointLight.falloff == Light.LightFalloff.Quadratic ? Light.LightAttenuationFactor : 0;
         float linear = pointLight.falloff == Light.LightFalloff.Linear ? Light.LightAttenuationFactor : 0;
-        float constant = 0;
+        float constant = 1.f;
 
         float radius = (-linear + (float)Math.sqrt(linear * linear - 4 * exponential * (constant - maxChannel)))/(2*exponential);
         return radius;
@@ -274,7 +314,7 @@ public class GLDeferredRenderer {
 
         glBlitFramebuffer(0, 0, _widthPixels, _heightPixels,
                 0, 0, _widthPixels, _heightPixels, GL_COLOR_BUFFER_BIT, GL_LINEAR);
-
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
     }
 
 }

@@ -711,7 +711,7 @@ public void setPixelDimensions(int width, int height) {  // ignore
 
   // Some renderers (OpenGL) need to know what smoothing level will be used
   // before the rendering surface is even created.
-  smooth = 4;
+  smooth = 0;
   pixelDensity = width/this.width;
 
   this.pixelWidth = width;
@@ -4130,8 +4130,6 @@ public float textDescent() {
  *
  *  typography:loading_displaying
  * @param which any variable of the type PFont
- * @see PApplet#createFont(String, float, boolean)
- * @see PApplet#loadFont(String)
  * @see PFont
  * @see PGraphics#text(String, float, float)
  * @see PGraphics#textSize(float)

@@ -17,7 +17,7 @@ struct PerLightData {
 
 const int MaxLights = 32;
 
-layout(location = 3) uniform Light {
+uniform Light {
     vec4 ambientIntensity;
     int numDynamicLights;
     int padding1;
@@ -26,7 +26,7 @@ layout(location = 3) uniform Light {
     PerLightData lights[MaxLights];
 } lighting;
 
-layout(location = 4) uniform Material {
+uniform Material {
     vec4 ambientColour; //of which xyz are the colour and w is a 0/1 as to whether ambient self-illumination is enabled.
     vec4 diffuseColour; //r,g,b,a
     vec4 specularColour; //of which xyz are the colour and w is the specularity.

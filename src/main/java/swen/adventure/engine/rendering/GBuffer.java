@@ -76,7 +76,6 @@ class GBuffer {
 
 
     public void bindForGeometryPass() {
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _frameBufferObject);
 
         int[] drawBuffers = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4 };
         IntBuffer drawBuffersBuffer = BufferUtils.createIntBuffer(drawBuffers.length);

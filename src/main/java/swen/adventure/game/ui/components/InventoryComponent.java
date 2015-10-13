@@ -4,6 +4,7 @@ import processing.core.PGraphics;
 import swen.adventure.engine.Action;
 import swen.adventure.engine.Input;
 import swen.adventure.engine.rendering.GLForwardRenderer;
+import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.rendering.maths.Matrix4;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
@@ -130,7 +131,7 @@ public class InventoryComponent extends UIComponent {
      * @param width
      * @param height
      */
-    public void drawItems(GLForwardRenderer renderer, float scaleX, float scaleY, float dx, float dy, float width, float height) {
+    public void drawItems(GLRenderer renderer, float scaleX, float scaleY, float dx, float dy, float width, float height) {
 
         _toScreenTransform.setScale(new Vector3(2.f / width, 2.f / height, 1.f));
         _toScreenTransform.setTranslation(new Vector3(-1.f, -1.f, -1.f));
