@@ -18,6 +18,7 @@ import java.util.List;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 4/10/15.
+ * Modified by Daniel Braithwaite, ID: 300313770
  */
 public class Lever extends AdventureGameObject {
 
@@ -53,6 +54,11 @@ public class Lever extends AdventureGameObject {
         });
     }
 
+    /**
+     * Changes the state of the lever, if its down then
+     * this will set it to up and visa versa
+     * @param player player that is toggling it
+     */
     public void toggle(Player player) {
         if (_isDown) {
             this.moveUp(player);
@@ -61,12 +67,20 @@ public class Lever extends AdventureGameObject {
         }
     }
 
+    /**
+     * Sets the lever to be up and animates the lever to that position
+     * @param player player making the interaction
+     */
     public void moveUp(Player player) {
         _isDown = false;
         new Animation(_leverRotationProgress, Math.abs(0.5f - _leverRotationProgress.value()), 0.0f);
         this.eventLeverToggled.trigger(player, Collections.emptyMap());
     }
 
+    /**
+     * Sets the lever to be down and animates the lever to that position
+     * @param player player making the interaction
+     */
     public void moveDown(Player player) {
         _isDown = true;
         new Animation(_leverRotationProgress, Math.abs(0.5f - _leverRotationProgress.value()), 1.0f);
