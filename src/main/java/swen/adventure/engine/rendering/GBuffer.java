@@ -40,7 +40,7 @@ class GBuffer {
         int i = 0;
         for (; i < _glTextures.length ; i++) {
             glBindTexture(GL_TEXTURE_2D, _glTextures[i]);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, pixelWidth, pixelHeight, 0, GL_RGBA, GL_FLOAT, (ByteBuffer)null);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, pixelWidth, pixelHeight, 0, GL_RGBA, GL_FLOAT, (ByteBuffer)null);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, _glTextures[i], 0);
