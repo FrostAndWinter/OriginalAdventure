@@ -181,6 +181,16 @@ public class SceneGraphParser {
                 ((Door) gameObject).setRequiresKey(requiresKey);
             }
 
+            if (gameObject instanceof AdventureGameObject) {
+                getOptionalAttribute("container", xmlNode)
+                        .flatMap(parent::nodeWithID)
+                        .map(Container.class::cast)
+                        .ifPresent(container -> {
+                            AdventureGameObject adventureGameObject = (AdventureGameObject) gameObject;
+                            adventureGameObject.setContainer(container);
+                        });
+            }
+
             return class0.cast(gameObject);
         } catch (ClassNotFoundException | NoSuchMethodException e) {
             return null;
@@ -363,22 +373,6 @@ public class SceneGraphParser {
 
         Container container = parent.findNodeWithIdOrCreate(id, () -> new Container(id, parent, capacity));
         container.setShowTopItem(showTopItem);
-
-        String selectionObjectId = getAttribute("selectionObject", xmlNode, ParserManager.getFromStringFunction(String.class));
-        Optional<SceneNode> selectionObjectOptional = parent.nodeWithID(selectionObjectId);
-
-
-        if (selectionObjectOptional.isPresent()) {
-            SceneNode selectionObject = selectionObjectOptional.get();
-            if (!(selectionObject instanceof AdventureGameObject)) {
-                throw new RuntimeException("selectionObject on container " + id + " must be an AdventureGameObject");
-            }
-
-            AdventureGameObject adventureGameObject = (AdventureGameObject) selectionObject;
-            adventureGameObject.setContainer(container);
-        } else {
-            throw new RuntimeException("The container " + id + "must have a selectionObject");
-        }
 
         return container;
     }
