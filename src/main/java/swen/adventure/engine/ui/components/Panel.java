@@ -24,11 +24,18 @@ public class Panel extends swen.adventure.engine.ui.components.UIComponent {
         setLayoutManager(new LinearLayout(LinearLayout.LINEAR_LAYOUT_VERTICAL));
     }
 
+    /**
+     * Set the background color of the panel
+     * @param c background color
+     */
     public void setColor(Color c) {
         color = c;
     }
 
     @Override
+    /**
+     * {@inheritDoc}
+     */
     public void drawComponent(PGraphics g, float scaleX, float scaleY) {
 
         if (color == null) {
@@ -50,11 +57,17 @@ public class Panel extends swen.adventure.engine.ui.components.UIComponent {
     }
 
     @Override
+    /**
+     * {@inheritDoc}
+     */
     public boolean withinBounds(int x, int y) {
         return true;
     }
 
     @Override
+    /**
+     * {@inheritDoc}
+     */
     protected void componentClicked(int x, int y) {
         for (UIComponent c : children) {
             c.mouseClicked(x - this.x, y - this.y);

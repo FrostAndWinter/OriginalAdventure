@@ -87,21 +87,33 @@ public class InventoryComponent extends UIComponent {
     }
 
     @Override
+    /**
+     * {@inheritDoc}
+     */
     public void setLayoutManager(LayoutManager lm) {
         throw new UnsupportedOperationException("Inventory cant use a layout manager");
     }
 
     @Override
+    /**
+     * {@inheritDoc}
+     */
     public void addChild(UIComponent c) {
         throw new UnsupportedOperationException("Inventory cant contain child ui elements");
     }
 
     @Override
+    /**
+     * {@inheritDoc}
+     */
     public void removeChild(UIComponent c) {
         throw new UnsupportedOperationException("Inventory cant contain child ui elements");
     }
 
     @Override
+    /**
+     * {@inheritDoc}
+     */
     protected void drawComponent(PGraphics g, float scaleX, float scaleY) {
         int currentX = x;
         int currentY = y;
@@ -214,12 +226,18 @@ public class InventoryComponent extends UIComponent {
 
 
     @Override
+    /**
+     * {@inheritDoc}
+     */
     public boolean withinBounds(int x, int y) {
         return (x > this.x && y > this.y) && (x < this.x + this.width && y < this.y + this.height);
     }
 
     @Override
+    /**
+     * {@inheritDoc}
+     */
     protected void componentClicked(int x, int y) {
-
+        // Component does nothing when clicked
     }
 }

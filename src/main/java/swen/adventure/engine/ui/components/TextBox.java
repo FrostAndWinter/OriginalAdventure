@@ -6,10 +6,11 @@ import swen.adventure.engine.ui.layoutmanagers.LayoutManager;
 
 /**
  * Created by danielbraithwt on 9/19/15.
+ *
+ * UI Component to display text on a interface
  */
 public class TextBox extends UIComponent {
     private static final int DEFAULT_PADDING = 20;
-
 
     private String text;
     private int padding;
@@ -22,6 +23,12 @@ public class TextBox extends UIComponent {
         padding = DEFAULT_PADDING;
     }
 
+    /**
+     * Sets the text to be displayed in the
+     * text box
+     *
+     * @param t string to be displayed
+     */
     public void setText(String t) {
         text = t;
     }
@@ -31,6 +38,9 @@ public class TextBox extends UIComponent {
     }
 
     @Override
+    /**
+     * {@inheritDoc}
+     */
     public void drawComponent(PGraphics g, float scaleX, float scaleY) {
         int stringWidth = (int) g.textWidth(text);
         int stringHeight = (int) (g.textAscent() + g.textDescent());
@@ -43,6 +53,9 @@ public class TextBox extends UIComponent {
     }
 
     @Override
+    /**
+     * {@inheritDoc}
+     */
     public boolean withinBounds(int x, int y) {
         return (x > this.x && y > this.y) && (x < this.x + this.width && y < this.y + this.height);
     }

@@ -4,6 +4,8 @@ import processing.core.PGraphics;
 
 /**
  * Created by danielbraithwt on 9/17/15.
+ *
+ *
  */
 public class Frame extends UIComponent {
 
@@ -12,6 +14,9 @@ public class Frame extends UIComponent {
     }
 
     @Override
+    /**
+     * {@inheritDoc}
+     */
     public void drawComponent(PGraphics g, float scaleX, float scaleY) {
         for (UIComponent c : children) {
             c.draw(g, scaleX, scaleY);
@@ -19,11 +24,17 @@ public class Frame extends UIComponent {
     }
 
     @Override
+    /**
+     * {@inheritDoc}
+     */
     public boolean withinBounds(int x, int y) {
         return true;
     }
 
     @Override
+    /**
+     * {@inheritDoc}
+     */
     protected void componentClicked(int x, int y) {
         for (UIComponent c : children) {
             c.mouseClicked(x, y);
