@@ -25,11 +25,7 @@ public class MultipleLightsUniformMaterialShader extends ShaderProgram {
     private final int _cameraToClipMatrixUniformRef;
     private final int _normalModelToCameraMatrixUniformRef;
     private final int _colourUniformRef;
-
-    private final int _maxIntensityUniformRef;
     private final int _specularityUniformRef;
-
-    private static final int LightBlockIndex = 0;
 
     private final int _lightUniformBufferRef;
 
@@ -60,20 +56,19 @@ public class MultipleLightsUniformMaterialShader extends ShaderProgram {
         _cameraToClipMatrixUniformRef = glGetUniformLocation(this.glProgramRef(), "cameraToClipMatrixUniform");
         _normalModelToCameraMatrixUniformRef = glGetUniformLocation(this.glProgramRef(), "normalModelToCameraMatrixUniform");
 
-        _maxIntensityUniformRef = glGetUniformLocation(this.glProgramRef(), "maxIntensity");
         _specularityUniformRef = glGetUniformLocation(this.glProgramRef(), "specularity");
 
         //Setup the uniform buffer
         int lightBlock = glGetUniformBlockIndex(this.glProgramRef(), "Light");
 
-        glUniformBlockBinding(this.glProgramRef(), lightBlock, LightBlockIndex);
+        glUniformBlockBinding(this.glProgramRef(), lightBlock, ShaderProgram.nextUniformBlockIndex());
 
         _lightUniformBufferRef = glGenBuffers();
         glBindBuffer(GL_UNIFORM_BUFFER, _lightUniformBufferRef);
         glBufferData(GL_UNIFORM_BUFFER, Light.BufferSizeInBytes, GL_DYNAMIC_DRAW);
 
         //Bind the static buffer
-        glBindBufferRange(GL_UNIFORM_BUFFER, LightBlockIndex, _lightUniformBufferRef, 0, Light.BufferSizeInBytes);
+        glBindBufferRange(GL_UNIFORM_BUFFER, ShaderProgram.nextUniformBlockIndex(), _lightUniformBufferRef, 0, Light.BufferSizeInBytes);
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
     }
 
@@ -97,10 +92,6 @@ public class MultipleLightsUniformMaterialShader extends ShaderProgram {
 
     public void setColour(Vector4 colour) {
         glUniform4fv(_colourUniformRef, colour.toFloatBuffer());
-    }
-
-    public void setMaxIntensity(float maxIntensity) {
-        glUniform1f(_maxIntensityUniformRef, maxIntensity);
     }
 
     public void setSpecularity(float specularity) {

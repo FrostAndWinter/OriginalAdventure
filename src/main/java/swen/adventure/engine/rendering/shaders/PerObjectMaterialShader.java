@@ -20,24 +20,19 @@ import static org.lwjgl.opengl.GL31.*;
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 26/09/15.
  *
- * GaussianPerObjectMaterialShader describes a shader that implements materials (set via a uniform),
+ * PerObjectMaterialShader describes a shader that implements materials (set via a uniform),
  * gaussian specular shading, diffuse shading, and textures for specularity, specular colour,
  * diffuse colour, and ambient colour.
  * It also provides functionality to repeat a texture in the U or V direction.
  * Up to 32 light sources are supported.
  */
-public class GaussianPerObjectMaterialShader extends ShaderProgram implements MaterialShader {
+public class PerObjectMaterialShader extends ShaderProgram implements MaterialShader {
     private final int _modelToCameraMatrixUniformRef;
     private final int _cameraToClipMatrixUniformRef;
     private final int _normalModelToCameraMatrixUniformRef;
 
-    private final int _maxIntensityUniformRef;
-
-    private static final int LightBlockIndex = 0;
-    private static final int MaterialBlockIndex = 1;
-
-    private final int _lightUniformBufferRef;
-    private final int _materialUniformBufferRef;
+    private int _lightUniformBufferRef;
+    private int _materialUniformBufferRef;
     private final int _textureRepeatUniformBufferRef;
 
     private static String vertexShaderText() {
@@ -58,15 +53,13 @@ public class GaussianPerObjectMaterialShader extends ShaderProgram implements Ma
         return null;
     }
 
-    public GaussianPerObjectMaterialShader(String vertexShaderText, String fragmentShaderText) {
+    public PerObjectMaterialShader(String vertexShaderText, String fragmentShaderText) {
         super(vertexShaderText, fragmentShaderText);
         //Retrieve the uniforms
         _modelToCameraMatrixUniformRef = glGetUniformLocation(this.glProgramRef(), "modelToCameraMatrixUniform");
         _cameraToClipMatrixUniformRef = glGetUniformLocation(this.glProgramRef(), "cameraToClipMatrixUniform");
         _normalModelToCameraMatrixUniformRef = glGetUniformLocation(this.glProgramRef(), "normalModelToCameraMatrixUniform");
         _textureRepeatUniformBufferRef = glGetUniformLocation(this.glProgramRef(), "textureRepeatUniform");
-
-        _maxIntensityUniformRef = glGetUniformLocation(this.glProgramRef(), "maxIntensity");
 
         final int ambientColourSamplerRef = glGetUniformLocation(this.glProgramRef(), "ambientColourSampler");
         final int diffuseColourSamplerRef = glGetUniformLocation(this.glProgramRef(), "diffuseColourSampler");
@@ -85,27 +78,33 @@ public class GaussianPerObjectMaterialShader extends ShaderProgram implements Ma
         int lightBlock = glGetUniformBlockIndex(this.glProgramRef(), "Light");
         int materialBlock = glGetUniformBlockIndex(this.glProgramRef(), "Material");
 
-        glUniformBlockBinding(this.glProgramRef(), lightBlock, LightBlockIndex);
-        glUniformBlockBinding(this.glProgramRef(), materialBlock, MaterialBlockIndex);
+        if (lightBlock != -1) {
+            int lightBlockIndex = ShaderProgram.nextUniformBlockIndex();
 
-        _lightUniformBufferRef = glGenBuffers();
-        glBindBuffer(GL_UNIFORM_BUFFER, _lightUniformBufferRef);
-        glBufferData(GL_UNIFORM_BUFFER, Light.BufferSizeInBytes, GL_DYNAMIC_DRAW);
+            glUniformBlockBinding(this.glProgramRef(), lightBlock, lightBlockIndex);
+            _lightUniformBufferRef = glGenBuffers();
+            glBindBuffer(GL_UNIFORM_BUFFER, _lightUniformBufferRef);
+            glBufferData(GL_UNIFORM_BUFFER, Light.BufferSizeInBytes, GL_DYNAMIC_DRAW);
 
-        //Bind the static buffer
-        glBindBufferRange(GL_UNIFORM_BUFFER, LightBlockIndex, _lightUniformBufferRef, 0, Light.BufferSizeInBytes);
+            //Bind the static buffer
+            glBindBufferRange(GL_UNIFORM_BUFFER, lightBlockIndex, _lightUniformBufferRef, 0, Light.BufferSizeInBytes);
+        }
 
-        _materialUniformBufferRef = glGenBuffers();
-        glBindBuffer(GL_UNIFORM_BUFFER, _materialUniformBufferRef);
-        glBufferData(GL_UNIFORM_BUFFER, Material.BufferSizeInBytes, GL_DYNAMIC_DRAW);
+        if (materialBlock != -1) {
+            int materialBlockIndex = ShaderProgram.nextUniformBlockIndex();
+            glUniformBlockBinding(this.glProgramRef(), materialBlock, materialBlockIndex);
+            _materialUniformBufferRef = glGenBuffers();
+            glBindBuffer(GL_UNIFORM_BUFFER, _materialUniformBufferRef);
+            glBufferData(GL_UNIFORM_BUFFER, Material.BufferSizeInBytes, GL_DYNAMIC_DRAW);
 
-        //Bind the static buffer
-        glBindBufferRange(GL_UNIFORM_BUFFER, MaterialBlockIndex, _materialUniformBufferRef, 0, Material.BufferSizeInBytes);
+            //Bind the static buffer
+            glBindBufferRange(GL_UNIFORM_BUFFER, materialBlockIndex, _materialUniformBufferRef, 0, Material.BufferSizeInBytes);
+        }
 
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
     }
 
-    public GaussianPerObjectMaterialShader() {
+    public PerObjectMaterialShader() {
         this(vertexShaderText(), fragmentShaderText());
     }
 
@@ -135,10 +134,6 @@ public class GaussianPerObjectMaterialShader extends ShaderProgram implements Ma
 
     public void setNormalModelToCameraMatrix(Matrix3 matrix) {
         glUniformMatrix3fv(_normalModelToCameraMatrixUniformRef, false, matrix.toFloatBuffer());
-    }
-
-    public void setMaxIntensity(float maxIntensity) {
-        glUniform1f(_maxIntensityUniformRef, maxIntensity);
     }
 
 }

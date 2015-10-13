@@ -4,6 +4,9 @@ package swen.adventure.engine;
  * Created by josephbennett on 2/10/15
  */
 public interface Game {
+
+    String title();
+
     void setup(int width, int height);
 
     void setSize(int width, int height);

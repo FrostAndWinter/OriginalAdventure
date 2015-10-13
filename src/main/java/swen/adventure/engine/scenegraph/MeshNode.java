@@ -59,12 +59,9 @@ public final class MeshNode extends SceneNode {
         _fileName = fileName;
         _directory = directory;
 
-        try {
-            _mesh = MeshNode.loadMeshWithFileName(directory, fileName);
-            _localSpaceBoundingBox = _mesh.boundingBox();
-        } catch (FileNotFoundException e) {
-            System.err.println("Could not load mesh file " + fileName + ": " + e);
-        }
+        _mesh = MeshNode.meshWithFileName(directory, fileName);
+        _localSpaceBoundingBox = _mesh.boundingBox();
+
     }
 
     @Override
@@ -123,11 +120,12 @@ public final class MeshNode extends SceneNode {
     /**
      * Renders the mesh, applying its own materials to the shader. If a material override is set, then that override is used.
      * @param shader The Material Shader on which to set the materials.
+     * @param hdrMaxIntensity The maximum light intensity in the scene, beyond which values will be clipped.
      */
-    public void render(MaterialShader shader) {
+    public void render(MaterialShader shader, float hdrMaxIntensity) {
         shader.setTextureRepeat(_textureRepeat);
         _materialOverride.ifPresent(material -> {
-            shader.setMaterial(material.toBuffer());
+            shader.setMaterial(material.toBuffer(hdrMaxIntensity));
             material.bindTextures();
             Material.bindSamplers();
 
@@ -137,7 +135,7 @@ public final class MeshNode extends SceneNode {
             Material.unbindTextures();
         });
         if (!_materialOverride.isPresent()) {
-            _mesh.render(shader);
+            _mesh.render(shader, hdrMaxIntensity);
         }
     }
 
@@ -173,9 +171,8 @@ public final class MeshNode extends SceneNode {
      * @param directory The directory the mesh is in.
      * @param fileName the name of the mesh.
      * @return The GLMesh object for the mesh with that name and directory
-     * @throws FileNotFoundException if the mesh file could not be found at that location.
      */
-    private static GLMesh<Float> loadMeshWithFileName(String directory, String fileName) throws FileNotFoundException {
+    public static GLMesh<Float> meshWithFileName(String directory, String fileName) {
         GLMesh<Float> mesh = _loadedMeshes.get(fileName);
 
         if (mesh == null) {
@@ -183,7 +180,11 @@ public final class MeshNode extends SceneNode {
             String extension = fileNameComponents[fileNameComponents.length - 1];
 
             if (extension.equalsIgnoreCase("obj")) {
-                mesh = ObjMesh.loadMesh(directory, fileName);
+                try {
+                    mesh = ObjMesh.loadMesh(directory, fileName);
+                } catch (FileNotFoundException e) {
+                    throw new RuntimeException("Could not load mesh file in directory " + directory + " named " + fileName);
+                }
             } else {
                 throw new RuntimeException("The file format " + extension + " is not supported.");
             }

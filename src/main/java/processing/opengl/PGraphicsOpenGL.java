@@ -6259,6 +6259,7 @@ public class PGraphicsOpenGL extends PGraphics {
 
 
   protected void setGLSettings() {
+
     inGeo.clear();
     tessGeo.clear();
     texCache.clear();

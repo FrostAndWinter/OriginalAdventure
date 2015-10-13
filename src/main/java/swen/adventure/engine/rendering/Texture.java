@@ -4,6 +4,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.stb.STBImageResize;
 import org.lwjgl.stb.STBImageWrite;
+import swen.adventure.Settings;
 import swen.adventure.engine.Utilities;
 
 import java.io.File;
@@ -141,7 +142,7 @@ public final class Texture {
 
             STBImage.stbi_set_flip_vertically_on_load(1);
 
-            ByteBuffer image = STBImage.stbi_load_from_memory(encodedImageDataBuffer, widthBuffer, heightBuffer, numPixelComponentsBuffer, 4);
+            ByteBuffer image = STBImage.stbi_load_from_memory(encodedImageDataBuffer, widthBuffer, heightBuffer, numPixelComponentsBuffer, Settings.IntelGraphicsWorkaround ? 4 : 0);
 
             if (image == null) {
                 throw new RuntimeException("Error loading image with name " + fileName + ": " + STBImage.stbi_failure_reason());
