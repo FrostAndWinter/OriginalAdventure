@@ -11,6 +11,7 @@ import java.util.Optional;
  */
 
 /**
+ * Interface that describes how to interact with the server
  *
  * @param <I> type used to identify client
  * @param <M> type used to send messages between clients and server
@@ -33,7 +34,7 @@ public interface Server<I, M> {
      * @return The value is present when the server has messages queued from the clients to be processed. Otherwise
      * empty.
      */
-     Optional<M> poll(); // FIXME: replace String with an encapsulated data-type
+     Optional<M> poll();
 
     /**
      * Check if the server is running
@@ -49,7 +50,7 @@ public interface Server<I, M> {
      * @param message contents to be sent
      * @return returns true if the message was successfully sent, otherwise false
      */
-    boolean send(I id, M message); // FIXME: replace String with an encapsulate data-type
+    boolean send(I id, M message);
 
     /**
      * Send a snapshot of a scenenode from the root of the graph

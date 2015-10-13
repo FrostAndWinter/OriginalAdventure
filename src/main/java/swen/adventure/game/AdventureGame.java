@@ -13,7 +13,9 @@ import swen.adventure.engine.rendering.GLDeferredRenderer;
 import swen.adventure.engine.rendering.GLForwardRenderer;
 import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.rendering.PickerRenderer;
+import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.engine.rendering.maths.Quaternion;
+import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
 import swen.adventure.game.input.AdventureGameKeyInput;
 import swen.adventure.game.input.AdventureGameMouseInput;
@@ -21,9 +23,9 @@ import swen.adventure.game.scenenodes.*;
 import swen.adventure.game.ui.components.InventoryComponent;
 import swen.adventure.game.ui.components.UI;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+
+import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 
 public class AdventureGame implements Game {
@@ -51,7 +53,7 @@ public class AdventureGame implements Game {
 
     private Optional<MeshNode> _meshBeingLookedAt = Optional.empty();
 
-    private EnumMap<Interaction.InteractionType, Interaction> _possibleInteractionsForStep = new EnumMap<>(Interaction.InteractionType.class);
+    private EnumMap<InteractionType, Interaction> _possibleInteractionsForStep = new EnumMap<>(InteractionType.class);
     private EnumMap<Interaction.ActionType, Interaction> _interactionInProgressForActionType = new EnumMap<>(Interaction.ActionType.class);
 
     public AdventureGame(Client<EventBox> client) {
@@ -65,60 +67,84 @@ public class AdventureGame implements Game {
 
     @Override
     public void setup(int width, int height) {
-
-        try {
-            _sceneGraph = SceneGraphParser.parseSceneGraph(new File(Utilities.pathForResource("SceneGraph", "xml")));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        this._player = (Player)_sceneGraph.nodeWithID("player").get();
-        this._player.setCamera((CameraNode) _sceneGraph.nodeWithID("playerCamera").get());
-
-        try {
-            List<EventConnectionParser.EventConnection> connections = EventConnectionParser.parseFile(Utilities.readLinesFromFile(Utilities.pathForResource("EventConnections", "event")));
-            EventConnectionParser.setupConnections(connections, _sceneGraph);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         if (!Utilities.isHeadlessMode) {
             _forwardRenderer = new GLForwardRenderer(width, height);
             _mainRenderer = Settings.DeferredShading ? new GLDeferredRenderer(width, height) : _forwardRenderer;
             _pickerRenderer = new PickerRenderer();
         }
+        
+        virtualUIWidth = width;
+        virtualUIHeight = height;
 
-        this.setupUI(width, height);
+        // Wait for the SNAPSHOT event
+        Optional<EventBox> box;
+        while (!(box = _client.poll()).isPresent()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
-        _keyInput.eventMoveInDirection.addAction(this._player, Player.actionMoveInDirection);
+        EventBox event = box.get();
+        setupSceneGraph(SceneGraphParser.parseSceneGraph(event.eventData.get("scenegraph").toString()), event.targetId);
+    }
 
-        _mouseInput.eventMousePrimaryAction.addAction(this, AdventureGame.primaryActionFired);
-        _mouseInput.eventMousePrimaryActionEnded.addAction(this, AdventureGame.primaryActionEnded);
-        _mouseInput.eventMouseSecondaryAction.addAction(this, AdventureGame.secondaryActionFired);
-        _mouseInput.eventMouseSecondaryActionEnded.addAction(this, AdventureGame.secondaryActionEnded);
+    private void setupSceneGraph(TransformNode sceneGraph, String playerId) {
+        _sceneGraph = sceneGraph;
 
-        _keyInput.eventPrimaryAction.addAction(this, AdventureGame.primaryActionFired);
-        _keyInput.eventPrimaryActionEnded.addAction(this, AdventureGame.primaryActionEnded);
-        _keyInput.eventSecondaryAction.addAction(this, AdventureGame.secondaryActionFired);
-        _keyInput.eventSecondaryActionEnded.addAction(this, AdventureGame.secondaryActionEnded);
+        createPlayer(playerId);
 
-        _keyInput.eventSelectInventorySlot1.addAction(_player.inventory(), Inventory.actionSelectSlot1);
-        _keyInput.eventSelectInventorySlot2.addAction(_player.inventory(), Inventory.actionSelectSlot2);
-        _keyInput.eventSelectInventorySlot3.addAction(_player.inventory(), Inventory.actionSelectSlot3);
-        _keyInput.eventSelectInventorySlot4.addAction(_player.inventory(), Inventory.actionSelectSlot4);
-        _keyInput.eventSelectInventorySlot5.addAction(_player.inventory(), Inventory.actionSelectSlot5);
+        Event.EventSet playerMovedSet = Event.eventSetForName("PlayerMoved");
+        playerMovedSet.addAction(this, MovePlayer);
 
-        _keyInput.eventHideShowInventory.addAction(ui.getInventory(), InventoryComponent.actionToggleZoomItem);
-
-        _keyInput.eventHideShowControls.addAction(ui, UI.actionToggleControlls);
+        try {
+            List<EventConnectionParser.EventConnection> connections = EventConnectionParser.parseFile(Utilities.readLinesFromFile(Utilities.pathForResource("EventConnections", "event")));
+            EventConnectionParser.setupConnections(connections, _sceneGraph);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // get the possible interactions a player can make this step
-        Event.EventSet<AdventureGameObject, Player> interactionEvents = (Event.EventSet<AdventureGameObject, Player>) Event.eventSetForName("eventShouldProvideInteraction");
+        Event.EventSet<AdventureGameObject, Player> interactionEvents = (Event.EventSet<AdventureGameObject, Player>) Event.eventSetForName("ShouldProvideInteraction");
         interactionEvents.addAction(this, (gameObject, player, adventureGame, data) -> {
             Interaction interaction = (Interaction) data.get(EventDataKeys.Interaction);
             _possibleInteractionsForStep.put(interaction.interactionType, interaction);
         });
+
+        this.setupUI((int) virtualUIWidth, (int) virtualUIHeight);
+    } 
+
+
+    private static final Action<Player, Player, AdventureGame> MovePlayer = (eventObject, triggeringObject, listener, data) -> {
+        System.out.println("Update " + eventObject.id + " position: " + data);
+        if (data.containsKey("Networked")) {
+            eventObject.parent().get().setTranslation((Vector3) data.get(EventDataKeys.Location));
+            System.out.println("Forcefully set position of " + eventObject.id);
+        } else {
+            listener._client.send(new EventBox("PlayerMoved", triggeringObject, eventObject, listener._player, data));
+        }
+    };
+
+
+    private void sendInteraction(Interaction interaction) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("InteractionType", interaction.interactionType);
+        _client.send(new EventBox("InteractionPerformed",
+                interaction.gameObject.id,
+                interaction.meshNode.id,
+                _player.id,
+                data));
+    }
+
+    private void sendEndInteraction(Interaction interaction) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("InteractionType", interaction.interactionType);
+        _client.send(new EventBox("InteractionEnded",
+                interaction.gameObject.id,
+                interaction.meshNode.id,
+                _player.id,
+                data));
     }
 
     private static final Action<Input, Input, AdventureGame> primaryActionFired = (eventObject, triggeringObject, adventureGame, data) -> {
@@ -137,19 +163,44 @@ public class AdventureGame implements Game {
         adventureGame.endInteractions(Interaction.ActionType.Secondary);
     };
 
+    private void createPlayer(String playerId) {
+        SpawnNode spawn = (SpawnNode)_sceneGraph.nodeWithID(SpawnNode.ID).get();
+        spawn.spawnPlayerWithId(playerId);
+
+        Player newPlayer = (Player)_sceneGraph.nodeWithID(playerId).get();
+        if (_player == null || playerId.equals(_player.id)) {
+            TransformNode cameraTransform = new TransformNode(playerId + "CameraTranslation",
+                    newPlayer.parent().get(), false, new Vector3(0, 40, 0), new Quaternion(), Vector3.one);
+            newPlayer.setCamera(new CameraNode(playerId + "Camera", cameraTransform));
+            _player = newPlayer;
+        } else {
+            new MeshNode(playerId + "Mesh", "", "rocket.obj", newPlayer.parent().get());
+        }
+
+        newPlayer.eventPlayerMoved.addAction(this, MovePlayer);
+
+        BoundingBox boundingBox = new BoundingBox(new Vector3(-30, -60, -10) , new Vector3(30, 60, 10));
+        String colliderID = playerId + "Collider";
+        CollisionNode collider = (CollisionNode)spawn.nodeWithID(colliderID).orElseGet(() -> new CollisionNode(colliderID, newPlayer.parent().get(), boundingBox, CollisionNode.CollisionFlag.Player));
+        collider.setParent(newPlayer.parent().get());
+
+        newPlayer.setCollisionNode(collider);
+    }
+
     /**
      * Performs all interactions for the specified action type.
      * @param actionType The action type to perform the interactions for.
      */
     private void performInteractions(Interaction.ActionType actionType) {
         this.endInteractions(actionType);
-        List<Interaction.InteractionType> interactionTypes = Interaction.InteractionType.typesForActionType(actionType);
+        List<InteractionType> interactionTypes = InteractionType.typesForActionType(actionType);
 
         interactionTypes.stream()
                 .map(_possibleInteractionsForStep::get)
                 .filter(interaction -> interaction != null)
                 .forEach(interaction -> {
                     interaction.performInteractionWithPlayer(_player);
+                    sendInteraction(interaction);
                     _interactionInProgressForActionType.put(actionType, interaction);
                 });
     }
@@ -158,12 +209,12 @@ public class AdventureGame implements Game {
         Interaction interaction = _interactionInProgressForActionType.get(actionType);
         if (interaction != null) {
             interaction.interactionEndedByPlayer(_player);
+            sendEndInteraction(interaction);
         }
         _interactionInProgressForActionType.put(actionType, null);
     }
 
     private void setupUI(int width, int height) {
-
         virtualUIWidth = width;
         virtualUIHeight = height;
 
@@ -172,6 +223,30 @@ public class AdventureGame implements Game {
         _pGraphics.setSize(width, height);
 
         ui = new UI(width, height, _player);
+
+        _keyInput.eventMoveInDirection.addAction(this._player, Player.actionMoveInDirection);
+
+        _mouseInput.eventMousePrimaryAction.addAction(this, AdventureGame.primaryActionFired);
+        _mouseInput.eventMousePrimaryActionEnded.addAction(this, AdventureGame.primaryActionEnded);
+        _mouseInput.eventMouseSecondaryAction.addAction(this, AdventureGame.secondaryActionFired);
+        _mouseInput.eventMouseSecondaryActionEnded.addAction(this, AdventureGame.secondaryActionEnded);
+
+        _keyInput.eventPrimaryAction.addAction(this, AdventureGame.primaryActionFired);
+        _keyInput.eventPrimaryActionEnded.addAction(this, AdventureGame.primaryActionEnded);
+        _keyInput.eventSecondaryAction.addAction(this, AdventureGame.secondaryActionFired);
+        _keyInput.eventSecondaryActionEnded.addAction(this, AdventureGame.secondaryActionEnded);
+
+        _keyInput.eventMoveInDirection.addAction(_player, Player.actionMoveInDirection);
+
+        _keyInput.eventSelectInventorySlot1.addAction(_player.inventory(), Inventory.actionSelectSlot1);
+        _keyInput.eventSelectInventorySlot2.addAction(_player.inventory(), Inventory.actionSelectSlot2);
+        _keyInput.eventSelectInventorySlot3.addAction(_player.inventory(), Inventory.actionSelectSlot3);
+        _keyInput.eventSelectInventorySlot4.addAction(_player.inventory(), Inventory.actionSelectSlot4);
+        _keyInput.eventSelectInventorySlot5.addAction(_player.inventory(), Inventory.actionSelectSlot5);
+
+        _keyInput.eventHideShowInventory.addAction(ui.getInventory(), InventoryComponent.actionToggleZoomItem);
+
+        _keyInput.eventHideShowControls.addAction(ui, UI.actionToggleControlls);
     }
 
     @Override
@@ -201,7 +276,36 @@ public class AdventureGame implements Game {
         Optional<EventBox> box;
         while ((box = _client.poll()).isPresent()) {
             EventBox event = box.get();
+            event.eventData.put("Networked", true);
             SceneNode source = _sceneGraph.nodeWithID(event.sourceId).get();
+
+            if (event.eventName.equals("playerConnected")) {
+                createPlayer(event.targetId);
+                continue;
+            }
+
+            if (event.eventName.equals("InteractionPerformed")) {
+                AdventureGameObject gameObject = (AdventureGameObject)_sceneGraph.nodeWithID(event.sourceId).get();
+                MeshNode meshNode = (MeshNode)_sceneGraph.nodeWithID(event.targetId).get();
+                Player player = (Player)_sceneGraph.nodeWithID(event.from).get();
+
+                Interaction interaction = new Interaction((InteractionType) event.eventData.get("InteractionType"), gameObject, meshNode);
+
+                interaction.performInteractionWithPlayer(player);
+                continue;
+            }
+
+            if (event.eventName.equals("InteractionEnded")) {
+                AdventureGameObject gameObject = (AdventureGameObject) _sceneGraph.nodeWithID(event.sourceId).get();
+                MeshNode meshNode = (MeshNode) _sceneGraph.nodeWithID(event.targetId).get();
+                Player player = (Player) _sceneGraph.nodeWithID(event.from).get();
+
+                Interaction interaction = new Interaction((InteractionType) event.eventData.get("InteractionType"), gameObject, meshNode);
+
+                interaction.interactionEndedByPlayer(player);
+                continue;
+            }
+
             SceneNode target = _sceneGraph.nodeWithID(event.targetId).get();
             Event e = target.eventWithName(event.eventName);
             e.trigger(source, event.eventData);
@@ -274,11 +378,16 @@ public class AdventureGame implements Game {
         _viewAngleY = (_viewAngleY + deltaY / _mouseSensitivity);
     }
 
+    @Override
+    public void cleanup() {
+        _client.disconnect();
+    }
+
     public static void main(String[] args) {
         // Start with networking using CLI arguments <_player id> <host> <port>
         Client<EventBox> client;
         if (args.length == 3) {
-            client = new NetworkClient("player" + Math.random());
+            client = new NetworkClient(args[0] + Math.random());
             try {
                 client.connect(args[1], Integer.parseInt(args[2]));
             } catch (IOException e) {
@@ -286,7 +395,16 @@ public class AdventureGame implements Game {
                 return;
             }
         } else {
-            client = new DumbClient();
+            DumbClient dumbClient = new DumbClient();
+            Map<String, Object> data = new HashMap<>();
+            try {
+                data.put("scenegraph", new String(Files.readAllBytes(new File(Utilities.pathForResource("SceneGraph", "xml")).toPath())));
+                dumbClient.add(new EventBox("snapshot", "", "player", null, data));
+                client = dumbClient;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
         }
 
         GameDelegate.setGame(new AdventureGame(client));

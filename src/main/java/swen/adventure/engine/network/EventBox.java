@@ -10,6 +10,11 @@ import java.util.Map;
 /**
  * Created by David Barnett, Student ID 3003123764, on 01/10/15.
  */
+
+/**
+ * EventBox is a data storage to represent the information needed
+ * for an Event to be re-created elsewhere
+ */
 public class EventBox {
     /**
      * The name of the event that has been triggered
@@ -40,6 +45,16 @@ public class EventBox {
     private final static String END_LINE = ":";
     private final static String SEPARATORS = "!";
 
+
+    public EventBox(String eventName, SceneNode source, SceneNode target, SceneNode from, Map<String, Object> eventData) {
+        this.eventName = eventName;
+        this.sourceId = source.id;
+        this.targetId = target.id;
+        this.from = from.id;
+        this.eventData = eventData;
+    }
+
+
     public EventBox(String eventName, String sourceId, String targetId, String from, Map<String, Object> eventData) {
         this.eventName = eventName;
         this.sourceId = sourceId;
@@ -57,6 +72,7 @@ public class EventBox {
     public static EventBox fromBytes(byte[] raw) {
         String[] lines = new String(raw).split(END_LINE);
         String[] parts = lines[0].split(SEPARATORS);
+
         Map<String, Object> objectMap = new HashMap<>();
         for (int i = 1; i < lines.length; i++) {
             String[] obj = lines[i].split(SEPARATORS);
@@ -66,7 +82,7 @@ public class EventBox {
                 e.printStackTrace();
             }
         }
-        // TODO: Parse eventData from bytes
+
         return new EventBox(parts[0], parts[1], parts[2], parts[3], objectMap);
     }
 
@@ -80,6 +96,7 @@ public class EventBox {
         StringBuilder data = new StringBuilder();
         data.append(String.join(SEPARATORS, new String[] {eventName, sourceId, targetId, from}))
             .append(END_LINE);
+
         for (Map.Entry<String, Object> entry : eventData.entrySet()) {
             data.append(entry.getKey())
                 .append(SEPARATORS)

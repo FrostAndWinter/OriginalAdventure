@@ -6,27 +6,28 @@
     <TransformNode id="ceilingPlaneTransform" translation="0, 280, 0" rotation="0.70710677, 0.0, 0.0, 0.70710677" scale="600, 900, 0.2">
         <MeshNode id="ceilingPlaneMesh" fileName="Plane.obj" materialFileName="StoneWall.mtl" materialName="StoneWall" textureRepeat="10, 10, 0.2"/>
     </TransformNode>
-    
-    <TransformNode id="playerTransform" translation="0, 60, 200" isDynamic="true">
-        <TransformNode id="cameraTransform" translation="0, 40, 0">
+
+    <TransformNode id="spawnPointTransform" translation="0, 60, 200" isDynamic="true">
+        <SpawnNode id="spawnPoint" />
+        <!--<TransformNode id="cameraTransform" translation="0, 40, 0">
             <Camera id="playerCamera"/>
         </TransformNode>
-        <Player id="player" boundingBox="-30, -60, -10, 30, 60, 10"/>
+        <Player id="player" boundingBox="-30, -60, -10, 30, 60, 10"/>-->
     </TransformNode>
     <AmbientLight id="ambientLight" colour="0.5, 0.5, 0.5" intensity="1.0"/>
 
     <!-- Room 1 starts here. Centred at origin, dimensions are 1200 x 1800. -->
     
     <TransformNode id="greenLightLeverTransform" translation="-600, 110, 90" rotation="0, 0, -0.7071067812, 0.7071067812" scale="0.5, 0.5, 0.5">
-        <Lever id="greenLightLever"/>
+        <Lever id="greenLightLever" isDown="false" />
     </TransformNode>
 
     <TransformNode id="redLightLeverTransform" translation="600, 110, -340" rotation="-0.7071067812, 0.7071067812, 0, 0" scale="0.5, 0.5, 0.5">
-        <Lever id="redLightLever"/>
+        <Lever id="redLightLever" isDown="false" />
     </TransformNode>
 
     <TransformNode id="blueLightLeverTransform" translation="-400, 110, 900" rotation="-0.5, 0.5, -0.5, 0.5" scale="0.5, 0.5, 0.5">
-        <Lever id="blueLightLever"/>
+        <Lever id="blueLightLever" isDown="false" />
     </TransformNode>
     
     <TransformNode id="chestTransform" translation="580, 0, -400" rotation="0, -0.7071067812, 0, 0.7071067812" scale="30, 30, 30">
@@ -55,7 +56,7 @@
 
         <TransformNode id="frontWallTransform" translation="0, 0, -900">
             <TransformNode id="doorTransform" scale="1.4, 1, 1.7" translation="230, 0.3, 0"> <!-- width is 140 units. -->
-                <Door id="door" requiresKey="true"/>
+                <Door id="door" requiresKey="false"/>
             </TransformNode>
 
             <TransformNode id="frontWallLeftTransform" translation="-490, 0, 0" scale="13, 1, 1">
@@ -136,24 +137,25 @@
 
     <!-- Room 2 starts here. -->
 
-    <TransformNode id="room2" translation="0, 0, -1200">
+    <TransformNode id="room2" translation="0, 0, -1200"> <!-- -1200 from the centre of room 1 !-->
         <TransformNode id="room2GroundAndCeiling" scale="1100, 1.4, 300">
             <TransformNode id="r2GroundPlaneT" rotation="-0.70710677, 0.0, 0.0, 0.70710677">
                 <MeshNode id="r2GroundPlane" fileName="Plane.obj" materialDirectory="MedievalModels" materialFileName="MedievalMaterials.mtl" materialName="corner_fullSG" textureRepeat="44, 12, 0.2"/>
             </TransformNode>
 
+            <!-- place the ceiling 200 units up from the floor !-->
             <TransformNode id="r2CeilingPlaneT" translation="0, 200, 0" rotation="0.70710677, 0.0, 0.0, 0.70710677">
                 <MeshNode id="r2CeilingPlane" fileName="Plane.obj" materialFileName="StoneWall.mtl" materialName="StoneWall" textureRepeat="44, 12, 0.2"/>
             </TransformNode>
         </TransformNode>
 
-            <TransformNode id="room2LeftWall" scale="6, 1.4, 1" translation="-1100, 0, 0" rotation="0, 0.7071067812, 0, 0.7071067812">
-                <MeshNode id="room2LeftWallM" directory="MedievalModels" fileName="Wall.obj" textureRepeat="6, 1.4, 1" isCollidable="true"/>
-            </TransformNode>
+        <TransformNode id="room2LeftWall" scale="6, 1.4, 1" translation="-1100, 0, 0" rotation="0, 0.7071067812, 0, 0.7071067812">
+            <MeshNode id="room2LeftWallM" directory="MedievalModels" fileName="Wall.obj" textureRepeat="6, 1.4, 1" isCollidable="true"/>
+        </TransformNode>
 
-            <TransformNode id="room2RightWall" scale="6, 1.4, 1" translation="1100, 0, 0" rotation="0, -0.7071067812, 0, 0.7071067812">
-                <MeshNode id="room2RightWallM" directory="MedievalModels" fileName="Wall.obj" textureRepeat="6, 1.4, 1" isCollidable="true"/>
-            </TransformNode>
+        <TransformNode id="room2RightWall" scale="6, 1.4, 1" translation="1100, 0, 0" rotation="0, -0.7071067812, 0, 0.7071067812">
+            <MeshNode id="room2RightWallM" directory="MedievalModels" fileName="Wall.obj" textureRepeat="6, 1.4, 1" isCollidable="true"/>
+        </TransformNode>
 
         <TransformNode id="room2FrontWallLeft" scale="5, 1.4, 1" translation="-850, 0, -300">
             <MeshNode id="room2FrontWallLeftM" directory="MedievalModels" fileName="Wall.obj" textureRepeat="5, 1.4, 1" isCollidable="true"/>
@@ -162,8 +164,6 @@
         <TransformNode id="room2FrontWallRight" scale="5, 1.4, 1" translation="850, 0, -300">
             <MeshNode id="room2FrontWallRightM" directory="MedievalModels" fileName="Wall.obj" textureRepeat="5, 1.4, 1" isCollidable="true"/>
         </TransformNode>
-
-
     </TransformNode>
 
     <TransformNode id="longCorridors" translation="0, 0, -4260">
@@ -177,13 +177,34 @@
             </TransformNode>
         </TransformNode>
 
-        <TransformNode id="corridorsCentreColumns" rotation="0, -0.7071067812, 0, 0.7071067812">
-            <TransformNode id="corridorsLeftColumn" scale="55.2, 0.8, 1" translation="0, 0, 120">
+        <TransformNode id="corridorFrontDoorTransform"  translation="0, 0, 2820" scale="2.1, 1.4, 1.4">
+            <Door id="corridorFrontDoor"/>
+        </TransformNode>
+
+        <TransformNode id="leftGateLeverTransform" translation="-200, 0, 1400" rotation="0, 0.7071067812, 0, 0.7071067812" scale="1, 1, 1">
+            <Lever id="leftGateLever"/>
+        </TransformNode>
+
+        <TransformNode id="rightGateLeverTransform" translation="500, 0, 2700" rotation="0, 0.7071067812, 0, 0.7071067812" scale="1, 1, 1">
+            <Lever id="rightGateLever"/>
+        </TransformNode>
+
+        <TransformNode id="rightGateTransform" translation="400, 0, 1500" rotation="0, 1, 0, 0" scale="5, 5, 5">
+            <Door id="rightGate" canDirectlyInteractWith="false"/>
+        </TransformNode>
+
+        <TransformNode id="leftGateTransform" translation="-400, 0, 1500" scale="5, 5, 5">
+            <Door id="leftGate" canDirectlyInteractWith="false" />
+        </TransformNode>
+
+        <TransformNode id="corridors" rotation="0, -0.7071067812, 0, 0.7071067812"> <!-- Roation of 90 degress around y !-->
+            <TransformNode id="corridorsLeftColumn" scale="55.2, 1.4, 1" translation="0, 0, 120">
                 <MeshNode id="corridorsLeftColumnBottomMesh" directory="MedievalModels" fileName="WallColumnMiddle.obj" textureRepeat="55.2, 0.8, 1" isCollidable="true"/>
                 <TransformNode id="corridorsLeftColumnCapT" translation="50, 0, 0" rotation="0, 1, 0, 0" scale="0.018115942028986, 1, 1.02">
                     <MeshNode id="corridorsLeftColumnCapMesh" directory="MedievalModels" fileName="WallColumnEnd.obj" textureRepeat="1, 0.8, 1" isCollidable="true"/>
                 </TransformNode>
             </TransformNode>
+
 
             <TransformNode id="corridorsLeftWall" scale="55.2, 1.4, 1" rotation="0, 1, 0, 0" translation="0, 0, 600">
                 <MeshNode id="corridorsLeftColumnWallMesh" directory="MedievalModels" fileName="Wall.obj" textureRepeat="55.2, 1.4, 1" isCollidable="true"/>
@@ -192,7 +213,7 @@
                 </TransformNode>
             </TransformNode>
 
-            <TransformNode id="corridorsRightColumn" scale="55.2, 0.8, 1" translation="0, 0, -120">
+            <TransformNode id="corridorsRightColumn" scale="55.2, 1.4, 1" translation="0, 0, -120">
                 <MeshNode id="corridorsRightColumnBottomMesh" directory="MedievalModels" fileName="WallColumnMiddle.obj" textureRepeat="55.2, 0.8, 1" isCollidable="true"/>
                 <TransformNode id="corridorsRightColumnCapT" translation="50, 0, 0" rotation="0, 1, 0, 0" scale="0.018115942028986, 1, 1.02">
                     <MeshNode id="corridorsRightColumnCapMesh" directory="MedievalModels" fileName="WallColumnEnd.obj" textureRepeat="1, 0.8, 1" isCollidable="true"/>

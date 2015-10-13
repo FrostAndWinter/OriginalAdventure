@@ -7,8 +7,10 @@ import swen.adventure.engine.scenegraph.TransformNode;
 import java.util.Optional;
 
 /**
- * Created by josephbennett on 29/09/15
- * Modefied by Daniel Braithwaite id: 300313770
+ * An inventory is a container that belongs to a player. It has a slot that is selected and always holds 5 items.
+ *
+ * Joseph Bennett, 30019773
+ * Daniel Braithwaite, 300313770
  */
 public class Inventory extends Container {
     public static final int InventoryCapacity = 5;
@@ -48,6 +50,11 @@ public class Inventory extends Container {
         this.setShowTopItem(false);
     }
 
+    /**
+     * Select the given slot in this player's inventory.
+     *
+     * @param slot the slot to select
+     */
     public void selectSlot(int slot) {
         if (slot < 0 || slot >= this.capacity()) {
             throw new IllegalArgumentException("Given slot cannot be selected. Available slots between 0 and " + this.capacity());
@@ -55,7 +62,6 @@ public class Inventory extends Container {
 
         _selectedSlot = slot;
     }
-
 
     @Override
     public Optional<Item> pop() {
@@ -66,10 +72,20 @@ public class Inventory extends Container {
         return Optional.of(this.removeItemAtIndex(_selectedSlot));
     }
 
+    /**
+     * Returns the item that is currently selected.
+     *
+     * @return the item that is currently selected.
+     */
     public Optional<Item> selectedItem() {
         return itemAtIndex(_selectedSlot);
     }
 
+    /**
+     * Returns the slot number that is selected.
+     *
+     * @return the slot number that is selected.
+     */
     public int selectedSlot() {
         return _selectedSlot;
     }

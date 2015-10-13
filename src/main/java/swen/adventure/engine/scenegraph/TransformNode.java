@@ -230,39 +230,9 @@ public final class TransformNode extends SceneNode {
     }
 
     @Override
-    public BundleObject toBundle() {
-        return super.toBundle()
-                .put("translation", _translation)
-                .put("rotation", _rotation)
-                .put("scale", _scale)
-                .put("needsRecalculateNodeWorldTransform", _needsRecalculateNodeWorldTransform)
-                .put("needsRecalculateTransformWorldNodeTransform", _needsRecalculateTransformWorldNodeTransform)
-                .put("nodeToWorldTransform", _nodeToWorldTransform)
-                .put("worldToNodeTransform", _worldToNodeTransform);
-    }
-
-
-    @Override
     public void setParent(TransformNode newParent) {
         super.setParent(newParent);
         this.setNeedsRecalculateTransform();
-    }
-
-    private static TransformNode createSceneNodeFromBundle(BundleObject bundle,
-                                                           Function<String, TransformNode> findParentFunction) {
-        String id = bundle.getString("id");
-        Vector3 translation = bundle.getVector3("translation");
-        Quaternion rotation = bundle.getQuaternion("rotation");
-        Vector3 scale = bundle.getVector3("scale");
-
-        if(bundle.hasProperty("parentId")) {
-            String parentId = bundle.getString("parentId");
-            TransformNode parent = findParentFunction.apply(parentId);
-            boolean isDynamic = bundle.getBoolean("isDynamic");
-            return new TransformNode(id, parent, isDynamic, translation, rotation, scale);
-        }
-
-        return new TransformNode(id, translation, rotation, scale);
     }
 
     @Override

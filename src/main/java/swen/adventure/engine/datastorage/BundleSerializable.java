@@ -5,5 +5,11 @@ package swen.adventure.engine.datastorage;
  * {@code ANY-ACCESS-MODIFIER static *class name here* createFromBundle(BundleObject);}
  */
 public interface BundleSerializable {
+
+    /**
+     * Convert this instance to its bundle object representation.
+     *
+     * @return a bundle object containing all information necessary to reconstruct this object.
+     */
     BundleObject toBundle();
 }

@@ -20,4 +20,6 @@ public interface Game {
     MouseInput mouseInput();
 
     void onMouseDeltaChange(float deltaX, float deltaY);
+
+    void cleanup();
 }
