@@ -121,6 +121,8 @@ public class AdventureGame implements Game {
         if (data.containsKey("Networked")) {
             eventObject.parent().get().setTranslation((Vector3) data.get(EventDataKeys.Location));
             System.out.println("Forcefully set position of " + eventObject.id);
+        } else {
+            listener._client.send(new EventBox("PlayerMoved", triggeringObject, eventObject, listener._player, data));
         }
     };
 
