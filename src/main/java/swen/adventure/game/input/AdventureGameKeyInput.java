@@ -20,8 +20,8 @@ public class AdventureGameKeyInput extends KeyInput {
             this.onPressMappings.put('I', this.eventHideShowInventory);
             this.onReleasedMappings.put('I', this.eventHideShowInventory);
 
-            this.onPressMappings.put('C', this.eventHideShowControlls);
-            this.onReleasedMappings.put('C', this.eventHideShowControlls);
+            this.onPressMappings.put('C', this.eventHideShowControls);
+            this.onReleasedMappings.put('C', this.eventHideShowControls);
 
             this.onPressMappings.put('E', this.eventPrimaryAction);
             this.onPressMappings.put('Q', this.eventSecondaryAction);
@@ -42,7 +42,7 @@ public class AdventureGameKeyInput extends KeyInput {
 
     public final Event<KeyInput, KeyInput> eventHideShowInventory = new Event<>("eventHideShowInventory", this);
 
-    public final Event<KeyInput, KeyInput> eventHideShowControlls = new Event<>("eventHideShowControls", this);
+    public final Event<KeyInput, KeyInput> eventHideShowControls = new Event<>("eventHideShowControls", this);
 
     private final Event<KeyInput, KeyInput> eventMoveForwardKeyPressed = new Event<>("eventMoveForwardKeyPressed", this);
     private final Event<KeyInput, KeyInput> eventMoveBackwardKeyPressed = new Event<>("eventMoveBackwardKeyPressed", this);

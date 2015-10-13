@@ -104,7 +104,7 @@ public class AdventureGame implements Game {
 
         _keyInput.eventHideShowInventory.addAction(ui.getInventory(), InventoryComponent.actionToggleZoomItem);
 
-        _keyInput.eventHideShowControlls.addAction(ui, UI.actionToggleControlls);
+        _keyInput.eventHideShowControls.addAction(ui, UI.actionToggleControlls);
 
         // get the possible interactions a player can make this step
         Event.EventSet<AdventureGameObject, Player> interactionEvents = (Event.EventSet<AdventureGameObject, Player>) Event.eventSetForName("eventShouldProvideInteraction");
@@ -187,6 +187,8 @@ public class AdventureGame implements Game {
 
     @Override
     public void update(long deltaMillis) {
+
+        _meshBeingLookedAt = _pickerRenderer.selectedNode();
         _possibleInteractionsForStep.clear();
 
         Optional<EventBox> box;
@@ -217,8 +219,7 @@ public class AdventureGame implements Game {
         this._player.camera().ifPresent(cameraNode -> {
             List<MeshNode> meshNodesSortedByZ = DepthSorter.sortedMeshNodesByZ(_sceneGraph, cameraNode.worldToNodeSpaceTransform());
 
-            _meshBeingLookedAt = _pickerRenderer.selectedNode(meshNodesSortedByZ, cameraNode.worldToNodeSpaceTransform());
-
+            _pickerRenderer.render(meshNodesSortedByZ, cameraNode.worldToNodeSpaceTransform());
             _deferredRenderer.render(meshNodesSortedByZ, _sceneGraph.allNodesOfType(Light.class), cameraNode.worldToNodeSpaceTransform(), cameraNode.fieldOfView(), cameraNode.hdrMaxIntensity());
         });
 

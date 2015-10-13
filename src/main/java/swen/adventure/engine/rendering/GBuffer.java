@@ -77,7 +77,7 @@ class GBuffer {
 
     public void bindForGeometryPass() {
 
-        int[] drawBuffers = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4 };
+        int[] drawBuffers = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, _finalBufferAttachment };
         IntBuffer drawBuffersBuffer = BufferUtils.createIntBuffer(drawBuffers.length);
         drawBuffersBuffer.put(drawBuffers);
         drawBuffersBuffer.flip();
@@ -100,6 +100,9 @@ class GBuffer {
             glBindTexture(GL_TEXTURE_2D, _glTextures[i]);
             i++;
         }
+
+        glActiveTexture(GL_TEXTURE0 + TextureUnit.FinalUnit.glUnit);
+        glBindTexture(GL_TEXTURE_2D, _finalTexture);
     }
 
     public void bindForFinalPass() {

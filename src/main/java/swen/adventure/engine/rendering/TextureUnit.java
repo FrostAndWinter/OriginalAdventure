@@ -28,6 +28,6 @@ public enum TextureUnit {
     }
 
     public static List<TextureUnit> deferredShadingTextureUnits() {
-        return Arrays.asList(PositionUnit, VertexNormalUnit, DiffuseColourUnit, SpecularColourUnit, AmbientColourUnit);
+        return Arrays.asList(PositionUnit, VertexNormalUnit, DiffuseColourUnit, SpecularColourUnit);
     }
 }

@@ -14,6 +14,8 @@ import java.util.*;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.*;
+import static org.lwjgl.opengl.GL21.*;
+import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL32.*;
 
@@ -32,8 +34,7 @@ public class PickerRenderer {
     private WeakReference<MeshNode>[] _idsToNodes = (WeakReference<MeshNode>[]) new WeakReference[0xFFFFFF];
 
     private int _frameBufferObject, _colourRenderBuffer, _depthStencilBuffer;
-
-    private MeshNode _highlightedMesh = null;
+    private int _pixelBufferObject;
 
     public PickerRenderer() {
         _pickerShader = new PickerShader();
@@ -59,6 +60,11 @@ public class PickerRenderer {
         glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, _colourRenderBuffer);
         glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthStencilBuffer);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+        _pixelBufferObject = glGenBuffers();
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, _pixelBufferObject);
+        glBufferData(GL_PIXEL_PACK_BUFFER, 4, GL_STREAM_READ);
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
     }
 
     /**
@@ -111,28 +117,48 @@ public class PickerRenderer {
         glDisable(GL_CULL_FACE);
         glDisable(GL_DEPTH_TEST);
 
-        IntBuffer idBuffer = BufferUtils.createIntBuffer(1);
         glReadBuffer(GL_COLOR_ATTACHMENT0);
-        glReadPixels(0, 0, 1, 1, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, idBuffer);
 
-        int id = PickerShader.colourToID(idBuffer.get());
-        _highlightedMesh = _idsToNodes[id] != null ? _idsToNodes[id].get() : null;
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, _pixelBufferObject);
+
+        glReadPixels(0, 0, 1, 1, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, 0);
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
+
     /**
-     * Renders the scene and then returns the mesh that is currently in the centre of the scene.
-     * @param meshNodes The meshes to render.
-     * @param worldToCameraMatrix The transformation matrix to convert from world space to camera space.
+     * Returns the mesh that was in the centre of the screen the last time this was rendered.
+     * For best performance, this should be called some time after render() is called.
      * @return The MeshNode that is situated in the centre of the screen, if it is present.
      */
-    public Optional<MeshNode> selectedNode(List<MeshNode> meshNodes, Matrix4 worldToCameraMatrix) {
-        this.render(meshNodes, worldToCameraMatrix);
-        return Optional.ofNullable(_highlightedMesh);
+    public Optional<MeshNode> selectedNode() {
+        // Map the pixel buffer object to be processed by the CPU
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, _pixelBufferObject);
+        ByteBuffer mapBuffer = glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
+
+        MeshNode highlightedMesh = null;
+        if (mapBuffer != null) {
+            int colour = mapBuffer.asIntBuffer().get();
+
+            int id = PickerShader.colourToID(colour);
+            highlightedMesh = _idsToNodes[id] != null ? _idsToNodes[id].get() : null;
+            glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
+        }
+
+        // back to conventional pixel operations
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+
+        return Optional.ofNullable(highlightedMesh);
     }
 
-    private void render(List<MeshNode> meshNodes, Matrix4 worldToCameraMatrix) {
+    /**
+     * Renders the scene to be used in colour picking.
+     * @param meshNodes The meshes to render.
+     * @param worldToCameraMatrix The transformation matrix to convert from world space to camera space.
+     */
+    public void render(List<MeshNode> meshNodes, Matrix4 worldToCameraMatrix) {
         final int[] currentNodeId = {1}; //NOTE: The maximum number of nodes is 2^24, and this will break if we go over that. But that's fine, because with that many nodes lots of other things will break first.
                                             //This also starts at 1, since the id 0 corresponds to no object being selected.
         this.preRender();
