@@ -182,8 +182,10 @@ public class SceneGraphParser {
         Door door = parseGameObject(xmlNode, parent, Door.class);
         boolean isOpen = getAttribute("isOpen", xmlNode, Boolean.class, false);
         boolean requiresKey = getAttribute("requiresKey", xmlNode, Boolean.class, false);
+        boolean canDirectlyInteractWith = getAttribute("canDirectlyInteractWith", xmlNode, Boolean.class, true);
         door.setIsOpen(isOpen);
         door.setRequiresKey(requiresKey);
+        door.setCanDirectlyInteractWith(canDirectlyInteractWith);
         return door;
     }
 

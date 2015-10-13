@@ -1,11 +1,13 @@
 package swen.adventure.game.scenenodes;
 
 import swen.adventure.engine.Action;
+import swen.adventure.engine.Game;
 import swen.adventure.engine.animation.AnimableProperty;
 import swen.adventure.engine.animation.Animation;
 import swen.adventure.engine.animation.AnimationCurve;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
+import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.SceneNode;
 import swen.adventure.engine.scenegraph.TransformNode;
@@ -28,6 +30,11 @@ public class Door extends AdventureGameObject {
     private boolean _isOpen = false;
     private boolean _requiresKey = false;
 
+    /**
+     * Whether or not a player can directly interact with this door
+     */
+    private boolean _canDirectlyInteractWith = true;
+
     private AnimableProperty _doorOpenPercentage = new AnimableProperty(0.f);
 
     private Set<Player> _playersThatCanOpenDoor = new HashSet<>();
@@ -40,6 +47,16 @@ public class Door extends AdventureGameObject {
     // DO NOT REMOVE. This action is unused within the Java code base but is still used in the event connections.
     public static final Action<Item, Player, Door> actionDisallowPlayerFromOpeningDoor = (item, player, door, data) -> {
         door._playersThatCanOpenDoor.remove(player);
+    };
+
+    // DO NOT REMOVE. This action is unused within the Java code base but is still used in the event connections.
+    public static final Action<GameObject, Player, Door> actionOpenDoor = (item, player, door, data) -> {
+        door.open();
+    };
+
+    // DO NOT REMOVE. This action is unused within the Java code base but is still used in the event connections.
+    public static final Action<GameObject, Player, Door> actionCloseDoor = (item, player, door, data) -> {
+        door.close();
     };
 
     public Door(String id, TransformNode parent) {
@@ -78,20 +95,12 @@ public class Door extends AdventureGameObject {
         new Animation(_doorOpenPercentage, AnimationCurve.Sine, DoorAnimationDuration, 0.0f);
     }
 
-    /**
-     * Set whether or not this door needs a key to be opened
-     *
-     * @param requiresKey true if the door requires a key to be opened, false otherwise.
-     */
-    public void setRequiresKey(boolean requiresKey) {
-        _requiresKey = requiresKey;
-    }
 
     @Override
     public List<Interaction> possibleInteractions(final MeshNode meshNode, final Player player) {
 
         // a player can interact with the door if it doesn't require a key or that player has permission to open it.
-        boolean canInteract = (!_requiresKey || _playersThatCanOpenDoor.contains(player));
+        boolean canInteract = _canDirectlyInteractWith && (!_requiresKey || _playersThatCanOpenDoor.contains(player));
 
         if (canInteract) {
             InteractionType interactionType;
@@ -127,5 +136,24 @@ public class Door extends AdventureGameObject {
      */
     public void setIsOpen(boolean isOpen) {
         _isOpen = isOpen;
+    }
+
+    /**
+     * Whether or not a player can directly interact with this door. i.e can interact by using a primary
+     * or secondary interacition
+     *
+     * @param canDirectlyInteractWith whether or not a player can directly interact with this door.
+     */
+    public void setCanDirectlyInteractWith(boolean canDirectlyInteractWith) {
+        this._canDirectlyInteractWith = canDirectlyInteractWith;
+    }
+
+    /**
+     * Set whether or not this door needs a key to be opened
+     *
+     * @param requiresKey true if the door requires a key to be opened, false otherwise.
+     */
+    public void setRequiresKey(boolean requiresKey) {
+        _requiresKey = requiresKey;
     }
 }

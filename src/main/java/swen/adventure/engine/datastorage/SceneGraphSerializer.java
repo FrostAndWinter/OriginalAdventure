@@ -442,6 +442,9 @@ public class SceneGraphSerializer {
         Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
         setAttribute("id", sceneNode.id, xmlElement);
         setAttribute("enabled", Boolean.toString(sceneNode.isEnabled()), xmlElement);
+        setAttribute("requiresKey", Boolean.toString(sceneNode.isEnabled()), xmlElement);
+        setAttribute("isOpen", Boolean.toString(sceneNode.isEnabled()), xmlElement);
+        setAttribute("canDirectlyInteractWith", Boolean.toString(sceneNode.isEnabled()), xmlElement);
         return xmlElement;
     }
 

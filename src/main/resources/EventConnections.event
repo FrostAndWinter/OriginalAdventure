@@ -20,3 +20,14 @@ InteractionEnded; greenLightLever; LeverMoveUp; greenLightLever
 //Connections for the key and door.
 PlayerPickedUpItem; key; AllowPlayerToOpenDoor; door
 PlayerDroppedItem; key; DisallowPlayerFromOpeningDoor; door
+
+InteractionEnded; rightGateLever; LeverMoveUp; rightGateLever
+
+LeverMovedDown; rightGateLever; OpenDoor; rightGate
+LeverMovedUp; rightGateLever; CloseDoor; rightGate
+LeverMovedDown; rightGateLever; OpenDoor; leftGate
+LeverMovedUp; rightGateLever; CloseDoor; leftGate
+
+LeverMovedDown; leftGateLever; OpenDoor; rightGate
+LeverMovedUp; leftGateLever; CloseDoor; rightGate
+
