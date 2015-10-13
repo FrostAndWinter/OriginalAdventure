@@ -46,31 +46,47 @@ public class SceneGraphParser {
     private static final String DOOR_TAG = "Door";
     private static final String INVENTORY_TAG = "Inventory";
 
+    /**
+     * Parse a graph which is stored in xml format from a input string.
+     *
+     * @param input xml representation of the scene graph
+     * @return root of the graph
+     */
     public static TransformNode parseSceneGraph(String input) {
         InputStream is = Utilities.stringToInputStream(input);
         return parseSceneNode(is);
     }
 
-    public static TransformNode parseSceneGraph(String input, TransformNode graph) {
-        InputStream is = Utilities.stringToInputStream(input);
-        return parseSceneNode(is, graph);
-    }
-
+    /**
+     * Parse a graph which is stored in xml format from a input string.
+     *
+     * @param inputFile file containing a xml representation of the scene graph.
+     * @throws FileNotFoundException if the file doesn't exist.
+     * @return root of the graph.
+     */
     public static TransformNode parseSceneGraph(File inputFile) throws FileNotFoundException {
         InputStream is = Utilities.fileToInputStream(inputFile);
         return parseSceneNode(is);
     }
 
-    public static TransformNode parseSceneGraph(File inputFile, TransformNode graph) throws FileNotFoundException {
-        InputStream is = Utilities.fileToInputStream(inputFile);
-        return parseSceneNode(is, graph);
-    }
-
-    private static TransformNode parseSceneNode(InputStream is){
+    /**
+     * Parse a graph which from a input stream.
+     *
+     * @param inputStream stream containing a xml representation of the scene graph.
+     * @return root of the graph.
+     */
+    private static TransformNode parseSceneNode(InputStream inputStream){
         TransformNode rootNode = new TransformNode("root", Vector3.zero, new Quaternion(), Vector3.one); //All scene graphs start with an identity root node.
-        return SceneGraphParser.parseSceneNode(is, rootNode);
+        return SceneGraphParser.parseSceneNode(inputStream, rootNode);
     }
 
+    /**
+     * Parse a scene graph and set its parent to the given graph
+     *
+     * @param is input stream constraining a xml representation of the scene graph.
+     * @param graph graph which will parent the parsed graph.
+     * @return the root of the new graph.
+     */
     private static TransformNode parseSceneNode(InputStream is, TransformNode graph){
         Document doc = Utilities.loadExistingXmlDocument(is);
 
@@ -82,6 +98,13 @@ public class SceneGraphParser {
         return graph;
     }
 
+    /**
+     * Construct a scene node by from the information in the given xml node.
+     *
+     * @param xmlNode node containing all the information for a node
+     * @param parent parent of this node (as given in the xml structure)
+     * @return the newly constructed scene node
+     */
     private static SceneNode parseNode(Node xmlNode, TransformNode parent) {
         String name = xmlNode.getNodeName();
         switch (name) {
@@ -119,6 +142,13 @@ public class SceneGraphParser {
         }
     }
 
+    /**
+     * Construct a inventory node from its xml representation.
+     *
+     * @param xmlNode node from the xml document which represents a inventory node.
+     * @param parent the transform node which will be set as the newly constructed node's parent.
+     * @return a newly constructed inventory node with the same state as represented in the xml node.
+     */
     private static Inventory parseInventory(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode);
         int selectedSlot = getAttribute("selectedSlot", xmlNode, Integer.class);
@@ -127,6 +157,13 @@ public class SceneGraphParser {
         return inventory;
     }
 
+    /**
+     * Construct a lever node from its xml representation.
+     *
+     * @param xmlNode node from the xml document which represents a lever node.
+     * @param parent the transform node which will be set as the newly constructed node's parent.
+     * @return a newly constructed lever node with the same state as represented in the xml node.
+     */
     private static SceneNode parseLever(Node xmlNode, TransformNode parent) {
         Lever lever = parseGameObject(xmlNode, parent, Lever.class);
         boolean isDown = getAttribute("isDown", xmlNode, Boolean.class, false);
@@ -134,6 +171,13 @@ public class SceneGraphParser {
         return lever;
     }
 
+    /**
+     * Construct a door node from its xml representation.
+     *
+     * @param xmlNode node from the xml document which represents a door node.
+     * @param parent the transform node which will be set as the newly constructed node's parent.
+     * @return a newly constructed door node with the same state as represented in the xml node.
+     */
     private static SceneNode parseDoor(Node xmlNode, TransformNode parent) {
         Door door = parseGameObject(xmlNode, parent, Door.class);
         boolean isOpen = getAttribute("isOpen", xmlNode, Boolean.class, false);
@@ -143,6 +187,13 @@ public class SceneGraphParser {
         return door;
     }
 
+    /**
+     * Construct a game object node from its xml representation.
+     *
+     * @param xmlNode node from the xml document which represents a game object node.
+     * @param parent the transform node which will be set as the newly constructed node's parent.
+     * @return a newly constructed game object node with the same state as represented in the xml node.
+     */
     private static <T extends SceneNode> T parseGameObject(Node xmlNode, TransformNode parent, Class<T> class0) {
         try {
             Class<?> gameObjectClass = Class.forName("swen.adventure.game.scenenodes." + xmlNode.getNodeName());
@@ -196,6 +247,13 @@ public class SceneGraphParser {
         }
     }
 
+    /**
+     * Construct a mesh node from its xml representation.
+     *
+     * @param xmlNode node from the xml document which represents a mesh node.
+     * @param parent the transform node which will be set as the newly constructed node's parent.
+     * @return a newly constructed mesh node with the same state as represented in the xml node.
+     */
     private static MeshNode parseMeshNode(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode, Function.identity());
         String directory = getAttribute("directory", xmlNode, Function.identity(), "");
@@ -225,6 +283,13 @@ public class SceneGraphParser {
         return node;
     }
 
+    /**
+     * Construct a puzzle node from its xml representation.
+     *
+     * @param xmlNode node from the xml document which represents a puzzle node.
+     * @param parent the transform node which will be set as the newly constructed node's parent.
+     * @return a newly constructed puzzle node with the same state as represented in the xml node.
+     */
     public static Puzzle parsePuzzle(Node xmlNode, TransformNode parent) {
 
         String id = getAttribute("id", xmlNode, Function.identity());
@@ -240,6 +305,13 @@ public class SceneGraphParser {
         return puzzle;
     }
 
+    /**
+     * Construct a flickering light node from its xml representation.
+     *
+     * @param xmlNode node from the xml document which represents a flickering light node.
+     * @param parent the transform node which will be set as the newly constructed node's parent.
+     * @return a newly constructed flickering light node with the same state as represented in the xml node.
+     */
     private static FlickeringLight parseFlickeringLightNode(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode, Function.identity());
         String directory = getAttribute("directory", xmlNode, Function.identity(), "");
@@ -265,6 +337,13 @@ public class SceneGraphParser {
         return flickeringLight;
     }
 
+    /**
+     * Construct a camera node from its xml representation.
+     *
+     * @param xmlNode node from the xml document which represents a camera node.
+     * @param parent the transform node which will be set as the newly constructed node's parent.
+     * @return a newly constructed camera node with the same state as represented in the xml node.
+     */
     private static CameraNode parseCameraNode(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode, Function.identity());
 
@@ -277,6 +356,13 @@ public class SceneGraphParser {
         return cameraNode;
     }
 
+    /**
+     * Construct a player node from its xml representation.
+     *
+     * @param xmlNode node from the xml document which represents a player node.
+     * @param parent the transform node which will be set as the newly constructed node's parent.
+     * @return a newly constructed player node with the same state as represented in the xml node.
+     */
     private static Player parsePlayerNode(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode, Function.identity());
         BoundingBox boundingBox = getAttribute("boundingBox", xmlNode, ParserManager.getFromStringFunction(BoundingBox.class), new BoundingBox(Vector3.zero, Vector3.zero));
@@ -294,6 +380,13 @@ public class SceneGraphParser {
         return player;
     }
 
+    /**
+     * Construct a ambient light node from its xml representation.
+     *
+     * @param xmlNode node from the xml document which represents a ambient light node.
+     * @param parent the transform node which will be set as the newly constructed node's parent.
+     * @return a newly constructed ambient light node with the same state as represented in the xml node.
+     */
     private static Light parseAmbientLight(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode, Function.identity());
         Vector3 colour = getAttribute("colour", xmlNode, ParserManager.getFromStringFunction(Vector3.class), Vector3.one);
@@ -308,6 +401,13 @@ public class SceneGraphParser {
         return node;
     }
 
+    /**
+     * Construct a directional light node from its xml representation.
+     *
+     * @param xmlNode node from the xml document which represents a directional light node.
+     * @param parent the transform node which will be set as the newly constructed node's parent.
+     * @return a newly constructed directional light node with the same state as represented in the xml node.
+     */
     private static Light parseDirectionalLight(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode, Function.identity());
         Vector3 colour = getAttribute("colour", xmlNode, ParserManager.getFromStringFunction(Vector3.class), Vector3.one);
@@ -323,6 +423,13 @@ public class SceneGraphParser {
         return node;
     }
 
+    /**
+     * Construct a point light node from its xml representation.
+     *
+     * @param xmlNode node from the xml document which represents a point light node.
+     * @param parent the transform node which will be set as the newly constructed node's parent.
+     * @return a newly constructed point light node with the same state as represented in the xml node.
+     */
     private static Light parsePointLight(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode, Function.identity());
         Vector3 colour = getAttribute("colour", xmlNode, ParserManager.getFromStringFunction(Vector3.class), Vector3.one);
@@ -338,7 +445,13 @@ public class SceneGraphParser {
         return node;
     }
 
-
+    /**
+     * Construct a transform node from its xml representation.
+     *
+     * @param xmlNode node from the xml document which represents a transform node.
+     * @param parent the transform node which will be set as the newly constructed node's parent.
+     * @return a newly constructed transform node with the same state as represented in the xml node.
+     */
     private static TransformNode parseTransformNode(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode, Function.identity());
         Vector3 translation = getAttribute("translation", xmlNode, ParserManager.getFromStringFunction(Vector3.class), Vector3.zero);
@@ -366,6 +479,13 @@ public class SceneGraphParser {
         return node;
     }
 
+    /**
+     * Construct a container node from its xml representation.
+     *
+     * @param xmlNode node from the xml document which represents a container node.
+     * @param parent the transform node which will be set as the newly constructed node's parent.
+     * @return a newly container camera node with the same state as represented in the xml node.
+     */
     private static Container parseContainer(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode, Function.identity());
 
@@ -378,11 +498,26 @@ public class SceneGraphParser {
         return container;
     }
 
-
+    /**
+     * Signal that the parsing of this input has failed by throwing a unchecked exception with the given message
+     *
+     * @param message message to be given to the exception
+     * @throws RuntimeException always throws a RuntimeException
+     */
     private static void fail(String message) throws RuntimeException {
         throw new RuntimeException(message);
     }
 
+    /**
+     * Helper method for getting the value of a attribute and converting it with the given function or
+     *      returning a default value in the case that the attribute doesn't exist.
+     *
+     * @param name the name of the attribute
+     * @param node xml node to get the attribute from
+     * @param converter function to convert the string value into some other type
+     * @param defaultValue the value returned if the node doesn't have a attribute with the given name
+     * @return the value of the converted attribute or the defaultValue if it doesn't exist
+     */
     private static <T> T getAttribute(String name, Node node, Function<String, T> converter, T defaultValue) {
         NamedNodeMap attributes = node.getAttributes();
         Node valueNode = attributes.getNamedItem(name);
@@ -396,29 +531,77 @@ public class SceneGraphParser {
         return converter.apply(value);
     }
 
+    /**
+     * Helper method for getting the value of a attribute and converting it with the given function.
+     *
+     * @param name the name of the attribute
+     * @param node xml node to get the attribute from
+     * @param converter function to convert the string value into some other type
+     * @return the value of the converted attribute
+     */
     private static <T> T getAttribute(String name, Node node, Function<String, T> converter) {
        return getAttribute(name, node, converter, null);
     }
 
+    /**
+     * Helper method for getting the value of a attribute.
+     *
+     * @param name the name of the attribute
+     * @param node xml node to get the attribute from
+     * @return the value the attribute
+     */
     private static String getAttribute(String name, Node node) {
         return getAttribute(name, node, Function.identity(), null);
     }
 
+    /**
+     * Helper method for getting the value of a attribute and converting it with the standard parser for the given type.
+     *
+     * @param name the name of the attribute
+     * @param node xml node to get the attribute from
+     * @param class0 the type of the desired value
+     * @return the value of the converted attribute
+     */
     private static <T> T getAttribute(String name, Node node, Class<T> class0) {
         return getAttribute(name, node, ParserManager.getFromStringFunction(class0), null);
     }
 
+    /**
+     * Helper method for getting the value of a attribute and converting it with the standard parser for the given type,
+     *      or returns the given defaultValue if the attribute doesn't exist.
+     *
+     * @param name the name of the attribute
+     * @param node xml node to get the attribute from
+     * @param class0 the type of the desired value
+     * @param defaultValue value to be returned if the attribute doesn't exist
+     * @return the value of the converted attribute
+     */
     private static <T> T getAttribute(String name, Node node, Class<T> class0, T defaultValue) {
         return getAttribute(name, node, ParserManager.getFromStringFunction(class0), defaultValue);
     }
 
+    /**
+     * Helper method for getting a optional of the value of a attribute and converting it with the standard parser for the given type,
+     *      or if the the attribute doesn't exist it will return a empty optional
+     *
+     * @param name the name of the attribute
+     * @param node xml node to get the attribute from
+     * @param class0 the type of the desired value
+     * @return optional of the value of the converted attribute
+     */
     private static <T> Optional<T> getOptionalAttribute(String name, Node node, Class<T> class0) {
-        Function<T, Optional<T>> toOptional = Optional::of;
-        Function<String, T> fromString = ParserManager.getFromStringFunction(class0);
-        Function<String, Optional<T>> convert =  toOptional.compose(fromString);
-        return getAttribute(name, node, convert, Optional.empty());
+        return getOptionalAttribute(name, node)
+                .map(ParserManager.getFromStringFunction(class0));
     }
 
+    /**
+     * Helper method for getting a optional of the value of a attribute,
+     *          or if the the attribute doesn't exist it will return a empty optional.
+     *
+     * @param name the name of the attribute
+     * @param node xml node to get the attribute from
+     * @return optional of the value of the attribute
+     */
     private static Optional<String> getOptionalAttribute(String name, Node node) {
         return getOptionalAttribute(name, node, String.class);
     }

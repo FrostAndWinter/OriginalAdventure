@@ -8,6 +8,9 @@ import java.util.List;
 
 /**
  * Created by danielbraithwt on 9/15/15.
+ *
+ * Base class for all the UI Components, defines the
+ * basic functionality all the components must have.
  */
 public abstract class UIComponent {
     protected PGraphics graphics;
@@ -153,34 +156,68 @@ public abstract class UIComponent {
      */
     protected abstract void componentClicked(int x, int y);
 
+    /**
+     * @return the x position of the component
+     */
     public int getX() {
         return x;
     }
 
+    /**
+     * @param x new x position for the component
+     */
     public void setX(int x) {
         this.x = x;
     }
 
+    /**
+     * @return y position of the component
+     */
     public int getY() {
         return y;
     }
 
+    /**
+     * @param y new y position of the component
+     */
     public void setY(int y) {
         this.y = y;
     }
 
+    /**
+     * Gets the width of the component in the context of
+     * a PGraphics object. Some components involving text
+     * there size will depend on the font
+     *
+     * @param g pGraphics we would be drawing to
+     * @return width of component in the context of g
+     */
     public int getWidth(PGraphics g) {
         return width;
     }
 
+    /**
+     * @param width new width of the component
+     */
     public void setWidth(int width) {
         this.width = width;
     }
 
+    /**
+     * Gets the height of the component in the context of
+     * a PGraphics object. Some components involving text
+     * there size will depend on the font
+     *
+     * @param g pGraphics we would be drawing to
+     * @return height of component in the context of g
+     */
     public int getHeight(PGraphics g) {
         return height;
     }
 
+    /**
+     * @param height new height of the component
+     */
     public void setHeight(int height) {
         this.height = height;
     }

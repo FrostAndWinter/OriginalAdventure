@@ -10,9 +10,12 @@ import static org.lwjgl.opengl.GL21.*;
 import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.GL31.*;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 11/10/15.
+ *
+ * The GBuffer contains the different framebuffers used for deferred rendering.
  */
 class GBuffer {
 
@@ -22,6 +25,21 @@ class GBuffer {
     private final int _finalTexture;
 
     private final int _finalBufferAttachment;
+
+    private static int gBufferFormatForTextureUnit(TextureUnit textureUnit) {
+        switch (textureUnit) {
+            case DiffuseColourUnit:
+                return GL_RGB8;
+            case SpecularColourUnit:
+                return GL_RGBA8_SNORM;
+            case PositionUnit:
+                return GL_RGB16F;
+            case VertexNormalUnit:
+                return GL_RGB16F;
+        }
+
+        throw new RuntimeException(textureUnit + " is not supported as a GBuffer format.");
+    }
 
     public GBuffer(int pixelWidth, int pixelHeight) {
 
@@ -38,12 +56,15 @@ class GBuffer {
         _finalTexture = glGenTextures();
 
         int i = 0;
-        for (; i < _glTextures.length ; i++) {
+        for (TextureUnit textureUnit : TextureUnit.deferredShadingTextureUnits()) {
+
             glBindTexture(GL_TEXTURE_2D, _glTextures[i]);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, pixelWidth, pixelHeight, 0, GL_RGBA, GL_FLOAT, (ByteBuffer)null);
+            glTexImage2D(GL_TEXTURE_2D, 0, GBuffer.gBufferFormatForTextureUnit(textureUnit), pixelWidth, pixelHeight, 0, GL_RGBA, GL_FLOAT, (ByteBuffer)null);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, _glTextures[i], 0);
+
+            i++;
         }
 
         // depth
@@ -101,8 +122,8 @@ class GBuffer {
             i++;
         }
 
-//        glActiveTexture(GL_TEXTURE0 + TextureUnit.FinalUnit.glUnit);
-//        glBindTexture(GL_TEXTURE_2D, _finalTexture);
+        glActiveTexture(GL_TEXTURE0 + TextureUnit.FinalUnit.glUnit);
+        glBindTexture(GL_TEXTURE_2D, _finalTexture);
     }
 
     public void bindForFinalPass() {

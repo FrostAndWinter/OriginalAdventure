@@ -5,6 +5,9 @@ import swen.adventure.engine.ui.components.UIComponent;
 
 /**
  * Created by danielbraithwt on 9/19/15.
+ *
+ * Linear layout will organise things either vertically
+ * or horizontally
  */
 public class LinearLayout extends LayoutManager {
 
@@ -29,6 +32,9 @@ public class LinearLayout extends LayoutManager {
     }
 
     @Override
+    /**
+     * {@inheritDoc}
+     */
     public void applyLayout(PGraphics g) {
         height = 0;
         width = 0;

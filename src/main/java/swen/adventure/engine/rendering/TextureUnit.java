@@ -19,7 +19,8 @@ public enum TextureUnit {
     //Units for deferred shading.
     PositionUnit(5),
     VertexNormalUnit(6),
-    FinalUnit(7);
+    DepthTextureUnit(7),
+    FinalUnit(8);
 
     public final int glUnit;
 

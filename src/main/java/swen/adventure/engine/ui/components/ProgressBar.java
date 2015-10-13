@@ -20,6 +20,7 @@ public class ProgressBar extends UIComponent {
 
     /**
      * Update the progress of the progress bar
+     *
      * @param delta ammount to update the progress bar
      * @return the new value of the progress bar
      */
@@ -35,6 +36,9 @@ public class ProgressBar extends UIComponent {
     }
 
     @Override
+    /**
+     * {@inheritDoc}
+     */
     public void drawComponent(PGraphics g, float scaleX, float scaleY) {
         // Draw the grey bar
         g.fill(150, 130, 180);
@@ -59,24 +63,39 @@ public class ProgressBar extends UIComponent {
     }
 
     @Override
+    /**
+     * {@inheritDoc}
+     */
     public boolean withinBounds(int x, int y) {
         return (x > this.x && y > this.y) && (x < this.x + this.width && y < this.y + this.height);
     }
 
     @Override
+    /**
+     * {@inheritDoc}
+     */
     protected void componentClicked(int x, int y) {}
 
     @Override
+    /**
+     * {@inheritDoc}
+     */
     public void setLayoutManager(LayoutManager lm) {
         throw new UnsupportedOperationException("Inventory cant use a layout manager");
     }
 
     @Override
+    /**
+     * {@inheritDoc}
+     */
     public void addChild(UIComponent c) {
         throw new UnsupportedOperationException("Inventory cant contain child ui elements");
     }
 
     @Override
+    /**
+     * {@inheritDoc}
+     */
     public void removeChild(UIComponent c) {
         throw new UnsupportedOperationException("Inventory cant contain child ui elements");
     }

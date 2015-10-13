@@ -480,10 +480,10 @@ public class Matrix4 {
     }
 
     /**
-     * Calculates the inverse transpose of the matrix. Code adapted from PMatrix3D's invert function.
-     * @return the inverse transpose of the matrix.
+     * Calculates the inverse of the matrix. Code adapted from PMatrix3D's invert function.
+     * @return the inverse of the matrix.
      */
-    public Matrix4 inverseTranspose() {
+    public Matrix4 inverse() {
         float determinant = determinant();
         if (determinant == 0) {
             throw new RuntimeException("The matrix " + this + " is not invertible.");

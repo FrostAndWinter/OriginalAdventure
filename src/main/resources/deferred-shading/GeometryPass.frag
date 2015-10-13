@@ -8,7 +8,7 @@ smooth in mat3 tangentToCameraSpaceMatrix;
 
 layout (location = 0) out vec3 cameraSpacePositionOut;
 layout (location = 1) out vec3 vertexNormalOut;
-layout (location = 2) out vec4 diffuseColourOut;
+layout (location = 2) out vec3 diffuseColourOut;
 layout (location = 3) out vec4 specularColourOut;
 layout (location = 4) out vec4 ambientColourOut;
 
@@ -64,7 +64,12 @@ float specularity() {
 }
 											
 void main()									
-{											
+{
+    vec4 diffuseColour = diffuseColour();
+    if (diffuseColour.a < 0.001f) {
+       discard;
+    }
+
 	cameraSpacePositionOut = cameraSpacePosition;
 
     if (useNormalMap()) {
@@ -73,7 +78,8 @@ void main()
         vertexNormalOut = normalize(vertexNormal);
     }
 
-    diffuseColourOut = diffuseColour();
+    diffuseColourOut = diffuseColour.rgb;
+
     ambientColourOut = ambientColour();
     specularColourOut = vec4(specularColour().rgb, specularity());
 }
