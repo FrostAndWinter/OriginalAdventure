@@ -81,31 +81,10 @@ public class AdventureGame implements Game {
     }
 
 
-    private List<String> networkEvents = new ArrayList<String>(){{
-        add("PlayerMoved");
-        add("LeverToggled");
-        add("DoorToggled");
-    }};
-
     private void setupSceneGraph(TransformNode sceneGraph, String playerId) {
         _sceneGraph = sceneGraph;
 
         createPlayer(playerId);
-
-        for (String networkEvent : networkEvents) {
-            Event.EventSet eventSet = Event.eventSetForName(networkEvent);
-            eventSet.addAction(playerId, ((eventObject, triggeringObject, listener, data) -> {
-                SceneNode triggerNode = (SceneNode) triggeringObject;
-                SceneNode eventNode = (SceneNode) eventObject;
-                if (playerId.equals(triggerNode.id) &&
-                    !data.containsKey("Networked")) {
-                    _client.send(new EventBox(networkEvent, triggerNode.id, eventNode.id, playerId, data));
-                    System.out.println("Sending event " + networkEvent + " t: " + triggerNode.id + " e:" + eventNode.id + " pid: " + playerId + " data: " + data);
-                } else {
-                    System.out.println("Ignored event " + networkEvent + " t: " + triggerNode.id + " e:" + eventNode.id + " pid: " + playerId + " data: " + data);
-                }
-            }));
-        }
 
         Event.EventSet playerMovedSet = Event.eventSetForName("PlayerMoved");
         playerMovedSet.addAction(this, playerMoved);
