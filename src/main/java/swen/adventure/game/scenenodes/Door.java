@@ -53,6 +53,10 @@ public class Door extends AdventureGameObject {
         });
     }
 
+    /**
+     * Toggles wether the door is open
+     * or closed
+     */
     public void toggle() {
 
         if (_isOpen) {
@@ -62,16 +66,27 @@ public class Door extends AdventureGameObject {
         }
     }
 
+    /**
+     * Sets the door to open and starts the
+     * animation
+     */
     public void open() {
         _isOpen = true;
         new Animation(_doorOpenPercentage, AnimationCurve.Sine, DoorAnimationDuration, 0.9f);
     }
 
+    /**
+     * Sets the door to be closed and starts
+     * the animation
+     */
     public void close() {
         _isOpen = false;
         new Animation(_doorOpenPercentage, AnimationCurve.Sine, DoorAnimationDuration, 0.0f);
     }
 
+    /**
+     * @param requiresKey true if the door requires a key to be opened
+     */
     public void setRequiresKey(boolean requiresKey) {
         _requiresKey = requiresKey;
     }
@@ -99,6 +114,9 @@ public class Door extends AdventureGameObject {
         }
     }
 
+    /**
+     * @param isOpen true to set the door as open
+     */
     public void setIsOpen(boolean isOpen) {
         _isOpen = isOpen;
     }
