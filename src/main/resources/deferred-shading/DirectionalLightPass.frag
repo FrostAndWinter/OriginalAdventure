@@ -20,14 +20,29 @@ uniform Light {
     PerLightData lights[MaxLights];
 } lighting;
 
+in vec2 textureCoordinate;
+
+uniform mat4 cameraToClipMatrixUniform;
+uniform vec2 depthRangeUniform;
 uniform vec2 screenSizeUniform;
+
+//Half the size of the near plane {y * aspect, tan(fovy/2.0) } // { 0.7698 , 0.577350 } for fov = pi/3 and aspect = 4:3
+uniform vec2 halfSizeNearPlaneUniform;
 
 uniform sampler2D ambientColourSampler;
 uniform sampler2D diffuseColourSampler;
 uniform sampler2D specularColourSampler;
 
-uniform sampler2D cameraSpacePositionSampler;
 uniform sampler2D cameraSpaceNormalSampler;
+
+uniform sampler2D depthSampler;
+
+vec3 CalcCameraSpacePositionFromWindow(in float windowZ, in vec3 eyeDirection) {
+  float ndcZ = (2.0 * windowZ - depthRangeUniform.x - depthRangeUniform.y) /
+    (depthRangeUniform.y - depthRangeUniform.x);
+  float eyeZ = -cameraToClipMatrixUniform[3][2] / ((cameraToClipMatrixUniform[2][3] * ndcZ) - cameraToClipMatrixUniform[2][2]);
+  return eyeDirection * eyeZ;
+}
 
 float ComputeAngleNormalHalf(in PerLightData lightData, in vec3 cameraSpacePosition, in vec3 surfaceNormal, out float cosAngIncidence, out vec3 lightIntensity) {
     vec3 lightDirection = lightData.positionInCameraSpace.xyz;
@@ -60,15 +75,10 @@ vec3 ComputeLighting(in PerLightData lightData, in vec3 cameraSpacePosition, in 
     return lighting;
 }
 
-
-vec2 CalcTexCoord() {
-   return gl_FragCoord.xy / screenSizeUniform;
-}
-
 void main() {
 
-    vec2 textureCoordinate = CalcTexCoord();
-	vec3 cameraSpacePosition = texture(cameraSpacePositionSampler, textureCoordinate).xyz;
+    vec3 cameraDirection = vec3((2.0 * halfSizeNearPlaneUniform * textureCoordinate) - halfSizeNearPlaneUniform, -1.0);
+    vec3 cameraSpacePosition = CalcCameraSpacePositionFromWindow(texture(depthSampler, textureCoordinate).r, cameraDirection);
 
 	vec3 diffuseColour = texture(diffuseColourSampler, textureCoordinate).rgb;
 	vec4 specularColour = texture(specularColourSampler, textureCoordinate);

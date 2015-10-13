@@ -19,13 +19,15 @@ public class LightPassShader extends PerObjectMaterialShader {
     private final int _screenSizeUniformRef;
     private final int _halfSizeNearPlaneUniformRef;
     private final int _modelToClipMatrixUniformRef;
+    private final int _depthRangeUniformRef;
 
     public LightPassShader(String vertexShader, String fragmentShader) {
         super(vertexShader, fragmentShader);
 
         _screenSizeUniformRef = glGetUniformLocation(this.glProgramRef(), "screenSizeUniform");
-        _halfSizeNearPlaneUniformRef = glGetUniformLocation(this.glProgramRef(), "halfSizeNearPlane");
+        _halfSizeNearPlaneUniformRef = glGetUniformLocation(this.glProgramRef(), "halfSizeNearPlaneUniform");
         _modelToClipMatrixUniformRef = glGetUniformLocation(this.glProgramRef(), "modelToClipMatrixUniform");
+        _depthRangeUniformRef = glGetUniformLocation(this.glProgramRef(), "depthRangeUniform");
 
         final int positionsSamplerRef = glGetUniformLocation(this.glProgramRef(), "cameraSpacePositionSampler");
         final int vertexNormalsSamplerRef = glGetUniformLocation(this.glProgramRef(), "cameraSpaceNormalSampler");
@@ -46,13 +48,17 @@ public class LightPassShader extends PerObjectMaterialShader {
         glUniform2f(_screenSizeUniformRef, width, height);
     }
 
-    public void setHalfSizeNearPlane(float height, float aspect, float fieldOfViewY) {
-        float x = height * aspect;
-        float y = (float)Math.tan(fieldOfViewY / 2.f);
+    public void setHalfSizeNearPlane(float zNear, float aspect, float tanHalfFOV) {
+        float y = tanHalfFOV * zNear;
+        float x = y * aspect;
         glUniform2f(_halfSizeNearPlaneUniformRef, x, y);
     }
 
     public void setModelToClipMatrix(Matrix4 matrix) {
         glUniformMatrix4fv(_modelToClipMatrixUniformRef, false, matrix.toFloatBuffer());
+    }
+
+    public void setDepthRange(float zNear, float zFar) {
+        glUniform2f(_depthRangeUniformRef, zNear, zFar);
     }
 }

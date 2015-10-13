@@ -13,24 +13,24 @@ import java.util.Optional;
 public class Inventory extends Container {
     public static final int InventoryCapacity = 5;
 
-    public static final Action<Input, Input, Inventory> actionSelectSlot1 = (eventObject, triggeringObject, listener, data) -> {
-        listener.selectSlot(0);
+    public static final Action<Input, Input, Inventory> actionSelectSlot1 = (eventObject, triggeringObject, inventory, data) -> {
+        inventory.selectSlot(0);
     };
 
-    public static final Action<Input, Input, Inventory> actionSelectSlot2 = (eventObject, triggeringObject, listener, data) -> {
-        listener.selectSlot(1);
+    public static final Action<Input, Input, Inventory> actionSelectSlot2 = (eventObject, triggeringObject, inventory, data) -> {
+        inventory.selectSlot(1);
     };
 
-    public static final Action<Input, Input, Inventory> actionSelectSlot3 = (eventObject, triggeringObject, listener, data) -> {
-        listener.selectSlot(2);
+    public static final Action<Input, Input, Inventory> actionSelectSlot3 = (eventObject, triggeringObject, inventory, data) -> {
+        inventory.selectSlot(2);
     };
 
-    public static final Action<Input, Input, Inventory> actionSelectSlot4 = (eventObject, triggeringObject, listener, data) -> {
-        listener.selectSlot(3);
+    public static final Action<Input, Input, Inventory> actionSelectSlot4 = (eventObject, triggeringObject, inventory, data) -> {
+        inventory.selectSlot(3);
     };
 
-    public static final Action<Input, Input, Inventory> actionSelectSlot5 = (eventObject, triggeringObject, listener, data) -> {
-        listener.selectSlot(4);
+    public static final Action<Input, Input, Inventory> actionSelectSlot5 = (eventObject, triggeringObject, inventory, data) -> {
+        inventory.selectSlot(4);
     };
 
     /**
