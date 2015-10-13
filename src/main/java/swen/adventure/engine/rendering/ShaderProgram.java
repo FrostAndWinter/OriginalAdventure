@@ -15,6 +15,8 @@ import static org.lwjgl.opengl.GL32.GL_GEOMETRY_SHADER;
  * It also manages compiling and linking the different shaders.
  */
 public class ShaderProgram {
+    private static int CurrentUniformBlockIndex = 0;
+
     private final int _glProgramRef;
 
     public ShaderProgram(String vertexShaderText, String fragmentShaderText) {
@@ -42,6 +44,10 @@ public class ShaderProgram {
      */
     public void endUseProgram() {
         glUseProgram(0);
+    }
+
+    public static int nextUniformBlockIndex() {
+        return CurrentUniformBlockIndex++;
     }
 
     /**

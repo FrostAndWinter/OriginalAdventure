@@ -12,6 +12,8 @@ import static org.lwjgl.opengl.GL20.*;
  * Created by Thomas Roughton, Student ID 300313924, on 1/10/15.
  * A PickerShader defines a shader that can be passed a 24-bit integer id and shade objects in a solid colour based on that id.
  * It is used to implement colour picking (i.e. detecting what object is at a given position in 3D space using rendering techniques).
+ *
+ * With the new deferred renderer, this can probably be folded into the geometry pass.
  */
 public class PickerShader extends ShaderProgram {
     private final int _modelToClipMatrixUniformRef;
@@ -58,7 +60,10 @@ public class PickerShader extends ShaderProgram {
         glUniform3f(_colourUniformRef, r / 255.f, g / 255.f, b / 255.f);
     }
 
-    public static int colourToID(byte r, byte g, byte b) {
+    public static int colourToID(int colour) {
+        byte b = (byte)(colour & 0xFF);
+        byte g = (byte)((colour >>> 8) & 0xFF);
+        byte r = (byte)((colour >>> 16) & 0xFF);
 
         return ((r << 16) | (g << 8) | b) & 0xFFFFFF;
     }

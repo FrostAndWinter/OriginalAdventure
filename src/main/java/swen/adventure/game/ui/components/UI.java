@@ -1,19 +1,22 @@
 package swen.adventure.game.ui.components;
 
 import processing.core.PGraphics;
+import processing.opengl.PGL;
 import swen.adventure.engine.Action;
 import swen.adventure.engine.Input;
+import swen.adventure.engine.rendering.GLForwardRenderer;
 import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.ui.color.Color;
 import swen.adventure.engine.ui.components.Frame;
 import swen.adventure.engine.ui.components.Panel;
 import swen.adventure.engine.ui.components.Reticule;
-import swen.adventure.engine.ui.components.TextBox;
-import swen.adventure.engine.ui.layoutmanagers.LinearLayout;
-import swen.adventure.game.scenenodes.Inventory;
 import swen.adventure.game.scenenodes.Player;
 
 import java.util.ArrayList;
+
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL14.*;
+import static org.lwjgl.opengl.GL20.*;
 
 /**
  * Created by danielbraithwt on 10/10/15.
@@ -89,6 +92,7 @@ public class UI extends Frame {
         float dh = (pg.height - (scale * height))/2;
 
         pg.beginDraw();
+
         pg.noStroke();
         pg.translate(dw, dh);
 

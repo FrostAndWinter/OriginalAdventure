@@ -1,20 +1,20 @@
-package swen.adventure.engine.rendering.shaders;
+package swen.adventure.engine.rendering.shaders.deferredrendering;
 
 import swen.adventure.engine.Utilities;
 import swen.adventure.engine.rendering.TextureUnit;
 import swen.adventure.engine.rendering.maths.Matrix4;
+import swen.adventure.engine.rendering.shaders.PerObjectMaterialShader;
 
 import java.io.IOException;
 
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL20.glGetUniformLocation;
 import static org.lwjgl.opengl.GL20.glUniform1i;
+import static org.lwjgl.opengl.GL20.glUniformMatrix3fv;
 
 /**
- * Created by Thomas Roughton, Student ID 300313924, on 3/10/15.
- * This class describes a shader that, in addition to the functionality provided by PerObjectMaterialShader, also allows per-material normal maps.
+ * Created by Thomas Roughton, Student ID 300313924, on 11/10/15.
  */
-public class GaussianMaterialsNormalMapsShader extends PerObjectMaterialShader {
-
+public class GeometryPassShader extends PerObjectMaterialShader {
     private final int _nodeToCamera3x3MatrixUniformRef;
 
     private static String vertexShaderText() {
@@ -28,14 +28,14 @@ public class GaussianMaterialsNormalMapsShader extends PerObjectMaterialShader {
 
     private static String fragmentShaderText() {
         try {
-            return Utilities.readFile(Utilities.pathForResource("GaussianMaterialsNormalMap", "frag"));
+            return Utilities.readFile(Utilities.pathForResource("deferred-shading", "GeometryPass", "frag"));
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public GaussianMaterialsNormalMapsShader(String vertexShader, String fragmentShader) {
+    public GeometryPassShader(String vertexShader, String fragmentShader) {
         super(vertexShader, fragmentShader);
 
         final int normalMapSamplerRef = glGetUniformLocation(this.glProgramRef(), "normalMapSampler");
@@ -46,7 +46,7 @@ public class GaussianMaterialsNormalMapsShader extends PerObjectMaterialShader {
         this.endUseProgram();
     }
 
-    public GaussianMaterialsNormalMapsShader() {
+    public GeometryPassShader() {
         this(vertexShaderText(), fragmentShaderText());
     }
 

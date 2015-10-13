@@ -3,6 +3,7 @@ package swen.adventure.game.ui.components;
 import processing.core.PGraphics;
 import swen.adventure.engine.Action;
 import swen.adventure.engine.Input;
+import swen.adventure.engine.rendering.GLForwardRenderer;
 import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.rendering.maths.Matrix4;
 import swen.adventure.engine.rendering.maths.Quaternion;

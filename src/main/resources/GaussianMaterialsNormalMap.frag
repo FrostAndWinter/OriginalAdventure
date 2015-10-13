@@ -39,8 +39,6 @@ uniform sampler2D specularColourSampler;
 uniform sampler2D specularitySampler;
 uniform sampler2D normalMapSampler;
 
-uniform float maxIntensity;
-
 vec4 diffuseColour() {
     if ((material.booleanMask & (1 << 1)) != 0) {
         return texture(diffuseColourSampler, textureCoordinate);
@@ -100,7 +98,7 @@ float ComputeAttenuation(in vec3 objectPosition,
 
 float ComputeAngleNormalHalf(in PerLightData lightData, out float cosAngIncidence, out vec3 lightIntensity) {
     vec3 lightDirection;
-    if (lightData.positionInCameraSpace.w < 0.0001) {
+    if (lightData.positionInCameraSpace.w < 0.0001) { //DirectionalLight
         lightDirection = lightData.positionInCameraSpace.xyz;
         lightIntensity = lightData.lightIntensity.rgb;
     }
@@ -161,8 +159,6 @@ void main() {
     for (int light = 0; light < lighting.numDynamicLights; light++) {
         totalLighting += ComputeLighting(lighting.lights[light], diffuse, specular, specularity);
     }
-
-    totalLighting = totalLighting / maxIntensity;
 
     outputColor = vec4(totalLighting, diffuse.a);
 

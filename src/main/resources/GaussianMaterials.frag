@@ -37,8 +37,6 @@ uniform sampler2D diffuseColourSampler;
 uniform sampler2D specularColourSampler;
 uniform sampler2D specularitySampler;
 
-uniform float maxIntensity;
-
 vec4 diffuseColour() {
     if ((material.booleanMask & (1 << 1)) != 0) {
         return texture(diffuseColourSampler, textureCoordinate);
@@ -139,8 +137,6 @@ void main() {
 	for (int light = 0; light < lighting.numDynamicLights; light++) {
 		totalLighting += ComputeLighting(lighting.lights[light]);
 	}
-
-	totalLighting = totalLighting / maxIntensity;
 
 	outputColor = vec4(totalLighting, material.diffuseColour.a);
 }

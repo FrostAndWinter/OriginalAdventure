@@ -9,6 +9,7 @@ import swen.adventure.engine.animation.AnimationSystem;
 
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
+import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.Callbacks.errorCallbackPrint;
 import static org.lwjgl.glfw.Callbacks.glfwSetCallback;
@@ -88,14 +89,15 @@ public class GameDelegate {
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-        glfwWindowHint(GLFW_SAMPLES, Settings.MultiSampling);
+        glfwWindowHint(GLFW_SAMPLES, 0);
         glfwWindowHint(GLFW_SRGB_CAPABLE, GL_TRUE);
 
         // setup the main _window
         _windowWidth = DefaultWindowWidth;
         _windowHeight = DefaultWindowHeight;
 
-        _window = glfwCreateWindow(_windowWidth, _windowHeight, "Hello World!", NULL, NULL);
+        _window = glfwCreateWindow(_windowWidth, _windowHeight, _game.title(), NULL, NULL);
+
         if ( _window == NULL )
             throw new RuntimeException("Failed to create the GLFW _window");
 
@@ -210,7 +212,11 @@ public class GameDelegate {
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
+        IntBuffer pixelWidth = BufferUtils.createIntBuffer(1), pixelHeight = BufferUtils.createIntBuffer(1);
+        glfwGetFramebufferSize(_window, pixelWidth, pixelHeight);
+
         _game.setup(_windowWidth, _windowHeight);
+        _game.setSizeInPixels(pixelWidth.get(), pixelHeight.get());
 
         // Run the rendering loop until the user has attempted to close
         // the _window or has pressed the ESCAPE key.
