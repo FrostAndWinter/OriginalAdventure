@@ -38,6 +38,10 @@ public class Dialog extends Panel {
         }
     }
 
+    /**
+     * Closes the dialog and notifies all the on close
+     * listeners
+     */
     private synchronized void closeDialog() {
         setVisible(false);
 
@@ -49,18 +53,31 @@ public class Dialog extends Panel {
     }
 
 
+    /**
+     * @param l dialog on close listener to be added
+     */
     public synchronized void addDialogCloseListener(DialogCloseListener l) {
         listeners.add(l);
     }
 
+    /**
+     * @param l dialog on close listener to be removed
+     */
     public synchronized void removeDialodCloseListener(DialogCloseListener l) {
         listeners.remove(l);
     }
 
+    /**
+     * Interface so class can perform an action
+     * when the dialog is closed
+     */
     public interface DialogCloseListener {
         public void onDialogClose(DialogCloseEvent e);
     }
 
+    /**
+     * Event class for when the dialog is closed
+     */
     public static class DialogCloseEvent extends EventObject {
         public DialogCloseEvent(Object source) {
             super(source);

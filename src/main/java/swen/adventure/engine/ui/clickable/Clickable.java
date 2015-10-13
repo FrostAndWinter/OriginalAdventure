@@ -15,9 +15,9 @@ public interface Clickable {
     public void removeClickListener(OnClickListener c);
 
     /**
-     *
-     * @param x
-     * @param y
+     * Called when the component is clicked
+     * @param x x position of the click
+     * @param y y position of the click
      */
     public void clicked(int x, int y);
 }
