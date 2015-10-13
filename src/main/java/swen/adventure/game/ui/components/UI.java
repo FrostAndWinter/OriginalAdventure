@@ -20,6 +20,8 @@ import static org.lwjgl.opengl.GL20.*;
 
 /**
  * Created by danielbraithwt on 10/10/15.
+ *
+ * Stores all the UI components to move creating the UI out of our main class.
  */
 public class UI extends Frame {
     public static final Action<Input, Input, UI> actionToggleControlls = (input, ignored, ui, data) -> {
@@ -57,6 +59,11 @@ public class UI extends Frame {
         addChild(_container);
     }
 
+    /**
+     * List of strings that will be displayed just under the reticule
+     * in the center of the screen.
+     * @param tips list of strings
+     */
     public void setTooltip(ArrayList<String> tips) {
         removeTooltip();
 
@@ -67,14 +74,25 @@ public class UI extends Frame {
         _tooltips.addAll(tips);
     }
 
+    /**
+     * Clears all the tooltips
+     */
     public void removeTooltip() {
         _tooltips.clear();
     }
 
+    /**
+     * Changes the visibility of the overlay which displays
+     * all the game keyboard controls
+     * @param b true if we want to display the overlay
+     */
     public void setControlsOverlayVisibility(boolean b) {
         _controlsOverlay.setVisible(b);
     }
 
+    /**
+     * @return true if the controls overlay is visible
+     */
     public boolean getControlsOverlayVisibility() {
         return _controlsOverlay.getVisible();
     }
@@ -83,6 +101,11 @@ public class UI extends Frame {
         return _inventory;
     }
 
+    /**
+     * Handles drawing the UI
+     * @param pg pGraphics to draw all the UI components to
+     * @param gr GLRenderer to draw the inventory 3D objects to
+     */
     public void drawUI(PGraphics pg, GLRenderer gr) {
         float scaleX = pg.width / (float) width;
         float scaleY = pg.height / (float) height;

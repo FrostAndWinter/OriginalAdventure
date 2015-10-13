@@ -7,6 +7,8 @@ import swen.adventure.engine.ui.layoutmanagers.LinearLayout;
 
 /**
  * Created by danielbraithwt on 10/10/15.
+ *
+ * UI Panel for displaying all the keyboard controls
  */
 public class ControlsOverlay extends Panel {
     public ControlsOverlay(int x, int y) {
