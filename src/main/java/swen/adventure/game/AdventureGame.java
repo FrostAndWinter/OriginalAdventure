@@ -164,6 +164,16 @@ public class AdventureGame implements Game {
         }
     };
 
+    private static final Action<Interaction, Client<EventBox>, AdventureGame> interactionPerformed = (eventObject, triggeringObject, listener, data1) -> {
+        Map<String, Object> data = new HashMap<>();
+        data.put("InteractionType", eventObject.interactionType);
+        triggeringObject.send(new EventBox("InteractionPerformed",
+                eventObject.gameObject.id,
+                eventObject.meshNode.id,
+                triggeringObject.toString(),
+                data));
+    };
+
     private static final Action<Input, Input, AdventureGame> primaryActionFired = (eventObject, triggeringObject, adventureGame, data) -> {
         adventureGame.performInteractions(Interaction.ActionType.Primary);
     };
@@ -193,6 +203,7 @@ public class AdventureGame implements Game {
                 .filter(interaction -> interaction != null)
                 .forEach(interaction -> {
                     interaction.performInteractionWithPlayer(_player);
+
                     _interactionInProgressForActionType.put(actionType, interaction);
                 });
     }

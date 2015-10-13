@@ -2,6 +2,7 @@ package swen.adventure.engine.datastorage;
 
 import swen.adventure.engine.Utilities;
 import swen.adventure.engine.rendering.maths.*;
+import swen.adventure.game.Interaction;
 
 import java.util.*;
 import java.util.function.Function;
@@ -62,6 +63,12 @@ public class ParserManager {
                 s -> {
                     List<Float> entryValues = fromCsvString(s, Float.class);
                     return new Matrix4(Utilities.toPrimitiveArray(entryValues));
+                }), parsers);
+
+        addParser(Interaction.InteractionType.class, new Parser<>(
+                Interaction.InteractionType::ordinal,
+                s -> {
+                    return Interaction.InteractionType.values()[Integer.parseInt(s)];
                 }), parsers);
 
         PARSERS = Collections.unmodifiableMap(parsers);
