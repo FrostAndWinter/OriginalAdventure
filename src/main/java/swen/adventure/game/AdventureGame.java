@@ -11,6 +11,7 @@ import swen.adventure.engine.network.EventBox;
 import swen.adventure.engine.network.NetworkClient;
 import swen.adventure.engine.rendering.GLDeferredRenderer;
 import swen.adventure.engine.rendering.GLForwardRenderer;
+import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.rendering.PickerRenderer;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.scenegraph.*;
@@ -28,7 +29,7 @@ import java.util.*;
 public class AdventureGame implements Game {
 
     private GLForwardRenderer _forwardRenderer;
-    private GLDeferredRenderer _deferredRenderer;
+    private GLRenderer _mainRenderer;
     private PickerRenderer _pickerRenderer;
     private PGraphics2D _pGraphics;
     private TransformNode _sceneGraph;
@@ -83,8 +84,8 @@ public class AdventureGame implements Game {
         }
 
         if (!Utilities.isHeadlessMode) {
-            _deferredRenderer = new GLDeferredRenderer(width, height);
             _forwardRenderer = new GLForwardRenderer(width, height);
+            _mainRenderer = Settings.DeferredShading ? new GLDeferredRenderer(width, height) : _forwardRenderer;
             _pickerRenderer = new PickerRenderer();
         }
 
@@ -169,8 +170,8 @@ public class AdventureGame implements Game {
 
     @Override
     public void setSize(int width, int height) {
-        if (_deferredRenderer != null) {
-            _deferredRenderer.setSize(width, height);
+        if (_mainRenderer != null) {
+            _mainRenderer.setSize(width, height);
         }
         if (_pGraphics != null) {
             _pGraphics.setSize(width, height);
@@ -181,7 +182,7 @@ public class AdventureGame implements Game {
     @Override
     public void setSizeInPixels(int width, int height) {
         _pGraphics.setPixelDimensions(width, height);
-        _deferredRenderer.setSizeInPixels(width, height);
+        _mainRenderer.setSizeInPixels(width, height);
         _forwardRenderer.setSizeInPixels(width, height);
     }
 
@@ -220,7 +221,7 @@ public class AdventureGame implements Game {
             List<MeshNode> meshNodesSortedByZ = DepthSorter.sortedMeshNodesByZ(_sceneGraph, cameraNode.worldToNodeSpaceTransform());
 
             _pickerRenderer.render(meshNodesSortedByZ, cameraNode.worldToNodeSpaceTransform());
-            _deferredRenderer.render(meshNodesSortedByZ, _sceneGraph.allNodesOfType(Light.class), cameraNode.worldToNodeSpaceTransform(), cameraNode.fieldOfView(), cameraNode.hdrMaxIntensity());
+            _mainRenderer.render(meshNodesSortedByZ, _sceneGraph.allNodesOfType(Light.class), cameraNode.worldToNodeSpaceTransform(), cameraNode.fieldOfView(), cameraNode.hdrMaxIntensity());
         });
 
         ArrayList<String> tips = new ArrayList<>();
