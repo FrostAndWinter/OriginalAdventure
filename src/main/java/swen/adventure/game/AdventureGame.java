@@ -170,6 +170,16 @@ public class AdventureGame implements Game {
                     data));
     }
 
+    private void sendEndInteraction(Interaction interaction) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("InteractionType", interaction.interactionType);
+        _client.send(new EventBox("InteractionEnded",
+                interaction.gameObject.id,
+                interaction.meshNode.id,
+                _player.id,
+                data));
+    }
+
     private static final Action<Input, Input, AdventureGame> primaryActionFired = (eventObject, triggeringObject, adventureGame, data) -> {
         adventureGame.performInteractions(Interaction.ActionType.Primary);
     };
@@ -208,6 +218,7 @@ public class AdventureGame implements Game {
         Interaction interaction = _interactionInProgressForActionType.get(actionType);
         if (interaction != null) {
             interaction.interactionEndedByPlayer(_player);
+            sendEndInteraction(interaction);
         }
         _interactionInProgressForActionType.put(actionType, null);
     }
@@ -281,6 +292,17 @@ public class AdventureGame implements Game {
                 Interaction interaction = new Interaction((InteractionType)event.eventData.get("InteractionType"), gameObject, meshNode);
 
                 interaction.performInteractionWithPlayer(player);
+                continue;
+            }
+
+            if (event.eventName.equals("InteractionEnded")) {
+                AdventureGameObject gameObject = (AdventureGameObject)_sceneGraph.nodeWithID(event.sourceId).get();
+                MeshNode meshNode = (MeshNode)_sceneGraph.nodeWithID(event.targetId).get();
+                Player player = (Player)_sceneGraph.nodeWithID(event.from).get();
+
+                Interaction interaction = new Interaction((InteractionType)event.eventData.get("InteractionType"), gameObject, meshNode);
+
+                interaction.interactionEndedByPlayer(player);
                 continue;
             }
 

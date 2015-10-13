@@ -71,13 +71,10 @@ public class MultiPlayerServer implements Runnable {
                         createPlayer(event.targetId);
                         break;
                     case "InteractionPerformed":
-                        AdventureGameObject gameObject = (AdventureGameObject)root.nodeWithID(event.sourceId).get();
-                        MeshNode meshNode = (MeshNode)root.nodeWithID(event.targetId).get();
-                        Player player = (Player)root.nodeWithID(event.from).get();
-
-                        Interaction interaction = new Interaction((InteractionType)event.eventData.get("InteractionType"), gameObject, meshNode);
-
-                        interaction.performInteractionWithPlayer(player);
+                        interactionPerformed(event);
+                        break;
+                    case "InteractionEnded":
+                        interactionEnded(event);
                         break;
                     default:
                         GameObject target = (GameObject) root.nodeWithID(event.targetId).get();
@@ -90,17 +87,34 @@ public class MultiPlayerServer implements Runnable {
                 System.out.println("Error occurred in Multilayer server: " + ex.toString());
             }
 
-            if (loops >= 100) {
-                try {
-                    SceneGraphSerializer.serializeToFile(root, new File(String.format("SceneGraph-%s.xml", System.currentTimeMillis())));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+            if (loops >= 10000) {
+//                try {
+//                     SceneGraphSerializer.serializeToFile(root, new File(String.format("SceneGraph-%s.xml", System.currentTimeMillis())));
+//                } catch (FileNotFoundException e) {
+//                    e.printStackTrace();
+//                }
                 loops = 0;
             }
             loops++;
         }
         server.stop();
+    }
+
+    private void interactionPerformed(EventBox event) {
+        Player player = (Player)root.nodeWithID(event.from).get();
+        buildInteraction(event).performInteractionWithPlayer(player);
+    }
+
+    private void interactionEnded(EventBox event) {
+        Player player = (Player)root.nodeWithID(event.from).get();
+        buildInteraction(event).interactionEndedByPlayer(player);
+    }
+
+    private Interaction buildInteraction(EventBox event) {
+        AdventureGameObject gameObject = (AdventureGameObject)root.nodeWithID(event.sourceId).get();
+        MeshNode meshNode = (MeshNode)root.nodeWithID(event.targetId).get();
+
+        return new Interaction((InteractionType)event.eventData.get("InteractionType"), gameObject, meshNode);
     }
 
     private void createPlayer(String playerId) {
