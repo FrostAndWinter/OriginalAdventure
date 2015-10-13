@@ -70,12 +70,12 @@ public class MultiPlayerServer implements Runnable {
                         server.sendSnapShot(event.from, root);
                         createPlayer(event.targetId);
                         break;
-                    case "InteractionType":
+                    case "InteractionPerformed":
                         AdventureGameObject gameObject = (AdventureGameObject)root.nodeWithID(event.sourceId).get();
                         MeshNode meshNode = (MeshNode)root.nodeWithID(event.targetId).get();
                         Player player = (Player)root.nodeWithID(event.from).get();
 
-                        Interaction interaction = new Interaction((Interaction.InteractionType)event.eventData.get("InteractionType"), gameObject, meshNode);
+                        Interaction interaction = new Interaction((InteractionType)event.eventData.get("InteractionType"), gameObject, meshNode);
 
                         interaction.performInteractionWithPlayer(player);
                         break;

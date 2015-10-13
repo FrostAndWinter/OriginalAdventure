@@ -19,34 +19,6 @@ public final class Interaction {
         Secondary;
     }
 
-    public enum InteractionType {
-        PickUp(ActionType.Primary),
-        PlaceIn(ActionType.Secondary),
-        Open(ActionType.Primary),
-        Close(ActionType.Primary),
-        Pull(ActionType.Primary);
-
-        public final ActionType actionType;
-
-        InteractionType(ActionType actionType) {
-            this.actionType = actionType;
-        }
-
-        private static EnumMap<ActionType, List<InteractionType>> _actionTypesToInteractionTypes = new EnumMap<>(ActionType.class);
-        static {
-            for (InteractionType interactionType : InteractionType.values()) {
-                List<InteractionType> interactionTypes = _actionTypesToInteractionTypes.get(interactionType.actionType);
-                if (interactionTypes == null) { interactionTypes = new ArrayList<>(); _actionTypesToInteractionTypes.put(interactionType.actionType, interactionTypes); }
-                interactionTypes.add(interactionType);
-            }
-
-        }
-
-        public static List<InteractionType> typesForActionType(ActionType actionType) {
-            return _actionTypesToInteractionTypes.getOrDefault(actionType, Collections.emptyList());
-        }
-    }
-
     public final InteractionType interactionType;
     public final AdventureGameObject gameObject;
     public final MeshNode meshNode;

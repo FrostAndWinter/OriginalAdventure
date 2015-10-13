@@ -4,6 +4,7 @@ import swen.adventure.engine.Event;
 import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.TransformNode;
 import swen.adventure.game.Interaction;
+import swen.adventure.game.InteractionType;
 
 import java.util.Collections;
 import java.util.List;
@@ -55,7 +56,7 @@ public class Item extends AdventureGameObject {
     @Override
     public List<Interaction> possibleInteractions(final MeshNode meshNode, final Player player) {
         if (!player.inventory().isFull()) {
-            return Collections.singletonList(new Interaction(Interaction.InteractionType.PickUp, this, meshNode));
+            return Collections.singletonList(new Interaction(InteractionType.PickUp, this, meshNode));
         } else {
             return Collections.emptyList();
         }

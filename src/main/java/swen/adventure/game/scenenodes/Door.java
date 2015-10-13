@@ -10,6 +10,7 @@ import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.SceneNode;
 import swen.adventure.engine.scenegraph.TransformNode;
 import swen.adventure.game.Interaction;
+import swen.adventure.game.InteractionType;
 
 import java.util.*;
 
@@ -81,7 +82,7 @@ public class Door extends AdventureGameObject {
         boolean canInteract = (!_requiresKey || _playersThatCanOpenDoor.contains(player));
 
         if (canInteract) {
-            return Collections.singletonList(new Interaction(_isOpen ? Interaction.InteractionType.Close : Interaction.InteractionType.Open, this, meshNode));
+            return Collections.singletonList(new Interaction(_isOpen ? InteractionType.Close : InteractionType.Open, this, meshNode));
         } else {
             return Collections.emptyList();
         }

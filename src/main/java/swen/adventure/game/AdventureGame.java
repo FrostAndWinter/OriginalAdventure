@@ -50,7 +50,7 @@ public class AdventureGame implements Game {
 
     private Optional<MeshNode> _meshBeingLookedAt = Optional.empty();
 
-    private EnumMap<Interaction.InteractionType, Interaction> _possibleInteractionsForStep = new EnumMap<>(Interaction.InteractionType.class);
+    private EnumMap<InteractionType, Interaction> _possibleInteractionsForStep = new EnumMap<>(InteractionType.class);
     private EnumMap<Interaction.ActionType, Interaction> _interactionInProgressForActionType = new EnumMap<>(Interaction.ActionType.class);
 
     public AdventureGame(Client<EventBox> client) {
@@ -192,7 +192,7 @@ public class AdventureGame implements Game {
      */
     private void performInteractions(Interaction.ActionType actionType) {
         this.endInteractions(actionType);
-        List<Interaction.InteractionType> interactionTypes = Interaction.InteractionType.typesForActionType(actionType);
+        List<InteractionType> interactionTypes = InteractionType.typesForActionType(actionType);
 
         interactionTypes.stream()
                 .map(_possibleInteractionsForStep::get)
@@ -273,12 +273,12 @@ public class AdventureGame implements Game {
                 continue;
             }
 
-            if (event.eventName.equals("InteractionType")) {
+            if (event.eventName.equals("InteractionPerformed")) {
                 AdventureGameObject gameObject = (AdventureGameObject)_sceneGraph.nodeWithID(event.sourceId).get();
                 MeshNode meshNode = (MeshNode)_sceneGraph.nodeWithID(event.targetId).get();
                 Player player = (Player)_sceneGraph.nodeWithID(event.from).get();
 
-                Interaction interaction = new Interaction((Interaction.InteractionType)event.eventData.get("InteractionType"), gameObject, meshNode);
+                Interaction interaction = new Interaction((InteractionType)event.eventData.get("InteractionType"), gameObject, meshNode);
 
                 interaction.performInteractionWithPlayer(player);
                 continue;
