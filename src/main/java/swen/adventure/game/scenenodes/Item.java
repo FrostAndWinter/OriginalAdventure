@@ -15,7 +15,7 @@ import java.util.Optional;
  */
 public class Item extends AdventureGameObject {
 
-    public final Optional<String> description;
+    public Optional<String> description;
 
     private Optional<Container> _containingContainer = Optional.empty();
 
@@ -73,5 +73,9 @@ public class Item extends AdventureGameObject {
 
     public Optional<Container> containingContainer() {
         return _containingContainer;
+    }
+
+    public void setDescription(String description) {
+        this.description = Optional.of(description);
     }
 }

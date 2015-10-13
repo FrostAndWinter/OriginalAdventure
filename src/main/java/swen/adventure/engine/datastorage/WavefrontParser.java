@@ -19,6 +19,9 @@ import java.util.regex.Pattern;
  */
 public class WavefrontParser {
 
+    /**
+     * IndexData stores the index of the vertex and optionally stores the indices for the normal and the textureCoord.
+     */
     public class IndexData {
         public final int vertexIndex;
         public final Optional<Integer> normalIndex;
@@ -31,6 +34,7 @@ public class WavefrontParser {
         }
     }
 
+    // Patterns for identerfiying parts of the file
     private static final Pattern COMMENT_PAT = Pattern.compile("#.*");
     private static final Pattern GEOMETRIC_VERTEX_PAT = Pattern.compile("v");
     private static final Pattern TEXTURE_VERTEX_PAT = Pattern.compile("vt");
@@ -40,12 +44,12 @@ public class WavefrontParser {
     private static final Pattern MATERIAL_PAT = Pattern.compile("usemtl");
     private static final Pattern POLYGONAL_FACE_PAT = Pattern.compile("f");
     private static final Pattern POLYGONAL_FACE_VERTEX_PATTERN = Pattern.compile("\\d+(/(\\d+)?)*");
-   // private static final Pattern POLYGONAL_FACE_PAT = Pattern.compile("f\\s+(\\d+(/(\\d+)?(/\\d+)?)?\\s*){3,}");
-
     private static final Pattern FORWARD_SLASH_PATTERN = Pattern.compile("/");
 
+    // scanner which will wrap the input
     private final Scanner scanner;
 
+    // parsed items
     private final List<Vector> geometricVertices = new ArrayList<>();
     private final List<Vector3> textureVertices = new ArrayList<>();
     private final List<Vector3> vertexNormals = new ArrayList<>();
@@ -55,30 +59,53 @@ public class WavefrontParser {
     private Material _currentMaterial = Material.DefaultMaterial;
     private String _directory = null;
 
+    /**
+     * Parse the given wavefront file.
+     *
+     * @param file - location of a the wavefront input file
+     * @param directory - directory of the material
+     * @return a result object holding the parsed results
+     * @throws FileNotFoundException thrown if the file doesn't exist
+     */
     public static Result parse(File file, String directory) throws FileNotFoundException {
         InputStream is = new FileInputStream(file);
         return parse(is, directory);
     }
 
-    public static Result parse(String obj) {
-        InputStream is = new ByteArrayInputStream(obj.getBytes(StandardCharsets.UTF_8));
+    /**
+     * Parse the given wavefront text.
+     *
+     * @param input - wavefront input text
+     * @return a result object holding the parsed results
+     */
+    public static Result parse(String input) {
+        InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         return parse(is, null);
     }
 
+    /**
+     * Parse wavefront text from the given input stream
+     *
+     * @param is - wavefront input stream
+     * @return a result object holding the parsed results
+     */
     private static Result parse(InputStream is, String directory) {
         WavefrontParser parser = new WavefrontParser(is, directory);
         return new Result(parser.geometricVertices, parser.textureVertices, parser.vertexNormals, parser.polygonFaces);
     }
 
+    /** Don't allow any outside classes to create instances. */
     private WavefrontParser(InputStream is, String directory) {
         this.scanner = new Scanner(is);
         _directory = directory;
         parse();
     }
 
+    /**
+     * Parse the given input.
+     */
     private void parse(){
         while (hasNext()){
-
             if (hasNext(GEOMETRIC_VERTEX_PAT)) {
                 parseGeometricVertex();
 
@@ -106,6 +133,9 @@ public class WavefrontParser {
         }
     }
 
+    /**
+     * Parse a series of float input into a into a geometric vertex.
+     */
     private void parseGeometricVertex() {
         ensuredGobble(GEOMETRIC_VERTEX_PAT, "Geometric vertices should start with a 'v'");
         float x = scanner.nextFloat();
@@ -115,6 +145,9 @@ public class WavefrontParser {
         geometricVertices.add(w == 1.f ? new Vector3(x, y, z) : new Vector4(x, y, z, w));
     }
 
+    /**
+     * Parse a series of float values into a texture vertex.
+     */
     private void parseTextureVertex() {
         ensuredGobble(TEXTURE_VERTEX_PAT, "Texture vertices should start with a 'vt'");
         float u = scanner.nextFloat();
@@ -123,6 +156,9 @@ public class WavefrontParser {
         textureVertices.add(new Vector3(u, v, w));
     }
 
+    /**
+     * Parse a series of float values into a normal vertex.
+     */
     private void parseVertexNormal() {
         ensuredGobble(VERTEX_NORMAL_PAT, "Vertex should start with a 'vn'");
         float x = scanner.nextFloat();
@@ -131,6 +167,9 @@ public class WavefrontParser {
         vertexNormals.add(new Vector3(x, y, z));
     }
 
+    /**
+     * This method hasn't been implemented as parameter space vertices aren't present in any of our models.
+     */
     private void parseParameterSpaceVertex() {
         throw new UnsupportedOperationException("Parameter space vertices haven't been implemented yet");
     }
@@ -233,6 +272,9 @@ public class WavefrontParser {
         }
     }
 
+    /**
+     * Result wraps up the results of parsing a wavefront file.
+     */
     public static class Result {
         public final List<Vector> geometricVertices;
         public final List<Vector3> textureVertices;

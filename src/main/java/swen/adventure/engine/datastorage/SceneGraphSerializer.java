@@ -1,5 +1,6 @@
 package swen.adventure.engine.datastorage;
 
+import org.lwjgl.system.libffi.Closure;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -8,18 +9,19 @@ import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
-import swen.adventure.game.scenenodes.FlickeringLight;
-import swen.adventure.game.scenenodes.Player;
+import swen.adventure.game.scenenodes.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 /**
  * Created by Liam O'Neill, Student ID 300312734, on 04/10/15.
+ *
+ * The SceneGraphSerializer can take a SceneGraph describing a scene graph and generate an internal memory representation of that graph.
+ * These files are generally used to describe the level, but can also describe the saved state.
  */
 public class SceneGraphSerializer {
-
-    private static final ParserManager PARSER_MANAGER = new ParserManager();
 
     private final Document document = Utilities.createDocument();
 
@@ -38,14 +40,14 @@ public class SceneGraphSerializer {
         new SceneGraphSerializer().start(root, outputStream);
     }
 
+    /** Don't allow outside classes to create instances */
     private SceneGraphSerializer(){
     }
 
-    public void start(SceneNode root, OutputStream outputStream) {
+    private void start(SceneNode root, OutputStream outputStream) {
         serializeSceneNode(root, document);
         Utilities.writeOutDocument(document, outputStream, true);
     }
-
 
     private void serializeSceneNode(SceneNode sceneNode, Node xmlParentNode) {
         Node serializedNode;
@@ -77,11 +79,60 @@ public class SceneGraphSerializer {
         else if (sceneNode instanceof Player)
             serializedNode = serializePlayerNode((Player) sceneNode, xmlParentNode);
 
+        else if (sceneNode instanceof Lever)
+            serializedNode = serializeLeverNode((Lever) sceneNode, xmlParentNode);
+
+        else if (isInstanceOf(sceneNode, Container.class))
+            serializedNode = serializeContainerNode((Container) sceneNode, xmlParentNode);
+
+        else if (isInstanceOf(sceneNode, Item.class))
+            serializedNode = serializeItemNode((Item) sceneNode, xmlParentNode);
+
+        else if (isInstanceOf(sceneNode, Inventory.class))
+            serializedNode = serializedInventoryNode((Inventory) sceneNode, xmlParentNode);
+
         else
             throw new RuntimeException("Don't recognise node " + sceneNode);
 
         sceneNode.children()
                 .forEach(node -> serializeSceneNode(node, serializedNode));
+    }
+
+    private Node serializedInventoryNode(Inventory sceneNode, Node xmlParentNode) {
+        Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
+        setAttribute("selectedSlot", sceneNode.selectedSlot(), Integer.class, xmlElement);
+        return xmlElement;
+    }
+
+    private Node serializeContainerNode(Container containerNode, Node xmlParentNode) {
+        Element xmlElement = createElementForNode(containerNode, xmlParentNode);
+        setAttribute("capacity", containerNode.capacity(), Integer.class, xmlElement);
+        setAttribute("showTopItem", containerNode.getShowTopItem(), Boolean.class, xmlElement);
+        return xmlElement;
+    }
+
+    private Node serializeItemNode(Item itemNode, Node xmlParentNode) {
+        Element xmlElement = createElementForNode(itemNode, xmlParentNode);
+
+        itemNode.containingContainer()
+                .map(container -> container.id)
+                .ifPresent(id -> setAttribute("inContainer", id, xmlElement)
+        );
+
+        itemNode.description
+                .ifPresent(description -> setAttribute("description", description, xmlElement));
+
+        return xmlElement;
+    }
+
+    private boolean isInstanceOf(Object obj, Class<?> class0) {
+        return obj.getClass() == class0;
+    }
+
+    private Node serializeLeverNode(Lever leverNode, Node xmlParentNode) {
+        Element xmlElement = createElementForNode(leverNode, xmlParentNode);
+        setAttribute("isDown", leverNode.isDown(), Boolean.class, xmlElement);
+        return xmlElement;
     }
 
     private boolean isRoot(SceneNode sceneNode) {
@@ -123,14 +174,7 @@ public class SceneGraphSerializer {
         setAttribute("directory", meshNode.getDirectory(), xmlElement);
         setAttribute("textureRepeat", meshNode.getTextureRepeat(), Vector3.class, xmlElement);
         setAttribute("isCollidable", meshNode.isCollidable(), Boolean.class, xmlElement);
-
-
         return xmlElement;
-    }
-
-    private Node serializeGameObjectNode(GameObject gameObject, Node xmlParentNode) {
-        // TODO serializeToStream different game objects
-        return createElementForNode(gameObject, xmlParentNode);
     }
 
     private Node serializeAmbientLightNode(Light lightNode, Node xmlParentNode) {
@@ -180,7 +224,7 @@ public class SceneGraphSerializer {
     }
 
     private <T> String parseToString(T object, Class<T> class0) {
-        return PARSER_MANAGER.getToStringFunction(class0).apply(object);
+        return ParserManager.getToStringFunction(class0).apply(object);
     }
 
     private void setAttribute(String name, String value, Element xmlElement) {

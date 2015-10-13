@@ -58,12 +58,6 @@ public class InventoryTests {
         inventory.selectSlot(-1);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void canGetPlayer() {
-        Inventory inventory = new Inventory(player);
-        assertEquals(player, inventory.player());
-    }
-
     @Test
     public void selectingSlotUpdatesSelectedSlot() {
         Inventory inventory = new Inventory(player);
@@ -72,7 +66,6 @@ public class InventoryTests {
         inventory.selectSlot(1);
         assertEquals(1, inventory.selectedSlot());
     }
-
 
     private Item createMockItem() {
         Item testItem = mock(Item.class);
