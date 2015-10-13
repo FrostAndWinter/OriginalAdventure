@@ -96,16 +96,25 @@ public class FlickeringLight extends AdventureGameObject {
         return material;
     }
 
+    /**
+     * @param intensity intensity of the light
+     */
     public void setIntensity(float intensity) {
         _baseIntensity = intensity;
         this.setIntensityVariation(_intensityVariation);
     }
 
+    /**
+     * @param colour color of the light as a vector
+     */
     public void setColour(final Vector3 colour) {
         this.light().ifPresent(light -> light.setColour(colour));
         this.setMaterialColour(_lightMaterial, colour, _lightIntensity.value());
     }
 
+    /**
+     * @param intensityVariation how much the intensity should change (i.e. flicker)
+     */
     public void setIntensityVariation(float intensityVariation) {
         _intensityVariation = intensityVariation;
         float lowIntensity = _baseIntensity - intensityVariation/2.f;
@@ -116,6 +125,9 @@ public class FlickeringLight extends AdventureGameObject {
         new Animation(_lightIntensity, highIntensity);
     }
 
+    /**
+     * @param isOn true if the light should be set to on
+     */
     public void setOn(boolean isOn) {
         _isOn = isOn;
         if (isOn) {
