@@ -40,6 +40,16 @@ public class EventBox {
     private final static String END_LINE = ":";
     private final static String SEPARATORS = "!";
 
+
+    public EventBox(String eventName, SceneNode source, SceneNode target, SceneNode from, Map<String, Object> eventData) {
+        this.eventName = eventName;
+        this.sourceId = source.id;
+        this.targetId = target.id;
+        this.from = from.id;
+        this.eventData = eventData;
+    }
+
+
     public EventBox(String eventName, String sourceId, String targetId, String from, Map<String, Object> eventData) {
         this.eventName = eventName;
         this.sourceId = sourceId;
