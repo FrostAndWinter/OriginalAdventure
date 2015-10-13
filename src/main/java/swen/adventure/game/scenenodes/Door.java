@@ -13,22 +13,30 @@ import swen.adventure.game.Interaction;
 
 import java.util.*;
 
-
+/**
+ * A door that can be opened and closed. Amazing.
+ *
+ * It can also require a key to be opened, at this stage there is no link between doors and keys. This can be setup
+ * with event connections though by allowing a player open the door when they have picked up a key.
+ *
+ * Joseph Bennett, 300319773
+ */
 public class Door extends AdventureGameObject {
+    private static final float DoorAnimationDuration = 1.2f;
 
     private boolean _isOpen = false;
     private boolean _requiresKey = false;
-
-    private static final float DoorAnimationDuration = 1.2f;
 
     private AnimableProperty _doorOpenPercentage = new AnimableProperty(0.f);
 
     private Set<Player> _playersThatCanOpenDoor = new HashSet<>();
 
+    // DO NOT REMOVE. This action is unused within the Java code base but is still used in the event connections.
     public static final Action<Item, Player, Door> actionAllowPlayerToOpenDoor = (item, player, door, data) -> {
         door._playersThatCanOpenDoor.add(player);
     };
 
+    // DO NOT REMOVE. This action is unused within the Java code base but is still used in the event connections.
     public static final Action<Item, Player, Door> actionDisallowPlayerFromOpeningDoor = (item, player, door, data) -> {
         door._playersThatCanOpenDoor.remove(player);
     };
@@ -54,21 +62,7 @@ public class Door extends AdventureGameObject {
     }
 
     /**
-     * Toggles wether the door is open
-     * or closed
-     */
-    public void toggle() {
-
-        if (_isOpen) {
-            close();
-        } else {
-            open();
-        }
-    }
-
-    /**
-     * Sets the door to open and starts the
-     * animation
+     * Sets the door to open and starts the animation
      */
     public void open() {
         _isOpen = true;
@@ -76,8 +70,7 @@ public class Door extends AdventureGameObject {
     }
 
     /**
-     * Sets the door to be closed and starts
-     * the animation
+     * Sets the door to be closed and starts the animation
      */
     public void close() {
         _isOpen = false;
@@ -85,7 +78,9 @@ public class Door extends AdventureGameObject {
     }
 
     /**
-     * @param requiresKey true if the door requires a key to be opened
+     * Set whether or not this door needs a key to be opened
+     *
+     * @param requiresKey true if the door requires a key to be opened, false otherwise.
      */
     public void setRequiresKey(boolean requiresKey) {
         _requiresKey = requiresKey;
@@ -93,10 +88,20 @@ public class Door extends AdventureGameObject {
 
     @Override
     public List<Interaction> possibleInteractions(final MeshNode meshNode, final Player player) {
+
+        // a player can interact with the door if it doesn't require a key or that player has permission to open it.
         boolean canInteract = (!_requiresKey || _playersThatCanOpenDoor.contains(player));
 
         if (canInteract) {
-            return Collections.singletonList(new Interaction(_isOpen ? Interaction.InteractionType.Close : Interaction.InteractionType.Open, this, meshNode));
+            Interaction.InteractionType interactionType;
+
+            if (_isOpen) {
+                interactionType = Interaction.InteractionType.Close;
+            } else {
+                interactionType = Interaction.InteractionType.Open;
+            }
+
+            return Collections.singletonList(new Interaction(interactionType, this, meshNode));
         } else {
             return Collections.emptyList();
         }
@@ -115,7 +120,9 @@ public class Door extends AdventureGameObject {
     }
 
     /**
-     * @param isOpen true to set the door as open
+     * Set whether this door is open or closed.
+     *
+     * @param isOpen true to set the door as open, false to set door as closed
      */
     public void setIsOpen(boolean isOpen) {
         _isOpen = isOpen;
