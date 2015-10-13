@@ -42,7 +42,7 @@ float ComputeAngleNormalHalf(in PerLightData lightData, in vec3 cameraSpacePosit
     return angleNormalHalf;
 }
 
-vec3 ComputeLighting(in PerLightData lightData, in vec3 cameraSpacePosition, in vec3 surfaceNormal, in vec4 diffuse, in vec4 specular) {
+vec3 ComputeLighting(in PerLightData lightData, in vec3 cameraSpacePosition, in vec3 surfaceNormal, in vec3 diffuse, in vec4 specular) {
     vec3 lightIntensity;
     float cosAngIncidence;
 
@@ -54,7 +54,7 @@ vec3 ComputeLighting(in PerLightData lightData, in vec3 cameraSpacePosition, in 
 
     gaussianTerm = cosAngIncidence != 0.0f ? gaussianTerm : 0.0;
 
-    vec3 lighting = diffuse.rgb * lightIntensity * cosAngIncidence;
+    vec3 lighting = diffuse * lightIntensity * cosAngIncidence;
     lighting += specular.rgb * lightIntensity * gaussianTerm;
 
     return lighting;
@@ -70,17 +70,13 @@ void main() {
     vec2 textureCoordinate = CalcTexCoord();
 	vec3 cameraSpacePosition = texture(cameraSpacePositionSampler, textureCoordinate).xyz;
 
-	vec4 diffuseColour = texture(diffuseColourSampler, textureCoordinate);
+	vec3 diffuseColour = texture(diffuseColourSampler, textureCoordinate).rgb;
 	vec4 specularColour = texture(specularColourSampler, textureCoordinate);
 	vec4 ambientColour = texture(ambientColourSampler, textureCoordinate);
 
 	vec3 surfaceNormal = texture(cameraSpaceNormalSampler, textureCoordinate).xyz;
 
-    if (diffuseColour.a < 0.001f) {
-        discard;
-    }
-
-    vec3 totalLighting = diffuseColour.rgb * lighting.ambientIntensity.rgb;
+    vec3 totalLighting = diffuseColour * lighting.ambientIntensity.rgb;
 
     if (ambientColour.a > 0.9f) { // ~= 1
          totalLighting += ambientColour.rgb;
@@ -90,6 +86,6 @@ void main() {
         totalLighting += ComputeLighting(lighting.lights[light], cameraSpacePosition, surfaceNormal, diffuseColour, specularColour);
     }
 
-    outputColor = vec4(totalLighting, diffuseColour.a);
+    outputColor = vec4(totalLighting, 1.f);
 
 }

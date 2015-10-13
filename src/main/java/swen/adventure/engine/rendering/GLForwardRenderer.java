@@ -17,6 +17,7 @@ import static org.lwjgl.opengl.GL32.*;
  * Created by Thomas Roughton, Student ID 300313924, on 19/09/15.
  *
  * GLForwardRenderer provides mechanisms to render MeshNodes under lighting defined by a set of Lights and using a given camera matrix.
+ * It performs lighting and geometry in a single pass.
  */
 public class GLForwardRenderer implements GLRenderer {
 

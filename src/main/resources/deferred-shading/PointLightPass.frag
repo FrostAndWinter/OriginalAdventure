@@ -17,6 +17,8 @@ uniform sampler2D specularColourSampler;
 uniform sampler2D cameraSpacePositionSampler;
 uniform sampler2D cameraSpaceNormalSampler;
 
+uniform sampler2D depthSampler;
+
 uniform vec2 screenSizeUniform;
 
 float ComputeAttenuation(in vec3 objectPosition,
@@ -49,7 +51,7 @@ float ComputeAngleNormalHalf(in vec3 cameraSpacePosition, in vec3 surfaceNormal,
     return angleNormalHalf;
 }
 
-vec3 ComputeLighting(in vec3 cameraSpacePosition, in vec3 surfaceNormal, in vec4 diffuse, in vec4 specular) {
+vec3 ComputeLighting(in vec3 cameraSpacePosition, in vec3 surfaceNormal, in vec3 diffuse, in vec4 specular) {
 
     vec3 lightIntensity;
     float cosAngIncidence;
@@ -62,8 +64,8 @@ vec3 ComputeLighting(in vec3 cameraSpacePosition, in vec3 surfaceNormal, in vec4
 
     gaussianTerm = cosAngIncidence != 0.0f ? gaussianTerm : 0.0;
 
-    vec3 lighting = diffuse.rgb * lightIntensity * cosAngIncidence;
-    lighting += specular.rgb * lightIntensity * gaussianTerm;
+    vec3 lighting = diffuse * lightIntensity * cosAngIncidence;
+    lighting = specular.rgb * lightIntensity * gaussianTerm;
 
     return lighting;
 }
@@ -78,17 +80,13 @@ void main() {
     vec2 textureCoordinate = CalcTexCoord();
 	vec3 cameraSpacePosition = texture(cameraSpacePositionSampler, textureCoordinate).xyz;
 
-	vec4 diffuseColour = texture(diffuseColourSampler, textureCoordinate);
+	vec3 diffuseColour = texture(diffuseColourSampler, textureCoordinate).rgb;
 	vec4 specularColour = texture(specularColourSampler, textureCoordinate);
 
 	vec3 surfaceNormal = texture(cameraSpaceNormalSampler, textureCoordinate).xyz;
 
-    if (diffuseColour.a < 0.001f) {
-        discard;
-    }
-
     vec3 totalLighting = ComputeLighting(cameraSpacePosition, surfaceNormal, diffuseColour, specularColour);
 
-    outputColor = vec4(totalLighting, diffuseColour.a);
+    outputColor = vec4(totalLighting, 1.f);
 
 }
