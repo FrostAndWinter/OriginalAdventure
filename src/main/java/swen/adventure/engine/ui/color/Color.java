@@ -9,6 +9,13 @@ public class Color {
     private float b;
     private float a;
 
+    /**
+     * Stores information about a color
+     * @param r red component of the color
+     * @param g green component of the color
+     * @param b blue component of the color
+     * @param a alpha component of the color
+     */
     public Color(float r, float g, float b, float a) {
         this.r = r;
         this.g = g;

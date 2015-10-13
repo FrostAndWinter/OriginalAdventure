@@ -11,8 +11,6 @@ public class ProgressBar extends UIComponent {
     private int maxValue;
     private int count;
 
-    private PFont font;
-
     public ProgressBar(int maxValue, int startingVal, int x, int y) {
         super(x, y, 200, 25);
 
@@ -20,6 +18,11 @@ public class ProgressBar extends UIComponent {
         this.maxValue = maxValue;
     }
 
+    /**
+     * Update the progress of the progress bar
+     * @param delta ammount to update the progress bar
+     * @return the new value of the progress bar
+     */
     public int changeProgress(int delta) {
 
         if (count + delta < maxValue) {

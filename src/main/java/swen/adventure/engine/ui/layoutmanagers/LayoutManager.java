@@ -24,10 +24,16 @@ public abstract class LayoutManager {
         padding = DEFAULT_PADDING;
     }
 
+    /**
+     * @return the width of the layout including padding
+     */
     public int getWidth() {
         return width + padding;
     }
 
+    /**
+     * @return the height of the layout including padding
+     */
     public int getHeight() {
         return height + padding;
     }

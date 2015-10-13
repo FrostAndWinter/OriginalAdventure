@@ -44,6 +44,11 @@ public class InventoryComponent extends UIComponent {
 
     private final List<Interaction> _interactionsForStep = new ArrayList<>();
 
+    /**
+     * @param inventory player inventory asociated with this component
+     * @param x x position of the component
+     * @param y y position of the component
+     */
     public InventoryComponent(Inventory inventory, int x, int y) {
         super(x, y, inventory.capacity() * BOX_SIZE, BOX_SIZE);
 
@@ -52,14 +57,26 @@ public class InventoryComponent extends UIComponent {
         boxSize = BOX_SIZE;
     }
 
+    /**
+     * Sets the size of each of the inventory boxes
+     * @param boxSize size to set it to
+     */
     public void setBoxSize(int boxSize) {
         this.boxSize = boxSize;
     }
 
+    /**
+     *
+     * @return true if we are zooming in on the selected item
+     */
     public boolean selectedItemIsZoomed() {
         return _selectedItemIsZoomed;
     }
 
+    /**
+     * Sets wether we are zooming in on the selected item
+     * @param zoomSelectedItem true if we want to zoom on the selected item
+     */
     public void setSelectedItemZoomed(boolean zoomSelectedItem) {
         if (_inventory.selectedSlot() >= _inventory.itemCount()) {
             return;
@@ -121,12 +138,14 @@ public class InventoryComponent extends UIComponent {
     }
 
     /**
-     *
-     * @param renderer
-     * @param scaleX
-     * @param scaleY
-     * @param width
-     * @param height
+     * Draws the 3D object associated with the items stored in the inventory
+     * @param renderer renderer to draw the meshes to
+     * @param scaleX scale of the x axis
+     * @param scaleY scale of the y axis
+     * @param dx shift in the x axis
+     * @param dy shift in the y axis
+     * @param width width of the window
+     * @param height height of the window
      */
     public void drawItems(GLRenderer renderer, float scaleX, float scaleY, float dx, float dy, float width, float height) {
 
