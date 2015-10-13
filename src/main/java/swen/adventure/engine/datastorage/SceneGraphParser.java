@@ -590,8 +590,10 @@ public class SceneGraphParser {
      * @return optional of the value of the converted attribute
      */
     private static <T> Optional<T> getOptionalAttribute(String name, Node node, Class<T> class0) {
-        return getOptionalAttribute(name, node)
-                .map(ParserManager.getFromStringFunction(class0));
+        Function<T, Optional<T>> toOptional = Optional::of;
+        Function<String, T> fromString = ParserManager.getFromStringFunction(class0);
+        Function<String, Optional<T>> convert =  toOptional.compose(fromString);
+        return getAttribute(name, node, convert, Optional.empty());
     }
 
     /**
