@@ -6,9 +6,10 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL21.*;
 import static org.lwjgl.opengl.GL13.*;
+import static org.lwjgl.opengl.GL14.*;
 import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL21.*;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL31.*;
 
@@ -35,7 +36,7 @@ class GBuffer {
             case PositionUnit:
                 return GL_RGB16F;
             case VertexNormalUnit:
-                return GL_RGB16F;
+                return GL_R11F_G11F_B10F; //This is a positive-only format, so we need to modify the values in the shader.
         }
 
         throw new RuntimeException(textureUnit + " is not supported as a GBuffer format.");
@@ -70,11 +71,16 @@ class GBuffer {
         // depth
         glBindTexture(GL_TEXTURE_2D, _depthTexture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH32F_STENCIL8, pixelWidth, pixelHeight, 0, GL_DEPTH_STENCIL, GL_FLOAT_32_UNSIGNED_INT_24_8_REV, (ByteBuffer)null);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, _depthTexture, 0);
 
         // final
         glBindTexture(GL_TEXTURE_2D, _finalTexture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8_ALPHA8, pixelWidth, pixelHeight, 0, GL_RGBA, GL_FLOAT, (ByteBuffer)null);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
         glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, _finalTexture, 0);
 
         _finalBufferAttachment = GL_COLOR_ATTACHMENT0 + i;
@@ -121,6 +127,9 @@ class GBuffer {
             glBindTexture(GL_TEXTURE_2D, _glTextures[i]);
             i++;
         }
+
+        glActiveTexture(GL_TEXTURE0 + TextureUnit.DepthTextureUnit.glUnit);
+        glBindTexture(GL_TEXTURE_2D, _depthTexture);
 
         glActiveTexture(GL_TEXTURE0 + TextureUnit.FinalUnit.glUnit);
         glBindTexture(GL_TEXTURE_2D, _finalTexture);

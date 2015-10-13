@@ -72,11 +72,14 @@ void main()
 
 	cameraSpacePositionOut = cameraSpacePosition;
 
+    vec3 cameraSpaceNormal;
     if (useNormalMap()) {
-        vertexNormalOut = normalize(tangentToCameraSpaceMatrix * (texture(normalMapSampler, textureCoordinate).rgb*2.0 - 1.0));
+        cameraSpaceNormal = normalize(tangentToCameraSpaceMatrix * (texture(normalMapSampler, textureCoordinate).rgb*2.0 - 1.0));
     } else {
-        vertexNormalOut = normalize(vertexNormal);
+        cameraSpaceNormal = normalize(vertexNormal);
     }
+
+    vertexNormalOut = cameraSpaceNormal + 1;
 
     diffuseColourOut = diffuseColour.rgb;
 

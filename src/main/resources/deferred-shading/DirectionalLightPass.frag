@@ -74,7 +74,7 @@ void main() {
 	vec4 specularColour = texture(specularColourSampler, textureCoordinate);
 	vec4 ambientColour = texture(ambientColourSampler, textureCoordinate);
 
-	vec3 surfaceNormal = texture(cameraSpaceNormalSampler, textureCoordinate).xyz;
+	vec3 surfaceNormal = texture(cameraSpaceNormalSampler, textureCoordinate).xyz - 1;
 
     vec3 totalLighting = diffuseColour * lighting.ambientIntensity.rgb;
 

@@ -10,6 +10,7 @@ uniform PointLight {
     vec4 intensity;
 } light;
 
+in vec3 eyeDirection;
 
 uniform sampler2D diffuseColourSampler;
 uniform sampler2D specularColourSampler;
@@ -65,7 +66,7 @@ vec3 ComputeLighting(in vec3 cameraSpacePosition, in vec3 surfaceNormal, in vec3
     gaussianTerm = cosAngIncidence != 0.0f ? gaussianTerm : 0.0;
 
     vec3 lighting = diffuse * lightIntensity * cosAngIncidence;
-    lighting = specular.rgb * lightIntensity * gaussianTerm;
+    lighting += specular.rgb * lightIntensity * gaussianTerm;
 
     return lighting;
 }
@@ -83,7 +84,7 @@ void main() {
 	vec3 diffuseColour = texture(diffuseColourSampler, textureCoordinate).rgb;
 	vec4 specularColour = texture(specularColourSampler, textureCoordinate);
 
-	vec3 surfaceNormal = texture(cameraSpaceNormalSampler, textureCoordinate).xyz;
+	vec3 surfaceNormal = texture(cameraSpaceNormalSampler, textureCoordinate).xyz - 1;
 
     vec3 totalLighting = ComputeLighting(cameraSpacePosition, surfaceNormal, diffuseColour, specularColour);
 
