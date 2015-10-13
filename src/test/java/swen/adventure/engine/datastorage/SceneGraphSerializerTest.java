@@ -38,7 +38,7 @@ public class SceneGraphSerializerTest {
         new Container("container1", root, 45);
         assertXmlEqual(
                 "<root>\n" +
-                "<Container capacity=\"45\" id=\"container1\"/>\n" +
+                "<Container capacity=\"45\" id=\"container1\" showTopItem=\"false\"/>\n" +
                 "</root>",
                 root);
     }

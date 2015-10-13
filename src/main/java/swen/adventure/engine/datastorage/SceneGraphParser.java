@@ -122,16 +122,14 @@ public class SceneGraphParser {
     private static Inventory parseInventory(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode);
         int selectedSlot = getAttribute("selectedSlot", xmlNode, Integer.class);
-        boolean showTopItem = getAttribute("showTopItem", xmlNode, Boolean.class);
         Inventory inventory = new Inventory(id, parent);
         inventory.selectSlot(selectedSlot);
-        inventory.setShowTopItem(showTopItem);
         return inventory;
     }
 
     private static SceneNode parseLever(Node xmlNode, TransformNode parent) {
         Lever lever = parseGameObject(xmlNode, parent, Lever.class);
-        boolean isDown = getAttribute("isDown", xmlNode, Boolean.class);
+        boolean isDown = getAttribute("isDown", xmlNode, Boolean.class, false);
         lever.setIsDown(isDown);
         return lever;
     }
