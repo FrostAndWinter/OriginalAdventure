@@ -8,5 +8,6 @@ uniform mat4 cameraToClipMatrixUniform;
 void main() {
 
     vec4 cameraPos = modelToCameraMatrixUniform * position;
-	gl_Position = cameraToClipMatrixUniform * cameraPos;
+	vec4 clipPos = cameraToClipMatrixUniform * cameraPos;
+    gl_Position = clipPos;
 }

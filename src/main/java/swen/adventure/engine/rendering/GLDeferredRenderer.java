@@ -27,6 +27,11 @@ import static org.lwjgl.opengl.GL32.GL_DEPTH_CLAMP;
  */
 public class GLDeferredRenderer implements GLRenderer {
 
+    private static final float CameraNear = 1.f;
+    private static final float CameraFar = 10000.f;
+    private static final float DepthRangeNear = 0.f;
+    private static final float DepthRangeFar = 1.f;
+
     private GeometryPassShader _geometryPassShader;
     private PointLightPassShader _pointLightPassShader;
     private DirectionalLightPassShader _directionalLightPassShader;
@@ -47,11 +52,9 @@ public class GLDeferredRenderer implements GLRenderer {
     }
 
     private Matrix4 perspectiveMatrix(int width, int height, float fieldOfView) {;
-        float cameraNear = 1.f;
-        float cameraFar = 10000.f;
         float cameraAspect = width / (float) height;
 
-        return Matrix4.makePerspective(fieldOfView, cameraAspect, cameraNear, cameraFar);
+        return Matrix4.makePerspective(fieldOfView, cameraAspect, CameraNear, CameraFar);
     }
 
     @Override
@@ -152,7 +155,7 @@ public class GLDeferredRenderer implements GLRenderer {
         glEnable(GL_DEPTH_TEST);
         glDepthMask(true);
         glDepthFunc(GL_LEQUAL);
-        glDepthRange(0.0f, 1.0f);
+        glDepthRange(DepthRangeNear, DepthRangeFar);
         glEnable(GL_DEPTH_CLAMP);
 
         glClear(GL_DEPTH_BUFFER_BIT);
@@ -271,11 +274,15 @@ public class GLDeferredRenderer implements GLRenderer {
         glEnable(GL_CULL_FACE);
         glCullFace(GL_FRONT);
 
+        _pointLightPassShader.setPointLightData(light.pointLightDataBuffer(lightToCameraMatrix, hdrMaxIntensity));
+        _pointLightPassShader.setModelToCameraMatrix(lightToCameraMatrix);
         _pointLightPassShader.setCameraToClipMatrix(projectionMatrix);
 
-        _pointLightPassShader.setPointLightData(light.pointLightDataBuffer(lightToCameraMatrix, hdrMaxIntensity));
+        _pointLightPassShader.setDepthRange(DepthRangeNear, DepthRangeFar);
 
-        _pointLightPassShader.setModelToCameraMatrix(lightToCameraMatrix);
+        float cameraAspect = _width / (float) _height;
+        float tanHalfFov = 1.f/(projectionMatrix.m[0] * cameraAspect);
+        _pointLightPassShader.setHalfSizeNearPlane(CameraNear, cameraAspect, tanHalfFov);
 
         sphereMesh.render();
 
