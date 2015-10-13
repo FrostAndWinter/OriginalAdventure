@@ -6,11 +6,17 @@ import java.util.Optional;
 /**
  * Created by David Barnett, Student ID 3003123764, on 20/09/15.
  */
+
+/**
+ * Interface that describes how to interact with the client
+ *
+ * @param <M> The message type to be sent.
+ */
 public interface Client<M> {
 
 
     /**
-     * Connects to given server at host & port
+     * Connects to given server at host and port
      *
      * @param host a string IP address or hostname
      * @param port port on the server to connect to
@@ -29,7 +35,7 @@ public interface Client<M> {
      * @return The value is present when the server has messages queued from the clients to be processed. Otherwise
      * empty.
      */
-    Optional<M> poll(); // FIXME: replace String with an encapsulated data-type
+    Optional<M> poll();
 
     /**
      * Check if connected to a server
@@ -45,11 +51,4 @@ public interface Client<M> {
      * @return returns true if the message was successfully sent, otherwise false
      */
     boolean send(M message);
-
-    /**
-     * Get ping in milliseconds
-     *
-     * @return round trip to server & back
-     */
-    double getPing();
 }

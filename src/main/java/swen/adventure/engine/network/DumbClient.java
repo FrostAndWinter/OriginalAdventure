@@ -8,6 +8,11 @@ import java.util.Queue;
 /**
  * Created by David Barnett, Student ID 3003123764, on 05/10/15.
  */
+
+/**
+ * A simple implementation of the Client interface with no network connections
+ * and allows pushing items into the poll queue
+ */
 public class DumbClient implements Client<EventBox> {
 
     private Queue<EventBox> queue;
@@ -44,11 +49,11 @@ public class DumbClient implements Client<EventBox> {
         return false;
     }
 
-    @Override
-    public double getPing() {
-        return -1;
-    }
-
+    /**
+     * Add the event box to the poll queue
+     *
+     * @param box event to be added
+     */
     public void add(EventBox box) {
         queue.add(box);
     }
