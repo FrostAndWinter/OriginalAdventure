@@ -101,6 +101,25 @@ public class GameDelegate {
         if ( _window == NULL )
             throw new RuntimeException("Failed to create the GLFW _window");
 
+        // Get the resolution of the primary monitor
+        ByteBuffer vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        // Center our _window
+        glfwSetWindowPos(
+                _window,
+                (GLFWvidmode.width(vidmode) - _windowWidth) / 2,
+                (GLFWvidmode.height(vidmode) - _windowHeight) / 2
+        );
+
+        // Make the OpenGL context current
+        glfwMakeContextCurrent(_window);
+        // Enable v-sync
+        glfwSwapInterval(1);
+
+        // Make the _window visible
+        glfwShowWindow(_window);
+    }
+
+    private static void setupCallbacks() {
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
         glfwSetKeyCallback(_window, _keyCallback = new GLFWKeyCallback() {
             @Override
@@ -161,23 +180,6 @@ public class GameDelegate {
                 }
             }
         });
-
-        // Get the resolution of the primary monitor
-        ByteBuffer vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-        // Center our _window
-        glfwSetWindowPos(
-                _window,
-                (GLFWvidmode.width(vidmode) - _windowWidth) / 2,
-                (GLFWvidmode.height(vidmode) - _windowHeight) / 2
-        );
-
-        // Make the OpenGL context current
-        glfwMakeContextCurrent(_window);
-        // Enable v-sync
-        glfwSwapInterval(1);
-
-        // Make the _window visible
-        glfwShowWindow(_window);
     }
 
     public static void pollInput() {
@@ -208,6 +210,8 @@ public class GameDelegate {
         // creates the ContextCapabilities instance and makes the OpenGL
         // bindings available for use.
         GL.createCapabilities(true); // valid for latest build
+
+        GameDelegate.setupCallbacks();
 
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);

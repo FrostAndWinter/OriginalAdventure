@@ -167,6 +167,7 @@ public class Material {
     }
 
     /**
+     * @param hdrMaxIntensity The maximum light intensity in the scene, which the ambient colour is divided by.
      * @return This material's attributes, packed into a ByteBuffer.
      * The format is as follows:
      * struct Material {
@@ -188,13 +189,13 @@ public class Material {
      * boolean useSpecularityMap; //packed in an integer as 1 << 3
      * boolean useNormalMap; //packed in an integer as 1 << 4
      */
-    public ByteBuffer toBuffer() {
+    public ByteBuffer toBuffer(float hdrMaxIntensity) {
 
         if (_bufferRepresentation == null) {
             ByteBuffer buffer = BufferUtils.createByteBuffer(BufferSizeInBytes);
             FloatBuffer floatBuffer = buffer.asFloatBuffer();
 
-            floatBuffer.put(_ambientColour.v);
+            floatBuffer.put(_ambientColour.divideScalar(hdrMaxIntensity).v);
             floatBuffer.put(_useAmbient ? 1.f : 0.f);
 
             floatBuffer.put(_diffuseColour.v);

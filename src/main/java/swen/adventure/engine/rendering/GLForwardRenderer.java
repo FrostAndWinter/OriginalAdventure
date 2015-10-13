@@ -120,7 +120,7 @@ public class GLForwardRenderer implements GLRenderer {
             _defaultShader.setModelToCameraMatrix(nodeToCameraSpaceTransform);
             _defaultShader.setNormalModelToCameraMatrix(normalModelToCameraSpaceTransform);
 
-            node.render(_defaultShader);
+            node.render(_defaultShader, hdrMaxIntensity);
         });
 
 

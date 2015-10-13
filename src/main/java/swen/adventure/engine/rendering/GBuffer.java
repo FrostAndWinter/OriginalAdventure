@@ -101,8 +101,8 @@ class GBuffer {
             i++;
         }
 
-        glActiveTexture(GL_TEXTURE0 + TextureUnit.FinalUnit.glUnit);
-        glBindTexture(GL_TEXTURE_2D, _finalTexture);
+//        glActiveTexture(GL_TEXTURE0 + TextureUnit.FinalUnit.glUnit);
+//        glBindTexture(GL_TEXTURE_2D, _finalTexture);
     }
 
     public void bindForFinalPass() {

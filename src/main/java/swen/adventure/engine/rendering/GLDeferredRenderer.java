@@ -116,7 +116,7 @@ public class GLDeferredRenderer implements GLRenderer {
         this.preRender();
 
         _gBuffer.startFrame();
-        this.performGeometryPass(nodes, worldToCameraMatrix, projectionMatrix);
+        this.performGeometryPass(nodes, worldToCameraMatrix, projectionMatrix, hdrMaxIntensity);
 
         // We need stencil to be enabled in the stencil pass to get the stencil buffer
         // updated and we also need it in the light pass because we render the light
@@ -174,7 +174,7 @@ public class GLDeferredRenderer implements GLRenderer {
         glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
     }
 
-    private void performGeometryPass(List<MeshNode> nodes, Matrix4 worldToCameraMatrix, Matrix4 projectionMatrix) {
+    private void performGeometryPass(List<MeshNode> nodes, Matrix4 worldToCameraMatrix, Matrix4 projectionMatrix, float ambientMaxIntensity) {
         _geometryPassShader.useProgram();
 
         _gBuffer.bindForGeometryPass();
@@ -194,7 +194,7 @@ public class GLDeferredRenderer implements GLRenderer {
             _geometryPassShader.setModelToCameraMatrix(nodeToCameraSpaceTransform);
             _geometryPassShader.setNormalModelToCameraMatrix(normalModelToCameraSpaceTransform);
 
-            node.render(_geometryPassShader);
+            node.render(_geometryPassShader, ambientMaxIntensity);
         });
 
         _geometryPassShader.endUseProgram();

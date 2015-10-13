@@ -89,9 +89,10 @@ public abstract class GLMesh<T> {
         /**
          * Binds this command's material to the shader, and then renders the primitive.
          * @param shader The MaterialShader to set the material on.
+         * @param hdrMaxIntensity The maximum light intensity in the scene, beyond which values will be clipped.
          */
-        public void render(MaterialShader shader) {
-            shader.setMaterial(_material.toBuffer());
+        public void render(MaterialShader shader, float hdrMaxIntensity) {
+            shader.setMaterial(_material.toBuffer(hdrMaxIntensity));
             _material.bindTextures();
             Material.bindSamplers();
 
@@ -394,8 +395,9 @@ public abstract class GLMesh<T> {
     /**
      * Renders using each primitive's own material.
      * @param shader The shader on which to set the materials.
+     * @param hdrMaxIntensity The maximum light intensity in the scene, beyond which values will be clipped.
      */
-    public void render(MaterialShader shader) {
+    public void render(MaterialShader shader, float hdrMaxIntensity) {
         if (_vertexArrayObjectRef == 0) {
             return;
         }
@@ -403,7 +405,7 @@ public abstract class GLMesh<T> {
         glBindVertexArray(_vertexArrayObjectRef);
 
         for (RenderCommand primitive : _primitives) {
-            primitive.render(shader);
+            primitive.render(shader, hdrMaxIntensity);
         }
 
         glBindVertexArray(0);

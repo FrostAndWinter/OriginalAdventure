@@ -120,11 +120,12 @@ public final class MeshNode extends SceneNode {
     /**
      * Renders the mesh, applying its own materials to the shader. If a material override is set, then that override is used.
      * @param shader The Material Shader on which to set the materials.
+     * @param hdrMaxIntensity The maximum light intensity in the scene, beyond which values will be clipped.
      */
-    public void render(MaterialShader shader) {
+    public void render(MaterialShader shader, float hdrMaxIntensity) {
         shader.setTextureRepeat(_textureRepeat);
         _materialOverride.ifPresent(material -> {
-            shader.setMaterial(material.toBuffer());
+            shader.setMaterial(material.toBuffer(hdrMaxIntensity));
             material.bindTextures();
             Material.bindSamplers();
 
@@ -134,7 +135,7 @@ public final class MeshNode extends SceneNode {
             Material.unbindTextures();
         });
         if (!_materialOverride.isPresent()) {
-            _mesh.render(shader);
+            _mesh.render(shader, hdrMaxIntensity);
         }
     }
 
