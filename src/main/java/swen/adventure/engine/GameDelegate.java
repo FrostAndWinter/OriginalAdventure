@@ -28,6 +28,7 @@ public class GameDelegate {
     private static GLFWMouseButtonCallback _mouseButtonCallback;
     private static GLFWWindowSizeCallback _resizeCallback;
     private static GLFWFramebufferSizeCallback _framebufferSizeCallback;
+    private static GLFWWindowFocusCallback _windowFocusCallback;
 
     // The _window handle
     private static long _window;
@@ -56,19 +57,24 @@ public class GameDelegate {
     private static void run() {
         try {
             init();
-
             _timeLastUpdate = System.currentTimeMillis();
-
             loop();
-
-            // Release _window and _window callbacks
-            glfwDestroyWindow(_window);
-            _keyCallback.release();
         } finally {
-            // Terminate GLFW and release the GLFWerrorfun
+            cleanup();
+
             glfwTerminate();
             _errorCallback.release();
         }
+    }
+
+    private static void cleanup() {
+        // Release _window and all callbacks except the error callback
+        glfwDestroyWindow(_window);
+        _keyCallback.release();
+        _resizeCallback.release();
+        _mouseButtonCallback.release();
+        _framebufferSizeCallback.release();
+        _windowFocusCallback.release();
     }
 
     private static void init() {
@@ -180,6 +186,15 @@ public class GameDelegate {
                 }
             }
         });
+
+        glfwSetCallback(_window, _windowFocusCallback = new GLFWWindowFocusCallback() {
+            @Override
+            public void invoke(long window, int focused) {
+                if(focused == GL_FALSE) {
+                    unlockMouse();
+                }
+            }
+        });
     }
 
     public static void pollInput() {
@@ -240,20 +255,29 @@ public class GameDelegate {
             _timeLastUpdate = currentTime;
 
             glfwSwapBuffers(_window); // swap the color buffers
-
         }
 
         // run clean up after main loop
         _game.cleanup();
     }
+
+
+    private static void unlockMouse() {
+        glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        _mouseLocked = false;
+    }
+
+    private static void lockMouse() {
+        // hide mouse cursor and move cursor to centre of window
+        glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        glfwSetCursorPos(_window, _windowWidth / 2, _windowHeight / 2);
+
+        _mouseLocked = true;
+    }
+
     private static void handleMouseInput() {
-
         if (!_mouseLocked && glfwGetMouseButton(_window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
-            // hide mouse cursor and move cursor to centre of window
-            glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-            glfwSetCursorPos(_window, _windowWidth / 2, _windowHeight / 2);
-
-            _mouseLocked = true;
+            lockMouse();
         }
 
         if (_mouseLocked) {
