@@ -68,17 +68,6 @@ public class BundleObject implements BundleSerializable {
         storedValues.put(name, new BundleProperty(name, value, value.getClass()));
     }
 
-    /*private <T> Optional<T> getOptionalValue(String name, Class<T> class0) {
-        BundleProperty property = storedValues.get(name);
-        if(property == null)
-            return Optional.empty();
-
-        if(class0 != property.class0)
-            return Optional.empty();
-
-        return Optional.of(class0.cast(property.value));
-    }*/
-
     private <T> T getValue(String name, Class<T> class0) {
         BundleProperty property = storedValues.get(name);
         if(property == null)

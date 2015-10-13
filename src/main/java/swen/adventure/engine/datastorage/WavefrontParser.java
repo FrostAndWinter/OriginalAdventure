@@ -1,6 +1,5 @@
 package swen.adventure.engine.datastorage;
 
-import swen.adventure.engine.Utilities;
 import swen.adventure.engine.rendering.Material;
 import swen.adventure.engine.rendering.maths.Vector;
 import swen.adventure.engine.rendering.maths.Vector3;
@@ -34,7 +33,7 @@ public class WavefrontParser {
         }
     }
 
-    // Patterns for identerfiying parts of the file
+    // Patterns for identifying parts of the file
     private static final Pattern COMMENT_PAT = Pattern.compile("#.*");
     private static final Pattern GEOMETRIC_VERTEX_PAT = Pattern.compile("v");
     private static final Pattern TEXTURE_VERTEX_PAT = Pattern.compile("vt");
@@ -49,7 +48,7 @@ public class WavefrontParser {
     // scanner which will wrap the input
     private final Scanner scanner;
 
-    // parsed items
+    // these collections will store the parsed results of the input
     private final List<Vector> geometricVertices = new ArrayList<>();
     private final List<Vector3> textureVertices = new ArrayList<>();
     private final List<Vector3> vertexNormals = new ArrayList<>();
