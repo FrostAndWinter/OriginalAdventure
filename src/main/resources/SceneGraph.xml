@@ -19,15 +19,15 @@
     <!-- Room 1 starts here. Centred at origin, dimensions are 1200 x 1800. -->
     
     <TransformNode id="greenLightLeverTransform" translation="-600, 110, 90" rotation="0, 0, -0.7071067812, 0.7071067812" scale="0.5, 0.5, 0.5">
-        <Lever id="greenLightLever"/>
+        <Lever id="greenLightLever" isDown="false" />
     </TransformNode>
 
     <TransformNode id="redLightLeverTransform" translation="600, 110, -340" rotation="-0.7071067812, 0.7071067812, 0, 0" scale="0.5, 0.5, 0.5">
-        <Lever id="redLightLever"/>
+        <Lever id="redLightLever" isDown="false" />
     </TransformNode>
 
     <TransformNode id="blueLightLeverTransform" translation="-400, 110, 900" rotation="-0.5, 0.5, -0.5, 0.5" scale="0.5, 0.5, 0.5">
-        <Lever id="blueLightLever"/>
+        <Lever id="blueLightLever" isDown="false" />
     </TransformNode>
     
     <TransformNode id="chestTransform" translation="580, 0, -400" rotation="0, -0.7071067812, 0, 0.7071067812" scale="30, 30, 30">
