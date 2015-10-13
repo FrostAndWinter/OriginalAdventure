@@ -6,27 +6,28 @@
     <TransformNode id="ceilingPlaneTransform" translation="0, 280, 0" rotation="0.70710677, 0.0, 0.0, 0.70710677" scale="600, 900, 0.2">
         <MeshNode id="ceilingPlaneMesh" fileName="Plane.obj" materialFileName="StoneWall.mtl" materialName="StoneWall" textureRepeat="10, 10, 0.2"/>
     </TransformNode>
-    
-    <TransformNode id="playerTransform" translation="0, 60, 200" isDynamic="true">
-        <TransformNode id="cameraTransform" translation="0, 40, 0">
+
+    <TransformNode id="spawnPointTransform" translation="0, 60, 200" isDynamic="true">
+        <SpawnNode id="spawnPoint" />
+        <!--<TransformNode id="cameraTransform" translation="0, 40, 0">
             <Camera id="playerCamera"/>
         </TransformNode>
-        <Player id="player" boundingBox="-30, -60, -10, 30, 60, 10"/>
+        <Player id="player" boundingBox="-30, -60, -10, 30, 60, 10"/>-->
     </TransformNode>
     <AmbientLight id="ambientLight" colour="0.5, 0.5, 0.5" intensity="1.0"/>
 
     <!-- Room 1 starts here. Centred at origin, dimensions are 1200 x 1800. -->
     
     <TransformNode id="greenLightLeverTransform" translation="-600, 110, 90" rotation="0, 0, -0.7071067812, 0.7071067812" scale="0.5, 0.5, 0.5">
-        <Lever id="greenLightLever"/>
+        <Lever id="greenLightLever" isDown="false" />
     </TransformNode>
 
     <TransformNode id="redLightLeverTransform" translation="600, 110, -340" rotation="-0.7071067812, 0.7071067812, 0, 0" scale="0.5, 0.5, 0.5">
-        <Lever id="redLightLever"/>
+        <Lever id="redLightLever" isDown="false" />
     </TransformNode>
 
     <TransformNode id="blueLightLeverTransform" translation="-400, 110, 900" rotation="-0.5, 0.5, -0.5, 0.5" scale="0.5, 0.5, 0.5">
-        <Lever id="blueLightLever"/>
+        <Lever id="blueLightLever" isDown="false" />
     </TransformNode>
     
     <TransformNode id="chestTransform" translation="580, 0, -400" rotation="0, -0.7071067812, 0, 0.7071067812" scale="30, 30, 30">

@@ -11,7 +11,9 @@ import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.game.EventDataKeys;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by josephbennett on 19/09/15
@@ -31,21 +33,16 @@ public class Player extends AdventureGameObject {
 
     public static final Action<Player, Player, Player> actionMoveToLocation =
             (player, triggeringPlayer, ignored, data) -> {
-                TransformNode parent = triggeringPlayer.parent().get();
                 Vector3 location = (Vector3) data.get(EventDataKeys.Location);
-                if (!parent.translation().equals(location)) { //we don't need to recalculate the position if we haven't moved (i.e. if we're the client that triggered the translation.)
-                    parent.setTranslation(location);
-                }
+                player.move(location);
             };
 
-    public final Event<Player, Player> eventPlayerMoved = new Event<>("eventPlayerMoved", this);
+    public final Event<Player, Player> eventPlayerMoved = new Event<>("PlayerMoved", this);
 
     public Player(String id, TransformNode parent) {
         super(id, parent, id);
 
         this.setContainer(new Inventory(this));
-
-        this.eventPlayerMoved.addAction(this, actionMoveToLocation);
     }
 
     public void setCamera(CameraNode camera) {
@@ -72,18 +69,20 @@ public class Player extends AdventureGameObject {
 
         transformNode.translateBy(translation);
 
-        final boolean[] canMove = {true};
-        this.collisionNode().ifPresent(collisionNode -> {
-            this.allNodesOfType(CollisionNode.class).stream()
-                    .filter(otherCollisionNode ->
-                            collisionNode.isCollidingWith(otherCollisionNode))
-                    .forEach(otherCollisionNode -> {
-                transformNode.setTranslation(startingTranslation);
-                canMove[0] = false;
-            });
-        });
 
-        return canMove[0];
+        if (!this.collisionNode().isPresent())
+            return true;
+
+        CollisionNode selfCollisionNode = collisionNode().get();
+
+        boolean canMove = allNodesOfType(CollisionNode.class).stream()
+                .filter(otherCollisionNode -> selfCollisionNode != otherCollisionNode)
+                .noneMatch(selfCollisionNode::isCollidingWith);
+
+        if(!canMove)
+            transformNode.setTranslation(startingTranslation);
+
+        return canMove;
     }
 
     public Inventory inventory() {

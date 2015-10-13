@@ -82,4 +82,9 @@ public final class CollisionNode extends SceneNode {
     public void setBoundingBox(BoundingBox boundingBox) {
         _localSpaceBoundingBox = boundingBox;
     }
+
+    @Override
+    public String toString() {
+        return "CollisionNode{" + id + '}';
+    }
 }

@@ -4,6 +4,7 @@ import swen.adventure.engine.Event;
 import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.TransformNode;
 import swen.adventure.game.Interaction;
+import swen.adventure.game.InteractionType;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,8 +20,8 @@ public class Item extends AdventureGameObject {
 
     private Optional<Container> _containingContainer = Optional.empty();
 
-    public final Event<Item, Player> eventPlayerPickedUpItem = new Event<>("eventPlayerPickedUpItem", this);
-    public final Event<Item, Player> eventPlayerDroppedItem = new Event<>("eventPlayerDroppedItem", this);
+    public final Event<Item, Player> eventPlayerPickedUpItem = new Event<>("PlayerPickedUpItem", this);
+    public final Event<Item, Player> eventPlayerDroppedItem = new Event<>("PlayerDroppedItem", this);
 
     /**
      * An Item's parent transform must directly bring the item into
@@ -59,7 +60,7 @@ public class Item extends AdventureGameObject {
     @Override
     public List<Interaction> possibleInteractions(final MeshNode meshNode, final Player player) {
         if (!player.inventory().isFull()) {
-            return Collections.singletonList(new Interaction(Interaction.InteractionType.PickUp, this, meshNode));
+            return Collections.singletonList(new Interaction(InteractionType.PickUp, this, meshNode));
         } else {
             return Collections.emptyList();
         }

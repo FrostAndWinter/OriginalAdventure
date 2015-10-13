@@ -42,10 +42,11 @@ public class AdventureGameKeyInput extends KeyInput {
 
         }
 
-    public final Event<KeyInput, KeyInput> eventPrimaryAction = new Event<>("eventPrimaryAction", this);
-    public final Event<KeyInput, KeyInput> eventSecondaryAction = new Event<>("eventSecondaryAction", this);
-    public final Event<KeyInput, KeyInput> eventPrimaryActionEnded = new Event<>("eventPrimaryActionEnded", this);
-    public final Event<KeyInput, KeyInput> eventSecondaryActionEnded = new Event<>("eventSecondaryActionEnded", this);
+    public final Event<KeyInput, KeyInput> eventPrimaryAction = new Event<>("PrimaryAction", this);
+    public final Event<KeyInput, KeyInput> eventSecondaryAction = new Event<>("SecondaryAction", this);
+    public final Event<KeyInput, KeyInput> eventPrimaryActionEnded = new Event<>("PrimaryActionEnded", this);
+    public final Event<KeyInput, KeyInput> eventSecondaryActionEnded = new Event<>("SecondaryActionEnded", this);
+
 
     public final Event<KeyInput, KeyInput> eventSelectInventorySlot1 = new Event<>("eventSelectInventorySlot1", this);
     public final Event<KeyInput, KeyInput> eventSelectInventorySlot2 = new Event<>("eventSelectInventorySlot2", this);
@@ -55,14 +56,14 @@ public class AdventureGameKeyInput extends KeyInput {
 
     public final Event<KeyInput, KeyInput> eventHideShowInventory = new Event<>("eventHideShowInventory", this);
 
-    public final Event<KeyInput, KeyInput> eventHideShowControls = new Event<>("eventHideShowControls", this);
+    public final Event<KeyInput, KeyInput> eventHideShowControls = new Event<>("HideShowControls", this);
 
-    private final Event<KeyInput, KeyInput> eventMoveForwardKeyPressed = new Event<>("eventMoveForwardKeyPressed", this);
-    private final Event<KeyInput, KeyInput> eventMoveBackwardKeyPressed = new Event<>("eventMoveBackwardKeyPressed", this);
-    private final Event<KeyInput, KeyInput> eventMoveRightKeyPressed = new Event<>("eventMoveRightKeyPressed", this);
-    private final Event<KeyInput, KeyInput> eventMoveLeftKeyPressed = new Event<>("eventMoveLeftKeyPressed", this);
+    private final Event<KeyInput, KeyInput> eventMoveForwardKeyPressed = new Event<>("MoveForwardKeyPressed", this);
+    private final Event<KeyInput, KeyInput> eventMoveBackwardKeyPressed = new Event<>("MoveBackwardKeyPressed", this);
+    private final Event<KeyInput, KeyInput> eventMoveRightKeyPressed = new Event<>("MoveRightKeyPressed", this);
+    private final Event<KeyInput, KeyInput> eventMoveLeftKeyPressed = new Event<>("MoveLeftKeyPressed", this);
 
-    public final Event<KeyInput, KeyInput> eventMoveInDirection = new Event<>("eventMoveInDirection", this);
+    public final Event<KeyInput, KeyInput> eventMoveInDirection = new Event<>("MoveInDirection", this);
 
     public final Action<KeyInput, KeyInput, AdventureGameKeyInput> actionMoveKeyPressed = ((eventObject, triggeringObject, listener, data) -> {
        long elapsedTime = (Long)data.get(EventDataKeys.ElapsedMillis);

@@ -297,6 +297,4 @@ public class Material {
         return 1.f/phongSpecular;
     }
 
-
-
 }

@@ -5,6 +5,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import swen.adventure.engine.Utilities;
+import swen.adventure.engine.rendering.Material;
 import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
@@ -79,6 +80,27 @@ public class SceneGraphSerializer {
         else if (sceneNode instanceof Player)
             serializedNode = serializePlayerNode((Player) sceneNode, xmlParentNode);
 
+        else if (sceneNode instanceof Puzzle)
+            serializedNode = serializePuzzle((Puzzle) sceneNode, xmlParentNode);
+
+        else if (sceneNode instanceof SpawnNode)
+            serializedNode = serializeSpawnNode((SpawnNode) sceneNode, xmlParentNode);
+
+        else if (sceneNode instanceof Key)
+            serializedNode = serializeKey((Key) sceneNode, xmlParentNode);
+
+        else if (sceneNode instanceof Note)
+            serializedNode = serializeNote((Note) sceneNode, xmlParentNode);
+
+        else if (sceneNode instanceof Lever)
+            serializedNode = serializeLever((Lever) sceneNode, xmlParentNode);
+
+        else if (sceneNode instanceof Chest)
+            serializedNode = serializeChest((Chest) sceneNode, xmlParentNode);
+
+        else if (sceneNode instanceof Door)
+            serializedNode = serializeDoor((Door) sceneNode, xmlParentNode);
+
         else if (sceneNode instanceof Lever)
             serializedNode = serializeLeverNode((Lever) sceneNode, xmlParentNode);
 
@@ -92,7 +114,8 @@ public class SceneGraphSerializer {
             serializedNode = serializedInventoryNode((Inventory) sceneNode, xmlParentNode);
 
         else
-            throw new RuntimeException("Don't recognise node " + sceneNode);
+            //throw new RuntimeException("Don't recognise node " + sceneNode);
+            return;
 
         sceneNode.children()
                 .forEach(node -> serializeSceneNode(node, serializedNode));
@@ -108,6 +131,7 @@ public class SceneGraphSerializer {
         Element xmlElement = createElementForNode(containerNode, xmlParentNode);
         setAttribute("capacity", containerNode.capacity(), Integer.class, xmlElement);
         setAttribute("showTopItem", containerNode.getShowTopItem(), Boolean.class, xmlElement);
+        // ?? setAttribute("selectionObject", , String.class, xmlElement);
         return xmlElement;
     }
 
@@ -174,6 +198,11 @@ public class SceneGraphSerializer {
         setAttribute("directory", meshNode.getDirectory(), xmlElement);
         setAttribute("textureRepeat", meshNode.getTextureRepeat(), Vector3.class, xmlElement);
         setAttribute("isCollidable", meshNode.isCollidable(), Boolean.class, xmlElement);
+
+        setAttributeIfPresent("materialDirectory", meshNode.getMaterialDirectory(), xmlElement);
+        setAttributeIfPresent("materialFileName", meshNode.getMaterialFileName(), xmlElement);
+        setAttributeIfPresent("materialName", meshNode.getMaterialName(), xmlElement);
+
         return xmlElement;
     }
 
@@ -206,15 +235,17 @@ public class SceneGraphSerializer {
 
     private Node serializePlayerNode(Player playerNode, Node xmlParentNode) {
         Element xmlElement = createElementForNode(playerNode, xmlParentNode);
-        setAttribute("boundingBox", playerNode.collisionNode().get().boundingBox(),
-                BoundingBox.class, xmlElement);
+
+        playerNode.collisionNode().ifPresent(collisionNode ->
+                setAttribute("boundingBox", collisionNode.boundingBox(), BoundingBox.class, xmlElement));
+
         return xmlElement;
     }
 
     private Node serializeFlickeringLightNode(FlickeringLight flickeringLightNode, Node xmlParentNode) {
         Element xmlElement = createElementForNode(flickeringLightNode, xmlParentNode);
         setAttribute("directory", flickeringLightNode.mesh().get().getDirectory(), xmlElement);
-        setAttribute("fileName", flickeringLightNode.mesh().get().getDirectory(), xmlElement);
+        setAttribute("fileName", flickeringLightNode.mesh().get().getFileName(), xmlElement);
         setAttribute("colour", flickeringLightNode.getColour(), Vector3.class, xmlElement);
         setAttribute("intensity", flickeringLightNode.getIntensity(), Float.class, xmlElement);
         setAttribute("falloff", flickeringLightNode.getFalloff().toString(), xmlElement);
@@ -223,8 +254,61 @@ public class SceneGraphSerializer {
         return xmlElement;
     }
 
+    private Node serializePuzzle(Puzzle sceneNode, Node xmlParentNode) {
+        Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
+        setAttribute("id", sceneNode.id, xmlElement);
+        setAttribute("conditions", sceneNode.getConditionSource(), xmlElement);
+        return xmlElement;
+    }
+
+    private Node serializeKey(Key sceneNode, Node xmlParentNode) {
+        Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
+        setAttribute("id", sceneNode.id, xmlElement);
+        setAttribute("enabled", Boolean.toString(sceneNode.isEnabled()), xmlElement);
+        return xmlElement;
+    }
+
+    private Node serializeSpawnNode(SpawnNode sceneNode, Node xmlParentNode) {
+        Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
+        setAttribute("id", sceneNode.id, xmlElement);
+        return xmlElement;
+    }
+
+    private Node serializeChest(Chest sceneNode, Node xmlParentNode) {
+        Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
+        setAttribute("id", sceneNode.id, xmlElement);
+        return xmlElement;
+    }
+
+    private Node serializeLever(Lever sceneNode, Node xmlParentNode) {
+        Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
+        setAttribute("id", sceneNode.id, xmlElement);
+        return xmlElement;
+    }
+    private Node serializeNote(Note sceneNode, Node xmlParentNode) {
+        Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
+        setAttribute("id", sceneNode.id, xmlElement);
+        return xmlElement;
+    }
+
+    private Node serializeDoor(Door sceneNode, Node xmlParentNode) {
+        Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
+        setAttribute("id", sceneNode.id, xmlElement);
+        // FIXME: need to serialize state of door
+        setAttribute("enabled", Boolean.toString(sceneNode.isEnabled()), xmlElement);
+        return xmlElement;
+    }
+
     private <T> String parseToString(T object, Class<T> class0) {
         return ParserManager.getToStringFunction(class0).apply(object);
+    }
+
+    private void setAttributeIfPresent(String name, Optional<String> optionalValue, Element xmlElement) {
+        optionalValue.ifPresent(value -> setAttribute(name, value, xmlElement));
+    }
+
+    private <T> void setAttributeIfPresent(String name, Optional<T> optionalValue, Class<T> class0, Element xmlElement) {
+        optionalValue.ifPresent(value -> setAttribute(name, value, class0, xmlElement));
     }
 
     private void setAttribute(String name, String value, Element xmlElement) {

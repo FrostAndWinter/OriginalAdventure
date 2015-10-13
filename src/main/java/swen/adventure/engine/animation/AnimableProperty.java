@@ -19,7 +19,7 @@ public class AnimableProperty {
     /**
      * The ValueChanged event triggers whenever the
      */
-    public final Event<AnimableProperty, Animation> eventValueChanged = new Event<>("eventValueChanged", this);
+    public final Event<AnimableProperty, Animation> eventValueChanged = new Event<>("ValueChanged", this);
 
     public static final Action<Animation, Animation, AnimableProperty> actionAnimationDidFinish = (animation, triggeringObject, animatableProperty, data) -> {
         animatableProperty._currentAnimation.ifPresent(propertyAnimation -> {

@@ -242,6 +242,9 @@ public class GameDelegate {
             glfwSwapBuffers(_window); // swap the color buffers
 
         }
+
+        // run clean up after main loop
+        _game.cleanup();
     }
     private static void handleMouseInput() {
 

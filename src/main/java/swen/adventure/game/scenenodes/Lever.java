@@ -6,13 +6,12 @@ import swen.adventure.engine.animation.AnimableProperty;
 import swen.adventure.engine.animation.Animation;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
-import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.SceneNode;
 import swen.adventure.engine.scenegraph.TransformNode;
 import swen.adventure.game.Interaction;
+import swen.adventure.game.InteractionType;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,10 +21,15 @@ import java.util.List;
  */
 public class Lever extends AdventureGameObject {
 
-    public final Event<SceneNode, Player> eventLeverToggled = new Event<>("eventLeverToggled", this);
+    public final Event<SceneNode, Player> eventLeverMovedUp = new Event<>("LeverMovedUp", this);
+    public final Event<SceneNode, Player> eventLeverMovedDown = new Event<>("LeverMovedDown", this);
 
-    public static final Action<SceneNode, Player, Lever> actionMoveUp = (sceneNode, player, lever, data) ->  {
+    public static final Action<SceneNode, Player, Lever> actionLeverMoveUp = (sceneNode, player, lever, data) ->  {
         lever.moveUp(player);
+    };
+
+    public static final Action<SceneNode, Player, Lever> actionLeverMoveDown = (sceneNode, player, lever, data) ->  {
+        lever.moveDown(player);
     };
 
     private TransformNode _hingeTransform;
@@ -49,8 +53,8 @@ public class Lever extends AdventureGameObject {
         MeshNode leverMesh = parent.findNodeWithIdOrCreate(leverMeshId, () -> new MeshNode(id + "Lever", "Lever", "Lever.obj", _hingeTransform));
         this.registerMeshForInteraction(leverMesh);
 
-        _leverRotationProgress.eventValueChanged.addAction(this, (eventObject, triggeringObject, listener, data) ->  {
-            listener._hingeTransform.setRotation(Quaternion.makeWithAngleAndAxis((float) (eventObject.value() * (-Math.PI/3)), 0, 0, 1));
+        _leverRotationProgress.eventValueChanged.addAction(this, (eventObject, triggeringObject, listener, data) -> {
+            listener._hingeTransform.setRotation(Quaternion.makeWithAngleAndAxis((float) (eventObject.value() * (-Math.PI / 3)), 0, 0, 1));
         });
     }
 
@@ -74,7 +78,7 @@ public class Lever extends AdventureGameObject {
     public void moveUp(Player player) {
         _isDown = false;
         new Animation(_leverRotationProgress, Math.abs(0.5f - _leverRotationProgress.value()), 0.0f);
-        this.eventLeverToggled.trigger(player, Collections.emptyMap());
+        this.eventLeverMovedUp.trigger(player, Collections.emptyMap());
     }
 
     /**
@@ -84,7 +88,7 @@ public class Lever extends AdventureGameObject {
     public void moveDown(Player player) {
         _isDown = true;
         new Animation(_leverRotationProgress, Math.abs(0.5f - _leverRotationProgress.value()), 1.0f);
-        this.eventLeverToggled.trigger(player, Collections.emptyMap());
+        this.eventLeverMovedDown.trigger(player, Collections.emptyMap());
     }
 
     public boolean isDown() {
@@ -97,7 +101,7 @@ public class Lever extends AdventureGameObject {
 
     @Override
     public List<Interaction> possibleInteractions(final MeshNode meshNode, final Player player) {
-        return Collections.singletonList(new Interaction(Interaction.InteractionType.Pull, this, meshNode));
+        return Collections.singletonList(new Interaction(InteractionType.Pull, this, meshNode));
     }
 
     @Override

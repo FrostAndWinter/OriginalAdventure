@@ -2,6 +2,7 @@ package swen.adventure.engine.network;
 
 import swen.adventure.engine.datastorage.SceneGraphSerializer;
 import swen.adventure.engine.scenegraph.SceneNode;
+import swen.adventure.game.scenenodes.SpawnNode;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -138,6 +139,17 @@ public class NetworkServer implements Server<String, EventBox>, Session.SessionS
         if (!this.isRunning()) {
             throw new RuntimeException("Cannot poll a server which is not running");
         }
+
+        // block until woken, presumably when queue gets a new element
+        if (queue.isEmpty()) {
+            try {
+                synchronized (queue) {
+                    queue.wait();
+                }
+            } catch (InterruptedException e) {
+            }
+        }
+
         EventBox event = queue.poll();
         if (event != null) {
             return Optional.of(event);
@@ -158,7 +170,7 @@ public class NetworkServer implements Server<String, EventBox>, Session.SessionS
                 }
                 clients.put(id, from);
                 System.out.println("Client connected id:" + id);
-                queue.add(new EventBox("playerConnected", id, "spawnPoint", id, Collections.emptyMap()));
+                queue.add(new EventBox("playerConnected", SpawnNode.ID, id, id, Collections.emptyMap()));
                 break;
             case CLIENT_DATA:
                 queue.add(EventBox.fromBytes(packet.getPayload()));
@@ -171,6 +183,11 @@ public class NetworkServer implements Server<String, EventBox>, Session.SessionS
                 break;
         }
         } catch (IOException ex) { ex.printStackTrace(); }
+        if (!queue.isEmpty()) {
+            synchronized (queue) {
+                queue.notifyAll();
+            }
+        }
     }
 
     @Override

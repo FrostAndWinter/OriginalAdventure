@@ -122,10 +122,8 @@ public class SceneGraphParser {
     private static Inventory parseInventory(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode);
         int selectedSlot = getAttribute("selectedSlot", xmlNode, Integer.class);
-        boolean showTopItem = getAttribute("showTopItem", xmlNode, Boolean.class);
         Inventory inventory = new Inventory(id, parent);
         inventory.selectSlot(selectedSlot);
-        inventory.setShowTopItem(showTopItem);
         return inventory;
     }
 
@@ -218,6 +216,9 @@ public class SceneGraphParser {
         materialFileName.ifPresent(matFileName ->
                 materialName.ifPresent(matName -> {
                     String matDirectory = materialDirectory.orElse("");
+                    node.setMaterialDirectory(matDirectory);
+                    node.setMaterialFileName(matFileName);
+                    node.setMaterialName(matName);
                     node.setMaterialOverride(MaterialLibrary.libraryWithName(matDirectory, matFileName).materialWithName(matName));
                 }));
 

@@ -32,6 +32,8 @@ import java.util.*;
  */
 public class Event<E, T> {
 
+    private static boolean ShowEventDebugLog = false;
+
     /**
      * ActionData is used to internally store records of registered actions.
      * @param <E> The type of object that the event is attached to.
@@ -204,8 +206,42 @@ public class Event<E, T> {
      */
     public <U extends T> void trigger(final U triggeringObject, final Map<String, Object> data) {
         for (ActionData actionData : _actions) {
+
+            // if the listener is the trigger, then it doesn't need to know about the update it sent out
+            if (actionData.listener == triggeringObject) {
+                System.out.println("Skipping action - listener is the trigger and probably already knows");
+                continue;
+            }
+
             if (actionData.listener.get() == null) { continue; } //skip if the listener object has expired.
             actionData.action.execute(_eventObject, triggeringObject, actionData.listener.get(), data);
         }
+
+        if (ShowEventDebugLog) {
+            String log = name;
+
+            if (name.equals("ValueChanged")) return;
+            if (name.equals("MeshLookedAt")) return;
+
+
+            log += " triggered by " + triggeringObject;
+            log += " on " + _eventObject;
+
+            if (!data.isEmpty()) {
+                log += " {";
+
+                for (Map.Entry<String, Object> entry : data.entrySet()) {
+                    log += entry.getKey() + ":" + entry.getValue() + ", ";
+                }
+
+                log += "}";
+            }
+            System.out.println(log);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

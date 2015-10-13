@@ -64,7 +64,7 @@ class Session implements Runnable { // FIXME
                 // TODO: Make sure packet boundaries are correct
                 byte[] recv = Arrays.copyOf(buffer, len);
                 builder.append(recv);
-                if (builder.isReady()) {
+                while (builder.isReady()) {
                     strategy.received(this, builder.build());
                     builder = new Packet.Builder().append(builder.overflow());
                 }

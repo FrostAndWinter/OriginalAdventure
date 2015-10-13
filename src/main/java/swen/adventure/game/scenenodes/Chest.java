@@ -7,6 +7,7 @@ import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.TransformNode;
 import swen.adventure.game.Interaction;
+import swen.adventure.game.InteractionType;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -96,11 +97,11 @@ public class Chest extends AdventureGameObject {
     @Override
     public List<Interaction> possibleInteractions(MeshNode meshNode, Player player) {
         List<Interaction> possibleInteractions = new ArrayList<>();
-        possibleInteractions.add(new Interaction(this.isOpen() ? Interaction.InteractionType.Close : Interaction.InteractionType.Open, this, meshNode));
+        possibleInteractions.add(new Interaction(this.isOpen() ? InteractionType.Close : InteractionType.Open, this, meshNode));
 
         container().ifPresent(container -> {
             if (!container.isFull() && this.isOpen() && player.inventory().selectedItem().isPresent()) {
-                possibleInteractions.add(new Interaction(Interaction.InteractionType.PlaceIn, this, meshNode));
+                possibleInteractions.add(new Interaction(InteractionType.PlaceIn, this, meshNode));
             }
         });
 
