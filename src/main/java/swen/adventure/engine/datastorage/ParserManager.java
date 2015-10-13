@@ -66,10 +66,8 @@ public class ParserManager {
                 }), parsers);
 
         addParser(Interaction.InteractionType.class, new Parser<>(
-                Interaction.InteractionType::ordinal,
-                s -> {
-                    return Interaction.InteractionType.values()[Integer.parseInt(s)];
-                }), parsers);
+                i -> Integer.toString(i.ordinal()),
+                s -> Interaction.InteractionType.values()[Integer.parseInt(s)]), parsers);
 
         PARSERS = Collections.unmodifiableMap(parsers);
     }

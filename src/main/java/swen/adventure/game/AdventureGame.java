@@ -3,10 +3,7 @@ package swen.adventure.game;
 import processing.opengl.PGraphics2D;
 import swen.adventure.Settings;
 import swen.adventure.engine.*;
-import swen.adventure.engine.animation.AnimableProperty;
-import swen.adventure.engine.animation.Animation;
 import swen.adventure.engine.datastorage.EventConnectionParser;
-import swen.adventure.engine.datastorage.ParserManager;
 import swen.adventure.engine.datastorage.SceneGraphParser;
 import swen.adventure.engine.network.Client;
 import swen.adventure.engine.network.DumbClient;
@@ -27,7 +24,6 @@ import swen.adventure.game.ui.components.UI;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 
 public class AdventureGame implements Game {
@@ -164,15 +160,15 @@ public class AdventureGame implements Game {
         }
     };
 
-    private static final Action<Interaction, Client<EventBox>, AdventureGame> interactionPerformed = (eventObject, triggeringObject, listener, data1) -> {
-        Map<String, Object> data = new HashMap<>();
-        data.put("InteractionType", eventObject.interactionType);
-        triggeringObject.send(new EventBox("InteractionPerformed",
-                eventObject.gameObject.id,
-                eventObject.meshNode.id,
-                triggeringObject.toString(),
-                data));
-    };
+    private void sendInteraction(Interaction interaction) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("InteractionType", interaction.interactionType);
+            _client.send(new EventBox("InteractionPerformed",
+                    interaction.gameObject.id,
+                    interaction.meshNode.id,
+                    _player.id,
+                    data));
+    }
 
     private static final Action<Input, Input, AdventureGame> primaryActionFired = (eventObject, triggeringObject, adventureGame, data) -> {
         adventureGame.performInteractions(Interaction.ActionType.Primary);
@@ -203,7 +199,7 @@ public class AdventureGame implements Game {
                 .filter(interaction -> interaction != null)
                 .forEach(interaction -> {
                     interaction.performInteractionWithPlayer(_player);
-
+                    sendInteraction(interaction);
                     _interactionInProgressForActionType.put(actionType, interaction);
                 });
     }
@@ -274,6 +270,17 @@ public class AdventureGame implements Game {
 
             if (event.eventName.equals("playerConnected")) {
                 createPlayer(event.targetId);
+                continue;
+            }
+
+            if (event.eventName.equals("InteractionType")) {
+                AdventureGameObject gameObject = (AdventureGameObject)_sceneGraph.nodeWithID(event.sourceId).get();
+                MeshNode meshNode = (MeshNode)_sceneGraph.nodeWithID(event.targetId).get();
+                Player player = (Player)_sceneGraph.nodeWithID(event.from).get();
+
+                Interaction interaction = new Interaction((Interaction.InteractionType)event.eventData.get("InteractionType"), gameObject, meshNode);
+
+                interaction.performInteractionWithPlayer(player);
                 continue;
             }
 

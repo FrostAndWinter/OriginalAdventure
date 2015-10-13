@@ -1,8 +1,10 @@
 package swen.adventure.game;
 
+import swen.adventure.engine.Event;
+import swen.adventure.engine.network.Client;
+import swen.adventure.engine.network.EventBox;
 import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.game.scenenodes.AdventureGameObject;
-import swen.adventure.game.scenenodes.Item;
 import swen.adventure.game.scenenodes.Player;
 
 import java.util.*;

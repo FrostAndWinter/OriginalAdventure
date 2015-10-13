@@ -114,7 +114,8 @@ public class SceneGraphSerializer {
             serializedNode = serializedInventoryNode((Inventory) sceneNode, xmlParentNode);
 
         else
-            throw new RuntimeException("Don't recognise node " + sceneNode);
+            //throw new RuntimeException("Don't recognise node " + sceneNode);
+            return;
 
         sceneNode.children()
                 .forEach(node -> serializeSceneNode(node, serializedNode));
@@ -130,6 +131,7 @@ public class SceneGraphSerializer {
         Element xmlElement = createElementForNode(containerNode, xmlParentNode);
         setAttribute("capacity", containerNode.capacity(), Integer.class, xmlElement);
         setAttribute("showTopItem", containerNode.getShowTopItem(), Boolean.class, xmlElement);
+        // ?? setAttribute("selectionObject", , String.class, xmlElement);
         return xmlElement;
     }
 

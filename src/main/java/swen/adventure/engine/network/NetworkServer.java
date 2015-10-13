@@ -140,7 +140,7 @@ public class NetworkServer implements Server<String, EventBox>, Session.SessionS
             throw new RuntimeException("Cannot poll a server which is not running");
         }
 
-        // block until woken, persumably when queue gets a new element
+        // block until woken, presumably when queue gets a new element
         if (queue.isEmpty()) {
             try {
                 synchronized (queue) {
