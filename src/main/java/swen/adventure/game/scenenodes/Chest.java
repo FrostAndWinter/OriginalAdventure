@@ -59,6 +59,11 @@ public class Chest extends AdventureGameObject {
         this.close(false);
     }
 
+    /**
+     * Sets the chest to be open and peforms an
+     * animation if wanted
+     * @param animate true if animation should be peformed
+     */
     public void open(boolean animate) {
         _isOpen = true;
         if (animate) {
@@ -69,6 +74,11 @@ public class Chest extends AdventureGameObject {
         }
     }
 
+    /**
+     * Sets the chest to be close and peforms an
+     * animation if wanted
+     * @param animate true if animation should be peformed
+     */
     public void close(boolean animate) {
         _isOpen = false;
         if (animate) {
