@@ -1,14 +1,12 @@
 package swen.adventure.game.scenenodes;
 
-import swen.adventure.engine.Action;
-import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.MeshNode;
-import swen.adventure.engine.scenegraph.Puzzle;
 import swen.adventure.engine.scenegraph.TransformNode;
 
 /**
- * Created by danielbraithwt on 10/3/15.
- * Modified by Thomas Roughton, Student ID 300313924
+ * Daniel Braithwate, 300313770
+ * Thomas Roughton, 300313924
+ * Joseph Bennett, 300319773
  */
 public class Key extends Item {
 
