@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Created by josephbennett on 6/10/15
- * Modified By Daniel Braithwate ID: 300313770
+ * Joseph Bennett, 300319773
+ * Daniel Braithwate, 300313770
  */
 public class Item extends AdventureGameObject {
 
@@ -22,7 +22,11 @@ public class Item extends AdventureGameObject {
     public final Event<Item, Player> eventPlayerPickedUpItem = new Event<>("eventPlayerPickedUpItem", this);
     public final Event<Item, Player> eventPlayerDroppedItem = new Event<>("eventPlayerDroppedItem", this);
 
-    /** An Item's parent transform must directly bring the item into world space (including centering the mesh at the origin); any extra translations must be done in a separate transform. */
+    /**
+     * An Item's parent transform must directly bring the item into
+     * world space (including centering the mesh at the origin); any extra translations must be done
+     * in a separate transform.
+     * */
     public Item(String id, TransformNode parent, String name, String description) {
         super(id, parent, name);
         this.description = Optional.ofNullable(description);
@@ -71,10 +75,20 @@ public class Item extends AdventureGameObject {
         }
     }
 
+    /**
+     * Returns the container that this item is in
+     *
+     * @return the conteainer that this item is in
+     */
     public Optional<Container> containingContainer() {
         return _containingContainer;
     }
 
+    /**
+     * Sets the description for this item.
+     *
+     * @param description the description for this item.
+     */
     public void setDescription(String description) {
         this.description = Optional.of(description);
     }
