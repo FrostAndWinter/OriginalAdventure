@@ -139,8 +139,8 @@ public class Door extends AdventureGameObject {
     }
 
     /**
-     * Whether or not a player can directly interact with this door. i.e can interact by using a primary
-     * or secondary interacition
+     * Whether or not a player can directly interact with this door (i.e can interact by using a primary
+     * or secondary interaction)
      *
      * @param canDirectlyInteractWith whether or not a player can directly interact with this door.
      */
