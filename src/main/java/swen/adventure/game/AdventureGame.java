@@ -123,7 +123,7 @@ public class AdventureGame implements Game {
     private void setupSceneGraph(TransformNode sceneGraph, String playerId) {
         _sceneGraph = sceneGraph;
 
-        // Fix to get singler player to run
+        // Fix to get single player to run
         if (!(_client instanceof NetworkClient)) {
             createPlayer(playerId);
         }

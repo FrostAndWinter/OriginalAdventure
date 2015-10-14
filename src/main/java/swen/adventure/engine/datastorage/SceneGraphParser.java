@@ -17,8 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -121,8 +120,8 @@ public class SceneGraphParser {
             Document doc = Utilities.loadExistingXmlDocument(is);
 
             NodeList nodes = doc.getFirstChild().getChildNodes();
-            for (int i = 0; i < nodes.getLength(); i++) {
-                parseNode(nodes.item(i), graph);
+            for (Node node : prioritiseChildren(nodes)) {
+                parseNode(node, graph);
             }
 
             return graph;
@@ -412,7 +411,7 @@ public class SceneGraphParser {
         String id = getAttribute("id", xmlNode, Function.identity());
 
         CameraNode cameraNode = parent.findNodeWithIdOrCreate(id, () ->
-            new CameraNode(id, parent)
+                        new CameraNode(id, parent)
         );
 
         cameraNode.setParent(parent);
@@ -535,12 +534,27 @@ public class SceneGraphParser {
 
         // now parse any children
         NodeList children = xmlNode.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            Node child = children.item(i);
+        for (Node child : prioritiseChildren(children)) {
             parseNode(child, node);
         }
 
         return node;
+    }
+
+    private static List<Node> prioritiseChildren(NodeList children) {
+        List<Node> prioritisedChildren = new ArrayList<>();
+
+        for(int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+            String nodeName = child.getNodeName();
+
+            if(nodeName.equals(CONTAINER_TAG) || nodeName.equals(INVENTORY_TAG)){
+                prioritisedChildren.add(0, child);
+            } else {
+                prioritisedChildren.add(child);
+            }
+        }
+        return prioritisedChildren;
     }
 
     /**
