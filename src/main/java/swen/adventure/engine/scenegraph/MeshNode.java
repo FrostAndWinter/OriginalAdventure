@@ -2,6 +2,7 @@ package swen.adventure.engine.scenegraph;
 
 import swen.adventure.engine.Event;
 import swen.adventure.engine.datastorage.BundleObject;
+import swen.adventure.engine.datastorage.ParserException;
 import swen.adventure.engine.rendering.GLMesh;
 import swen.adventure.engine.rendering.Material;
 import swen.adventure.engine.rendering.ObjMesh;
@@ -43,7 +44,7 @@ public final class MeshNode extends SceneNode {
      * @param fileName The mesh's file name (e.g. mesh.obj)
      * @param parent The transform node to parent the node to.
      */
-    public MeshNode(final String directory, final String fileName, final TransformNode parent) {
+    public MeshNode(final String directory, final String fileName, final TransformNode parent) throws ParserException {
         this("mesh" + fileName, directory, fileName, parent);
     }
 
@@ -187,7 +188,11 @@ public final class MeshNode extends SceneNode {
 
             if (extension.equalsIgnoreCase("obj")) {
                 try {
-                    mesh = ObjMesh.loadMesh(directory, fileName);
+                    try {
+                        mesh = ObjMesh.loadMesh(directory, fileName);
+                    } catch (ParserException e) {
+                        throw new RuntimeException(e);
+                    }
                 } catch (FileNotFoundException e) {
                     throw new RuntimeException("Could not load mesh file in directory " + directory + " named " + fileName);
                 }
