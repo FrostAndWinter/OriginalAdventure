@@ -12,6 +12,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * Represents a region within the world. It is used to detect when Player's enter and exit some area.
+ *
  * Created by Thomas Roughton, Student ID 300313924, on 14/10/15.
  */
 public class Region extends SceneNode {
