@@ -79,7 +79,7 @@ public class AdventureGame implements Game {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        
+
         virtualUIWidth = width;
         virtualUIHeight = height;
 
@@ -383,7 +383,7 @@ public class AdventureGame implements Game {
         _client.disconnect();
     }
 
-    public static void main(String[] args) {
+    public static void startGame(String[] args) {
         // Start with networking using CLI arguments <_player id> <host> <port>
         Client<EventBox> client;
         if (args.length == 3) {
@@ -408,5 +408,9 @@ public class AdventureGame implements Game {
         }
 
         GameDelegate.setGame(new AdventureGame(client));
+    }
+
+    public static void main(String[] args) {
+        startGame(args);
     }
 }
