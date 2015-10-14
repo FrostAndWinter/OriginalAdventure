@@ -55,7 +55,10 @@ public class Player extends AdventureGameObject {
     public Player(String id, TransformNode parent) {
         super(id, parent, id);
 
-        this.setContainer(new Inventory(this));
+        final String inventoryId = id + "Inventory";
+
+        Inventory inventory = parent.findNodeWithIdOrCreate(inventoryId, () -> new Inventory(inventoryId, parent));
+        this.setContainer(inventory);
 
         final String colliderID = id + "Collider";
         CollisionNode collider = parent.findNodeWithIdOrCreate(colliderID, () -> new CollisionNode(colliderID, parent, PlayerBoundingBox, CollisionNode.CollisionFlag.Player));

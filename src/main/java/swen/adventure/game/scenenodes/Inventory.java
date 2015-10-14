@@ -40,11 +40,6 @@ public class Inventory extends Container {
      */
     private int _selectedSlot = 0;
 
-    public Inventory(Player player) {
-        super(player.id + "Inventory", player.parent().get(), InventoryCapacity);
-        this.setShowTopItem(false);
-    }
-
     public Inventory(String id, TransformNode parent) {
         super(id, parent, InventoryCapacity);
         this.setShowTopItem(false);
