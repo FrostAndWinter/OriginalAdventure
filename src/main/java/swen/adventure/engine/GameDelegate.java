@@ -17,6 +17,9 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+/**
+ * The GameDelegate interacts with a Game object and the LWJGL context.
+ */
 public class GameDelegate {
 
     private static final int DefaultWindowWidth = 800;

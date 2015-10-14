@@ -16,9 +16,11 @@ import java.util.stream.Collectors;
 
 /**
  * Created by josephbennett on 19/09/15
+ * Modified by Thomas Roughton, Student ID 300313924.
  */
 public class Player extends AdventureGameObject {
 
+    private static final String PlayerMeshName = "Knight.obj";
     private static final BoundingBox PlayerBoundingBox = new BoundingBox(new Vector3(-30, -60, -10) , new Vector3(30, 60, 10));
     private float _playerSpeed = 600.f; //units per second
 
@@ -52,16 +54,23 @@ public class Player extends AdventureGameObject {
 
         this.setContainer(new Inventory(this));
 
-        String colliderID = id + "Collider";
+        final String colliderID = id + "Collider";
         CollisionNode collider = parent.findNodeWithIdOrCreate(colliderID, () -> new CollisionNode(colliderID, parent, PlayerBoundingBox, CollisionNode.CollisionFlag.Player));
-        collider.setParent(parent);
-
-        TransformNode cameraTransform = new TransformNode(id + "CameraTranslation", parent, false, CameraTranslation, new Quaternion(), Vector3.one);
-        _camera = new CameraNode(id + "Camera", cameraTransform);
-
-        this.setMesh(new MeshNode(id + "Mesh", null, "rocket.obj", parent));
-
         this.setCollisionNode(collider);
+
+        String cameraTranslationID = id + "CameraTranslation";
+
+        TransformNode cameraTransform = parent.findNodeWithIdOrCreate(cameraTranslationID, () ->
+            new TransformNode(cameraTranslationID, parent, false, CameraTranslation, new Quaternion(), Vector3.one)
+        );
+
+        final String cameraID = id + "Camera";
+        _camera = parent.findNodeWithIdOrCreate(cameraID, () -> new CameraNode(id + "Camera", cameraTransform));
+
+        final String meshID = id + "Mesh";
+
+        MeshNode mesh = parent.findNodeWithIdOrCreate(meshID, () -> new MeshNode(meshID, null, PlayerMeshName, parent));
+        this.setMesh(mesh);
     }
 
     private void move(Vector3 vector) {
