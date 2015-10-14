@@ -29,14 +29,31 @@ public final class Interaction {
         this.meshNode = meshNode;
     }
 
+    /**
+     * Perform interaction with player
+     *
+     * @param player player that will fire the interaction
+     */
     public void performInteractionWithPlayer(Player player) {
         this.gameObject.performInteraction(this, this.meshNode, player);
     }
 
+    /**
+     * End an interaction
+     *
+     * @param player player that stopped the interaction
+     */
     public void interactionEndedByPlayer(Player player) {
         this.gameObject.eventInteractionEnded.trigger(player, Collections.singletonMap(EventDataKeys.Interaction, this));
     }
 
+    /**
+     * Get a string that describes the interaction
+     *
+     * @param player player that will start the interaction
+     * @param buttonName button name that will be used to start the interaction
+     * @return A formatted string that describes the interaction
+     */
     public String interactionMessage(Player player, Character buttonName) {
         switch (this.interactionType) {
             case PickUp:

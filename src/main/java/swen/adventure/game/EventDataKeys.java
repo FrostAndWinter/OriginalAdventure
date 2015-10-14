@@ -3,6 +3,10 @@ package swen.adventure.game;
 /**
  * Created by josephbennett on 6/10/15
  */
+
+/**
+ * Static names for data in event's data maps
+ */
 public class EventDataKeys {
 
     public static final String ElapsedMillis = "ElapsedMillis"; //value is a long
