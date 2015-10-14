@@ -161,4 +161,8 @@ public class Door extends AdventureGameObject {
     public void setRequiresKey(boolean requiresKey) {
         _requiresKey = requiresKey;
     }
+
+    public Set<Player> playersThatCanOpenDoor() {
+        return Collections.unmodifiableSet(_playersThatCanOpenDoor);
+    }
 }

@@ -151,7 +151,7 @@ public class SceneGraphParser {
 
             // Note parseTransformNode will recursively parse all children under it.
             case TRANSFORM_NODE_TAG:
-                return parseTransformNode(xmlNode, parent);
+                return parseTransformNode(xmlNode, parent, executeAfter);
 
             // All other nodes are leafs in the graph.
             case GAME_OBJECT_TAG:
@@ -246,6 +246,15 @@ public class SceneGraphParser {
         boolean isOpen = getAttribute("isOpen", xmlNode, Boolean.class, false);
         boolean requiresKey = getAttribute("requiresKey", xmlNode, Boolean.class, false);
         boolean canDirectlyInteractWith = getAttribute("canDirectlyInteractWith", xmlNode, Boolean.class, true);
+        String[] allowedAccess = getAttribute("allowedAccess", xmlNode, String[].class, new String[] {});
+        List<String> allowedAccessList = Arrays.asList(allowedAccess);
+
+        executeAfter.add(() -> {
+           for (String id : allowedAccessList) {
+               Player player = (Player)parent.nodeWithID(id).get();
+               Door.actionAllowPlayerToOpenDoor.execute(null, player, door, Collections.emptyMap());
+           }
+        });
 
         door.setIsOpen(isOpen);
         door.setRequiresKey(requiresKey);
@@ -524,7 +533,7 @@ public class SceneGraphParser {
      * @param parent the transform node which will be set as the newly constructed node's parent.
      * @return a newly constructed transform node with the same state as represented in the xml node.
      */
-    private static TransformNode parseTransformNode(Node xmlNode, TransformNode parent) {
+    private static TransformNode parseTransformNode(Node xmlNode, TransformNode parent, List<PostExecutionFunction> executeAfter) {
         String id = getAttribute("id", xmlNode, Function.identity());
         Vector3 translation = getAttribute("translation", xmlNode, ParserManager.getFromStringFunction(Vector3.class), Vector3.zero);
         Quaternion rotation = getAttribute("rotation", xmlNode, ParserManager.getFromStringFunction(Quaternion.class), new Quaternion());
@@ -544,7 +553,7 @@ public class SceneGraphParser {
         // now parse any children
         NodeList children = xmlNode.getChildNodes();
         for (Node child : prioritiseChildren(children)) {
-            parseNode(child, node);
+            parseNode(child, node, executeAfter);
         }
 
         return node;
