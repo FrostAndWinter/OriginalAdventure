@@ -48,4 +48,15 @@ jacocoTestReport {
 }
 
 mainClassName = "swen.adventure.game.LauncherGUI"
-applicationDefaultJvmArgs = ["-Djava.library.path=libs/native", "-Dswen.adventure.NoIntelGraphics=false", "-Dswen.adventure.DeferredShading=false"]
+
+task runUgly << {
+	applicationDefaultJvmArgs = ["-Djava.library.path=libs/native", "-Dswen.adventure.NoIntelGraphics=false", "-Dswen.adventure.DeferredShading=false"]
+	mainClassName = "swen.adventure.game.LauncherGUI"
+}
+
+task runPretty << {
+	mainClassName = "swen.adventure.game.LauncherGUI"
+	applicationDefaultJvmArgs = ["-Djava.library.path=libs/native", "-Dswen.adventure.NoIntelGraphics=true", "-Dswen.adventure.DeferredShading=true"]
+}
+
+

@@ -18,4 +18,5 @@ public class EventDataKeys {
     public static final String InteractionType = "InteractionType"; // value is a InteractionType
     public static final String Networked = "Networked"; // value is a boolean
     public static final String Quaternion = "Quaternion"; // value is a Quaternion
+    public static final String Slot = "Slot"; // value is a int
 }

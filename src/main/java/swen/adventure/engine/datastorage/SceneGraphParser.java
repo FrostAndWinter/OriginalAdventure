@@ -122,20 +122,20 @@ public class SceneGraphParser {
      * @return the root of the new graph.
      */
     private static TransformNode parseSceneNode(InputStream is, TransformNode graph) throws ParserException {
-            Document doc = Utilities.loadExistingXmlDocument(is);
+        Document doc = Utilities.loadExistingXmlDocument(is);
 
-            List<PostExecutionFunction> executeAfter = new ArrayList<>(); //a list of functions to execute after the graph has been parsed.
+        List<PostExecutionFunction> executeAfter = new ArrayList<>(); //a list of functions to execute after the graph has been parsed.
 
-            NodeList nodes = doc.getFirstChild().getChildNodes();
-            for (Node node : prioritiseChildren(nodes)) {
-                parseNode(node, graph, executeAfter);
-            }
+        NodeList nodes = doc.getFirstChild().getChildNodes();
+        for (Node node : prioritiseChildren(nodes)) {
+            parseNode(node, graph, executeAfter);
+        }
 
         for (PostExecutionFunction function : executeAfter) {
             function.action();
         }
 
-            return graph;
+        return graph;
     }
 
     /**
@@ -246,14 +246,13 @@ public class SceneGraphParser {
         boolean isOpen = getAttribute("isOpen", xmlNode, Boolean.class, false);
         boolean requiresKey = getAttribute("requiresKey", xmlNode, Boolean.class, false);
         boolean canDirectlyInteractWith = getAttribute("canDirectlyInteractWith", xmlNode, Boolean.class, true);
-        String[] allowedAccess = getAttribute("allowedAccess", xmlNode, String[].class, new String[] {});
-        List<String> allowedAccessList = Arrays.asList(allowedAccess);
 
+        String[] allowedAccess = getAttribute("allowedAccess", xmlNode, String[].class, new String[] {});
         executeAfter.add(() -> {
-           for (String id : allowedAccessList) {
-               Player player = (Player)parent.nodeWithID(id).get();
-               Door.actionAllowPlayerToOpenDoor.execute(null, player, door, Collections.emptyMap());
-           }
+            for (String id : allowedAccess) {
+                Player player = (Player)parent.nodeWithID(id).get();
+                Door.actionAllowPlayerToOpenDoor.execute(null, player, door, Collections.emptyMap());
+            }
         });
 
         door.setIsOpen(isOpen);
@@ -636,7 +635,7 @@ public class SceneGraphParser {
      * @return the value of the converted attribute
      */
     private static <T> T getAttribute(String name, Node node, Function<String, T> converter) {
-       return getAttribute(name, node, converter, null);
+        return getAttribute(name, node, converter, null);
     }
 
     /**
