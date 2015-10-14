@@ -31,7 +31,7 @@ public class InventoryTests {
 
     @Test
     public void testCanSelectSlot() {
-        Inventory inventory = new Inventory(player);
+        Inventory inventory = createInventory();
 
         Item slotZero = createMockItem();
         Item slotTwo = createMockItem();
@@ -48,19 +48,19 @@ public class InventoryTests {
 
     @Test(expected = IllegalArgumentException.class)
     public void cannotSelectSlotGreaterThanCapacity() {
-        Inventory inventory = new Inventory(player);
+        Inventory inventory = createInventory();
         inventory.selectSlot(inventory.capacity() + 1);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void cannotSelectNegativeSlot() {
-        Inventory inventory = new Inventory(player);
+        Inventory inventory = createInventory();
         inventory.selectSlot(-1);
     }
 
     @Test
     public void selectingSlotUpdatesSelectedSlot() {
-        Inventory inventory = new Inventory(player);
+        Inventory inventory = createInventory();
         assertEquals(0, inventory.selectedSlot());
 
         inventory.selectSlot(1);
@@ -71,6 +71,10 @@ public class InventoryTests {
         Item testItem = mock(Item.class);
         when(testItem.parent()).then(invocation -> Optional.of(playerTransform));
         return testItem;
+    }
+
+    private Inventory createInventory() {
+        return new Inventory(player.id, player.parent().get());
     }
 
 }
