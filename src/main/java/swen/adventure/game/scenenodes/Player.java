@@ -28,6 +28,7 @@ public class Player extends AdventureGameObject {
     private float _playerSpeed = 600.f; //units per second
 
     private final CameraNode _camera;
+    private final TransformNode _meshTransform;
 
     private static final Vector3 CameraTranslation = new Vector3(0, 40, 0);
 
@@ -76,13 +77,13 @@ public class Player extends AdventureGameObject {
 
         final String meshTransformID = id + "MeshTransform";
 
-        TransformNode meshTransform = parent.findNodeWithIdOrCreate(meshTransformID, () ->
+        _meshTransform = parent.findNodeWithIdOrCreate(meshTransformID, () ->
                 new TransformNode(meshTransformID, parent, false, PlayerMeshOffset, new Quaternion(), new Vector3(PlayerMeshScale, PlayerMeshScale, PlayerMeshScale))
         );
 
         final String meshID = id + "Mesh";
 
-        MeshNode mesh = parent.findNodeWithIdOrCreate(meshID, () -> new MeshNode(meshID, null, PlayerMeshName, meshTransform));
+        MeshNode mesh = parent.findNodeWithIdOrCreate(meshID, () -> new MeshNode(meshID, null, PlayerMeshName, _meshTransform));
         this.setMesh(mesh);
     }
 
@@ -129,6 +130,7 @@ public class Player extends AdventureGameObject {
      */
     public void setLookDirection(float angleX, float angleY) {
         this.parent().get().setRotation(Quaternion.makeWithAngleAndAxis(angleX, 0, -1, 0).multiply(Quaternion.makeWithAngleAndAxis(angleY, -1, 0, 0)));
+        _meshTransform.setRotation(Quaternion.makeWithAngleAndAxis(angleY, -1, 0, 0));
     }
 
     public Inventory inventory() {
