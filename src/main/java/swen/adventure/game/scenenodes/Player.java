@@ -76,9 +76,9 @@ public class Player extends AdventureGameObject {
         _camera = parent.findNodeWithIdOrCreate(cameraID, () -> new CameraNode(id + "Camera", cameraTransform));
 
 
-        final String meshRotationTransformID = id + "MeshRotatationTransform";
+        final String meshRotationTransformID = id + "MeshRotationTransform";
         _meshRotationTransform = parent.findNodeWithIdOrCreate(meshRotationTransformID, () ->
-            new TransformNode(meshRotationTransformID, Vector3.zero, new Quaternion(), Vector3.one)
+            new TransformNode(meshRotationTransformID, parent, true, Vector3.zero, new Quaternion(), Vector3.one)
         );
 
         final String meshTransformID = id + "MeshTransform";
