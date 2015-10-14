@@ -158,7 +158,6 @@ public class Player extends AdventureGameObject {
 
     @Override
     public List<Interaction> possibleInteractions(final MeshNode meshNode, final Player otherPlayer) {
-        final Interaction[] interaction = {null};
         if (otherPlayer.inventory().selectedItem().isPresent() && !this.inventory().isFull()) {
             return Collections.singletonList(new Interaction(InteractionType.Give, this, meshNode));
         } else {
@@ -167,12 +166,13 @@ public class Player extends AdventureGameObject {
     }
 
     @Override
-    public void performInteraction(final Interaction interaction, final MeshNode meshNode, final Player player) {
+    public void performInteraction(final Interaction interaction, final MeshNode meshNode, final Player otherPlayer) {
         switch (interaction.interactionType) {
             case Give:
-                player.inventory().selectedItem().ifPresent(item -> {
+                otherPlayer.inventory().selectedItem().ifPresent(item -> {
                     item.moveToContainer(this.inventory());
-                    item.eventPlayerDroppedItem.trigger(player, Collections.emptyMap());
+                    item.eventPlayerDroppedItem.trigger(otherPlayer, Collections.emptyMap());
+                    item.eventPlayerPickedUpItem.trigger(this, Collections.emptyMap());
                 });
                 break;
         }
