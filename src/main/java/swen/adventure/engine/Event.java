@@ -32,7 +32,7 @@ import java.util.*;
  */
 public class Event<E, T> {
 
-    private static boolean ShowEventDebugLog = true;
+    private static boolean ShowEventDebugLog = false;
 
     /**
      * ActionData is used to internally store records of registered actions.
