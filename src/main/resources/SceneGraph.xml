@@ -164,6 +164,24 @@
         <TransformNode id="room2FrontWallRight" scale="5, 1.4, 1" translation="850, 0, -300">
             <MeshNode id="room2FrontWallRightM" directory="MedievalModels" fileName="Wall.obj" textureRepeat="5, 1.4, 1" isCollidable="true"/>
         </TransformNode>
+
+        <TransformNode id="room2Chains" translation="0, 0, 0">
+            <MeshNode id="room2ChainsM" fileName="Chain.obj" directory="MedievalModels" />
+        </TransformNode>
+
+        <TransformNode id="room2BrazierLeft" translation="-800, 0, -40">
+            <MeshNode id="room2BrazierLeftM" directory="MedievalModels" fileName="BigTorch.obj" isCollidable="true"/>
+            <TransformNode id="room2BrazierLeftFlame1T" translation="0, 40, -8" rotation="0, 0.4338837391, 0, 0.9009688679" scale="70, 70, 70">
+                <FlickeringLight id="room2BrazierLeftFlame1M" directory="Flame" fileName="flame.obj" colour="0.96, 0.3, 0.06" intensity="11.0" intensityVariation="4.0"/>
+            </TransformNode>
+        </TransformNode>
+
+        <TransformNode id="room2BrazierRight" translation="800, 0, -40">
+            <MeshNode id="room2BrazierRightM" directory="MedievalModels" fileName="BigTorch.obj" isCollidable="true"/>
+            <TransformNode id="room2BrazierRightFlame1T" translation="0, 40, -8" rotation="0, 0.4338837391, 0, 0.9009688679" scale="70, 70, 70">
+                <FlickeringLight id="room2BrazierRightFlame1M" directory="Flame" fileName="flame.obj" colour="0.96, 0.3, 0.06" intensity="11.0" intensityVariation="4.0"/>
+            </TransformNode>
+        </TransformNode>
     </TransformNode>
 
     <TransformNode id="longCorridors" translation="0, 0, -4260">
@@ -174,6 +192,20 @@
 
             <TransformNode id="corridorsCeilingPlaneT" translation="0, 200, 0" rotation="0.70710677, 0.0, 0.0, 0.70710677">
                 <MeshNode id="corridorsCeilingPlane" fileName="Plane.obj" materialFileName="StoneWall.mtl" materialName="StoneWall" textureRepeat="12, 110.4, 0.2"/>
+            </TransformNode>
+        </TransformNode>
+
+        <TransformNode id="corridorFrontDoorLightLeft" translation="-125, 100, 2860">
+            <MeshNode id="corridorFrontDoorLightLeftM" directory="MedievalModels" fileName="Torch.obj" isCollidable="true"/>
+            <TransformNode id="corridorFrontDoorLightLeftFlameT" translation="2, 152, -33" scale="16, 24, 16">
+                <FlickeringLight id="corridorFrontDoorLightLeftFlameM" directory="Flame" fileName="flame.obj" colour="0.96, 0.3, 0.06" intensity="2.0" intensityVariation="1.0"/>
+            </TransformNode>
+        </TransformNode>
+
+        <TransformNode id="corridorFrontDoorLightRight" translation="125, 100, 2860">
+            <MeshNode id="corridorFrontDoorLightRightM" directory="MedievalModels" fileName="Torch.obj" isCollidable="true"/>
+            <TransformNode id="corridorFrontDoorLightRightFlameT" translation="2, 152, -33" scale="16, 24, 16">
+                <FlickeringLight id="corridorFrontDoorLightRightFlameM" directory="Flame" fileName="flame.obj" colour="0.96, 0.3, 0.06" intensity="2.0" intensityVariation="1.0"/>
             </TransformNode>
         </TransformNode>
 
