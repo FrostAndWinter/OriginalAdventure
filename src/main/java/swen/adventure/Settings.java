@@ -1,4 +1,7 @@
-package swen.adventure;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* David Barnett (barnetdavi) (300313764) */ 
+ package swen.adventure;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 7/10/15.

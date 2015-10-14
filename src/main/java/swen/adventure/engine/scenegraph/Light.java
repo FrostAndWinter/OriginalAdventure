@@ -1,16 +1,19 @@
-package swen.adventure.engine.scenegraph;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ /* Daniel Braithwaite (braithdani) (300313770) */ 
+ package swen.adventure.engine.scenegraph;
 
 import org.lwjgl.BufferUtils;
-import swen.adventure.engine.datastorage.BundleObject;
 import swen.adventure.engine.rendering.maths.Matrix4;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.rendering.maths.Vector4;
 
-import java.awt.*;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**

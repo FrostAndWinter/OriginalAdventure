@@ -1,4 +1,8 @@
-package swen.adventure.engine;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ /* David Barnett (barnetdavi) (300313764) */ 
+ package swen.adventure.engine;
 
 /**
  * Created by josephbennett on 2/10/15

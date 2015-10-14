@@ -1,14 +1,13 @@
-package swen.adventure.engine;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package swen.adventure.engine;
 
 import swen.adventure.game.EventDataKeys;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
-
-import org.lwjgl.glfw.GLFW;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 2/10/15.

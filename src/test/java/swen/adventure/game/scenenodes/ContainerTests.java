@@ -1,4 +1,6 @@
-package swen.adventure.game.scenenodes;
+/* Contributor List  */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package swen.adventure.game.scenenodes;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -10,9 +12,7 @@ import java.util.Optional;
 
 import static junit.framework.Assert.assertNotSame;
 import static junit.framework.Assert.assertTrue;
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertSame;
+import static junit.framework.TestCase.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

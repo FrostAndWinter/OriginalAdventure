@@ -1,8 +1,10 @@
-package swen.adventure.engine.scenegraph;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ /* David Barnett (barnetdavi) (300313764) */ 
+ package swen.adventure.engine.scenegraph;
 
 import swen.adventure.engine.rendering.maths.BoundingBox;
-
-import java.util.Optional;
 
 /**
  * Created by josephbennett on 29/09/15

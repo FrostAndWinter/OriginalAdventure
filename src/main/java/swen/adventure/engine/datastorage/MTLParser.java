@@ -1,4 +1,7 @@
-package swen.adventure.engine.datastorage;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package swen.adventure.engine.datastorage;
 
 import swen.adventure.engine.rendering.Material;
 import swen.adventure.engine.rendering.Texture;
@@ -8,7 +11,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.regex.Pattern;
 
 /**

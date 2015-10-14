@@ -1,4 +1,6 @@
-package processing.opengl.glu.tessellator;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ package processing.opengl.glu.tessellator;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 23/09/15.

@@ -1,10 +1,12 @@
-package swen.adventure.engine.scenegraph;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package swen.adventure.engine.scenegraph;
 
-import javafx.scene.Scene;
 import swen.adventure.engine.Action;
 import swen.adventure.engine.Event;
-import swen.adventure.engine.datastorage.BundleObject;
-import swen.adventure.engine.datastorage.BundleSerializable;
 import swen.adventure.engine.rendering.maths.Matrix4;
 import swen.adventure.engine.rendering.maths.Vector3;
 

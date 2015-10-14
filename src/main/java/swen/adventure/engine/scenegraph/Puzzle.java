@@ -1,8 +1,11 @@
-package swen.adventure.engine.scenegraph;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ /* David Barnett (barnetdavi) (300313764) */ 
+ package swen.adventure.engine.scenegraph;
 
 import swen.adventure.engine.Action;
 import swen.adventure.engine.Event;
-import swen.adventure.game.scenenodes.FlickeringLight;
 import swen.adventure.game.scenenodes.Player;
 
 import java.util.Collections;

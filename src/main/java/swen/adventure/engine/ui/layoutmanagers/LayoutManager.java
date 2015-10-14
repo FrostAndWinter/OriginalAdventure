@@ -1,4 +1,7 @@
-package swen.adventure.engine.ui.layoutmanagers;
+/* Contributor List  */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ /* Daniel Braithwaite (braithdani) (300313770) */ 
+ package swen.adventure.engine.ui.layoutmanagers;
 
 import processing.core.PGraphics;
 import swen.adventure.engine.ui.components.UIComponent;

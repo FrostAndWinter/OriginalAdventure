@@ -1,4 +1,7 @@
-package processing.opengl;/* -*- mode: java; c-basic-offset: 2; indent-tabs-mode: nil -*- */
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package processing.opengl;/* -*- mode: java; c-basic-offset: 2; indent-tabs-mode: nil -*- */
 
 /*
   Part of the Processing project - http://processing.org

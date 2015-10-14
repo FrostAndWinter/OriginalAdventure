@@ -1,4 +1,7 @@
-package swen.adventure.engine.animation;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package swen.adventure.engine.animation;
 
 import swen.adventure.engine.Event;
 

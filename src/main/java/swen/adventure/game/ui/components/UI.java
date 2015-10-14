@@ -1,15 +1,15 @@
-package swen.adventure.game.ui.components;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Daniel Braithwaite (braithdani) (300313770) */ 
+ package swen.adventure.game.ui.components;
 
-import processing.core.PFont;
 import processing.core.PGraphics;
-import processing.opengl.PGL;
 import swen.adventure.engine.Action;
 import swen.adventure.engine.Event;
 import swen.adventure.engine.Input;
 import swen.adventure.engine.animation.AnimableProperty;
 import swen.adventure.engine.animation.Animation;
 import swen.adventure.engine.animation.AnimationCurve;
-import swen.adventure.engine.rendering.GLForwardRenderer;
 import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.ui.color.Color;
 import swen.adventure.engine.ui.components.Frame;
@@ -19,10 +19,6 @@ import swen.adventure.game.scenenodes.Player;
 import swen.adventure.game.scenenodes.Region;
 
 import java.util.ArrayList;
-
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL14.*;
-import static org.lwjgl.opengl.GL20.*;
 
 /**
  * Created by danielbraithwt on 10/10/15.

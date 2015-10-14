@@ -1,4 +1,7 @@
-package swen.adventure.game;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* David Barnett (barnetdavi) (300313764) */ 
+ package swen.adventure.game;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,7 +17,8 @@ public enum InteractionType {
     Open(Interaction.ActionType.Primary),
     Close(Interaction.ActionType.Primary),
     Give(Interaction.ActionType.Primary),
-    Pull(Interaction.ActionType.Primary);
+    Pull(Interaction.ActionType.Primary),
+    DisplayName(Interaction.ActionType.Primary);
 
     public final Interaction.ActionType actionType;
 

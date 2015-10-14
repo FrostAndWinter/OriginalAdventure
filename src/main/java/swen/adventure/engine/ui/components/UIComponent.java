@@ -1,4 +1,8 @@
-package swen.adventure.engine.ui.components;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ /* Daniel Braithwaite (braithdani) (300313770) */ 
+ package swen.adventure.engine.ui.components;
 
 import processing.core.PGraphics;
 import swen.adventure.engine.ui.layoutmanagers.LayoutManager;

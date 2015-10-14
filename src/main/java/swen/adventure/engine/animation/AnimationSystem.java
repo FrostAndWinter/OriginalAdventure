@@ -1,4 +1,6 @@
-package swen.adventure.engine.animation;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ package swen.adventure.engine.animation;
 
 import java.util.ArrayList;
 import java.util.Iterator;

@@ -1,4 +1,8 @@
-package swen.adventure.engine.datastorage;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ /* David Barnett (barnetdavi) (300313764) */ 
+ package swen.adventure.engine.datastorage;
 
 import org.junit.Test;
 import swen.adventure.engine.rendering.maths.Quaternion;

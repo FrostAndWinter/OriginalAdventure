@@ -1,7 +1,10 @@
-package swen.adventure.engine.rendering.octree;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package swen.adventure.engine.rendering.octree;
 
-import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.rendering.maths.BoundingBox;
+import swen.adventure.engine.rendering.maths.Vector3;
 
 import java.util.ArrayList;
 import java.util.HashSet;

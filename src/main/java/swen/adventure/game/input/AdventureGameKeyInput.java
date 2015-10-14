@@ -1,4 +1,9 @@
-package swen.adventure.game.input;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ /* David Barnett (barnetdavi) (300313764) */ 
+ /* Daniel Braithwaite (braithdani) (300313770) */ 
+ package swen.adventure.game.input;
 
 import swen.adventure.engine.Action;
 import swen.adventure.engine.Event;
@@ -6,7 +11,6 @@ import swen.adventure.engine.KeyInput;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.game.EventDataKeys;
 
-import javax.security.auth.kerberos.KerberosKey;
 import java.util.HashMap;
 import java.util.Map;
 

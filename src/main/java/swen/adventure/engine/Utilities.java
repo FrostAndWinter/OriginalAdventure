@@ -1,8 +1,12 @@
-package swen.adventure.engine;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ /* Daniel Braithwaite (braithdani) (300313770) */ 
+ package swen.adventure.engine;
 
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-import swen.adventure.engine.scenegraph.SceneNode;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -18,7 +22,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 

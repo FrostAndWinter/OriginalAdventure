@@ -1,10 +1,15 @@
-package swen.adventure.engine.datastorage;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ /* David Barnett (barnetdavi) (300313764) */ 
+ package swen.adventure.engine.datastorage;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import swen.adventure.engine.Utilities;
-import swen.adventure.engine.rendering.Material;
 import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
@@ -13,7 +18,6 @@ import swen.adventure.game.scenenodes.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**

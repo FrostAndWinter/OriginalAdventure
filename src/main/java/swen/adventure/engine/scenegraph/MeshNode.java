@@ -1,22 +1,24 @@
-package swen.adventure.engine.scenegraph;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package swen.adventure.engine.scenegraph;
 
 import swen.adventure.engine.Event;
-import swen.adventure.engine.datastorage.BundleObject;
 import swen.adventure.engine.datastorage.ParserException;
 import swen.adventure.engine.rendering.GLMesh;
 import swen.adventure.engine.rendering.Material;
 import swen.adventure.engine.rendering.ObjMesh;
+import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.rendering.shaders.MaterialShader;
-import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.game.scenenodes.Player;
 
 import java.io.FileNotFoundException;
-import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 25/09/15.

@@ -1,7 +1,11 @@
-package swen.adventure.engine.network;
+/* Contributor List  */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ /* David Barnett (barnetdavi) (300313764) */ 
+ package swen.adventure.engine.network;
 
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;

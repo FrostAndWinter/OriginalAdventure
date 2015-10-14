@@ -1,9 +1,12 @@
-package swen.adventure.game.ui.components;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ /* Daniel Braithwaite (braithdani) (300313770) */ 
+ package swen.adventure.game.ui.components;
 
 import processing.core.PGraphics;
 import swen.adventure.engine.Action;
 import swen.adventure.engine.Input;
-import swen.adventure.engine.rendering.GLForwardRenderer;
 import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.rendering.maths.Matrix4;
 import swen.adventure.engine.rendering.maths.Quaternion;
@@ -18,7 +21,10 @@ import swen.adventure.game.Interaction;
 import swen.adventure.game.scenenodes.Inventory;
 import swen.adventure.game.scenenodes.Item;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by danielbraithwt on 9/18/15.

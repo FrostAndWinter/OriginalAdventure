@@ -1,4 +1,10 @@
-package swen.adventure.game.scenenodes;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ /* David Barnett (barnetdavi) (300313764) */ 
+ /* Daniel Braithwaite (braithdani) (300313770) */ 
+ package swen.adventure.game.scenenodes;
 
 import swen.adventure.engine.Event;
 import swen.adventure.engine.animation.AnimableProperty;

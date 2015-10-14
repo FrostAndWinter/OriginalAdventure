@@ -1,4 +1,10 @@
-package swen.adventure.game;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ /* David Barnett (barnetdavi) (300313764) */ 
+ /* Daniel Braithwaite (braithdani) (300313770) */ 
+ package swen.adventure.game;
 
 import swen.adventure.Settings;
 import swen.adventure.engine.Event;
@@ -12,7 +18,9 @@ import swen.adventure.engine.network.NetworkServer;
 import swen.adventure.engine.network.Server;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
-import swen.adventure.engine.scenegraph.*;
+import swen.adventure.engine.scenegraph.GameObject;
+import swen.adventure.engine.scenegraph.MeshNode;
+import swen.adventure.engine.scenegraph.TransformNode;
 import swen.adventure.game.scenenodes.AdventureGameObject;
 import swen.adventure.game.scenenodes.Player;
 import swen.adventure.game.scenenodes.SpawnNode;

@@ -1,4 +1,10 @@
-package swen.adventure.game;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ /* David Barnett (barnetdavi) (300313764) */ 
+ /* Daniel Braithwaite (braithdani) (300313770) */ 
+ package swen.adventure.game;
 
 import processing.opengl.PGraphics2D;
 import swen.adventure.Settings;
@@ -19,12 +25,16 @@ import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
 import swen.adventure.game.input.AdventureGameKeyInput;
 import swen.adventure.game.input.AdventureGameMouseInput;
-import swen.adventure.game.scenenodes.*;
+import swen.adventure.game.scenenodes.AdventureGameObject;
+import swen.adventure.game.scenenodes.Inventory;
+import swen.adventure.game.scenenodes.Player;
+import swen.adventure.game.scenenodes.SpawnNode;
 import swen.adventure.game.ui.components.InventoryComponent;
 import swen.adventure.game.ui.components.UI;
 
-
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
 
