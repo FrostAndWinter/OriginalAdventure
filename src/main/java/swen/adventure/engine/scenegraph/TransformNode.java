@@ -85,12 +85,13 @@ public final class TransformNode extends SceneNode {
      * @return a matrix that converts from world space (i.e. the space of the root node) to local space.
      */
     private Matrix4 calculateWorldToNodeTransform() {
-        Matrix4 transform = this.parent().isPresent() ? this.parent().get().worldToNodeSpaceTransform() : new Matrix4();
-        transform = transform.scale(new Vector3(1.f, 1.f, 1.f).divide(_scale));
+        Matrix4 parentTransform = this.parent().isPresent() ? this.parent().get().worldToNodeSpaceTransform() : new Matrix4();
+
+        Matrix4 transform = Matrix4.makeScale(Vector3.one.divide(_scale));
         transform = transform.rotate(_rotation.conjugate());
         transform = transform.translate(_translation.negate());
 
-        return transform;
+        return transform.multiply(parentTransform);
     }
 
     @Override

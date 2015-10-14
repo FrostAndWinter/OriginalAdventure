@@ -22,10 +22,13 @@ public class Player extends AdventureGameObject {
     private static final BoundingBox PlayerBoundingBox = new BoundingBox(new Vector3(-30, -60, -10) , new Vector3(30, 60, 10));
     private float _playerSpeed = 600.f; //units per second
 
-    private Optional<CameraNode> _camera = Optional.empty();
+    private final CameraNode _camera;
 
     private static final Vector3 CameraTranslation = new Vector3(0, 40, 0);
 
+    /**
+     * Moves the player in the direction specified by the EventDataKeys.Direction key in the data dictionary.
+     */
     public static final Action<KeyInput, KeyInput, Player> actionMoveInDirection =
             (eventObject, triggeringObject, player, data) -> {
                 Vector3 direction = (Vector3)data.get(EventDataKeys.Direction);
@@ -33,6 +36,9 @@ public class Player extends AdventureGameObject {
                 player.move(direction.multiplyScalar(player._playerSpeed * elapsedMillis / 1000.f));
             };
 
+    /**
+     * Directly sets the location on a player.
+     */
     public static final Action<Player, Player, Player> actionMoveToLocation =
             (player, triggeringPlayer, ignored, data) -> {
                 Vector3 location = (Vector3) data.get(EventDataKeys.Location);
@@ -51,15 +57,11 @@ public class Player extends AdventureGameObject {
         collider.setParent(parent);
 
         TransformNode cameraTransform = new TransformNode(id + "CameraTranslation", parent, false, CameraTranslation, new Quaternion(), Vector3.one);
-        this.setCamera(new CameraNode(id + "Camera", cameraTransform));
+        _camera = new CameraNode(id + "Camera", cameraTransform);
 
         this.setMesh(new MeshNode(id + "Mesh", null, "rocket.obj", parent));
 
         this.setCollisionNode(collider);
-    }
-
-    public void setCamera(CameraNode camera) {
-        _camera = Optional.of(camera);
     }
 
     private void move(Vector3 vector) {
@@ -98,11 +100,20 @@ public class Player extends AdventureGameObject {
         return canMove;
     }
 
+    /**
+     * Sets the player to look in a direction (i.e. sets the rotation)
+     * @param angleX The rotation about the x axis.
+     * @param angleY The rotation about the y axis.
+     */
+    public void setLookDirection(float angleX, float angleY) {
+        this.parent().get().setRotation(Quaternion.makeWithAngleAndAxis(angleX, 0, -1, 0).multiply(Quaternion.makeWithAngleAndAxis(angleY, -1, 0, 0)));
+    }
+
     public Inventory inventory() {
         return (Inventory)this.container().get();
     }
 
-    public Optional<CameraNode> camera() {
+    public CameraNode camera() {
         return _camera;
     }
 }

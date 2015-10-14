@@ -124,7 +124,6 @@ public class AdventureGame implements Game {
 
 
     private static final Action<Player, Player, AdventureGame> MovePlayer = (eventObject, triggeringObject, listener, data) -> {
-        System.out.println("Update " + eventObject.id + " position: " + data);
         if (data.containsKey("Networked")) {
             eventObject.parent().get().setTranslation((Vector3) data.get(EventDataKeys.Location));
             System.out.println("Forcefully set position of " + eventObject.id);
@@ -314,10 +313,8 @@ public class AdventureGame implements Game {
         GameDelegate.pollInput();
 
         //Set where the _player is looking.
-        _player.parent().get().setRotation(Quaternion.makeWithAngleAndAxis(_viewAngleX / 500, 0, -1, 0).multiply(Quaternion.makeWithAngleAndAxis(_viewAngleY / 500, -1, 0, 0)));
+       _player.setLookDirection(_viewAngleX, _viewAngleY);
 
-
-        System.out.println(SceneGraphSerializer.serializeToString(_sceneGraph));
 
         this.render();
     }
@@ -327,12 +324,12 @@ public class AdventureGame implements Game {
             return;
         }
 
-        this._player.camera().ifPresent(cameraNode -> {
-            List<MeshNode> meshNodesSortedByZ = DepthSorter.sortedMeshNodesByZ(_sceneGraph, cameraNode.worldToNodeSpaceTransform());
+        CameraNode camera = _player.camera();
+        List<MeshNode> meshNodesSortedByZ = DepthSorter.sortedMeshNodesByZ(_sceneGraph, camera.worldToNodeSpaceTransform());
 
-            _pickerRenderer.render(meshNodesSortedByZ, cameraNode.worldToNodeSpaceTransform());
-            _mainRenderer.render(meshNodesSortedByZ, _sceneGraph.allNodesOfType(Light.class), cameraNode.worldToNodeSpaceTransform(), cameraNode.fieldOfView(), cameraNode.hdrMaxIntensity());
-        });
+        _pickerRenderer.render(meshNodesSortedByZ, camera.worldToNodeSpaceTransform());
+        _mainRenderer.render(meshNodesSortedByZ, _sceneGraph.allNodesOfType(Light.class), camera.worldToNodeSpaceTransform(), camera.fieldOfView(), camera.hdrMaxIntensity());
+
 
         ArrayList<String> tips = new ArrayList<>();
         for (Interaction interaction : _possibleInteractionsForStep.values()) {
@@ -374,8 +371,8 @@ public class AdventureGame implements Game {
 
     @Override
     public void onMouseDeltaChange(float deltaX, float deltaY) {
-        _viewAngleX = (_viewAngleX + deltaX / _mouseSensitivity);
-        _viewAngleY = (_viewAngleY + deltaY / _mouseSensitivity);
+        _viewAngleX = (_viewAngleX + deltaX / _mouseSensitivity) % (float)(2 * Math.PI);
+        _viewAngleY = (_viewAngleY + deltaY / _mouseSensitivity) % (float)(2 * Math.PI);
     }
 
     @Override
