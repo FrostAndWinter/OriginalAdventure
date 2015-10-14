@@ -177,14 +177,77 @@
         <TransformNode id="room2BrazierLeft" translation="-800, 0, -40">
             <MeshNode id="room2BrazierLeftM" directory="MedievalModels" fileName="BigTorch.obj" isCollidable="true"/>
             <TransformNode id="room2BrazierLeftFlame1T" translation="0, 40, -8" rotation="0, 0.4338837391, 0, 0.9009688679" scale="70, 70, 70">
-                <FlickeringLight id="room2BrazierLeftFlame1M" directory="Flame" fileName="flame.obj" colour="0.96, 0.3, 0.06" intensity="11.0" intensityVariation="4.0"/>
+                <FlickeringLight id="room2BrazierLeftFlame1M" directory="Flame" fileName="flame.obj" colour="0.96, 0.3, 0.06" intensity="7.0" intensityVariation="4.0"/>
+            </TransformNode>
+        </TransformNode>
+
+        <TransformNode id="room2BrazierBlueDoor" translation="-500, 0, -500">
+            <MeshNode id="room2BrazierBlueDoorM" directory="MedievalModels" fileName="BigTorch.obj" isCollidable="true"/>
+            <TransformNode id="room2BrazierBlueDoor1T" translation="0, 40, -8" rotation="0, 0.4338837391, 0, 0.9009688679" scale="70, 70, 70">
+                <FlickeringLight id="room2BrazierBlueDoor1M" directory="Flame" fileName="flame.obj" colour="0.96, 0.3, 0.06" intensity="7.0" intensityVariation="4.0"/>
+            </TransformNode>
+        </TransformNode>
+
+        <TransformNode id="room2BrazierBlueDoor2" translation="-500, 0, -1000">
+            <MeshNode id="room2BrazierBlueDoorM2" directory="MedievalModels" fileName="BigTorch.obj" isCollidable="true"/>
+            <TransformNode id="room2BrazierBlueDoor1T2" translation="0, 40, -8" rotation="0, 0.4338837391, 0, 0.9009688679" scale="70, 70, 70">
+                <FlickeringLight id="room2BrazierBlueDoor1M2" directory="Flame" fileName="flame.obj" colour="0.96, 0.3, 0.06" intensity="7.0" intensityVariation="4.0"/>
+            </TransformNode>
+        </TransformNode>
+
+        <TransformNode id="room2BrazierBlueDoor3" translation="-500, 0, -2500">
+            <MeshNode id="room2BrazierBlueDoorM3" directory="MedievalModels" fileName="BigTorch.obj" isCollidable="true"/>
+            <TransformNode id="room2BrazierBlueDoor1T3" translation="0, 40, -8" rotation="0, 0.4338837391, 0, 0.9009688679" scale="70, 70, 70">
+                <FlickeringLight id="room2BrazierBlueDoor1M3" directory="Flame" fileName="flame.obj" colour="0.96, 0.3, 0.06" intensity="7.0" intensityVariation="4.0"/>
+            </TransformNode>
+        </TransformNode>
+
+        <TransformNode id="room2BrazierBlueDoor4" translation="500, 0, -500">
+            <MeshNode id="room2BrazierBlueDoorM4" directory="MedievalModels" fileName="BigTorch.obj" isCollidable="true"/>
+            <TransformNode id="room2BrazierBlueDoor1T4" translation="0, 40, -8" rotation="0, 0.4338837391, 0, 0.9009688679" scale="70, 70, 70">
+                <FlickeringLight id="room2BrazierBlueDoor1M4" directory="Flame" fileName="flame.obj" colour="0.96, 0.3, 0.06" intensity="7.0" intensityVariation="4.0"/>
+            </TransformNode>
+        </TransformNode>
+
+        <TransformNode id="room2BrazierBlueDoor5" translation="500, 0, -1000">
+            <MeshNode id="room2BrazierBlueDoorM5" directory="MedievalModels" fileName="BigTorch.obj" isCollidable="true"/>
+            <TransformNode id="room2BrazierBlueDoor1T5" translation="0, 40, -8" rotation="0, 0.4338837391, 0, 0.9009688679" scale="70, 70, 70">
+                <FlickeringLight id="room2BrazierBlueDoor1M5" directory="Flame" fileName="flame.obj" colour="0.96, 0.3, 0.06" intensity="7.0" intensityVariation="4.0"/>
+            </TransformNode>
+        </TransformNode>
+
+        <TransformNode id="room2BrazierBlueDoor6" translation="500, 0, -2500">
+            <MeshNode id="room2BrazierBlueDoorM6" directory="MedievalModels" fileName="BigTorch.obj" isCollidable="true"/>
+            <TransformNode id="room2BrazierBlueDoor1T6" translation="0, 40, -8" rotation="0, 0.4338837391, 0, 0.9009688679" scale="70, 70, 70">
+                <FlickeringLight id="room2BrazierBlueDoor1M6" directory="Flame" fileName="flame.obj" colour="0.96, 0.3, 0.06" intensity="7.0" intensityVariation="4.0"/>
+            </TransformNode>
+        </TransformNode>
+
+        <TransformNode id="room2BrazierBlueDoor7" translation="500, 0, -3500">
+            <MeshNode id="room2BrazierBlueDoorM7" directory="MedievalModels" fileName="BigTorch.obj" isCollidable="true"/>
+            <TransformNode id="room2BrazierBlueDoor1T7" translation="0, 40, -8" rotation="0, 0.4338837391, 0, 0.9009688679" scale="70, 70, 70">
+                <FlickeringLight id="room2BrazierBlueDoor1M7" directory="Flame" fileName="flame.obj" colour="0.96, 0.3, 0.06" intensity="7.0" intensityVariation="4.0"/>
+            </TransformNode>
+        </TransformNode>
+
+        <TransformNode id="grapefruitChestLight1Transform" translation="500, 0, -5600">
+            <MeshNode id="grapefruitChestLight1M" directory="MedievalModels" fileName="BigTorch.obj" isCollidable="true"/>
+            <TransformNode id="grapefruitChestLight1Transform2" translation="0, 40, -8" rotation="0, 0.4338837391, 0, 0.9009688679" scale="20, 20, 20">
+                <FlickeringLight id="grapefruitChestLight1" directory="Flame" fileName="flame.obj" colour="0.96, 0.3, 0.06" intensity="7.0" intensityVariation="4.0"/>
+            </TransformNode>
+        </TransformNode>
+
+        <TransformNode id="grapefruitChestLight2Transform" translation="300, 0, -5600">
+            <MeshNode id="grapefruitChestLight2M" directory="MedievalModels" fileName="BigTorch.obj" isCollidable="true"/>
+            <TransformNode id="grapefruitChestLight2Transform2" translation="0, 40, -8" rotation="0, 0.4338837391, 0, 0.9009688679" scale="20, 20, 20">
+                <FlickeringLight id="grapefruitChestLight2" directory="Flame" fileName="flame.obj" colour="0.96, 0.3, 0.06" intensity="7.0" intensityVariation="4.0"/>
             </TransformNode>
         </TransformNode>
 
         <TransformNode id="room2BrazierRight" translation="800, 0, -40">
             <MeshNode id="room2BrazierRightM" directory="MedievalModels" fileName="BigTorch.obj" isCollidable="true"/>
             <TransformNode id="room2BrazierRightFlame1T" translation="0, 40, -8" rotation="0, 0.4338837391, 0, 0.9009688679" scale="70, 70, 70">
-                <FlickeringLight id="room2BrazierRightFlame1M" directory="Flame" fileName="flame.obj" colour="0.96, 0.3, 0.06" intensity="11.0" intensityVariation="4.0"/>
+                <FlickeringLight id="room2BrazierRightFlame1M" directory="Flame" fileName="flame.obj" colour="0.96, 0.3, 0.06" intensity="7.0" intensityVariation="4.0"/>
             </TransformNode>
         </TransformNode>
     </TransformNode>
@@ -225,11 +288,19 @@
         <!-- The red gate is the gate on the right on the corridor !-->
         <TransformNode id="redGateTransform" translation="400, 0, 1500" rotation="0, 1, 0, 0" scale="5, 1.4, 5">
             <Door id="redGate" canDirectlyInteractWith="false"/>
+
+            <TransformNode id="redGateFlameTransform" translation="0, 0, 0" scale="0.01, 0.01, 0.01">
+                <FlickeringLight id="redGateFlame" directory="Flame" fileName="flame.obj" colour="1.0, 0.0, 0.0" intensity="1.0" intensityVariation="0.5" isOn="true"/>
+            </TransformNode>
         </TransformNode>
 
         <!-- The blue gate is the gate on the left on the corridor !-->
         <TransformNode id="blueGateTransform" translation="-400, 0, 2400" scale="5, 1.4, 5">
             <Door id="blueGate" requiresKey="true" />
+
+            <TransformNode id="blueGateFlameTransform" translation="0, 0, 0" scale="0.01, 0.01, 0.01">
+                <FlickeringLight id="blueGateFlame" directory="Flame" fileName="flame.obj" colour="0.0, 0.0, 1.0" intensity="1.0" intensityVariation="0.5" isOn="true"/>
+            </TransformNode>
         </TransformNode>
 
         <!-- The red gate lever is in the blue corridor !-->
@@ -243,6 +314,13 @@
 
         <TransformNode id="redBlueGateLeverTransform" translation="500, 0, 2700" rotation="0, 0.7071067812, 0, 0.7071067812" scale="1, 1, 1">
             <Lever id="redBlueGateLever"/>
+
+            <TransformNode id="redBlueGateNotificationTransformBlue" translation="0, 0, 0" scale="0.01, 0.01, 0.01">
+                <FlickeringLight id="redBlueGateNotificationBlue" directory="Flame" fileName="flame.obj" colour="0.0, 0.0, 1.0" intensity="1.0" intensityVariation="0.5" />
+            </TransformNode>
+            <TransformNode id="redBlueGateNotificationTransformRed" translation="0, 0, 0" scale="0.01, 0.01, 0.01">
+                <FlickeringLight id="redBlueGateNotificationRed" directory="Flame" fileName="flame.obj" colour="1.0, 0.0, 0.0" intensity="1.0" intensityVariation="0.5" />
+            </TransformNode>
         </TransformNode>
 
         <TransformNode id="corridors" rotation="0, -0.7071067812, 0, 0.7071067812"> <!-- Rotation of 90 degress around y !-->

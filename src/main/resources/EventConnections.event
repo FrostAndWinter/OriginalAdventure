@@ -34,6 +34,11 @@ LeverMovedUp; redGateLever; CloseDoor; redGate
 ChestOpened; grapefruitChest; TurnLightOn; grapefruitChestLight
 ChestClosed; grapefruitChest; TurnLightOff; grapefruitChestLight
 
+ChestClosed; grapefruitChest; TurnLightOn; grapefruitChestLight2
+ChestOpened; grapefruitChest; TurnLightOff; grapefruitChestLight2
+ChestClosed; grapefruitChest; TurnLightOn; grapefruitChestLight1
+ChestOpened; grapefruitChest; TurnLightOff; grapefruitChestLight1
+
 // allow the player to escape if they the grapefruit key
 PlayerPickedUpItem; grapefruitKey; AllowPlayerToOpenDoor; corridorEscapeDoor
 PlayerDroppedItem; grapefruitKey; DisallowPlayerFromOpeningDoor; corridorEscapeDoor
