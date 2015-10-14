@@ -59,7 +59,7 @@ public class SceneGraphParserTest {
         );
     }
 
-    private static void testAgainstFile(String fileName, SceneNode expected) throws IOException {
+    private static void testAgainstFile(String fileName, SceneNode expected) throws IOException, ParserException {
         String graphXml = readFile(fileName);
         SceneNode result = SceneGraphParser.parseSceneGraph(graphXml);
         assertEquals(expected, result);

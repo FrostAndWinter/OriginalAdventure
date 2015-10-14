@@ -12,7 +12,7 @@ import java.io.IOException;
 public class WavefrontParserTest {
 
     @Test
-    public void testVertexTextureObj() {
+    public void testVertexTextureObj() throws Exception {
         String input =
                 "# List of geometric vertices, with (x,y,z[,w]) coordinates, w is optional and defaults to 1.0.\n" +
                 "v 0.123 0.234 0.345 1.0\n" +
@@ -23,4 +23,5 @@ public class WavefrontParserTest {
 
         WavefrontParser.Result result = WavefrontParser.parse(input);
     }
+
 }

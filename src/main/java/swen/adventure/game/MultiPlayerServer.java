@@ -3,6 +3,7 @@ package swen.adventure.game;
 import swen.adventure.engine.Event;
 import swen.adventure.engine.Utilities;
 import swen.adventure.engine.datastorage.EventConnectionParser;
+import swen.adventure.engine.datastorage.ParserException;
 import swen.adventure.engine.datastorage.SceneGraphParser;
 import swen.adventure.engine.datastorage.SceneGraphSerializer;
 import swen.adventure.engine.network.EventBox;
@@ -34,7 +35,8 @@ public class MultiPlayerServer implements Runnable {
         server = new NetworkServer();
         try {
             System.out.println("Loading map");
-            root = SceneGraphParser.parseSceneGraph(new File(Utilities.pathForResource(map, "xml")));
+            File sceneGraphFile = new File(Utilities.pathForResource(map, "xml"));
+            root = loadSceneGraph(sceneGraphFile);
             System.out.println("Completed loading map");
             System.out.println("Setting up event connections");
             // setup event connections
@@ -50,6 +52,22 @@ public class MultiPlayerServer implements Runnable {
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    private TransformNode loadSceneGraph(File sceneGraphFile) {
+        try {
+            return SceneGraphParser.parseSceneGraph(sceneGraphFile);
+        } catch (FileNotFoundException e) {
+            System.err.println("Can't find file: " + sceneGraphFile);
+        } catch (ParserException e) {
+            System.err.println(e.getMessage());
+        }
+        fail();
+        return null; // dead code
+    }
+
+    private void fail() {
+        System.exit(1);
     }
 
     public void run() {
