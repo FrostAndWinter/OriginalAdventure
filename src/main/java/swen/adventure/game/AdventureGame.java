@@ -98,7 +98,9 @@ public class AdventureGame implements Game {
         } catch (FileNotFoundException e) {
             System.err.println("Can't find file " + sceneGraphFile);
         } catch (ParserException e) {
-            System.err.println(e.getMessage());
+            System.err.println("Error while parsing the scene graph.");
+            e.printStackTrace();
+            e.getCause().printStackTrace();
         }
 
         fail();
