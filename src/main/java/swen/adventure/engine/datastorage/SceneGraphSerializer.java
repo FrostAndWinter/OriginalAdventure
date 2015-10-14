@@ -161,8 +161,8 @@ public class SceneGraphSerializer {
     private Node serializedInventoryNode(Inventory sceneNode, Node xmlParentNode) {
         Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
         setAttribute("selectedSlot", sceneNode.selectedSlot(), Integer.class, xmlElement);
-        setAttribute("capacity", containerNode.capacity(), Integer.class, xmlElement);
-        setAttribute("showTopItem", containerNode.getShowTopItem(), Boolean.class, xmlElement);
+        setAttribute("capacity", sceneNode.capacity(), Integer.class, xmlElement);
+        setAttribute("showTopItem", sceneNode.getShowTopItem(), Boolean.class, xmlElement);
         return xmlElement;
     }
 
