@@ -452,7 +452,7 @@ public class AdventureGame implements Game {
         float oldVX = _viewAngleX, oldVY = _viewAngleY;
         _viewAngleX = (_viewAngleX + deltaX / _mouseSensitivity) % (float)(2 * Math.PI);
         _viewAngleY = (_viewAngleY + deltaY / _mouseSensitivity) % (float)(2 * Math.PI);
-        _viewAngleUpdated = oldVX != _viewAngleX && oldVY != _viewAngleY;
+        _viewAngleUpdated = oldVX != _viewAngleX || oldVY != _viewAngleY;
     }
 
     @Override
