@@ -99,6 +99,7 @@ public class ParserManager {
         Parser<T> parser = getParser(class0);
         return Arrays.stream(csv.split(","))
                 .map(String::trim)
+                .filter(string -> !string.isEmpty())
                 .map(parser::convertToInstance)
                 .collect(Collectors.toList());
     }
