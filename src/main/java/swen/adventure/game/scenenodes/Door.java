@@ -1,7 +1,6 @@
 package swen.adventure.game.scenenodes;
 
 import swen.adventure.engine.Action;
-import swen.adventure.engine.Game;
 import swen.adventure.engine.animation.AnimableProperty;
 import swen.adventure.engine.animation.Animation;
 import swen.adventure.engine.animation.AnimationCurve;
@@ -9,12 +8,14 @@ import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.MeshNode;
-import swen.adventure.engine.scenegraph.SceneNode;
 import swen.adventure.engine.scenegraph.TransformNode;
 import swen.adventure.game.Interaction;
 import swen.adventure.game.InteractionType;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * A door that can be opened and closed. Amazing.
@@ -39,7 +40,7 @@ public class Door extends AdventureGameObject {
 
     private Set<Player> _playersThatCanOpenDoor = new HashSet<>();
 
-    // DO NOT REMOVE. This action is unused within the Java code base but is still used in the event connections.
+    // DO NOT REMOVE. This action i unused within the Java code base but is still used in the event connections.
     public static final Action<Item, Player, Door> actionAllowPlayerToOpenDoor = (item, player, door, data) -> {
         door._playersThatCanOpenDoor.add(player);
     };
@@ -135,7 +136,11 @@ public class Door extends AdventureGameObject {
      * @param isOpen true to set the door as open, false to set door as closed
      */
     public void setIsOpen(boolean isOpen) {
-        _isOpen = isOpen;
+        if (isOpen) {
+            this.open();
+        } else {
+            this.close();
+        }
     }
 
     /**
