@@ -14,6 +14,7 @@ import swen.adventure.game.scenenodes.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by Liam O'Neill, Student ID 300312734, on 04/10/15.
@@ -476,6 +477,13 @@ public class SceneGraphSerializer {
         setAttribute("requiresKey", Boolean.toString(sceneNode.isEnabled()), xmlElement);
         setAttribute("isOpen", Boolean.toString(sceneNode.isEnabled()), xmlElement);
         setAttribute("canDirectlyInteractWith", Boolean.toString(sceneNode.isEnabled()), xmlElement);
+
+        String[] allowedAccess = sceneNode.playersThatCanOpenDoor().stream()
+                .map(player -> player.id)
+                .collect(Collectors.toList())
+                .toArray(new String[0]);
+
+        setAttribute("allowedAccess", allowedAccess, String[].class, xmlElement);
         return xmlElement;
     }
 
