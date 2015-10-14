@@ -13,6 +13,7 @@ import swen.adventure.game.scenenodes.Container;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeNoException;
 
 /**
@@ -43,11 +44,19 @@ public class SceneGraphParserTest {
     }
 
     @Test
-    public void testGameObjectInTransformNode() throws Exception {
+    public void testGameObjectInTransformNode() {
         TransformNode root = createRoot();
         new GameObject("id2", root);
 
         testAgainstFile("testNestedTransformNodes", root);
+    }
+
+    @Test public void
+    should_be_able_to_parse_container() {
+        TransformNode root = createRoot();
+        new Container("container1", root);
+
+        testAgainstFile("should_be_able_to_parse_container", root);
     }
 
     private static TransformNode createRoot() {
@@ -59,10 +68,14 @@ public class SceneGraphParserTest {
         );
     }
 
-    private static void testAgainstFile(String fileName, SceneNode expected) throws IOException, ParserException {
+    private static void testAgainstFile(String fileName, SceneNode expected) {
         String graphXml = readFile(fileName);
-        SceneNode result = SceneGraphParser.parseSceneGraph(graphXml);
-        assertEquals(expected, result);
+        try {
+            SceneNode result = SceneGraphParser.parseSceneGraph(graphXml);
+            assertEquals(expected, result);
+        } catch (ParserException e) {
+            fail();
+        }
     }
 
     private static String readFile(String fileName) {
