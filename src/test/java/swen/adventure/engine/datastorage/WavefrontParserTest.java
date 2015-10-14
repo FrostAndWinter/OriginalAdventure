@@ -53,6 +53,38 @@ public class WavefrontParserTest {
     }
 
     @Test public void
+    should_be_able_to_parse_texture_coordinates() {
+        String input =
+                "vt 0.500 1 0\n" +
+                "vt 0.700 1.2\n";
+
+        WavefrontParser.Result result = parse(input);
+        assertEquals(
+                asList(
+                        new Vector3(0.5f, 1f, 0f),
+                        new Vector3(0.7f, 1.2f, 0f)
+                ),
+                result.textureVertices
+        );
+    }
+
+    @Test public void
+    should_be_able_to_parse_vertex_normals() {
+        String input =
+                "vn 0.707 0.000 0.707 \n" +
+                "vn 0.700 1.2 0.80 \n";
+
+        WavefrontParser.Result result = parse(input);
+        assertEquals(
+                asList(
+                        new Vector3(0.707f, 0f, 0.707f),
+                        new Vector3(0.7f, 1.2f, 0.8f)
+                ),
+                result.vertexNormals
+        );
+    }
+
+    @Test public void
     should_be_able_to_parse_all_information() {
         String input =
                 "# List of geometric vertices, with (x,y,z[,w]) coordinates, w is optional and defaults to 1.0.\n" +
@@ -65,7 +97,12 @@ public class WavefrontParserTest {
         WavefrontParser.Result result = parse(input);
 
         List<Vector> expectedGeometricResults = singletonList(new Vector3(0.123f, 0.234f, 0.345f));
-        //List<Vector3>
+        List<Vector3> expectedTextureCoordinates = singletonList(new Vector3(0.5f, 1f, 0f));
+        List<Vector3> expectedVertexNormals = singletonList(new Vector3(0.707f, 0f, 0.707f));
+
+        assertEquals(expectedGeometricResults, result.geometricVertices);
+        assertEquals(expectedTextureCoordinates, result.textureVertices);
+        assertEquals(expectedVertexNormals, result.vertexNormals);
     }
 
     private WavefrontParser.Result parse(String input) {
