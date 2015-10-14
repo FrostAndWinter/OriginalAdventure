@@ -5,6 +5,7 @@ package swen.adventure;
  */
 public class Settings {
     public static final float MouseSensitivity = 500.f;
+    public static final int EventsTillServerBackup = 4096;
     public static final boolean IntelGraphicsWorkaround = !Boolean.getBoolean("swen.adventure.NoIntelGraphics");
     public static final boolean DeferredShading = Boolean.getBoolean("swen.adventure.DeferredShading");
 }

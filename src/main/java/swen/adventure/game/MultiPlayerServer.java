@@ -1,14 +1,15 @@
 package swen.adventure.game;
 
+import swen.adventure.Settings;
 import swen.adventure.engine.Event;
 import swen.adventure.engine.Utilities;
 import swen.adventure.engine.datastorage.EventConnectionParser;
+import swen.adventure.engine.datastorage.ParserException;
 import swen.adventure.engine.datastorage.SceneGraphParser;
 import swen.adventure.engine.datastorage.SceneGraphSerializer;
 import swen.adventure.engine.network.EventBox;
 import swen.adventure.engine.network.NetworkServer;
 import swen.adventure.engine.network.Server;
-import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
 import swen.adventure.game.scenenodes.AdventureGameObject;
@@ -34,7 +35,8 @@ public class MultiPlayerServer implements Runnable {
         server = new NetworkServer();
         try {
             System.out.println("Loading map");
-            root = SceneGraphParser.parseSceneGraph(new File(Utilities.pathForResource(map, "xml")));
+            File sceneGraphFile = new File(Utilities.pathForResource(map, "xml"));
+            root = loadSceneGraph(sceneGraphFile);
             System.out.println("Completed loading map");
             System.out.println("Setting up event connections");
             // setup event connections
@@ -52,8 +54,24 @@ public class MultiPlayerServer implements Runnable {
         }
     }
 
+    private TransformNode loadSceneGraph(File sceneGraphFile) {
+        try {
+            return SceneGraphParser.parseSceneGraph(sceneGraphFile);
+        } catch (FileNotFoundException e) {
+            System.err.println("Can't find file: " + sceneGraphFile);
+        } catch (ParserException e) {
+            System.err.println(e.getMessage());
+        }
+        fail();
+        return null; // dead code
+    }
+
+    private void fail() {
+        System.exit(1);
+    }
+
     public void run() {
-        int loops = 0;
+        int eventsCount = 0;
         while(server.isRunning()) {
             Optional<EventBox> isEvent = server.poll();
             if (!isEvent.isPresent()) {
@@ -67,8 +85,8 @@ public class MultiPlayerServer implements Runnable {
             try {
                 switch (event.eventName) {
                     case "playerConnected":
-                        server.sendSnapShot(event.from, root);
                         createPlayer(event.targetId);
+                        server.sendSnapShot(event.from, root);
                         break;
                     case "InteractionPerformed":
                         interactionPerformed(event);
@@ -87,15 +105,15 @@ public class MultiPlayerServer implements Runnable {
                 System.out.println("Error occurred in Multilayer server: " + ex.toString());
             }
 
-            if (loops >= 10000) {
-//                try {
-//                     SceneGraphSerializer.serializeToFile(root, new File(String.format("SceneGraph-%s.xml", System.currentTimeMillis())));
-//                } catch (FileNotFoundException e) {
-//                    e.printStackTrace();
-//                }
-                loops = 0;
+            if (eventsCount >= Settings.EventsTillServerBackup) {
+                try {
+                     SceneGraphSerializer.serializeToFile(root, new File(String.format("SceneGraph-backup.xml", System.currentTimeMillis())));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                eventsCount = 0;
             }
-            loops++;
+            eventsCount++;
         }
         server.stop();
     }
@@ -114,20 +132,21 @@ public class MultiPlayerServer implements Runnable {
         AdventureGameObject gameObject = (AdventureGameObject)root.nodeWithID(event.sourceId).get();
         MeshNode meshNode = (MeshNode)root.nodeWithID(event.targetId).get();
 
-        return new Interaction((InteractionType)event.eventData.get("InteractionType"), gameObject, meshNode);
+        return new Interaction((InteractionType)event.eventData.get(EventDataKeys.InteractionType), gameObject, meshNode);
     }
 
     private void createPlayer(String playerId) {
+        if (root.nodeWithID(playerId).isPresent()) {
+            return;
+        }
         SpawnNode spawn = (SpawnNode)root.nodeWithID(SpawnNode.ID).get();
         spawn.spawnPlayerWithId(playerId);
 
         Player newPlayer = (Player)root.nodeWithID(playerId).get();
-        new MeshNode(playerId + "Mesh", "", "rocket.obj", newPlayer.parent().get());
 
         newPlayer.eventPlayerMoved.addAction(this, (eventObject, triggeringObject, listener, data) ->
                         eventObject.parent().get().setTranslation((Vector3)data.get(EventDataKeys.Location))
         );
-
     }
 
     public static void main(String[] args) {

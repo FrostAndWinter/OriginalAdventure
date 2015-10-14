@@ -66,7 +66,7 @@ public class WavefrontParser {
      * @return a result object holding the parsed results
      * @throws FileNotFoundException thrown if the file doesn't exist
      */
-    public static Result parse(File file, String directory) throws FileNotFoundException {
+    public static Result parse(File file, String directory) throws FileNotFoundException, ParserException {
         InputStream is = new FileInputStream(file);
         return parse(is, directory);
     }
@@ -77,7 +77,7 @@ public class WavefrontParser {
      * @param input - wavefront input text
      * @return a result object holding the parsed results
      */
-    public static Result parse(String input) {
+    public static Result parse(String input) throws ParserException  {
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         return parse(is, null);
     }
@@ -88,13 +88,13 @@ public class WavefrontParser {
      * @param is - wavefront input stream
      * @return a result object holding the parsed results
      */
-    private static Result parse(InputStream is, String directory) {
+    private static Result parse(InputStream is, String directory) throws ParserException  {
         WavefrontParser parser = new WavefrontParser(is, directory);
         return new Result(parser.geometricVertices, parser.textureVertices, parser.vertexNormals, parser.polygonFaces);
     }
 
     /** Don't allow any outside classes to create instances. */
-    private WavefrontParser(InputStream is, String directory) {
+    private WavefrontParser(InputStream is, String directory) throws ParserException  {
         this.scanner = new Scanner(is);
         _directory = directory;
         parse();
@@ -103,7 +103,7 @@ public class WavefrontParser {
     /**
      * Parse the given input.
      */
-    private void parse(){
+    private void parse() throws ParserException {
         while (hasNext()){
             if (hasNext(GEOMETRIC_VERTEX_PAT)) {
                 parseGeometricVertex();
@@ -135,7 +135,7 @@ public class WavefrontParser {
     /**
      * Parse a series of float input into a into a geometric vertex.
      */
-    private void parseGeometricVertex() {
+    private void parseGeometricVertex() throws ParserException  {
         ensuredGobble(GEOMETRIC_VERTEX_PAT, "Geometric vertices should start with a 'v'");
         float x = scanner.nextFloat();
         float y = scanner.nextFloat();
@@ -147,7 +147,7 @@ public class WavefrontParser {
     /**
      * Parse a series of float values into a texture vertex.
      */
-    private void parseTextureVertex() {
+    private void parseTextureVertex() throws ParserException  {
         ensuredGobble(TEXTURE_VERTEX_PAT, "Texture vertices should start with a 'vt'");
         float u = scanner.nextFloat();
         float v = scanner.nextFloat();
@@ -158,7 +158,7 @@ public class WavefrontParser {
     /**
      * Parse a series of float values into a normal vertex.
      */
-    private void parseVertexNormal() {
+    private void parseVertexNormal() throws ParserException  {
         ensuredGobble(VERTEX_NORMAL_PAT, "Vertex should start with a 'vn'");
         float x = scanner.nextFloat();
         float y = scanner.nextFloat();
@@ -173,14 +173,14 @@ public class WavefrontParser {
         throw new UnsupportedOperationException("Parameter space vertices haven't been implemented yet");
     }
 
-    private void parseMaterialLibrary() {
+    private void parseMaterialLibrary() throws ParserException  {
         ensuredGobble(MATERIAL_LIBRARY_PAT, "A material library starts with a mtllib command.");
         String libraryName = scanner.next();
         Map<String, Material> libraryMaterials = MaterialLibrary.libraryWithName(_directory, libraryName).materials();
         this.materials.putAll(libraryMaterials);
     }
 
-    private void parseMaterial() {
+    private void parseMaterial() throws ParserException {
         ensuredGobble(MATERIAL_PAT, "A material usage definition starts with 'usemtl'.");
         String materialName = scanner.next();
         Material material = this.materials.get(materialName);
@@ -190,7 +190,7 @@ public class WavefrontParser {
         _currentMaterial = material;
     }
 
-    private void parsePolygonFace() {
+    private void parsePolygonFace() throws ParserException {
         ensuredGobble(POLYGONAL_FACE_PAT, "Polygons faces should start with 'f'");
         List<IndexData> vertexIndices = new ArrayList<>();
 
@@ -244,7 +244,7 @@ public class WavefrontParser {
      * @param p patten to gobble
      * @param errorMessage message to display if it fails
      */
-    private void ensuredGobble(Pattern p, String errorMessage) {
+    private void ensuredGobble(Pattern p, String errorMessage) throws ParserException {
         if (!gobble(p)) {
             fail(errorMessage);
         }
@@ -253,12 +253,12 @@ public class WavefrontParser {
     /**
      * Report a failure in the parser.
      */
-    private void fail(String message) throws RuntimeException {
+    private void fail(String message) throws ParserException {
         String msg = message + "\n   @ ...";
         for (int i = 0; i < 10 && scanner.hasNext(); i++) {
             msg += " " + scanner.next();
         }
-        throw new RuntimeException(msg + "...");
+        throw new ParserException(msg + "...");
     }
 
     public static class PolygonFace {

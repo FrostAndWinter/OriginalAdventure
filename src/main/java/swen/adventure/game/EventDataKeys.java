@@ -11,4 +11,6 @@ public class EventDataKeys {
     public static final String Location = "Location"; //value is a Vector3
     public static final String Interaction = "Interaction"; //value is an Interaction
     public static final String Mesh = "Mesh"; //value is a MeshNode
+    public static final String InteractionType = "InteractionType"; // value is a InteractionType
+    public static final String Networked = "Networked"; // value is a boolean
 }
