@@ -1,5 +1,6 @@
 package swen.adventure.game;
 
+import swen.adventure.Settings;
 import swen.adventure.engine.Event;
 import swen.adventure.engine.Utilities;
 import swen.adventure.engine.datastorage.EventConnectionParser;
@@ -53,7 +54,7 @@ public class MultiPlayerServer implements Runnable {
     }
 
     public void run() {
-        int loops = 0;
+        int eventsCount = 0;
         while(server.isRunning()) {
             Optional<EventBox> isEvent = server.poll();
             if (!isEvent.isPresent()) {
@@ -67,8 +68,8 @@ public class MultiPlayerServer implements Runnable {
             try {
                 switch (event.eventName) {
                     case "playerConnected":
-                        server.sendSnapShot(event.from, root);
                         createPlayer(event.targetId);
+                        server.sendSnapShot(event.from, root);
                         break;
                     case "InteractionPerformed":
                         interactionPerformed(event);
@@ -87,15 +88,15 @@ public class MultiPlayerServer implements Runnable {
                 System.out.println("Error occurred in Multilayer server: " + ex.toString());
             }
 
-            if (loops >= 10000) {
-//                try {
-//                     SceneGraphSerializer.serializeToFile(root, new File(String.format("SceneGraph-%s.xml", System.currentTimeMillis())));
-//                } catch (FileNotFoundException e) {
-//                    e.printStackTrace();
-//                }
-                loops = 0;
+            if (eventsCount >= Settings.EventsTillServerBackup) {
+                try {
+                     SceneGraphSerializer.serializeToFile(root, new File(String.format("SceneGraph-backup.xml", System.currentTimeMillis())));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                eventsCount = 0;
             }
-            loops++;
+            eventsCount++;
         }
         server.stop();
     }
@@ -118,16 +119,17 @@ public class MultiPlayerServer implements Runnable {
     }
 
     private void createPlayer(String playerId) {
+        if (root.nodeWithID(playerId).isPresent()) {
+            return;
+        }
         SpawnNode spawn = (SpawnNode)root.nodeWithID(SpawnNode.ID).get();
         spawn.spawnPlayerWithId(playerId);
 
         Player newPlayer = (Player)root.nodeWithID(playerId).get();
-        new MeshNode(playerId + "Mesh", "", "rocket.obj", newPlayer.parent().get());
 
         newPlayer.eventPlayerMoved.addAction(this, (eventObject, triggeringObject, listener, data) ->
                         eventObject.parent().get().setTranslation((Vector3)data.get(EventDataKeys.Location))
         );
-
     }
 
     public static void main(String[] args) {

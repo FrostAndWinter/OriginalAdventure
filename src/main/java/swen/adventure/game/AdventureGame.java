@@ -100,7 +100,11 @@ public class AdventureGame implements Game {
     private void setupSceneGraph(TransformNode sceneGraph, String playerId) {
         _sceneGraph = sceneGraph;
 
-        createPlayer(playerId);
+        // Fix to get singler player to run
+        if (!(_client instanceof NetworkClient)) {
+            createPlayer(playerId);
+        }
+        setPlayer(playerId);
 
         Event.EventSet playerMovedSet = Event.eventSetForName("PlayerMoved");
         playerMovedSet.addAction(this, MovePlayer);
@@ -175,13 +179,12 @@ public class AdventureGame implements Game {
 
         Player newPlayer = (Player)_sceneGraph.nodeWithID(playerId).get();
 
-        if (_player == null) { //We're always the first player created after we connect.
-            newPlayer.mesh().ifPresent(meshNode -> meshNode.setEnabled(false));
-            _player = newPlayer;
-        }
-
         newPlayer.eventPlayerMoved.addAction(this, MovePlayer);
+    }
 
+    private void setPlayer(String playerId) {
+        _player = (Player)_sceneGraph.nodeWithID(playerId).get();
+        _player.mesh().ifPresent(meshNode -> meshNode.setEnabled(false));
     }
 
     /**
@@ -384,7 +387,7 @@ public class AdventureGame implements Game {
         // Start with networking using CLI arguments <_player id> <host> <port>
         Client<EventBox> client;
         if (args.length == 3) {
-            client = new NetworkClient(args[0] + Math.random());
+            client = new NetworkClient(args[0]);
             try {
                 client.connect(args[1], Integer.parseInt(args[2]));
             } catch (IOException e) {
