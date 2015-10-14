@@ -165,4 +165,11 @@ public class Door extends AdventureGameObject {
     public Set<Player> playersThatCanOpenDoor() {
         return Collections.unmodifiableSet(_playersThatCanOpenDoor);
     }
+
+    /**
+     * @return Whether the door is currently open.
+     */
+    public boolean isOpen() {
+        return _isOpen;
+    }
 }
