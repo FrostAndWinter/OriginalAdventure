@@ -8,9 +8,9 @@ Github Repository: https://github.com/FrostAndWinter/OriginalAdventure
 
 ## Requirements
 
-* java 8 or above
+* Java 8 or above
 
-* gradle
+* Gradle
 
 ## Running Game
 We’ve provided two Gradle scripts to run the project since some machines (notably ones with Intel Graphics) often crash when run with the ‘correct’ settings. If at all possible, run the program using the high quality script, since on capable computers that will likely have better performance (it uses deferred shading, making the lighting cheaper). On the lower quality script, you may notice some texture issues on the chest, key, and ceiling, along with mediocre performance.
@@ -21,7 +21,7 @@ The modes are 'runPretty' and 'runUgly'
 
 * Otherwise: run `./gradlew {mode} run`
 
-## Game Play
+## Gameplay
 
 The game is designed for two players to play; however, there are workarounds that we have left in the game so that one person can complete the majority of it.
 In particular, both the primary mouse button and the E key can be used to perform a primary action. I’ll outline how you can use that to bypass a puzzle below.
