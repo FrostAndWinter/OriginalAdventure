@@ -14,6 +14,7 @@ import swen.adventure.engine.rendering.GLDeferredRenderer;
 import swen.adventure.engine.rendering.GLForwardRenderer;
 import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.rendering.PickerRenderer;
+import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
 import swen.adventure.game.input.AdventureGameKeyInput;
@@ -46,6 +47,7 @@ public class AdventureGame implements Game {
     private float _mouseSensitivity = Settings.MouseSensitivity;
     private float _viewAngleX;
     private float _viewAngleY;
+    private boolean _viewAngleUpdated = false;
 
     private float virtualUIWidth;
     private float virtualUIHeight;
@@ -152,8 +154,14 @@ public class AdventureGame implements Game {
 
     private static final Action<Player, Player, AdventureGame> MovePlayer = (eventObject, triggeringObject, listener, data) -> {
         if (data.containsKey(EventDataKeys.Networked)) {
-            eventObject.parent().get().setTranslation((Vector3) data.get(EventDataKeys.Location));
-            System.out.println("Forcefully set position of " + eventObject.id);
+            if (data.containsKey(EventDataKeys.Location)) {
+                eventObject.parent().get().setTranslation((Vector3) data.get(EventDataKeys.Location));
+                System.out.println("Forcefully set position of " + eventObject.id);
+            }
+            if (data.containsKey(EventDataKeys.Quaternion)) {
+                eventObject.parent().get().setRotation((Quaternion) data.get(EventDataKeys.Quaternion));
+                System.out.println("Forcefully set rotation of " + eventObject.id);
+            }
         } else {
             listener._client.send(new EventBox("PlayerMoved", triggeringObject, eventObject, listener._player, data));
         }
@@ -339,7 +347,10 @@ public class AdventureGame implements Game {
         GameDelegate.pollInput();
 
         //Set where the _player is looking.
-       _player.setLookDirection(_viewAngleX, _viewAngleY);
+        if (_viewAngleUpdated) {
+            _player.setLookDirection(_viewAngleX, _viewAngleY);
+            _viewAngleUpdated = false;
+        }
         this.render();
     }
 
@@ -397,6 +408,7 @@ public class AdventureGame implements Game {
     public void onMouseDeltaChange(float deltaX, float deltaY) {
         _viewAngleX = (_viewAngleX + deltaX / _mouseSensitivity) % (float)(2 * Math.PI);
         _viewAngleY = (_viewAngleY + deltaY / _mouseSensitivity) % (float)(2 * Math.PI);
+        _viewAngleUpdated = true;
     }
 
     @Override

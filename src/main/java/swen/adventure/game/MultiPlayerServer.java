@@ -10,6 +10,7 @@ import swen.adventure.engine.datastorage.SceneGraphSerializer;
 import swen.adventure.engine.network.EventBox;
 import swen.adventure.engine.network.NetworkServer;
 import swen.adventure.engine.network.Server;
+import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
 import swen.adventure.game.scenenodes.AdventureGameObject;
@@ -144,9 +145,14 @@ public class MultiPlayerServer implements Runnable {
 
         Player newPlayer = (Player)root.nodeWithID(playerId).get();
 
-        newPlayer.eventPlayerMoved.addAction(this, (eventObject, triggeringObject, listener, data) ->
-                        eventObject.parent().get().setTranslation((Vector3)data.get(EventDataKeys.Location))
-        );
+        newPlayer.eventPlayerMoved.addAction(this, (eventObject, triggeringObject, listener, data) -> {
+            if (data.containsKey(EventDataKeys.Location)) {
+                eventObject.parent().get().setTranslation((Vector3) data.get(EventDataKeys.Location));
+            }
+            if (data.containsKey(EventDataKeys.Quaternion)) {
+                eventObject.parent().get().setRotation((Quaternion) data.get(EventDataKeys.Quaternion));
+            }
+        });
     }
 
     public static void main(String[] args) {

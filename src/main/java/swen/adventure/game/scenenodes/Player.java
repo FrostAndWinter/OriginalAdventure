@@ -102,7 +102,8 @@ public class Player extends AdventureGameObject {
         successfullyMoved |= this.attemptMoveDirect(new Vector3(0.f, 0.f, lateralTranslation.z));
 
         if (successfullyMoved) {
-            eventPlayerMoved.trigger(this, Collections.singletonMap(EventDataKeys.Location, transformNode.translation()));
+            eventPlayerMoved.trigger(this,
+                    Collections.singletonMap(EventDataKeys.Location, transformNode.translation()));
         }
     }
 
@@ -135,8 +136,13 @@ public class Player extends AdventureGameObject {
      * @param angleY The rotation about the y axis.
      */
     public void setLookDirection(float angleX, float angleY) {
-        this.parent().get().setRotation(Quaternion.makeWithAngleAndAxis(angleX, 0, -1, 0).multiply(Quaternion.makeWithAngleAndAxis(angleY, -1, 0, 0)));
+        TransformNode rotatedNode = this.parent().get();
+        rotatedNode.setRotation(Quaternion.makeWithAngleAndAxis(angleX, 0, -1, 0)
+                   .multiply(Quaternion.makeWithAngleAndAxis(angleY, -1, 0, 0)));
         _meshRotationTransform.setRotation(Quaternion.makeWithAngleAndAxis(angleY, -1, 0, 0));
+
+        eventPlayerMoved.trigger(this,
+                Collections.singletonMap(EventDataKeys.Quaternion, rotatedNode.rotation()));
     }
 
     public Inventory inventory() {
