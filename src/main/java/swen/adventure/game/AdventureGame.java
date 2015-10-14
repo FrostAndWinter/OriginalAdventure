@@ -403,6 +403,8 @@ public class AdventureGame implements Game {
         _client.disconnect();
     }
 
+
+
     public static void startGame(String[] args) {
         // Start with networking using CLI arguments <_player id> <host> <port>
         Client<EventBox> client;
@@ -411,8 +413,7 @@ public class AdventureGame implements Game {
             try {
                 client.connect(args[1], Integer.parseInt(args[2]));
             } catch (IOException e) {
-                e.printStackTrace();
-                return;
+                throw new InvalidServerConfig();
             }
         } else {
             DumbClient dumbClient = new DumbClient();
