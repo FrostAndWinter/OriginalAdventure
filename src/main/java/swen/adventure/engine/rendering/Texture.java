@@ -64,9 +64,6 @@ public final class Texture {
                     STBImageResize.STBIR_FILTER_DEFAULT,
                     useSRGB ? STBImageResize.STBIR_COLORSPACE_SRGB : STBImageResize.STBIR_COLORSPACE_LINEAR);
 
-
-           if (width == 1024 && height == 1024) STBImageWrite.stbi_write_png("/tmp/" + this.hashCode() + " w" + w + ".png", w, h, this.numPixelComponents, outputBuffer, 0);
-
             if (success == 0) {
                 System.err.printf("Error generating mip-map with dimensions %d, %d.\n", w, h);
             }
