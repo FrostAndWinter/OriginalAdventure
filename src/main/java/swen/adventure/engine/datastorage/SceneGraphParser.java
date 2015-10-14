@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -45,6 +46,11 @@ public class SceneGraphParser {
     private static final String LEVER_TAG = "Lever";
     private static final String DOOR_TAG = "Door";
     private static final String INVENTORY_TAG = "Inventory";
+
+    @FunctionalInterface
+    public interface PostExecutionFunction {
+        void action();
+    }
 
     /**
      * Parse a graph which is stored in xml format from a input string.
@@ -116,18 +122,20 @@ public class SceneGraphParser {
      * @return the root of the new graph.
      */
     private static TransformNode parseSceneNode(InputStream is, TransformNode graph) throws ParserException {
-        try {
             Document doc = Utilities.loadExistingXmlDocument(is);
+
+            List<PostExecutionFunction> executeAfter = new ArrayList<>(); //a list of functions to execute after the graph has been parsed.
 
             NodeList nodes = doc.getFirstChild().getChildNodes();
             for (Node node : prioritiseChildren(nodes)) {
-                parseNode(node, graph);
+                parseNode(node, graph, executeAfter);
             }
 
-            return graph;
-        } catch (Throwable t) {
-            throw new ParserException("Error while parsing the scene graph.", t);
+        for (PostExecutionFunction function : executeAfter) {
+            function.action();
         }
+
+            return graph;
     }
 
     /**
@@ -137,7 +145,7 @@ public class SceneGraphParser {
      * @param parent parent of this node (as given in the xml structure)
      * @return the newly constructed scene node
      */
-    private static SceneNode parseNode(Node xmlNode, TransformNode parent) {
+    private static SceneNode parseNode(Node xmlNode, TransformNode parent, List<PostExecutionFunction> executeAfter) {
         String name = xmlNode.getNodeName();
         switch (name) {
 
@@ -169,7 +177,7 @@ public class SceneGraphParser {
             case LEVER_TAG:
                 return parseLever(xmlNode, parent);
             case DOOR_TAG:
-                return parseDoor(xmlNode, parent);
+                return parseDoor(xmlNode, parent, executeAfter);
             case INVENTORY_TAG:
                 return parseInventory(xmlNode, parent);
             case REGION_TAG:
@@ -233,11 +241,12 @@ public class SceneGraphParser {
      * @param parent the transform node which will be set as the newly constructed node's parent.
      * @return a newly constructed door node with the same state as represented in the xml node.
      */
-    private static SceneNode parseDoor(Node xmlNode, TransformNode parent) {
+    private static SceneNode parseDoor(Node xmlNode, TransformNode parent, List<PostExecutionFunction> executeAfter) {
         Door door = parseGameObject(xmlNode, parent, Door.class);
         boolean isOpen = getAttribute("isOpen", xmlNode, Boolean.class, false);
         boolean requiresKey = getAttribute("requiresKey", xmlNode, Boolean.class, false);
         boolean canDirectlyInteractWith = getAttribute("canDirectlyInteractWith", xmlNode, Boolean.class, true);
+
         door.setIsOpen(isOpen);
         door.setRequiresKey(requiresKey);
         door.setCanDirectlyInteractWith(canDirectlyInteractWith);

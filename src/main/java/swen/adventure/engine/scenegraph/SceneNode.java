@@ -6,6 +6,7 @@ import swen.adventure.engine.Event;
 import swen.adventure.engine.datastorage.BundleObject;
 import swen.adventure.engine.datastorage.BundleSerializable;
 import swen.adventure.engine.rendering.maths.Matrix4;
+import swen.adventure.engine.rendering.maths.Vector3;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -176,6 +177,13 @@ public abstract class SceneNode {
         for (SceneNode child : _childNodes) {
             child.traverse(traversalFunction);
         }
+    }
+
+    /**
+     * @return The centre position of this node in world space.
+     */
+    public Vector3 positionInWorldSpace() {
+        return this.nodeToWorldSpaceTransform().multiplyWithTranslation(Vector3.zero);
     }
 
     /**

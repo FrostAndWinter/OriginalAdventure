@@ -33,7 +33,7 @@ public final class Texture {
     private static Map<String, Texture> _textureCache = new HashMap<>();
     private static Map<String, Texture> _normalsCache = new HashMap<>();
 
-    public final ByteBuffer textureData;
+    private final ByteBuffer textureData;
     private final List<ByteBuffer> _mipMappedData = new ArrayList<>();
 
     public final int width;
@@ -83,11 +83,13 @@ public final class Texture {
 
         glTexImage2D(GL_TEXTURE_2D, 0, this.internalFormat(), this.width, this.height, 0, this.textureFormat(), GL_UNSIGNED_BYTE, this.textureData);
 
+        STBImage.stbi_image_free(this.textureData);
         int mipmapLevel = 0;
         for(; mipmapLevel < _mipMappedData.size(); mipmapLevel++) {
 
             glTexImage2D(GL_TEXTURE_2D, mipmapLevel + 1, this.internalFormat(), this.width / (2 << mipmapLevel), this.height / (2 << mipmapLevel), 0,
                     this.textureFormat(), GL_UNSIGNED_BYTE, _mipMappedData.get(mipmapLevel));
+            STBImage.stbi_image_free(_mipMappedData.get(mipmapLevel));
         }
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
@@ -195,8 +197,8 @@ public final class Texture {
             IntBuffer numPixelComponentsBuffer = BufferUtils.createIntBuffer(1);
             ByteBuffer image = Texture.loadImageWithName(directory, fileName, widthBuffer, heightBuffer, numPixelComponentsBuffer);
 
-                texture = new Texture(image, widthBuffer.get(), heightBuffer.get(), numPixelComponentsBuffer.get(), useSRGB);
-                _textureCache.put(directory + fileName, texture);
+            texture = new Texture(image, widthBuffer.get(), heightBuffer.get(), numPixelComponentsBuffer.get(), useSRGB);
+            _textureCache.put(directory + fileName, texture);
         }
 
         return texture;
