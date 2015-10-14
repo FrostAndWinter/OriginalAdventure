@@ -14,15 +14,19 @@ import static org.mockito.Mockito.when;
 
 /**
  * Created by josephbennett on 11/10/15
+ * Moderfied by Daniel Braithwaite ID: 300313770
  */
 public class InventoryTests {
 
     private TransformNode playerTransform;
+    private TransformNode rootTransform;
+    private TransformNode itemTransform;
     private Player player;
 
     @Before
     public void setup() {
-        TransformNode rootTransform = new TransformNode("rootTransform", Vector3.zero, new Quaternion(), Vector3.one);
+        rootTransform = new TransformNode("rootTransform", Vector3.zero, new Quaternion(), Vector3.one);
+        itemTransform = new TransformNode("itemTransform", rootTransform, true, Vector3.zero, new Quaternion(), Vector3.one);
         playerTransform = new TransformNode("playerTransform", rootTransform, true, Vector3.zero, new Quaternion(), Vector3.one);
 
         player = mock(Player.class);
@@ -69,7 +73,7 @@ public class InventoryTests {
 
     private Item createMockItem() {
         Item testItem = mock(Item.class);
-        when(testItem.parent()).then(invocation -> Optional.of(playerTransform));
+        when(testItem.parent()).then(invocation -> Optional.of(itemTransform));
         return testItem;
     }
 
