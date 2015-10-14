@@ -19,6 +19,7 @@ public final class Interaction {
         Secondary;
     }
 
+    private static final float InteractionCutoffDistance = 800;
     public final InteractionType interactionType;
     public final AdventureGameObject gameObject;
     public final MeshNode meshNode;
@@ -27,6 +28,11 @@ public final class Interaction {
         this.interactionType = interactionType;
         this.gameObject = gameObject;
         this.meshNode = meshNode;
+    }
+
+    public static boolean playerCanInteractWithObject(Player player, AdventureGameObject gameObject) {
+        float distance = player.positionInWorldSpace().distance(gameObject.positionInWorldSpace());
+        return distance <= Interaction.InteractionCutoffDistance;
     }
 
     public void performInteractionWithPlayer(Player player) {
