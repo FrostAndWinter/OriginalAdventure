@@ -21,13 +21,23 @@ InteractionEnded; greenLightLever; LeverMoveUp; greenLightLever
 PlayerPickedUpItem; key; AllowPlayerToOpenDoor; door
 PlayerDroppedItem; key; DisallowPlayerFromOpeningDoor; door
 
-InteractionEnded; rightGateLever; LeverMoveUp; rightGateLever
+InteractionEnded; redBlueGateLever; LeverMoveUp; redBlueGateLever
 
-LeverMovedDown; rightGateLever; OpenDoor; rightGate
-LeverMovedUp; rightGateLever; CloseDoor; rightGate
-LeverMovedDown; rightGateLever; OpenDoor; leftGate
-LeverMovedUp; rightGateLever; CloseDoor; leftGate
+LeverMovedDown; redBlueGateLever; OpenDoor; redGate
+LeverMovedUp; redBlueGateLever; CloseDoor; redGate
+LeverMovedDown; redBlueGateLever; OpenDoor; blueGate
+LeverMovedUp; redBlueGateLever; CloseDoor; blueGate
 
-LeverMovedDown; leftGateLever; OpenDoor; rightGate
-LeverMovedUp; leftGateLever; CloseDoor; rightGate
+LeverMovedDown; redGateLever; OpenDoor; redGate
+LeverMovedUp; redGateLever; CloseDoor; redGate
+
+ChestOpened; grapefruitChest; TurnLightOn; grapefruitChestLight
+ChestClosed; grapefruitChest; TurnLightOff; grapefruitChestLight
+
+// allow the player to escape if they the grapefruit key
+PlayerPickedUpItem; grapefruitKey; AllowPlayerToOpenDoor; corridorEscapeDoor
+PlayerDroppedItem; grapefruitKey; DisallowPlayerFromOpeningDoor; corridorEscapeDoor
+PlayerPickedUpItem; grapefruitKey; AllowPlayerToOpenDoor; blueGate
+PlayerDroppedItem; grapefruitKey; DisallowPlayerFromOpeningDoor; blueGate
+
 

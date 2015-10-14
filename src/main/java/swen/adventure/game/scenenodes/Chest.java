@@ -1,5 +1,6 @@
 package swen.adventure.game.scenenodes;
 
+import swen.adventure.engine.Event;
 import swen.adventure.engine.animation.AnimableProperty;
 import swen.adventure.engine.animation.Animation;
 import swen.adventure.engine.rendering.maths.Quaternion;
@@ -25,6 +26,9 @@ public class Chest extends AdventureGameObject {
     private static final float AnimationDuration = 0.6f;
 
     private AnimableProperty _lidRotationProgress = new AnimableProperty(ClosedAngle);
+
+    public final Event<Chest, Player> eventChestOpened = new Event<>("ChestOpened", this);
+    public final Event<Chest, Player> eventChestClosed = new Event<>("ChestClosed", this);
 
     public Chest(String id, TransformNode parent) {
         super(id, parent, "chest");
@@ -56,8 +60,6 @@ public class Chest extends AdventureGameObject {
         _lidRotationProgress.eventValueChanged.addAction(this, (eventObject, triggeringObject, listener, data) ->  {
             listener._hingeTransform.setRotation(Quaternion.makeWithAngleAndAxis(eventObject.value() * (ClosedAngle), 1, 0, 0));
         });
-
-        this.close(false);
     }
 
     /**
@@ -65,7 +67,7 @@ public class Chest extends AdventureGameObject {
      * animation if wanted
      * @param animate true if animation should be peformed
      */
-    public void open(boolean animate) {
+    public void open(boolean animate, Player player) {
         _isOpen = true;
         if (animate) {
             new Animation(_lidRotationProgress, AnimationDuration * Math.abs(0.5f - _lidRotationProgress.value()), 0.0f);
@@ -73,6 +75,8 @@ public class Chest extends AdventureGameObject {
             _lidRotationProgress.stopAnimating();
             _lidRotationProgress.setValue(0.f);
         }
+
+        this.eventChestOpened.trigger(player, Collections.emptyMap());
     }
 
     /**
@@ -80,7 +84,7 @@ public class Chest extends AdventureGameObject {
      * animation if wanted
      * @param animate true if animation should be peformed
      */
-    public void close(boolean animate) {
+    public void close(boolean animate, Player player) {
         _isOpen = false;
         if (animate) {
             new Animation(_lidRotationProgress, AnimationDuration * Math.abs(0.5f - _lidRotationProgress.value()), 1.0f);
@@ -88,6 +92,8 @@ public class Chest extends AdventureGameObject {
             _lidRotationProgress.stopAnimating();
             _lidRotationProgress.setValue(1.f);
         }
+
+        this.eventChestClosed.trigger(player, Collections.emptyMap());
     }
 
     public boolean isOpen() {
@@ -113,10 +119,10 @@ public class Chest extends AdventureGameObject {
         super.performInteraction(interaction, meshNode, player);
         switch (interaction.interactionType) {
             case Open:
-                this.open(true);
+                this.open(true, player);
                 break;
             case Close:
-                this.close(true);
+                this.close(true, player);
                 break;
             case PlaceIn:
                 player.inventory().selectedItem().ifPresent(item -> {

@@ -67,8 +67,12 @@ public class EventConnectionParser {
     public static void setupConnections(List<EventConnection> connections, SceneNode sceneGraph) {
         for (EventConnection connection : connections) {
             for (String objectName : connection.objectNames) {
-                SceneNode targetObject = sceneGraph.nodeWithID(objectName).get();
-                Event event = targetObject.eventWithName(connection.eventName);
+                Optional<SceneNode> targetObject = sceneGraph.nodeWithID(objectName);
+                if (!targetObject.isPresent()) {
+                    System.err.println("Error retrieving target object with id " + objectName);
+                    break;
+                }
+                Event event = targetObject.get().eventWithName(connection.eventName);
                 for (String listenerName : connection.listenerNames) {
                     Optional<SceneNode> listeningObject = sceneGraph.nodeWithID(listenerName);
                     if (!listeningObject.isPresent()) {
