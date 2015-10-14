@@ -1,5 +1,6 @@
 package swen.adventure.game;
 
+import com.sun.media.sound.InvalidFormatException;
 import oracle.jrockit.jfr.JFR;
 import swen.adventure.engine.GameDelegate;
 import swen.adventure.engine.Utilities;
@@ -13,11 +14,16 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.font.OpenType;
 import java.io.File;
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by danielbraithwt on 10/14/15.
@@ -94,10 +100,19 @@ public class LauncherGUI extends JFrame {
 
     /**
      * Starts a new game by calling the start game method in
-     * the adventure game class.
+     * the adventure game class. Will also tell user
+     * if the server cant be connected to
+     *
      * @param n true if game should connect to a server
      */
-    public void startGame(boolean n) {
+    private void startGame(boolean n) {
+        Optional<String> inputError = validateInputData();
+
+        if (n && inputError.isPresent()) {
+            JOptionPane.showMessageDialog(this, inputError.get());
+            return;
+        }
+
         String[] args;
         if (n) {
             args = new String[] {nameTextField.getText(), serverAddressTextField.getText(),
@@ -108,7 +123,45 @@ public class LauncherGUI extends JFrame {
 
         setVisible(false);
 
-        AdventureGame.startGame(args);
+        try {
+            AdventureGame.startGame(args);
+        } catch (InvalidServerConfig e) {
+            JOptionPane.showMessageDialog(null, "Could not find server");
+            new Thread(() -> setVisible(true)).start();
+        }
+    }
+
+    /**
+     * Makes sure the data the user has entered is valid
+     * will give an error message if the data isnt valid
+     * @return String optional, if string present error occurred
+     */
+    private Optional<String> validateInputData() {
+        String error = "";
+
+        // Ensure that the name isnt empty
+        if (nameTextField.getText().trim().equals("")) {
+            error += "Name cant be empty\n";
+        }
+
+        // Ensure the port is a number
+        try {
+            int num = Integer.parseInt(serverPortTextField.getText());
+        } catch (NumberFormatException e) {
+            error += "Port must be a number\n";
+        }
+
+        // Ensure the ip address is valid
+        try {
+            InetAddress inet = Inet4Address.getByName(serverAddressTextField.getText());
+            if (!inet.getHostAddress().equals(serverAddressTextField.getText()) || !(inet instanceof Inet4Address)) {
+                error += "IP Address Isnt Valid\n";
+            }
+        } catch (UnknownHostException e) {
+            error += "IP Address Isnt Valid\n";
+        }
+
+        return Optional.ofNullable(error.equals("") ? null : error);
     }
 
     public static void main(String[] args) {

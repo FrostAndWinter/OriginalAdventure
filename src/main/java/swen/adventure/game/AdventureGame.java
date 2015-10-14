@@ -4,8 +4,8 @@ import processing.opengl.PGraphics2D;
 import swen.adventure.Settings;
 import swen.adventure.engine.*;
 import swen.adventure.engine.datastorage.EventConnectionParser;
+import swen.adventure.engine.datastorage.ParserException;
 import swen.adventure.engine.datastorage.SceneGraphParser;
-import swen.adventure.engine.datastorage.SceneGraphSerializer;
 import swen.adventure.engine.network.Client;
 import swen.adventure.engine.network.DumbClient;
 import swen.adventure.engine.network.EventBox;
@@ -14,8 +14,6 @@ import swen.adventure.engine.rendering.GLDeferredRenderer;
 import swen.adventure.engine.rendering.GLForwardRenderer;
 import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.rendering.PickerRenderer;
-import swen.adventure.engine.rendering.maths.BoundingBox;
-import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
 import swen.adventure.game.input.AdventureGameKeyInput;
@@ -74,11 +72,8 @@ public class AdventureGame implements Game {
             _pickerRenderer = new PickerRenderer();
         }
 
-        try { //TODO get the level file name from the server.
-            _sceneGraph = SceneGraphParser.parseSceneGraph(new File(Utilities.pathForResource("SceneGraph", "xml")));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        File sceneGraphFile = new File(Utilities.pathForResource("SceneGraph", "xml"));
+        _sceneGraph = loadSceneGraphFromFile(sceneGraphFile);
 
         virtualUIWidth = width;
         virtualUIHeight = height;
@@ -94,13 +89,45 @@ public class AdventureGame implements Game {
         }
 
         EventBox event = box.get();
-        setupSceneGraph(SceneGraphParser.parseSceneGraph(event.eventData.get("scenegraph").toString(), _sceneGraph), event.targetId);
+        setupSceneGraph(loadSceneGraphFromString(event.eventData.get("scenegraph").toString(), _sceneGraph), event.targetId);
+    }
+
+    private TransformNode loadSceneGraphFromFile(File sceneGraphFile) {
+        try {
+            return SceneGraphParser.parseSceneGraph(sceneGraphFile);
+        } catch (FileNotFoundException e) {
+            System.err.println("Can't find file " + sceneGraphFile);
+        } catch (ParserException e) {
+            System.err.println(e.getMessage());
+        }
+
+        fail();
+        return null; // dead code
+    }
+
+    private TransformNode loadSceneGraphFromString(String xml, TransformNode existingGraph) {
+        try {
+            return SceneGraphParser.parseSceneGraph(xml, existingGraph);
+        } catch (ParserException e) {
+            System.err.println(e.getMessage());
+        }
+
+        fail();
+        return null; // dead code
+    }
+
+    private void fail() {
+        System.exit(1);
     }
 
     private void setupSceneGraph(TransformNode sceneGraph, String playerId) {
         _sceneGraph = sceneGraph;
 
-        createPlayer(playerId);
+        // Fix to get singler player to run
+        if (!(_client instanceof NetworkClient)) {
+            createPlayer(playerId);
+        }
+        setPlayer(playerId);
 
         Event.EventSet playerMovedSet = Event.eventSetForName("PlayerMoved");
         playerMovedSet.addAction(this, MovePlayer);
@@ -120,11 +147,11 @@ public class AdventureGame implements Game {
         });
 
         this.setupUI((int) virtualUIWidth, (int) virtualUIHeight);
-    } 
+    }
 
 
     private static final Action<Player, Player, AdventureGame> MovePlayer = (eventObject, triggeringObject, listener, data) -> {
-        if (data.containsKey("Networked")) {
+        if (data.containsKey(EventDataKeys.Networked)) {
             eventObject.parent().get().setTranslation((Vector3) data.get(EventDataKeys.Location));
             System.out.println("Forcefully set position of " + eventObject.id);
         } else {
@@ -135,7 +162,7 @@ public class AdventureGame implements Game {
 
     private void sendInteraction(Interaction interaction) {
         Map<String, Object> data = new HashMap<>();
-        data.put("InteractionType", interaction.interactionType);
+        data.put(EventDataKeys.InteractionType, interaction.interactionType);
         _client.send(new EventBox("InteractionPerformed",
                 interaction.gameObject.id,
                 interaction.meshNode.id,
@@ -145,7 +172,7 @@ public class AdventureGame implements Game {
 
     private void sendEndInteraction(Interaction interaction) {
         Map<String, Object> data = new HashMap<>();
-        data.put("InteractionType", interaction.interactionType);
+        data.put(EventDataKeys.InteractionType, interaction.interactionType);
         _client.send(new EventBox("InteractionEnded",
                 interaction.gameObject.id,
                 interaction.meshNode.id,
@@ -175,13 +202,12 @@ public class AdventureGame implements Game {
 
         Player newPlayer = (Player)_sceneGraph.nodeWithID(playerId).get();
 
-        if (_player == null) { //We're always the first player created after we connect.
-            newPlayer.mesh().ifPresent(meshNode -> meshNode.setEnabled(false));
-            _player = newPlayer;
-        }
-
         newPlayer.eventPlayerMoved.addAction(this, MovePlayer);
+    }
 
+    private void setPlayer(String playerId) {
+        _player = (Player)_sceneGraph.nodeWithID(playerId).get();
+        _player.mesh().ifPresent(meshNode -> meshNode.setEnabled(false));
     }
 
     /**
@@ -273,7 +299,7 @@ public class AdventureGame implements Game {
         Optional<EventBox> box;
         while ((box = _client.poll()).isPresent()) {
             EventBox event = box.get();
-            event.eventData.put("Networked", true);
+            event.eventData.put(EventDataKeys.Networked, true);
             SceneNode source = _sceneGraph.nodeWithID(event.sourceId).get();
 
             if (event.eventName.equals("playerConnected")) {
@@ -286,7 +312,7 @@ public class AdventureGame implements Game {
                 MeshNode meshNode = (MeshNode)_sceneGraph.nodeWithID(event.targetId).get();
                 Player player = (Player)_sceneGraph.nodeWithID(event.from).get();
 
-                Interaction interaction = new Interaction((InteractionType) event.eventData.get("InteractionType"), gameObject, meshNode);
+                Interaction interaction = new Interaction((InteractionType) event.eventData.get(EventDataKeys.InteractionType), gameObject, meshNode);
 
                 interaction.performInteractionWithPlayer(player);
                 continue;
@@ -297,7 +323,7 @@ public class AdventureGame implements Game {
                 MeshNode meshNode = (MeshNode) _sceneGraph.nodeWithID(event.targetId).get();
                 Player player = (Player) _sceneGraph.nodeWithID(event.from).get();
 
-                Interaction interaction = new Interaction((InteractionType) event.eventData.get("InteractionType"), gameObject, meshNode);
+                Interaction interaction = new Interaction((InteractionType) event.eventData.get(EventDataKeys.InteractionType), gameObject, meshNode);
 
                 interaction.interactionEndedByPlayer(player);
                 continue;
@@ -314,8 +340,6 @@ public class AdventureGame implements Game {
 
         //Set where the _player is looking.
        _player.setLookDirection(_viewAngleX, _viewAngleY);
-
-
         this.render();
     }
 
@@ -380,16 +404,17 @@ public class AdventureGame implements Game {
         _client.disconnect();
     }
 
+
+
     public static void startGame(String[] args) {
         // Start with networking using CLI arguments <_player id> <host> <port>
         Client<EventBox> client;
         if (args.length == 3) {
-            client = new NetworkClient(args[0] + Math.random());
+            client = new NetworkClient(args[0]);
             try {
                 client.connect(args[1], Integer.parseInt(args[2]));
             } catch (IOException e) {
-                e.printStackTrace();
-                return;
+                throw new InvalidServerConfig();
             }
         } else {
             DumbClient dumbClient = new DumbClient();

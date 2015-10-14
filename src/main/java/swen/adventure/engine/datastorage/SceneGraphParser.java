@@ -34,6 +34,7 @@ public class SceneGraphParser {
     private static final String TRANSFORM_NODE_TAG = "TransformNode";
     private static final String GAME_OBJECT_TAG = "GameObject";
     private static final String MESH_NODE_TAG = "MeshNode";
+    private static final String REGION_TAG = "Region";
     private static final String AMBIENT_LIGHT_TAG = "AmbientLight";
     private static final String DIRECTIONAL_LIGHT_TAG = "DirectionalLight";
     private static final String POINT_LIGHT_TAG = "PointLight";
@@ -52,7 +53,7 @@ public class SceneGraphParser {
      * @param input xml representation of the scene graph
      * @return root of the graph
      */
-    public static TransformNode parseSceneGraph(String input) {
+    public static TransformNode parseSceneGraph(String input) throws ParserException {
         InputStream is = Utilities.stringToInputStream(input);
         return parseSceneNode(is);
     }
@@ -66,7 +67,7 @@ public class SceneGraphParser {
      * @param input xml representation of the scene graph
      * @return root of the graph
      */
-    public static TransformNode parseSceneGraph(String input, TransformNode existingGraph) {
+    public static TransformNode parseSceneGraph(String input, TransformNode existingGraph) throws ParserException {
         InputStream is = Utilities.stringToInputStream(input);
         return parseSceneNode(is, existingGraph);
     }
@@ -78,7 +79,7 @@ public class SceneGraphParser {
      * @throws FileNotFoundException if the file doesn't exist.
      * @return root of the graph.
      */
-    public static TransformNode parseSceneGraph(File inputFile) throws FileNotFoundException {
+    public static TransformNode parseSceneGraph(File inputFile) throws FileNotFoundException, ParserException {
         InputStream is = Utilities.fileToInputStream(inputFile);
         return parseSceneNode(is);
     }
@@ -92,7 +93,7 @@ public class SceneGraphParser {
      * @throws FileNotFoundException if the file doesn't exist.
      * @return root of the graph.
      */
-    public static TransformNode parseSceneGraph(File inputFile, TransformNode existingGraph) throws FileNotFoundException {
+    public static TransformNode parseSceneGraph(File inputFile, TransformNode existingGraph) throws FileNotFoundException, ParserException {
         InputStream is = Utilities.fileToInputStream(inputFile);
         return parseSceneNode(is, existingGraph);
     }
@@ -103,7 +104,7 @@ public class SceneGraphParser {
      * @param inputStream stream containing a xml representation of the scene graph.
      * @return root of the graph.
      */
-    private static TransformNode parseSceneNode(InputStream inputStream){
+    private static TransformNode parseSceneNode(InputStream inputStream) throws ParserException {
         TransformNode rootNode = new TransformNode("root", Vector3.zero, new Quaternion(), Vector3.one); //All scene graphs start with an identity root node.
         return SceneGraphParser.parseSceneNode(inputStream, rootNode);
     }
@@ -115,15 +116,19 @@ public class SceneGraphParser {
      * @param graph graph which will parent the parsed graph.
      * @return the root of the new graph.
      */
-    private static TransformNode parseSceneNode(InputStream is, TransformNode graph){
-        Document doc = Utilities.loadExistingXmlDocument(is);
+    private static TransformNode parseSceneNode(InputStream is, TransformNode graph) throws ParserException {
+        try {
+            Document doc = Utilities.loadExistingXmlDocument(is);
 
-        NodeList nodes = doc.getFirstChild().getChildNodes();
-        for (int i = 0; i < nodes.getLength(); i++) {
-            parseNode(nodes.item(i), graph);
+            NodeList nodes = doc.getFirstChild().getChildNodes();
+            for (int i = 0; i < nodes.getLength(); i++) {
+                parseNode(nodes.item(i), graph);
+            }
+
+            return graph;
+        } catch (Throwable t) {
+            throw new ParserException("Error while parsing the scene graph.", t);
         }
-
-        return graph;
     }
 
     /**
@@ -136,8 +141,12 @@ public class SceneGraphParser {
     private static SceneNode parseNode(Node xmlNode, TransformNode parent) {
         String name = xmlNode.getNodeName();
         switch (name) {
+
+            // Note parseTransformNode will recursively parse all children under it.
             case TRANSFORM_NODE_TAG:
                 return parseTransformNode(xmlNode, parent);
+
+            // All other nodes are leafs in the graph.
             case GAME_OBJECT_TAG:
                 return parseGameObject(xmlNode, parent, SceneNode.class);
             case MESH_NODE_TAG:
@@ -164,10 +173,28 @@ public class SceneGraphParser {
                 return parseDoor(xmlNode, parent);
             case INVENTORY_TAG:
                 return parseInventory(xmlNode, parent);
+            case REGION_TAG:
+                return parseRegion(xmlNode, parent);
             default:
-               // fail("Unrecognised node: " + name);
                 return parseGameObject(xmlNode, parent, SceneNode.class);
         }
+    }
+
+    /**
+     * Construct a inventory node from its xml representation.
+     *
+     * @param xmlNode node from the xml document which represents a inventory node.
+     * @param parent the transform node which will be set as the newly constructed node's parent.
+     * @return a newly constructed inventory node with the same state as represented in the xml node.
+     */
+    private static Region parseRegion(Node xmlNode, TransformNode parent) {
+        String id = getAttribute("regionName", xmlNode);
+
+        Region region = parent.findNodeWithIdOrCreate(id, () -> {
+            BoundingBox boundingBox = getAttribute("boundingBox", xmlNode, BoundingBox.class);
+            return new Region(id, boundingBox, parent);
+        });
+        return region;
     }
 
     /**

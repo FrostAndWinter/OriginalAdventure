@@ -16,22 +16,28 @@ public class ControlsOverlay extends Panel {
         setColor(new Color(0, 0, 0, 100));
         setLayoutManager(new LinearLayout(LinearLayout.LINEAR_LAYOUT_VERTICAL));
 
-        TextBox moveFoward = new TextBox("W - move foward", 0, 0);
+        TextBox moveFoward = new TextBox("W : move foward", 0, 0);
         addChild(moveFoward);
 
-        TextBox moveLeft = new TextBox("A - move left", 0, 0);
+        TextBox moveLeft = new TextBox("A : move left", 0, 0);
         addChild(moveLeft);
 
-        TextBox moveBack = new TextBox("S - move backwards", 0, 0);
+        TextBox moveBack = new TextBox("S : move backwards", 0, 0);
         addChild(moveBack);
 
-        TextBox moveRight = new TextBox("D - move right", 0, 0);
+        TextBox moveRight = new TextBox("D : move right", 0, 0);
         addChild(moveRight);
 
-        TextBox pickupItem = new TextBox("E - pickup / open / close", 0, 0);
+        TextBox pickupItem = new TextBox("E : pickup / open / close", 0, 0);
         addChild(pickupItem);
 
-        TextBox placeItem = new TextBox("Q - put item", 0, 0);
+        TextBox placeItem = new TextBox("Q : put item", 0, 0);
         addChild(placeItem);
+
+        TextBox changeInventorySlot = new TextBox("1 - 5 : change selected inventory item", 0, 0);
+        addChild(changeInventorySlot);
+
+        TextBox zoomItem = new TextBox("I : zoom slected item", 0, 0);
+        addChild(zoomItem);
     }
 }

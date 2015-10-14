@@ -2,6 +2,7 @@ package swen.adventure.engine.rendering;
 
 import org.lwjgl.Sys;
 import swen.adventure.engine.Utilities;
+import swen.adventure.engine.datastorage.ParserException;
 import swen.adventure.engine.datastorage.WavefrontParser;
 import swen.adventure.engine.rendering.maths.Vector;
 import swen.adventure.engine.rendering.maths.Vector3;
@@ -108,11 +109,11 @@ public class ObjMesh extends GLMesh<Float> {
 
     private final BoundingBox _boundingBox;
 
-    public static ObjMesh loadMesh(String fileName) throws FileNotFoundException {
+    public static ObjMesh loadMesh(String fileName) throws FileNotFoundException, ParserException {
         return ObjMesh.loadMesh(null, fileName);
     }
 
-    public static ObjMesh loadMesh(String directory, String fileName) throws FileNotFoundException {
+    public static ObjMesh loadMesh(String directory, String fileName) throws FileNotFoundException, ParserException {
         File file = new File(Utilities.pathForResource(directory, fileName, null));
         WavefrontParser.Result result = WavefrontParser.parse(file, directory);
         return new ObjMesh(fileName, result);

@@ -21,6 +21,9 @@ import java.util.stream.Collectors;
 public class Player extends AdventureGameObject {
 
     private static final String PlayerMeshName = "Knight.obj";
+    private static final Vector3 PlayerMeshOffset = new Vector3(0, -60, 0);
+    private static final float PlayerMeshScale = 4;
+
     private static final BoundingBox PlayerBoundingBox = new BoundingBox(new Vector3(-30, -60, -10) , new Vector3(30, 60, 10));
     private float _playerSpeed = 600.f; //units per second
 
@@ -67,9 +70,16 @@ public class Player extends AdventureGameObject {
         final String cameraID = id + "Camera";
         _camera = parent.findNodeWithIdOrCreate(cameraID, () -> new CameraNode(id + "Camera", cameraTransform));
 
+
+        final String meshTransformID = id + "MeshTransform";
+
+        TransformNode meshTransform = parent.findNodeWithIdOrCreate(meshTransformID, () ->
+                new TransformNode(meshTransformID, parent, false, PlayerMeshOffset, new Quaternion(), new Vector3(PlayerMeshScale, PlayerMeshScale, PlayerMeshScale))
+        );
+
         final String meshID = id + "Mesh";
 
-        MeshNode mesh = parent.findNodeWithIdOrCreate(meshID, () -> new MeshNode(meshID, null, PlayerMeshName, parent));
+        MeshNode mesh = parent.findNodeWithIdOrCreate(meshID, () -> new MeshNode(meshID, null, PlayerMeshName, meshTransform));
         this.setMesh(mesh);
     }
 
