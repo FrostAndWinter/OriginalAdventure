@@ -188,6 +188,16 @@ public class AdventureGame implements Game {
                 data));
     }
 
+    private void sendPlayerSelectSlot(int slot) {
+        Map<String, Object> data = new HashMap<>();
+        data.put(EventDataKeys.Slot, slot);
+        _client.send(new EventBox("PlayerSlotSelected",
+                _player.id,
+                _player.id,
+                _player.id,
+                data));
+    }
+
     private static final Action<Input, Input, AdventureGame> primaryActionFired = (eventObject, triggeringObject, adventureGame, data) -> {
         adventureGame.performInteractions(Interaction.ActionType.Primary);
     };
@@ -286,12 +296,24 @@ public class AdventureGame implements Game {
         _keyInput.eventSelectInventorySlot4.addAction(_player.inventory(), Inventory.actionSelectSlot4);
         _keyInput.eventSelectInventorySlot5.addAction(_player.inventory(), Inventory.actionSelectSlot5);
 
+        _keyInput.eventSelectInventorySlot1.addAction(_player.inventory(), sendSlotToNetwork);
+        _keyInput.eventSelectInventorySlot2.addAction(_player.inventory(), sendSlotToNetwork);
+        _keyInput.eventSelectInventorySlot3.addAction(_player.inventory(), sendSlotToNetwork);
+        _keyInput.eventSelectInventorySlot4.addAction(_player.inventory(), sendSlotToNetwork);
+        _keyInput.eventSelectInventorySlot5.addAction(_player.inventory(), sendSlotToNetwork);
+
         _keyInput.eventHideShowInventory.addAction(ui.getInventory(), InventoryComponent.actionToggleZoomItem);
 
         _keyInput.eventHideShowControls.addAction(ui, UI.actionToggleControlls);
     }
 
-    @Override
+    public final Action<Input, Input, Inventory> sendSlotToNetwork =
+            (eventObject, triggeringObject, inventory, data) -> {
+                sendPlayerSelectSlot(_player.inventory().selectedSlot());
+            };
+
+
+        @Override
     public void setSize(int width, int height) {
         if (_mainRenderer != null) {
             _mainRenderer.setSize(width, height);

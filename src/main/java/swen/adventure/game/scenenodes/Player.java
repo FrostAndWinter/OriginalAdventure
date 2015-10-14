@@ -55,6 +55,8 @@ public class Player extends AdventureGameObject {
             };
 
     public final Event<Player, Player> eventPlayerMoved = new Event<>("PlayerMoved", this);
+    public final Event<Player, Player> eventPlayerSlotSelected = new Event<>("PlayerSlotSelected", this);
+
 
     public Player(String id, TransformNode parent) {
         super(id, parent, id);
@@ -94,6 +96,10 @@ public class Player extends AdventureGameObject {
         MeshNode mesh = parent.findNodeWithIdOrCreate(meshID, () -> new MeshNode(meshID, null, PlayerMeshName, meshTransform));
         this.registerMeshForInteraction(mesh);
         this.setMesh(mesh);
+
+        this.eventPlayerSlotSelected.addAction(this, (eventObject, triggeringObject, listener, data) ->
+            this.inventory().selectSlot((int)data.get(EventDataKeys.Slot))
+        );
     }
 
     private void move(Vector3 vector) {
