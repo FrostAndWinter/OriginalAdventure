@@ -11,6 +11,7 @@ import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.game.scenenodes.Player;
 
 import java.io.FileNotFoundException;
+import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -22,10 +23,6 @@ import java.util.function.Function;
  * A MeshNode represents an object mesh and its associated materials.
  */
 public final class MeshNode extends SceneNode {
-
-    // needed for serializing this node into xml
-    private final String _directory;
-    private final String _fileName;
 
     private Optional<String> materialDirectory = Optional.empty();
     private Optional<String> materialFileName = Optional.empty();
@@ -60,12 +57,21 @@ public final class MeshNode extends SceneNode {
     public MeshNode(String id, final String directory, final String fileName, final TransformNode parent) {
         super(id, parent, false);
 
-        _fileName = fileName;
-        _directory = directory;
-
         _mesh = MeshNode.meshWithFileName(directory, fileName);
         _localSpaceBoundingBox = _mesh.boundingBox();
+    }
 
+    /**
+     * Loads a mesh from the specified location and parents it to parent.
+     * @param id The id the MeshNode is to have in the scene graph.
+     * @param mesh The GLMesh that this mesh has.
+     * @param parent The transform node to parent the node to.
+     */
+    public MeshNode(String id, final GLMesh<Float> mesh, final TransformNode parent) {
+        super(id, parent, false);
+
+        _mesh = mesh;
+        _localSpaceBoundingBox = _mesh.boundingBox();
     }
 
     @Override
@@ -75,12 +81,8 @@ public final class MeshNode extends SceneNode {
                 .put("fileName", fileName);
     }
 
-    private static MeshNode createSceneNodeFromBundle(BundleObject bundle, Function<String, TransformNode> findParentFunction) {
-        String id = bundle.getString("id");
-        String parentId = bundle.getString("parentId");
-        TransformNode parent = findParentFunction.apply(parentId);
-        String fileName = bundle.getString("fileName");
-        return new MeshNode(id, fileName, parent);
+    public GLMesh<Float> mesh() {
+        return _mesh;
     }
 
     /**
@@ -198,43 +200,8 @@ public final class MeshNode extends SceneNode {
         return mesh;
     }
 
-    public String getDirectory() {
-        return _directory;
-    }
-
-    public String getFileName() {
-        return _fileName;
-    }
-
-    public Vector3 getTextureRepeat() {
-        return _textureRepeat;
-    }
-
     public boolean isCollidable() {
         return _collisionNode.isPresent();
     }
 
-    public void setMaterialDirectory(String materialDirectory) {
-        this.materialDirectory = Optional.of(materialDirectory);
-    }
-
-    public void setMaterialFileName(String materialFileName) {
-        this.materialFileName = Optional.of(materialFileName);
-    }
-
-    public void setMaterialName(String materialName) {
-        this.materialName = Optional.of(materialName);
-    }
-
-    public Optional<String> getMaterialFileName() {
-        return materialFileName;
-    }
-
-    public Optional<String> getMaterialDirectory() {
-        return materialDirectory;
-    }
-
-    public Optional<String> getMaterialName() {
-        return materialName;
-    }
 }

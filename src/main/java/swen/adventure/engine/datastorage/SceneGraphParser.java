@@ -60,6 +60,20 @@ public class SceneGraphParser {
     /**
      * Parse a graph which is stored in xml format from a input string.
      *
+     * Applies changes to the existing scene graph.
+     *
+     * @param existingGraph The existing graph loaded from a level file.
+     * @param input xml representation of the scene graph
+     * @return root of the graph
+     */
+    public static TransformNode parseSceneGraph(String input, TransformNode existingGraph) {
+        InputStream is = Utilities.stringToInputStream(input);
+        return parseSceneNode(is, existingGraph);
+    }
+
+    /**
+     * Parse a graph which is stored in xml format from a input string.
+     *
      * @param inputFile file containing a xml representation of the scene graph.
      * @throws FileNotFoundException if the file doesn't exist.
      * @return root of the graph.
@@ -67,6 +81,20 @@ public class SceneGraphParser {
     public static TransformNode parseSceneGraph(File inputFile) throws FileNotFoundException {
         InputStream is = Utilities.fileToInputStream(inputFile);
         return parseSceneNode(is);
+    }
+
+    /**
+     * Parse a graph which is stored in xml format from a input string.
+     * Applies changes to the existing scene graph.
+     *
+     * @param existingGraph The existing graph loaded from a level file.
+     * @param inputFile file containing a xml representation of the scene graph.
+     * @throws FileNotFoundException if the file doesn't exist.
+     * @return root of the graph.
+     */
+    public static TransformNode parseSceneGraph(File inputFile, TransformNode existingGraph) throws FileNotFoundException {
+        InputStream is = Utilities.fileToInputStream(inputFile);
+        return parseSceneNode(is, existingGraph);
     }
 
     /**
@@ -258,29 +286,36 @@ public class SceneGraphParser {
      */
     private static MeshNode parseMeshNode(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode, Function.identity());
-        String directory = getAttribute("directory", xmlNode, Function.identity(), "");
-        String fileName = getAttribute("fileName", xmlNode, Function.identity());
-        Vector3 textureRepeat = getAttribute("textureRepeat", xmlNode, ParserManager.getFromStringFunction(Vector3.class), Vector3.one);
         boolean isCollidable = getAttribute("isCollidable", xmlNode, Boolean::parseBoolean, false);
 
-        Optional<String> materialDirectory = getOptionalAttribute("materialDirectory", xmlNode);
-        Optional<String> materialFileName = getOptionalAttribute("materialFileName", xmlNode);
-        Optional<String> materialName = getOptionalAttribute("materialName", xmlNode);
+        Optional<String> fileName = getAttribute("fileName", xmlNode, Optional::of, Optional.empty());
+        MeshNode node = parent.findNodeWithIdOrCreate(id, () -> {
+            if (fileName.isPresent()) { //if it's not present, we know that the mesh will be loaded later dynamically (e.g. for a player).
+                String directory = getAttribute("directory", xmlNode, Function.identity(), "");
+                Vector3 textureRepeat = getAttribute("textureRepeat", xmlNode, ParserManager.getFromStringFunction(Vector3.class), Vector3.one);
+                Optional<String> materialDirectory = getOptionalAttribute("materialDirectory", xmlNode);
+                Optional<String> materialFileName = getOptionalAttribute("materialFileName", xmlNode);
+                Optional<String> materialName = getOptionalAttribute("materialName", xmlNode);
+                MeshNode retVal = new MeshNode(id, directory, fileName.get(), parent);
+                retVal.setTextureRepeat(textureRepeat);
 
-        MeshNode node = parent.findNodeWithIdOrCreate(id, () -> new MeshNode(id, directory, fileName, parent));
-        node.setTextureRepeat(textureRepeat);
-        node.setCollidable(isCollidable);
+                materialFileName.ifPresent(matFileName ->
+                        materialName.ifPresent(matName -> {
+                            String matDirectory = materialDirectory.orElse("");
+                            retVal.setMaterialOverride(MaterialLibrary.libraryWithName(matDirectory, matFileName).materialWithName(matName));
+                        }));
 
-        node.setParent(parent);
+                return retVal;
+            } else {
+                return null;
+            }
 
-        materialFileName.ifPresent(matFileName ->
-                materialName.ifPresent(matName -> {
-                    String matDirectory = materialDirectory.orElse("");
-                    node.setMaterialDirectory(matDirectory);
-                    node.setMaterialFileName(matFileName);
-                    node.setMaterialName(matName);
-                    node.setMaterialOverride(MaterialLibrary.libraryWithName(matDirectory, matFileName).materialWithName(matName));
-                }));
+        });
+
+        if (node != null) {
+            node.setCollidable(isCollidable);
+            node.setParent(parent);
+        }
 
         return node;
     }
@@ -316,23 +351,23 @@ public class SceneGraphParser {
      */
     private static FlickeringLight parseFlickeringLightNode(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode, Function.identity());
-        String directory = getAttribute("directory", xmlNode, Function.identity(), "");
-        String fileName = getAttribute("fileName", xmlNode, Function.identity());
 
-        Vector3 colour = getAttribute("colour", xmlNode, ParserManager.getFromStringFunction(Vector3.class), Vector3.one);
-        float intensity = getAttribute("intensity", xmlNode, Float::parseFloat, 1.f);
-        Light.LightFalloff falloff = getAttribute("falloff", xmlNode, Light.LightFalloff::fromString, Light.LightFalloff.Quadratic);
+        FlickeringLight flickeringLight = parent.findNodeWithIdOrCreate(id, () -> {
+            String directory = getAttribute("directory", xmlNode, Function.identity(), "");
+            String fileName = getAttribute("fileName", xmlNode, Function.identity());
+
+            Vector3 colour = getAttribute("colour", xmlNode, ParserManager.getFromStringFunction(Vector3.class), Vector3.one);
+            float intensity = getAttribute("intensity", xmlNode, Float::parseFloat, 1.f);
+            Light.LightFalloff falloff = getAttribute("falloff", xmlNode, Light.LightFalloff::fromString, Light.LightFalloff.Quadratic);
+            return new FlickeringLight(id, parent, fileName, directory, colour, intensity, falloff);
+        });
+
+
         boolean isOn = getAttribute("isOn", xmlNode, Boolean::valueOf, true);
+        flickeringLight.setOn(isOn);
 
-        FlickeringLight flickeringLight = parent.findNodeWithIdOrCreate(id, () ->
-              new FlickeringLight(id, parent, fileName, directory, colour, intensity, falloff)
-        );
-
-        flickeringLight.setIntensity(intensity);
-        flickeringLight.setColour(colour);
         float intensityVariation = getAttribute("intensityVariation", xmlNode, Float::parseFloat, 0.f);
         flickeringLight.setIntensityVariation(intensityVariation);
-        flickeringLight.setOn(isOn);
 
         flickeringLight.setParent(parent);
 
@@ -525,7 +560,7 @@ public class SceneGraphParser {
         Node valueNode = attributes.getNamedItem(name);
         if (valueNode == null) {
             if (defaultValue == null) {
-                fail("Node " + node + " has no attribute for name " + name);
+                fail("Node " + attributes.getNamedItem("id") + " of type " + node + " has no attribute for name " + name);
             }
             return defaultValue;
         }

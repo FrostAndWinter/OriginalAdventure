@@ -2,10 +2,9 @@ package swen.adventure.game.scenenodes;
 
 import swen.adventure.engine.Action;
 import swen.adventure.engine.KeyInput;
-import swen.adventure.engine.scenegraph.CameraNode;
-import swen.adventure.engine.scenegraph.CollisionNode;
-import swen.adventure.engine.scenegraph.GameObject;
-import swen.adventure.engine.scenegraph.TransformNode;
+import swen.adventure.engine.rendering.maths.BoundingBox;
+import swen.adventure.engine.rendering.maths.Quaternion;
+import swen.adventure.engine.scenegraph.*;
 import swen.adventure.engine.Event;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.game.EventDataKeys;
@@ -20,9 +19,12 @@ import java.util.stream.Collectors;
  */
 public class Player extends AdventureGameObject {
 
+    private static final BoundingBox PlayerBoundingBox = new BoundingBox(new Vector3(-30, -60, -10) , new Vector3(30, 60, 10));
     private float _playerSpeed = 600.f; //units per second
 
     private Optional<CameraNode> _camera = Optional.empty();
+
+    private static final Vector3 CameraTranslation = new Vector3(0, 40, 0);
 
     public static final Action<KeyInput, KeyInput, Player> actionMoveInDirection =
             (eventObject, triggeringObject, player, data) -> {
@@ -43,6 +45,17 @@ public class Player extends AdventureGameObject {
         super(id, parent, id);
 
         this.setContainer(new Inventory(this));
+
+        String colliderID = id + "Collider";
+        CollisionNode collider = parent.findNodeWithIdOrCreate(colliderID, () -> new CollisionNode(colliderID, parent, PlayerBoundingBox, CollisionNode.CollisionFlag.Player));
+        collider.setParent(parent);
+
+        TransformNode cameraTransform = new TransformNode(id + "CameraTranslation", parent, false, CameraTranslation, new Quaternion(), Vector3.one);
+        this.setCamera(new CameraNode(id + "Camera", cameraTransform));
+
+        this.setMesh(new MeshNode(id + "Mesh", null, "rocket.obj", parent));
+
+        this.setCollisionNode(collider);
     }
 
     public void setCamera(CameraNode camera) {

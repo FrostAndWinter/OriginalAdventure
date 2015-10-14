@@ -5,6 +5,7 @@ import swen.adventure.Settings;
 import swen.adventure.engine.*;
 import swen.adventure.engine.datastorage.EventConnectionParser;
 import swen.adventure.engine.datastorage.SceneGraphParser;
+import swen.adventure.engine.datastorage.SceneGraphSerializer;
 import swen.adventure.engine.network.Client;
 import swen.adventure.engine.network.DumbClient;
 import swen.adventure.engine.network.EventBox;
@@ -72,7 +73,13 @@ public class AdventureGame implements Game {
             _mainRenderer = Settings.DeferredShading ? new GLDeferredRenderer(width, height) : _forwardRenderer;
             _pickerRenderer = new PickerRenderer();
         }
-        
+
+        try { //TODO get the level file name from the server.
+            _sceneGraph = SceneGraphParser.parseSceneGraph(new File(Utilities.pathForResource("SceneGraph", "xml")));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
         virtualUIWidth = width;
         virtualUIHeight = height;
 
@@ -87,7 +94,7 @@ public class AdventureGame implements Game {
         }
 
         EventBox event = box.get();
-        setupSceneGraph(SceneGraphParser.parseSceneGraph(event.eventData.get("scenegraph").toString()), event.targetId);
+        setupSceneGraph(SceneGraphParser.parseSceneGraph(event.eventData.get("scenegraph").toString(), _sceneGraph), event.targetId);
     }
 
     private void setupSceneGraph(TransformNode sceneGraph, String playerId) {
@@ -168,23 +175,14 @@ public class AdventureGame implements Game {
         spawn.spawnPlayerWithId(playerId);
 
         Player newPlayer = (Player)_sceneGraph.nodeWithID(playerId).get();
-        if (_player == null || playerId.equals(_player.id)) {
-            TransformNode cameraTransform = new TransformNode(playerId + "CameraTranslation",
-                    newPlayer.parent().get(), false, new Vector3(0, 40, 0), new Quaternion(), Vector3.one);
-            newPlayer.setCamera(new CameraNode(playerId + "Camera", cameraTransform));
+
+        if (_player == null) { //We're always the first player created after we connect.
+            newPlayer.mesh().ifPresent(meshNode -> meshNode.setEnabled(false));
             _player = newPlayer;
-        } else {
-            new MeshNode(playerId + "Mesh", "", "rocket.obj", newPlayer.parent().get());
         }
 
         newPlayer.eventPlayerMoved.addAction(this, MovePlayer);
 
-        BoundingBox boundingBox = new BoundingBox(new Vector3(-30, -60, -10) , new Vector3(30, 60, 10));
-        String colliderID = playerId + "Collider";
-        CollisionNode collider = (CollisionNode)spawn.nodeWithID(colliderID).orElseGet(() -> new CollisionNode(colliderID, newPlayer.parent().get(), boundingBox, CollisionNode.CollisionFlag.Player));
-        collider.setParent(newPlayer.parent().get());
-
-        newPlayer.setCollisionNode(collider);
     }
 
     /**
@@ -319,6 +317,8 @@ public class AdventureGame implements Game {
         _player.parent().get().setRotation(Quaternion.makeWithAngleAndAxis(_viewAngleX / 500, 0, -1, 0).multiply(Quaternion.makeWithAngleAndAxis(_viewAngleY / 500, -1, 0, 0)));
 
 
+        System.out.println(SceneGraphSerializer.serializeToString(_sceneGraph));
+
         this.render();
     }
 
@@ -383,7 +383,7 @@ public class AdventureGame implements Game {
         _client.disconnect();
     }
 
-    public static void main(String[] args) {
+    public static void startGame(String[] args) {
         // Start with networking using CLI arguments <_player id> <host> <port>
         Client<EventBox> client;
         if (args.length == 3) {
@@ -408,5 +408,9 @@ public class AdventureGame implements Game {
         }
 
         GameDelegate.setGame(new AdventureGame(client));
+    }
+
+    public static void main(String[] args) {
+        startGame(args);
     }
 }

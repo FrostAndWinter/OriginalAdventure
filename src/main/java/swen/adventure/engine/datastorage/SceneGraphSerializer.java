@@ -310,14 +310,7 @@ public class SceneGraphSerializer {
      */
     private Node serializeMeshNode(MeshNode meshNode, Node xmlParentNode) {
         Element xmlElement = createElementForNode(meshNode, xmlParentNode);
-        setAttribute("fileName", meshNode.getFileName(), xmlElement);
-        setAttribute("directory", meshNode.getDirectory(), xmlElement);
-        setAttribute("textureRepeat", meshNode.getTextureRepeat(), Vector3.class, xmlElement);
         setAttribute("isCollidable", meshNode.isCollidable(), Boolean.class, xmlElement);
-
-        setAttributeIfPresent("materialDirectory", meshNode.getMaterialDirectory(), xmlElement);
-        setAttributeIfPresent("materialFileName", meshNode.getMaterialFileName(), xmlElement);
-        setAttributeIfPresent("materialName", meshNode.getMaterialName(), xmlElement);
 
         return xmlElement;
     }
@@ -402,8 +395,6 @@ public class SceneGraphSerializer {
      */
     private Node serializeFlickeringLightNode(FlickeringLight flickeringLightNode, Node xmlParentNode) {
         Element xmlElement = createElementForNode(flickeringLightNode, xmlParentNode);
-        setAttribute("directory", flickeringLightNode.mesh().get().getDirectory(), xmlElement);
-        setAttribute("fileName", flickeringLightNode.mesh().get().getFileName(), xmlElement);
         setAttribute("colour", flickeringLightNode.getColour(), Vector3.class, xmlElement);
         setAttribute("intensity", flickeringLightNode.getIntensity(), Float.class, xmlElement);
         setAttribute("falloff", flickeringLightNode.getFalloff().toString(), xmlElement);
@@ -411,7 +402,15 @@ public class SceneGraphSerializer {
         setAttribute("intensityVariation", flickeringLightNode.getIntensityVariation(), Float.class, xmlElement);
         return xmlElement;
     }
-    
+
+
+    /**
+     * Serialize a puzzle node.
+     *
+     * @param sceneNode node to serialize
+     * @param xmlParentNode xml node corresponding to this node's parent
+     * @return xml node corresponding to this SceneGraph node
+     */
     private Node serializePuzzle(Puzzle sceneNode, Node xmlParentNode) {
         Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
         setAttribute("id", sceneNode.id, xmlElement);
@@ -419,6 +418,13 @@ public class SceneGraphSerializer {
         return xmlElement;
     }
 
+    /**
+     * Serialize a key node.
+     *
+     * @param sceneNode node to serialize
+     * @param xmlParentNode xml node corresponding to this node's parent
+     * @return xml node corresponding to this SceneGraph node
+     */
     private Node serializeKey(Key sceneNode, Node xmlParentNode) {
         Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
         setAttribute("id", sceneNode.id, xmlElement);
@@ -426,18 +432,39 @@ public class SceneGraphSerializer {
         return xmlElement;
     }
 
+    /**
+     * Serialize a spawn node.
+     *
+     * @param sceneNode node to serialize
+     * @param xmlParentNode xml node corresponding to this node's parent
+     * @return xml node corresponding to this SceneGraph node
+     */
     private Node serializeSpawnNode(SpawnNode sceneNode, Node xmlParentNode) {
         Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
         setAttribute("id", sceneNode.id, xmlElement);
         return xmlElement;
     }
 
+    /**
+     * Serialize a chest node.
+     *
+     * @param sceneNode node to serialize
+     * @param xmlParentNode xml node corresponding to this node's parent
+     * @return xml node corresponding to this SceneGraph node
+     */
     private Node serializeChest(Chest sceneNode, Node xmlParentNode) {
         Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
         setAttribute("id", sceneNode.id, xmlElement);
         return xmlElement;
     }
 
+    /**
+     * Serialize a door node.
+     *
+     * @param sceneNode node to serialize
+     * @param xmlParentNode xml node corresponding to this node's parent
+     * @return xml node corresponding to this SceneGraph node
+     */
     private Node serializeDoor(Door sceneNode, Node xmlParentNode) {
         Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
         setAttribute("id", sceneNode.id, xmlElement);
@@ -457,10 +484,6 @@ public class SceneGraphSerializer {
      */
     private <T> String parseToString(T object, Class<T> class0) {
         return ParserManager.getToStringFunction(class0).apply(object);
-    }
-
-    private void setAttributeIfPresent(String name, Optional<String> optionalValue, Element xmlElement) {
-        optionalValue.ifPresent(value -> setAttribute(name, value, xmlElement));
     }
     
     /**

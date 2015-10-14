@@ -17,6 +17,6 @@ public class SpawnNode extends GameObject {
     }
 
     public void spawnPlayerWithId(String id) {
-        new Player(id, new TransformNode(id + "Transform", parent().get(), true, Vector3.zero, new Quaternion(), Vector3.one));
+        new Player(id, new TransformNode(id + "Transform", parent().get(), true, new Vector3(0, 60, 0), new Quaternion(), Vector3.one));
     }
 }
