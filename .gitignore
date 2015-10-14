@@ -11,3 +11,6 @@ build/
 
 # Eclipse
 .project
+
+# Save files
+*-savefile.xml
