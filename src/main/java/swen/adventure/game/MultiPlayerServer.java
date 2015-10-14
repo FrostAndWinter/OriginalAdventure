@@ -34,7 +34,7 @@ public class MultiPlayerServer implements Runnable {
         server = new NetworkServer();
         try {
             System.out.println("Loading map");
-            root = SceneGraphParser.parseSceneGraph(new File(map));
+            root = SceneGraphParser.parseSceneGraph(new File(Utilities.pathForResource(map, "xml")));
             System.out.println("Completed loading map");
             System.out.println("Setting up event connections");
             // setup event connections
@@ -121,16 +121,8 @@ public class MultiPlayerServer implements Runnable {
         SpawnNode spawn = (SpawnNode)root.nodeWithID(SpawnNode.ID).get();
         spawn.spawnPlayerWithId(playerId);
 
-        // FIXME: Add CollisionNode to player
         Player newPlayer = (Player)root.nodeWithID(playerId).get();
         new MeshNode(playerId + "Mesh", "", "rocket.obj", newPlayer.parent().get());
-
-        BoundingBox boundingBox = new BoundingBox(new Vector3(-30, -60, -10) , new Vector3(30, 60, 10));
-        String colliderID = playerId + "Collider";
-        CollisionNode collider = (CollisionNode)spawn.nodeWithID(colliderID).orElseGet(() -> new CollisionNode(colliderID, newPlayer.parent().get(), boundingBox, CollisionNode.CollisionFlag.Player));
-        collider.setParent(newPlayer.parent().get());
-
-        newPlayer.setCollisionNode(collider);
 
         newPlayer.eventPlayerMoved.addAction(this, (eventObject, triggeringObject, listener, data) ->
                         eventObject.parent().get().setTranslation((Vector3)data.get(EventDataKeys.Location))

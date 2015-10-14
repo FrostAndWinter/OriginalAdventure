@@ -7,7 +7,7 @@
         <MeshNode id="ceilingPlaneMesh" fileName="Plane.obj" materialFileName="StoneWall.mtl" materialName="StoneWall" textureRepeat="10, 10, 0.2"/>
     </TransformNode>
 
-    <TransformNode id="spawnPointTransform" translation="0, 60, 200" isDynamic="true">
+    <TransformNode id="spawnPointTransform" translation="0, 0, 200" isDynamic="true">
         <SpawnNode id="spawnPoint" />
         <!--<TransformNode id="cameraTransform" translation="0, 40, 0">
             <Camera id="playerCamera"/>

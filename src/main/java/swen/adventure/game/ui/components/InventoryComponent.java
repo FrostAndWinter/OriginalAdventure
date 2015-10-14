@@ -185,7 +185,7 @@ public class InventoryComponent extends UIComponent {
                             meshNode = (MeshNode) meshNodeOpt.get();
                         } else {
                             TransformNode transformNode = new TransformNode(itemMesh.id + "Transform", _toScreenTransform, true, Vector3.zero, new Quaternion(), Vector3.one);
-                            meshNode = new MeshNode(itemMesh.id, itemMesh.getDirectory(), itemMesh.getFileName(), transformNode);
+                            meshNode = new MeshNode(itemMesh.id, itemMesh.mesh(), transformNode);
                             itemMesh.materialOverride().ifPresent(meshNode::setMaterialOverride);
                         }
 

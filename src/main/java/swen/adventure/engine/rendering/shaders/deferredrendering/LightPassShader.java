@@ -52,10 +52,6 @@ public class LightPassShader extends PerObjectMaterialShader {
         glUniform2f(_halfSizeNearPlaneUniformRef, x, y);
     }
 
-    public void setModelToClipMatrix(Matrix4 matrix) {
-        glUniformMatrix4fv(_modelToClipMatrixUniformRef, false, matrix.toFloatBuffer());
-    }
-
     public void setDepthRange(float zNear, float zFar) {
         glUniform2f(_depthRangeUniformRef, zNear, zFar);
     }

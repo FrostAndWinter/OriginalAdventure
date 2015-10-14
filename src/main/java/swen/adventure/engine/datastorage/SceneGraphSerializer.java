@@ -310,14 +310,7 @@ public class SceneGraphSerializer {
      */
     private Node serializeMeshNode(MeshNode meshNode, Node xmlParentNode) {
         Element xmlElement = createElementForNode(meshNode, xmlParentNode);
-        setAttribute("fileName", meshNode.getFileName(), xmlElement);
-        setAttribute("directory", meshNode.getDirectory(), xmlElement);
-        setAttribute("textureRepeat", meshNode.getTextureRepeat(), Vector3.class, xmlElement);
         setAttribute("isCollidable", meshNode.isCollidable(), Boolean.class, xmlElement);
-
-        setAttributeIfPresent("materialDirectory", meshNode.getMaterialDirectory(), xmlElement);
-        setAttributeIfPresent("materialFileName", meshNode.getMaterialFileName(), xmlElement);
-        setAttributeIfPresent("materialName", meshNode.getMaterialName(), xmlElement);
 
         return xmlElement;
     }
@@ -402,8 +395,6 @@ public class SceneGraphSerializer {
      */
     private Node serializeFlickeringLightNode(FlickeringLight flickeringLightNode, Node xmlParentNode) {
         Element xmlElement = createElementForNode(flickeringLightNode, xmlParentNode);
-        setAttribute("directory", flickeringLightNode.mesh().get().getDirectory(), xmlElement);
-        setAttribute("fileName", flickeringLightNode.mesh().get().getFileName(), xmlElement);
         setAttribute("colour", flickeringLightNode.getColour(), Vector3.class, xmlElement);
         setAttribute("intensity", flickeringLightNode.getIntensity(), Float.class, xmlElement);
         setAttribute("falloff", flickeringLightNode.getFalloff().toString(), xmlElement);
