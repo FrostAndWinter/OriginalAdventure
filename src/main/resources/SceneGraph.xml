@@ -198,6 +198,10 @@
             <TransformNode id="corridorsCeilingPlaneT" translation="0, 200, 0" rotation="0.70710677, 0.0, 0.0, 0.70710677">
                 <MeshNode id="corridorsCeilingPlane" fileName="Plane.obj" materialFileName="StoneWall.mtl" materialName="StoneWall" textureRepeat="12, 110.4, 0.2"/>
             </TransformNode>
+
+            <TransformNode id="centreCorridorT" scale="0.4, 1, 1">
+                <Region regionName="The Escape" boundingBox="-0.5, 0, -0.5, 0.5, 1, 0.5"/>
+            </TransformNode>
         </TransformNode>
 
         <TransformNode id="corridorFrontDoorLightLeft" translation="-125, 100, 2860">

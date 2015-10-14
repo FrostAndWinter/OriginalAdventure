@@ -137,9 +137,10 @@ public class Player extends AdventureGameObject {
      */
     public void setLookDirection(float angleX, float angleY) {
         TransformNode rotatedNode = this.parent().get();
-        rotatedNode.setRotation(Quaternion.makeWithAngleAndAxis(angleX, 0, -1, 0)
-                   .multiply(Quaternion.makeWithAngleAndAxis(angleY, -1, 0, 0)));
-        _meshRotationTransform.setRotation(Quaternion.makeWithAngleAndAxis(angleY, -1, 0, 0));
+        Quaternion rotation = Quaternion.makeWithAngleAndAxis(angleX, 0, -1, 0)
+                   .multiply(Quaternion.makeWithAngleAndAxis(angleY, -1, 0, 0));
+        rotatedNode.setRotation(rotation);
+        _meshRotationTransform.setRotation(rotation.invert().multiply(Quaternion.makeWithAngleAndAxis(angleY, -1, 0, 0)));
 
         eventPlayerMoved.trigger(this,
                 Collections.singletonMap(EventDataKeys.Quaternion, rotatedNode.rotation()));
