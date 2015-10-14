@@ -262,6 +262,8 @@ public class GameDelegate {
 
         // run clean up after main loop
         _game.cleanup();
+
+        System.exit(0);
     }
 
 
