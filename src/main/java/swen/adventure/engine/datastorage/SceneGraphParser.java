@@ -34,6 +34,7 @@ public class SceneGraphParser {
     private static final String TRANSFORM_NODE_TAG = "TransformNode";
     private static final String GAME_OBJECT_TAG = "GameObject";
     private static final String MESH_NODE_TAG = "MeshNode";
+    private static final String REGION_TAG = "Region";
     private static final String AMBIENT_LIGHT_TAG = "AmbientLight";
     private static final String DIRECTIONAL_LIGHT_TAG = "DirectionalLight";
     private static final String POINT_LIGHT_TAG = "PointLight";
@@ -164,10 +165,29 @@ public class SceneGraphParser {
                 return parseDoor(xmlNode, parent);
             case INVENTORY_TAG:
                 return parseInventory(xmlNode, parent);
+            case REGION_TAG:
+                return parseRegion(xmlNode, parent);
             default:
                // fail("Unrecognised node: " + name);
                 return parseGameObject(xmlNode, parent, SceneNode.class);
         }
+    }
+
+    /**
+     * Construct a inventory node from its xml representation.
+     *
+     * @param xmlNode node from the xml document which represents a inventory node.
+     * @param parent the transform node which will be set as the newly constructed node's parent.
+     * @return a newly constructed inventory node with the same state as represented in the xml node.
+     */
+    private static Region parseRegion(Node xmlNode, TransformNode parent) {
+        String id = getAttribute("regionName", xmlNode);
+
+        Region region = parent.findNodeWithIdOrCreate(id, () -> {
+            BoundingBox boundingBox = getAttribute("boundingBox", xmlNode, BoundingBox.class);
+            return new Region(id, boundingBox, parent);
+        });
+        return region;
     }
 
     /**

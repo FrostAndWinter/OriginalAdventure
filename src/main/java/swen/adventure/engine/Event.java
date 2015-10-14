@@ -89,7 +89,7 @@ public class Event<E, T> {
          * @param action The action to perform.
          * @param <L> The type of object that is listening to the action.
          */
-        public <L> void addAction(L listener, Action<E, T, L> action) {
+        public <L> void addAction(L listener, Action<? super E, ? super T, L> action) {
             for (Event<E, T> event  : _events) {
                 event.addAction(listener, action);
             }
@@ -102,7 +102,7 @@ public class Event<E, T> {
          * @param action The action to perform.
          * @param <L> The type of object that is listening to the action.
          */
-        public <L> void removeAction(L listener, Action<E, T, L> action) {
+        public <L> void removeAction(L listener, Action<? super E, ? super T, L> action) {
             for (Event<E, T> event  : _events) {
                 event.removeAction(listener, action);
             }
