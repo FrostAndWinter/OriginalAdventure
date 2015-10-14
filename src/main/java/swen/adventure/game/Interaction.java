@@ -83,6 +83,8 @@ public final class Interaction {
                 });
                 String response = responseArr[0];
                 return response != null ? response : "";
+            case DisplayName:
+                return this.gameObject.name;
         }
         throw new RuntimeException("Interaction type not implemented for message: " + interactionType); //Should never happen if switch statement is exhaustive.
     }

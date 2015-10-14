@@ -14,7 +14,8 @@ public enum InteractionType {
     Open(Interaction.ActionType.Primary),
     Close(Interaction.ActionType.Primary),
     Give(Interaction.ActionType.Primary),
-    Pull(Interaction.ActionType.Primary);
+    Pull(Interaction.ActionType.Primary),
+    DisplayName(Interaction.ActionType.Primary);
 
     public final Interaction.ActionType actionType;
 

@@ -105,7 +105,7 @@ public class Player extends AdventureGameObject {
         this.setMesh(mesh);
 
         this.eventPlayerSlotSelected.addAction(this, (eventObject, triggeringObject, listener, data) ->
-            this.inventory().selectSlot((int)data.get(EventDataKeys.Slot))
+                        this.inventory().selectSlot((int) data.get(EventDataKeys.Slot))
         );
     }
 
@@ -185,7 +185,7 @@ public class Player extends AdventureGameObject {
         if (otherPlayer.inventory().selectedItem().isPresent() && !this.inventory().isFull()) {
             return Collections.singletonList(new Interaction(InteractionType.Give, this, meshNode));
         } else {
-            return Collections.emptyList();
+            return Collections.singletonList(new Interaction(InteractionType.DisplayName, this, meshNode));
         }
     }
 
