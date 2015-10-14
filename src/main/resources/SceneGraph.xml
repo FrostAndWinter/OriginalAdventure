@@ -165,8 +165,12 @@
             <MeshNode id="room2FrontWallRightM" directory="MedievalModels" fileName="Wall.obj" textureRepeat="5, 1.4, 1" isCollidable="true"/>
         </TransformNode>
 
-        <TransformNode id="room2Chains" translation="0, 0, 0">
-            <MeshNode id="room2ChainsM" fileName="Chain.obj" directory="MedievalModels" />
+        <TransformNode id="room2Chain1" translation="-800, 0, -250">
+            <MeshNode id="room2Chains1M" fileName="Chain2.obj" directory="MedievalModels" />
+        </TransformNode>
+
+        <TransformNode id="room2Chain2" translation="-700, 0, -250">
+            <MeshNode id="room2Chains2M" fileName="Chain.obj" directory="MedievalModels" />
         </TransformNode>
 
         <TransformNode id="room2BrazierLeft" translation="-800, 0, -40">
@@ -221,11 +225,11 @@
             <Lever id="rightGateLever"/>
         </TransformNode>
 
-        <TransformNode id="rightGateTransform" translation="400, 0, 1500" rotation="0, 1, 0, 0" scale="5, 5, 5">
+        <TransformNode id="rightGateTransform" translation="400, 0, 1500" rotation="0, 1, 0, 0" scale="5, 1.4, 5">
             <Door id="rightGate" canDirectlyInteractWith="false"/>
         </TransformNode>
 
-        <TransformNode id="leftGateTransform" translation="-400, 0, 1500" scale="5, 5, 5">
+        <TransformNode id="leftGateTransform" translation="-400, 0, 2400" scale="5, 1.4, 5">
             <Door id="leftGate" canDirectlyInteractWith="false" />
         </TransformNode>
 
