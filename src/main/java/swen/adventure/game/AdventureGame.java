@@ -72,7 +72,7 @@ public class AdventureGame implements Game {
             _mainRenderer = Settings.DeferredShading ? new GLDeferredRenderer(width, height) : _forwardRenderer;
             _pickerRenderer = new PickerRenderer();
         }
-        
+
         virtualUIWidth = width;
         virtualUIHeight = height;
 
