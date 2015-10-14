@@ -77,6 +77,12 @@ public class UI extends Frame {
         addChild(_container);
     }
 
+    /**
+     * Sets the name of the room the to display on the
+     * UI and starts an animation to fade it out
+     *
+     * @param name name of room to show
+     */
     public void setRoomName(String name) {
         roomName = name;
 
