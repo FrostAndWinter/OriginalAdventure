@@ -8143,8 +8143,20 @@ protected void defaultFontOrDeath(String method, float size) {
     throw new RuntimeException("Use textFont() before " + method + "()");
   }
 
-
 }
+
+  public static PFont fontWithName(String name, float size) {
+      String fontPath = Utilities.pathForResource(name, "vlw");
+      InputStream input = processing.core.PApplet.createInput(fontPath);
+      PFont font = null;
+      try {
+          font = new PFont(input);
+          return font;
+      } catch (IOException e) {
+          e.printStackTrace();
+          throw new RuntimeException("Use textFont() before " + name + "()");
+      }
+  }
 
 
 

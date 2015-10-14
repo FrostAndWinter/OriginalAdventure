@@ -1,9 +1,14 @@
 package swen.adventure.game.ui.components;
 
+import processing.core.PFont;
 import processing.core.PGraphics;
 import processing.opengl.PGL;
 import swen.adventure.engine.Action;
+import swen.adventure.engine.Event;
 import swen.adventure.engine.Input;
+import swen.adventure.engine.animation.AnimableProperty;
+import swen.adventure.engine.animation.Animation;
+import swen.adventure.engine.animation.AnimationCurve;
 import swen.adventure.engine.rendering.GLForwardRenderer;
 import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.ui.color.Color;
@@ -11,6 +16,7 @@ import swen.adventure.engine.ui.components.Frame;
 import swen.adventure.engine.ui.components.Panel;
 import swen.adventure.engine.ui.components.Reticule;
 import swen.adventure.game.scenenodes.Player;
+import swen.adventure.game.scenenodes.Region;
 
 import java.util.ArrayList;
 
@@ -28,14 +34,26 @@ public class UI extends Frame {
         ui.setControlsOverlayVisibility(!ui.getControlsOverlayVisibility());
     };
 
+    private AnimableProperty roomNameOpacity = new AnimableProperty(0.f);
+
     private Panel _container;
     private InventoryComponent _inventory;
     private ControlsOverlay _controlsOverlay;
     private ArrayList<String> _tooltips;
     private Reticule _reticule;
+    private String roomName;
 
     public UI(int w, int h, Player p) {
         super(0, 0, w, h);
+
+        Event.EventSet<Region, Player> regionEnteredEvents = (Event.EventSet<Region, Player>)Event.eventSetForName("RegionEntered");
+        regionEnteredEvents.addAction(this, (region, player, listener, data) -> {
+            if (player.equals(p)) {
+                listener.setRoomName(region.regionName);
+            }
+        });
+
+        roomName = "";
 
         _tooltips = new ArrayList<>();
 
@@ -57,6 +75,14 @@ public class UI extends Frame {
         _container.addChild(_controlsOverlay);
 
         addChild(_container);
+    }
+
+    public void setRoomName(String name) {
+        roomName = name;
+
+        roomNameOpacity.stopAnimating();
+        roomNameOpacity.setValue(1.f);
+        new Animation(roomNameOpacity, AnimationCurve.Linear, 2.f, 0.f);
     }
 
     /**
@@ -121,6 +147,10 @@ public class UI extends Frame {
 
         // Draw the components
         draw(pg, scale, scale);
+
+        // Draw the room name
+        pg.fill(255, 255, 255, 255 * roomNameOpacity.value());
+        pg.text(roomName, (width * scale) / 2.0f - pg.textWidth(roomName)/2.0f, 20 + pg.textDescent() + pg.textAscent());
 
         // Draw the tool tips
         pg.fill(255);

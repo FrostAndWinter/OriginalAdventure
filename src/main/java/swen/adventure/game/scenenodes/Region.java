@@ -16,7 +16,7 @@ import java.util.Set;
  */
 public class Region extends SceneNode {
 
-    private final String regionName;
+    public final String regionName;
 
     private Set<Player> _playersInRegion = new HashSet<>();
 
