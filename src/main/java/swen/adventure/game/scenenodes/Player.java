@@ -92,6 +92,7 @@ public class Player extends AdventureGameObject {
         final String meshID = id + "Mesh";
 
         MeshNode mesh = parent.findNodeWithIdOrCreate(meshID, () -> new MeshNode(meshID, null, PlayerMeshName, meshTransform));
+        this.registerMeshForInteraction(mesh);
         this.setMesh(mesh);
     }
 
