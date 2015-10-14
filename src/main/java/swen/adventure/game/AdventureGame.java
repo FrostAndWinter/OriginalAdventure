@@ -4,6 +4,7 @@ import processing.opengl.PGraphics2D;
 import swen.adventure.Settings;
 import swen.adventure.engine.*;
 import swen.adventure.engine.datastorage.EventConnectionParser;
+import swen.adventure.engine.datastorage.ParserException;
 import swen.adventure.engine.datastorage.SceneGraphParser;
 import swen.adventure.engine.datastorage.SceneGraphSerializer;
 import swen.adventure.engine.network.Client;
@@ -14,7 +15,6 @@ import swen.adventure.engine.rendering.GLDeferredRenderer;
 import swen.adventure.engine.rendering.GLForwardRenderer;
 import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.rendering.PickerRenderer;
-import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
@@ -74,11 +74,8 @@ public class AdventureGame implements Game {
             _pickerRenderer = new PickerRenderer();
         }
 
-        try { //TODO get the level file name from the server.
-            _sceneGraph = SceneGraphParser.parseSceneGraph(new File(Utilities.pathForResource("SceneGraph", "xml")));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        File sceneGraphFile = new File(Utilities.pathForResource("SceneGraph", "xml"));
+        _sceneGraph = loadSceneGraphFromFile(sceneGraphFile);
 
         virtualUIWidth = width;
         virtualUIHeight = height;
@@ -94,7 +91,35 @@ public class AdventureGame implements Game {
         }
 
         EventBox event = box.get();
-        setupSceneGraph(SceneGraphParser.parseSceneGraph(event.eventData.get("scenegraph").toString(), _sceneGraph), event.targetId);
+        setupSceneGraph(loadSceneGraphFromString(event.eventData.get("scenegraph").toString(), _sceneGraph), event.targetId);
+    }
+
+    private TransformNode loadSceneGraphFromFile(File sceneGraphFile) {
+        try {
+            return SceneGraphParser.parseSceneGraph(sceneGraphFile);
+        } catch (FileNotFoundException e) {
+            System.err.println("Can't find file " + sceneGraphFile);
+        } catch (ParserException e) {
+            System.err.println(e.getMessage());
+        }
+
+        fail();
+        return null; // dead code
+    }
+
+    private TransformNode loadSceneGraphFromString(String xml, TransformNode existingGraph) {
+        try {
+            return SceneGraphParser.parseSceneGraph(xml, existingGraph);
+        } catch (ParserException e) {
+            System.err.println(e.getMessage());
+        }
+
+        fail();
+        return null; // dead code
+    }
+
+    private void fail() {
+        System.exit(1);
     }
 
     private void setupSceneGraph(TransformNode sceneGraph, String playerId) {
@@ -317,8 +342,6 @@ public class AdventureGame implements Game {
 
         //Set where the _player is looking.
        _player.setLookDirection(_viewAngleX, _viewAngleY);
-
-
         this.render();
     }
 
@@ -383,6 +406,8 @@ public class AdventureGame implements Game {
         _client.disconnect();
     }
 
+
+
     public static void startGame(String[] args) {
         // Start with networking using CLI arguments <_player id> <host> <port>
         Client<EventBox> client;
@@ -391,8 +416,7 @@ public class AdventureGame implements Game {
             try {
                 client.connect(args[1], Integer.parseInt(args[2]));
             } catch (IOException e) {
-                e.printStackTrace();
-                return;
+                throw new InvalidServerConfig();
             }
         } else {
             DumbClient dumbClient = new DumbClient();

@@ -21,8 +21,8 @@ public class AdventureGameKeyInput extends KeyInput {
             this.onPressMappings.put('I', this.eventHideShowInventory);
             this.onReleasedMappings.put('I', this.eventHideShowInventory);
 
-            this.onPressMappings.put('C', this.eventHideShowControls);
-            this.onReleasedMappings.put('C', this.eventHideShowControls);
+            this.onPressMappings.put('`', this.eventHideShowControls);
+            this.onReleasedMappings.put('`', this.eventHideShowControls);
 
             this.onPressMappings.put('E', this.eventPrimaryAction);
             this.onPressMappings.put('Q', this.eventSecondaryAction);
