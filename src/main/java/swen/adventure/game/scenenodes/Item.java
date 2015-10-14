@@ -45,10 +45,10 @@ public class Item extends AdventureGameObject {
             throw new NullPointerException("Cannot move to a null container");
         }
 
-        _containingContainer.ifPresent(Container::pop);
-        _containingContainer = Optional.of(container);
-
-        container.push(this);
+        if (container.push(this)) {
+            _containingContainer.ifPresent(Container::pop);
+            _containingContainer = Optional.of(container);
+        }
     }
 
     @Override

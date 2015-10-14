@@ -9,6 +9,8 @@ import swen.adventure.engine.scenegraph.*;
 import swen.adventure.engine.Event;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.game.EventDataKeys;
+import swen.adventure.game.Interaction;
+import swen.adventure.game.InteractionType;
 
 import java.util.Collections;
 import java.util.List;
@@ -152,5 +154,27 @@ public class Player extends AdventureGameObject {
 
     public CameraNode camera() {
         return _camera;
+    }
+
+    @Override
+    public List<Interaction> possibleInteractions(final MeshNode meshNode, final Player otherPlayer) {
+        final Interaction[] interaction = {null};
+        if (otherPlayer.inventory().selectedItem().isPresent() && !this.inventory().isFull()) {
+            return Collections.singletonList(new Interaction(InteractionType.Give, this, meshNode));
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public void performInteraction(final Interaction interaction, final MeshNode meshNode, final Player player) {
+        switch (interaction.interactionType) {
+            case Give:
+                player.inventory().selectedItem().ifPresent(item -> {
+                    item.moveToContainer(this.inventory());
+                    item.eventPlayerDroppedItem.trigger(player, Collections.emptyMap());
+                });
+                break;
+        }
     }
 }
