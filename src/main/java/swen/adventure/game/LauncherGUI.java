@@ -100,7 +100,8 @@ public class LauncherGUI extends JFrame {
 
     /**
      * Starts a new game by calling the start game method in
-     * the adventure game class.
+     * the adventure game class. Will also tell user
+     * if the server cant be connected to
      *
      * @param n true if game should connect to a server
      */
@@ -125,7 +126,6 @@ public class LauncherGUI extends JFrame {
         try {
             AdventureGame.startGame(args);
         } catch (InvalidServerConfig e) {
-            System.out.println("Cant Find Server");
             JOptionPane.showMessageDialog(null, "Could not find server");
             new Thread(() -> setVisible(true)).start();
         }
