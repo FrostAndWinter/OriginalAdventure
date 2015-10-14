@@ -206,7 +206,6 @@ public class SceneGraphParser {
     private static Inventory parseInventory(Node xmlNode, TransformNode parent) {
         String id = getAttribute("id", xmlNode);
         int selectedSlot = getAttribute("selectedSlot", xmlNode, Integer.class, 0);
-
         Inventory inventory = parent.findNodeWithIdOrCreate(id, () -> new Inventory(id, parent));
         inventory.selectSlot(selectedSlot);
 
