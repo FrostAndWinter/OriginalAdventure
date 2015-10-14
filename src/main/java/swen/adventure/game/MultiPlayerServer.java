@@ -29,16 +29,24 @@ import java.util.Optional;
  */
 public class MultiPlayerServer implements Runnable {
 
-    private final SceneNode root;
+    private final String mapName;
+    private final TransformNode root;
     private final Server<String, EventBox> server;
 
     public MultiPlayerServer(int port, String map) {
         server = new NetworkServer();
+        mapName = map;
         try {
             System.out.println("Loading map");
             File sceneGraphFile = new File(Utilities.pathForResource(map, "xml"));
+            File sceneGraphSaveFile = new File(Utilities.pathForResource(map + "-savefile", "xml"));
             root = loadSceneGraph(sceneGraphFile);
             System.out.println("Completed loading map");
+            if (sceneGraphSaveFile.exists()) {
+                System.out.println("loading save file map");
+                loadSaveFileSceneGraph(sceneGraphSaveFile);
+                System.out.println("completed save file map");
+            }
             System.out.println("Setting up event connections");
             // setup event connections
             try {
@@ -58,6 +66,18 @@ public class MultiPlayerServer implements Runnable {
     private TransformNode loadSceneGraph(File sceneGraphFile) {
         try {
             return SceneGraphParser.parseSceneGraph(sceneGraphFile);
+        } catch (FileNotFoundException e) {
+            System.err.println("Can't find file: " + sceneGraphFile);
+        } catch (ParserException e) {
+            System.err.println(e.getMessage());
+        }
+        fail();
+        return null; // dead code
+    }
+
+    private TransformNode loadSaveFileSceneGraph(File sceneGraphFile) {
+        try {
+            return SceneGraphParser.parseSceneGraph(sceneGraphFile, root);
         } catch (FileNotFoundException e) {
             System.err.println("Can't find file: " + sceneGraphFile);
         } catch (ParserException e) {
@@ -108,7 +128,7 @@ public class MultiPlayerServer implements Runnable {
 
             if (eventsCount >= Settings.EventsTillServerBackup) {
                 try {
-                     SceneGraphSerializer.serializeToFile(root, new File(String.format("SceneGraph-backup.xml", System.currentTimeMillis())));
+                     SceneGraphSerializer.serializeToFile(root, new File(Utilities.pathForResource(mapName + "-savefile", "xml")));
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
