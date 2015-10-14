@@ -22,8 +22,11 @@ public class AdventureGameObject extends GameObject {
 
     public static final Action<SceneNode, Player, AdventureGameObject> actionEnableInteractions = (sceneNode, player, gameObject, data) -> {
         MeshNode mesh = (MeshNode)data.get(EventDataKeys.Mesh);
-        for (Interaction interaction : gameObject.possibleInteractions(mesh, player)) {
-            gameObject.eventShouldProvideInteraction.trigger(player, Collections.singletonMap(EventDataKeys.Interaction, interaction));
+
+        if (Interaction.playerCanInteractWithObject(player, gameObject)) {
+            for (Interaction interaction : gameObject.possibleInteractions(mesh, player)) {
+                gameObject.eventShouldProvideInteraction.trigger(player, Collections.singletonMap(EventDataKeys.Interaction, interaction));
+            }
         }
     };
 

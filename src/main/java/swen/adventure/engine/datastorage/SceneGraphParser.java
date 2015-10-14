@@ -116,7 +116,6 @@ public class SceneGraphParser {
      * @return the root of the new graph.
      */
     private static TransformNode parseSceneNode(InputStream is, TransformNode graph) throws ParserException {
-        try {
             Document doc = Utilities.loadExistingXmlDocument(is);
 
             NodeList nodes = doc.getFirstChild().getChildNodes();
@@ -125,9 +124,6 @@ public class SceneGraphParser {
             }
 
             return graph;
-        } catch (Throwable t) {
-            throw new ParserException("Error while parsing the scene graph.", t);
-        }
     }
 
     /**

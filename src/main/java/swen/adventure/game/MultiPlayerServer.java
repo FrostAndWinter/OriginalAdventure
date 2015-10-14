@@ -70,6 +70,7 @@ public class MultiPlayerServer implements Runnable {
             System.err.println("Can't find file: " + sceneGraphFile);
         } catch (ParserException e) {
             System.err.println(e.getMessage());
+            e.getCause().printStackTrace();
         }
         fail();
         return null; // dead code

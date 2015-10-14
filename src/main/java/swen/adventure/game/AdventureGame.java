@@ -52,8 +52,6 @@ public class AdventureGame implements Game {
     private float virtualUIWidth;
     private float virtualUIHeight;
 
-    private Optional<MeshNode> _meshBeingLookedAt = Optional.empty();
-
     private EnumMap<InteractionType, Interaction> _possibleInteractionsForStep = new EnumMap<>(InteractionType.class);
     private EnumMap<Interaction.ActionType, Interaction> _interactionInProgressForActionType = new EnumMap<>(Interaction.ActionType.class);
 
@@ -102,6 +100,7 @@ public class AdventureGame implements Game {
         } catch (ParserException e) {
             System.err.println("Error while parsing the scene graph.");
             e.printStackTrace();
+            e.getCause().printStackTrace();
         }
 
         fail();
@@ -246,6 +245,17 @@ public class AdventureGame implements Game {
         _interactionInProgressForActionType.put(actionType, null);
     }
 
+    private void checkForInteractionsToEndBasedOnDistance() {
+        for (Interaction.ActionType actionType : Interaction.ActionType.values()) {
+            Interaction interaction = _interactionInProgressForActionType.get(actionType);
+            if (interaction != null) {
+                if (!Interaction.playerCanInteractWithObject(_player, interaction.gameObject)) {
+                    this.endInteractions(actionType);
+                }
+            }
+        }
+    }
+
     private void setupUI(int width, int height) {
         virtualUIWidth = width;
         virtualUIHeight = height;
@@ -302,8 +312,10 @@ public class AdventureGame implements Game {
     @Override
     public void update(long deltaMillis) {
 
-        _meshBeingLookedAt = _pickerRenderer.selectedNode();
+        final Optional<MeshNode> meshBeingLookedAt = _pickerRenderer.selectedNode();
         _possibleInteractionsForStep.clear();
+
+        this.checkForInteractionsToEndBasedOnDistance();
 
         Optional<EventBox> box;
         while ((box = _client.poll()).isPresent()) {
@@ -343,7 +355,7 @@ public class AdventureGame implements Game {
             e.trigger(source, event.eventData);
         }
 
-        _meshBeingLookedAt.ifPresent(meshNode -> meshNode.eventMeshLookedAt.trigger(this._player, Collections.singletonMap(EventDataKeys.Mesh, meshNode)));
+        meshBeingLookedAt.ifPresent(meshNode -> meshNode.eventMeshLookedAt.trigger(this._player, Collections.singletonMap(EventDataKeys.Mesh, meshNode)));
 
         GameDelegate.pollInput();
 
