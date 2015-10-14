@@ -288,7 +288,7 @@ public class SceneGraphParser {
         String id = getAttribute("id", xmlNode, Function.identity());
         boolean isCollidable = getAttribute("isCollidable", xmlNode, Boolean::parseBoolean, false);
 
-        Optional<String> fileName = getAttribute("fileName", xmlNode, Optional::of, Optional.empty());
+        Optional<String> fileName = getOptionalAttribute("fileName", xmlNode);
         MeshNode node = parent.findNodeWithIdOrCreate(id, () -> {
             if (fileName.isPresent()) { //if it's not present, we know that the mesh will be loaded later dynamically (e.g. for a player).
                 String directory = getAttribute("directory", xmlNode, Function.identity(), "");
