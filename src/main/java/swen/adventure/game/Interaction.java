@@ -53,6 +53,13 @@ public final class Interaction {
                 return String.format("Press %c to close %s", buttonName, this.gameObject.name);
             case Pull:
                 return String.format("Press %c to pull %s", buttonName, this.gameObject.name);
+            case Give:
+                final String[] responseArr = new String[1]; //since variables in lambdas should be final.
+                player.inventory().selectedItem().ifPresent(item -> {
+                    responseArr[0] = String.format("Press %c to give %s to %s", buttonName, item.name, this.gameObject.name);
+                });
+                String response = responseArr[0];
+                return response != null ? response : "";
         }
         throw new RuntimeException("Interaction type not implemented for message: " + interactionType); //Should never happen if switch statement is exhaustive.
     }

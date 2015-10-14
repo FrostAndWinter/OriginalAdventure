@@ -87,37 +87,6 @@ public final class Light extends SceneNode {
         this.falloff = falloff;
     }
 
-    @Override
-    public BundleObject toBundle() {
-        return super.toBundle()
-                .put("colour", _colour)
-                .put("intensity", _intensity)
-                // convert the enum values to their names so the valueOf() method can return their instance
-                .put("type", type.toString())
-                .put("falloff", falloff.toString());
-    }
-
-    private static Light createSceneNodeFromBundle(BundleObject bundle,
-                                                           Function<String, TransformNode> findParentFunction) { //FIXME move out of the Light class.
-        String parentId = bundle.getString("parentId");
-        TransformNode parent = findParentFunction.apply(parentId);
-
-        String id = bundle.getString("id");
-        float intensity = bundle.getFloat("intensity");
-        boolean isDynamic = bundle.getBoolean("isDynamic");
-        Vector3 colour = bundle.getVector3("colour");
-        LightType lightType = LightType.valueOf(bundle.getString("type"));
-        LightFalloff lightFalloff = LightFalloff.valueOf(bundle.getString("falloff"));
-
-        Optional<Vector3> direction;
-        if(bundle.hasProperty("direction"))
-            direction = Optional.of(bundle.getVector3("direction"));
-        else
-            direction = Optional.empty();
-
-        return new Light(id, parent, isDynamic, lightType, colour, intensity, direction, lightFalloff);
-    }
-
     /**
      * Creates a new ambient light.
      * @param id The light's id.

@@ -223,7 +223,12 @@ public class NetworkServer implements Server<String, EventBox>, Session.SessionS
             clients.remove(id);
         }
 
-        // TODO: inform other users of this disconnect
+        queue.add(new EventBox("playerDisconnected",
+                SpawnNode.ID, id, id,
+                Collections.emptyMap()));
+        synchronized (queue) {
+            queue.notifyAll();
+        }
     }
 
     /**

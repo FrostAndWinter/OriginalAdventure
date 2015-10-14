@@ -136,7 +136,7 @@ public class SceneGraphSerializer {
         else if (isStrictInstanceOf(sceneNode, Container.class))
             serializedNode = serializeContainerNode((Container) sceneNode, xmlParentNode);
 
-        else if (isStrictInstanceOf(sceneNode, Item.class))
+        else if (sceneNode instanceof Item)
             serializedNode = serializeItemNode((Item) sceneNode, xmlParentNode);
 
         else if (isStrictInstanceOf(sceneNode, Inventory.class))
@@ -429,6 +429,10 @@ public class SceneGraphSerializer {
         Element xmlElement = createElementForNode(sceneNode, xmlParentNode);
         setAttribute("id", sceneNode.id, xmlElement);
         setAttribute("enabled", Boolean.toString(sceneNode.isEnabled()), xmlElement);
+        sceneNode.containingContainer()
+                .map(container -> container.id)
+                .ifPresent(id -> setAttribute("inContainer", id, xmlElement)
+                );
         return xmlElement;
     }
 

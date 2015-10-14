@@ -13,6 +13,7 @@ public enum InteractionType {
     PlaceIn(Interaction.ActionType.Secondary),
     Open(Interaction.ActionType.Primary),
     Close(Interaction.ActionType.Primary),
+    Give(Interaction.ActionType.Primary),
     Pull(Interaction.ActionType.Primary);
 
     public final Interaction.ActionType actionType;
