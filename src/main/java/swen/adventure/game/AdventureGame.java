@@ -102,6 +102,7 @@ public class AdventureGame implements Game {
         } catch (ParserException e) {
             System.err.println("Error while parsing the scene graph.");
             e.printStackTrace();
+            e.getCause().printStackTrace();
         }
 
         fail();

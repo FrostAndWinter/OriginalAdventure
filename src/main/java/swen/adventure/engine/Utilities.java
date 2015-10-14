@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  */
 public class Utilities {
 
-    public static final boolean isHeadlessMode = Boolean.getBoolean("swen.adventure.HeadlessMode");
+    public static boolean isHeadlessMode = Boolean.getBoolean("swen.adventure.HeadlessMode");
 
     private static final String BasePath;
     static {
