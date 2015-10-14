@@ -124,6 +124,14 @@ public class Matrix4 {
         return m;
     }
 
+    public static Matrix4 makeScale(Vector3 scale) {
+        Matrix4 m = new Matrix4();
+        m.m[0] = scale.x;
+        m.m[5] = scale.y;
+        m.m[10] = scale.z;
+        return m;
+    }
+
     public static Matrix4 makeRotation(float radians, float x, float y, float z) {
         Vector3 v = new Vector3(x, y, z).normalise();
         float cos = (float)Math.cos(radians);
