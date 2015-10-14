@@ -1,10 +1,12 @@
-package swen.adventure.engine.datastorage;
+/* Contributor List  */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package swen.adventure.engine.datastorage;
 
 import org.junit.Test;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * Created by Liam O'Neill, Student ID 300312734, on 17/09/15.

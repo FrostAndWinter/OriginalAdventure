@@ -1,4 +1,6 @@
-package swen.adventure.engine.rendering;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ package swen.adventure.engine.rendering;
 
 import org.lwjgl.BufferUtils;
 
@@ -6,12 +8,13 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.*;
-import static org.lwjgl.opengl.GL14.*;
-import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL21.*;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL14.GL_TEXTURE_COMPARE_MODE;
+import static org.lwjgl.opengl.GL20.glDrawBuffers;
+import static org.lwjgl.opengl.GL21.GL_SRGB8_ALPHA8;
 import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.opengl.GL31.*;
+import static org.lwjgl.opengl.GL31.GL_RGBA8_SNORM;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 11/10/15.

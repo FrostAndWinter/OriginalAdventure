@@ -1,21 +1,26 @@
-package swen.adventure.game.scenenodes;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ /* David Barnett (barnetdavi) (300313764) */ 
+ package swen.adventure.game.scenenodes;
 
-import javafx.scene.shape.Mesh;
 import swen.adventure.engine.Action;
+import swen.adventure.engine.Event;
 import swen.adventure.engine.KeyInput;
 import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.engine.rendering.maths.Quaternion;
-import swen.adventure.engine.scenegraph.*;
-import swen.adventure.engine.Event;
 import swen.adventure.engine.rendering.maths.Vector3;
+import swen.adventure.engine.scenegraph.CameraNode;
+import swen.adventure.engine.scenegraph.CollisionNode;
+import swen.adventure.engine.scenegraph.MeshNode;
+import swen.adventure.engine.scenegraph.TransformNode;
 import swen.adventure.game.EventDataKeys;
 import swen.adventure.game.Interaction;
 import swen.adventure.game.InteractionType;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  *

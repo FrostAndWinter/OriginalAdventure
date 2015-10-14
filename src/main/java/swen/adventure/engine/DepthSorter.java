@@ -1,4 +1,6 @@
-package swen.adventure.engine;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ package swen.adventure.engine;
 
 import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.engine.rendering.maths.Matrix4;

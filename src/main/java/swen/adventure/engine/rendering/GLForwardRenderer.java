@@ -1,4 +1,7 @@
-package swen.adventure.engine.rendering;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package swen.adventure.engine.rendering;
 
 import swen.adventure.engine.rendering.maths.Matrix3;
 import swen.adventure.engine.rendering.maths.Matrix4;
@@ -10,8 +13,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.opengl.GL32.*;
+import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER_SRGB;
+import static org.lwjgl.opengl.GL32.GL_DEPTH_CLAMP;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 19/09/15.

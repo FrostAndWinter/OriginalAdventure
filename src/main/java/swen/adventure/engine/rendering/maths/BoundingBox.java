@@ -1,4 +1,7 @@
-package swen.adventure.engine.rendering.maths;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package swen.adventure.engine.rendering.maths;
 
 import swen.adventure.engine.rendering.octree.Direction;
 

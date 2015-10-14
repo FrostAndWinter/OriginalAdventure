@@ -1,22 +1,17 @@
-package swen.adventure.game.scenenodes;
+/* Contributor List  */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package swen.adventure.game.scenenodes;
 
 import org.junit.Before;
 import org.junit.Test;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
-import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.engine.scenegraph.TransformNode;
-import swen.adventure.game.Interaction;
 
-import java.util.List;
 import java.util.Optional;
 
 import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by josephbennett on 11/10/15

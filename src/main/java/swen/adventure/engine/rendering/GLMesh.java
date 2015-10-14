@@ -1,13 +1,17 @@
-package swen.adventure.engine.rendering;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package swen.adventure.engine.rendering;
 
 import org.lwjgl.BufferUtils;
 import swen.adventure.engine.Utilities;
-import swen.adventure.engine.rendering.shaders.MaterialShader;
-import swen.adventure.engine.scenegraph.TransformNode;
 import swen.adventure.engine.rendering.maths.BoundingBox;
+import swen.adventure.engine.rendering.shaders.MaterialShader;
 
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
 
 import static org.lwjgl.opengl.GL11.glDrawArrays;
 import static org.lwjgl.opengl.GL11.glDrawElements;

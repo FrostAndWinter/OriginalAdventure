@@ -1,13 +1,14 @@
-package swen.adventure.game;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* David Barnett (barnetdavi) (300313764) */ 
+ package swen.adventure.game;
 
-import swen.adventure.engine.Event;
-import swen.adventure.engine.network.Client;
-import swen.adventure.engine.network.EventBox;
 import swen.adventure.engine.scenegraph.MeshNode;
 import swen.adventure.game.scenenodes.AdventureGameObject;
 import swen.adventure.game.scenenodes.Player;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Objects;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 10/10/15.

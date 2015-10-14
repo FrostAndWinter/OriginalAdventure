@@ -1,4 +1,6 @@
-package swen.adventure.game.ui.components;
+/* Contributor List  */ 
+ /* Daniel Braithwaite (braithdani) (300313770) */ 
+ package swen.adventure.game.ui.components;
 
 import swen.adventure.engine.ui.color.Color;
 import swen.adventure.engine.ui.components.Panel;

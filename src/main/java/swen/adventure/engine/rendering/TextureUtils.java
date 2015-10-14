@@ -1,4 +1,6 @@
-package swen.adventure.engine.rendering;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ package swen.adventure.engine.rendering;
 
 import org.lwjgl.BufferUtils;
 

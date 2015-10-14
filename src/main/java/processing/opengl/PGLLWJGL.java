@@ -1,4 +1,7 @@
-package processing.opengl;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package processing.opengl;
 
 import processing.opengl.glu.tessellator.GLU;
 import processing.opengl.glu.tessellator.GLUtessellatorCallback;

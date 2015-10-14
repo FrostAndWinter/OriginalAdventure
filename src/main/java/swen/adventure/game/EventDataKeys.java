@@ -1,4 +1,8 @@
-package swen.adventure.game;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ /* David Barnett (barnetdavi) (300313764) */ 
+ package swen.adventure.game;
 
 /**
  * Created by josephbennett on 6/10/15

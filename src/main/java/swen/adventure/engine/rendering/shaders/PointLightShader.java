@@ -1,4 +1,7 @@
-package swen.adventure.engine.rendering.shaders;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package swen.adventure.engine.rendering.shaders;
 
 import swen.adventure.engine.rendering.ShaderProgram;
 

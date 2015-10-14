@@ -1,4 +1,7 @@
-package swen.adventure.engine;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package swen.adventure.engine;
 
 import java.lang.reflect.Field;
 import java.util.Map;

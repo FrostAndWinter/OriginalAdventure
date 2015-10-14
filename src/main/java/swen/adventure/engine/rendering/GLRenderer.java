@@ -1,4 +1,7 @@
-package swen.adventure.engine.rendering;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package swen.adventure.engine.rendering;
 
 import swen.adventure.engine.rendering.maths.Matrix4;
 import swen.adventure.engine.scenegraph.Light;

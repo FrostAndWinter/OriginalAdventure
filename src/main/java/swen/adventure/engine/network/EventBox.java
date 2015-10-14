@@ -1,4 +1,8 @@
-package swen.adventure.engine.network;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ /* David Barnett (barnetdavi) (300313764) */ 
+ package swen.adventure.engine.network;
 
 import swen.adventure.engine.Event;
 import swen.adventure.engine.datastorage.ParserManager;

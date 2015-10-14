@@ -1,4 +1,6 @@
-package swen.adventure;
+/* Contributor List  */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ package swen.adventure;
 
 import java.io.File;
 

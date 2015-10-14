@@ -1,13 +1,15 @@
-package swen.adventure.engine.scenegraph;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package swen.adventure.engine.scenegraph;
 
-import swen.adventure.engine.datastorage.BundleObject;
-import swen.adventure.engine.datastorage.BundleSerializable;
 import swen.adventure.engine.rendering.maths.Matrix4;
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 
 import java.util.Objects;
-import java.util.function.Function;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 15/09/15.

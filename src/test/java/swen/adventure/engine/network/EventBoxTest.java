@@ -1,4 +1,6 @@
-package swen.adventure.engine.network;
+/* Contributor List  */ 
+ /* David Barnett (barnetdavi) (300313764) */ 
+ package swen.adventure.engine.network;
 
 import junit.framework.TestCase;
 import org.junit.Assert;

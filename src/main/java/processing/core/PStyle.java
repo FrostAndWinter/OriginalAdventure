@@ -1,4 +1,6 @@
-/* -*- mode: java; c-basic-offset: 2; indent-tabs-mode: nil -*- */
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* -*- mode: java; c-basic-offset: 2; indent-tabs-mode: nil -*- */
 
 /*
   Part of the Processing project - http://processing.org

@@ -1,11 +1,9 @@
-package swen.adventure.engine.rendering.shaders.deferredrendering;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ package swen.adventure.engine.rendering.shaders.deferredrendering;
 
-import swen.adventure.engine.Utilities;
 import swen.adventure.engine.rendering.TextureUnit;
-import swen.adventure.engine.rendering.maths.Matrix4;
 import swen.adventure.engine.rendering.shaders.PerObjectMaterialShader;
-
-import java.io.IOException;
 
 import static org.lwjgl.opengl.GL20.*;
 

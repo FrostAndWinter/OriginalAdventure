@@ -1,10 +1,13 @@
-package swen.adventure.game.scenenodes;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ /* David Barnett (barnetdavi) (300313764) */ 
+ package swen.adventure.game.scenenodes;
 
 import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.GameObject;
 import swen.adventure.engine.scenegraph.TransformNode;
-import swen.adventure.game.scenenodes.Player;
 
 /**
  * A spawn node is a location in the world where player's can be spawned in at.

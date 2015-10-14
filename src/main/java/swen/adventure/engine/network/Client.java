@@ -1,4 +1,8 @@
-package swen.adventure.engine.network;
+/* Contributor List  */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ /* David Barnett (barnetdavi) (300313764) */ 
+ /* Daniel Braithwaite (braithdani) (300313770) */ 
+ package swen.adventure.engine.network;
 
 import java.io.IOException;
 import java.util.Optional;

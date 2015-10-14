@@ -1,21 +1,17 @@
-package swen.adventure.engine.rendering.shaders.deferredrendering;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ package swen.adventure.engine.rendering.shaders.deferredrendering;
 
 import swen.adventure.engine.Utilities;
 import swen.adventure.engine.rendering.ShaderProgram;
-import swen.adventure.engine.rendering.TextureUnit;
 import swen.adventure.engine.scenegraph.Light;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
-import static org.lwjgl.opengl.GL20.glGetUniformLocation;
-import static org.lwjgl.opengl.GL20.glUniform1i;
 import static org.lwjgl.opengl.GL30.glBindBufferRange;
-import static org.lwjgl.opengl.GL31.GL_UNIFORM_BUFFER;
-import static org.lwjgl.opengl.GL31.glGetUniformBlockIndex;
-import static org.lwjgl.opengl.GL31.glUniformBlockBinding;
+import static org.lwjgl.opengl.GL31.*;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 12/10/15.

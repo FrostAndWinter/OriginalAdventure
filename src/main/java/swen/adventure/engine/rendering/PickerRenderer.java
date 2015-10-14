@@ -1,23 +1,24 @@
-package swen.adventure.engine.rendering;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package swen.adventure.engine.rendering;
 
-import org.lwjgl.BufferUtils;
 import swen.adventure.engine.rendering.maths.Matrix4;
 import swen.adventure.engine.rendering.shaders.PickerShader;
-import swen.adventure.engine.scenegraph.CameraNode;
 import swen.adventure.engine.scenegraph.MeshNode;
-import swen.adventure.engine.scenegraph.SceneNode;
 
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL12.*;
-import static org.lwjgl.opengl.GL21.*;
+import static org.lwjgl.opengl.GL12.GL_BGRA;
+import static org.lwjgl.opengl.GL12.GL_UNSIGNED_INT_8_8_8_8_REV;
 import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL21.GL_PIXEL_PACK_BUFFER;
 import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.opengl.GL32.*;
+import static org.lwjgl.opengl.GL32.GL_DEPTH_CLAMP;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 1/10/15.

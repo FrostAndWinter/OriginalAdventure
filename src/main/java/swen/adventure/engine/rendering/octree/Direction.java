@@ -1,4 +1,7 @@
-package swen.adventure.engine.rendering.octree;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package swen.adventure.engine.rendering.octree;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 15/09/15.

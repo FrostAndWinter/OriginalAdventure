@@ -1,28 +1,14 @@
-package swen.adventure.game;
+/* Contributor List  */ 
+ /* Daniel Braithwaite (braithdani) (300313770) */ 
+ package swen.adventure.game;
 
-import com.sun.media.sound.InvalidFormatException;
-import oracle.jrockit.jfr.JFR;
-import swen.adventure.engine.GameDelegate;
 import swen.adventure.engine.Utilities;
-import swen.adventure.engine.network.Client;
-import swen.adventure.engine.network.DumbClient;
-import swen.adventure.engine.network.EventBox;
-import swen.adventure.engine.network.NetworkClient;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.font.OpenType;
-import java.io.File;
-import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 /**

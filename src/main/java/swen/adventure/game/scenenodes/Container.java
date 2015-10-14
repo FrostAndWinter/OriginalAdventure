@@ -1,4 +1,8 @@
-package swen.adventure.game.scenenodes;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package swen.adventure.game.scenenodes;
 
 import swen.adventure.engine.scenegraph.SceneNode;
 import swen.adventure.engine.scenegraph.TransformNode;

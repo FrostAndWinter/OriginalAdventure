@@ -1,4 +1,6 @@
-package swen.adventure.engine.rendering.shaders;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ package swen.adventure.engine.rendering.shaders;
 
 import swen.adventure.engine.Utilities;
 import swen.adventure.engine.rendering.TextureUnit;
@@ -7,7 +9,6 @@ import swen.adventure.engine.rendering.maths.Matrix4;
 import java.io.IOException;
 
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL20.glUniform1i;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 3/10/15.

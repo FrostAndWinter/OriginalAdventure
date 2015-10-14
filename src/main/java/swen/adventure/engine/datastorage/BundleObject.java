@@ -1,8 +1,17 @@
-package swen.adventure.engine.datastorage;
+/* Contributor List  */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package swen.adventure.engine.datastorage;
 
-import swen.adventure.engine.rendering.maths.*;
+import swen.adventure.engine.rendering.maths.Quaternion;
+import swen.adventure.engine.rendering.maths.Vector3;
+import swen.adventure.engine.rendering.maths.Vector4;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**

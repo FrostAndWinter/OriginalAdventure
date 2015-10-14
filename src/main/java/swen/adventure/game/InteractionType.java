@@ -1,4 +1,7 @@
-package swen.adventure.game;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* David Barnett (barnetdavi) (300313764) */ 
+ package swen.adventure.game;
 
 import java.util.ArrayList;
 import java.util.Collections;

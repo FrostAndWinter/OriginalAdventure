@@ -1,9 +1,11 @@
-package swen.adventure.engine.rendering;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package swen.adventure.engine.rendering;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.stb.STBImageResize;
-import org.lwjgl.stb.STBImageWrite;
 import swen.adventure.Settings;
 import swen.adventure.engine.Utilities;
 
@@ -18,9 +20,12 @@ import java.util.List;
 import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL12.*;
-import static org.lwjgl.opengl.GL13.*;
-import static org.lwjgl.opengl.GL21.*;
+import static org.lwjgl.opengl.GL12.GL_TEXTURE_BASE_LEVEL;
+import static org.lwjgl.opengl.GL12.GL_TEXTURE_MAX_LEVEL;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL21.GL_SRGB8;
+import static org.lwjgl.opengl.GL21.GL_SRGB8_ALPHA8;
 
 /**
  * Created by Thomas Roughton, Student ID 300313924, on 29/09/15.

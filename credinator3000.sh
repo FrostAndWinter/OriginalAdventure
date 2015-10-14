@@ -1,6 +1,5 @@
-START='\*'
-END=' */'
-
+#!/bin/bash
+# add Contributors to every java file
 git ls-tree -r --name-only master ./ | while read file ; do
 if [[ "$file" =~ java$ ]] ; then
     echo "=== $file"

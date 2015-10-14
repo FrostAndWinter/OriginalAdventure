@@ -1,4 +1,7 @@
-package swen.adventure.engine.rendering;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package swen.adventure.engine.rendering;
 
 import swen.adventure.engine.rendering.maths.Matrix3;
 import swen.adventure.engine.rendering.maths.Matrix4;
@@ -10,13 +13,13 @@ import swen.adventure.engine.rendering.shaders.deferredrendering.PointLightPassS
 import swen.adventure.engine.scenegraph.Light;
 import swen.adventure.engine.scenegraph.MeshNode;
 
-import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL14.*;
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL20.glBlendEquationSeparate;
+import static org.lwjgl.opengl.GL20.glStencilOpSeparate;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL32.GL_DEPTH_CLAMP;
 

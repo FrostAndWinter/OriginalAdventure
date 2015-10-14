@@ -1,13 +1,16 @@
-package swen.adventure.engine.rendering;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package swen.adventure.engine.rendering;
 
-import org.lwjgl.Sys;
 import swen.adventure.engine.Utilities;
 import swen.adventure.engine.datastorage.ParserException;
 import swen.adventure.engine.datastorage.WavefrontParser;
+import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.engine.rendering.maths.Vector;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.rendering.maths.Vector4;
-import swen.adventure.engine.rendering.maths.BoundingBox;
 
 import java.io.File;
 import java.io.FileNotFoundException;

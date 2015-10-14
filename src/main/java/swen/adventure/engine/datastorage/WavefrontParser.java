@@ -1,4 +1,9 @@
-package swen.adventure.engine.datastorage;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ package swen.adventure.engine.datastorage;
 
 import swen.adventure.engine.rendering.Material;
 import swen.adventure.engine.rendering.maths.Vector;

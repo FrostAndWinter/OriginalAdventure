@@ -1,4 +1,10 @@
-package swen.adventure.game.scenenodes;
+/* Contributor List  */ 
+ /* Thomas Roughton (roughtthom) (300313924) */ 
+ /* Liam O'Niell (oneilliam) (300312734) */ 
+ /* Joseph Bennett (bennetjose) (300319773) */ 
+ /* David Barnett (barnetdavi) (300313764) */ 
+ /* Daniel Braithwaite (braithdani) (300313770) */ 
+ package swen.adventure.game.scenenodes;
 
 import swen.adventure.engine.Action;
 import swen.adventure.engine.Event;
@@ -6,7 +12,10 @@ import swen.adventure.engine.animation.AnimableProperty;
 import swen.adventure.engine.animation.Animation;
 import swen.adventure.engine.rendering.Material;
 import swen.adventure.engine.rendering.maths.Vector3;
-import swen.adventure.engine.scenegraph.*;
+import swen.adventure.engine.scenegraph.Light;
+import swen.adventure.engine.scenegraph.MeshNode;
+import swen.adventure.engine.scenegraph.SceneNode;
+import swen.adventure.engine.scenegraph.TransformNode;
 
 import java.util.Collections;
 
