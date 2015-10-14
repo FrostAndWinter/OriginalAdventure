@@ -93,7 +93,7 @@ public class MultiPlayerServer implements Runnable {
 
     public void run() {
         int eventsCount = 0;
-        while(server.isRunning()) {
+        event: while(server.isRunning()) {
             Optional<EventBox> isEvent = server.poll();
             if (!isEvent.isPresent()) {
                 continue;
@@ -109,6 +109,9 @@ public class MultiPlayerServer implements Runnable {
                         createPlayer(event.targetId);
                         server.sendSnapShot(event.from, root);
                         break;
+                    case "playerDisconnected":
+                        saveState();
+                        continue event; // Do not send this to client
                     case "InteractionPerformed":
                         interactionPerformed(event);
                         break;
@@ -127,11 +130,7 @@ public class MultiPlayerServer implements Runnable {
             }
 
             if (eventsCount >= Settings.EventsTillServerBackup) {
-                try {
-                     SceneGraphSerializer.serializeToFile(root, new File(Utilities.pathForResource(mapName + "-savefile", "xml")));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+                saveState();
                 eventsCount = 0;
             }
             eventsCount++;
@@ -147,6 +146,14 @@ public class MultiPlayerServer implements Runnable {
     private void interactionEnded(EventBox event) {
         Player player = (Player)root.nodeWithID(event.from).get();
         buildInteraction(event).interactionEndedByPlayer(player);
+    }
+
+    private void saveState() {
+        try {
+            SceneGraphSerializer.serializeToFile(root, new File(Utilities.pathForResource(mapName + "-savefile", "xml")));
+        } catch (FileNotFoundException e) {
+            System.err.println("Error while saving server state: " + e);
+        }
     }
 
     private Interaction buildInteraction(EventBox event) {

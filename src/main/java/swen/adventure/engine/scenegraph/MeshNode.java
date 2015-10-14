@@ -75,13 +75,6 @@ public final class MeshNode extends SceneNode {
         _localSpaceBoundingBox = _mesh.boundingBox();
     }
 
-    @Override
-    public BundleObject toBundle() {
-        String fileName = id.substring("mesh".length()); // the id must equal "mesh" + fileName
-        return super.toBundle()
-                .put("fileName", fileName);
-    }
-
     public GLMesh<Float> mesh() {
         return _mesh;
     }
