@@ -87,7 +87,7 @@ public class LauncherGUI extends JFrame {
 
         add(input, BorderLayout.CENTER);
         //add(start, BorderLayout.SOUTH);
-        setMinimumSize(new Dimension(200, 180));
+        setMinimumSize(new Dimension(200, 250));
 
         setVisible(true);
     }
