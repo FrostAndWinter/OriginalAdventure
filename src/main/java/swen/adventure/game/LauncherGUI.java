@@ -84,10 +84,28 @@ public class LauncherGUI extends JFrame {
             startGame(false);
         });
 
+        JButton startServer = new JButton("Start Server");
+        startServer.addActionListener(e -> {
+            // Ensure the port is a number
+            try {
+                int num = Integer.parseInt(serverPortTextField.getText());
+            } catch (NumberFormatException error) {
+                JOptionPane.showMessageDialog(null, "Port number must be a number");
+                return;
+            }
+
+            setVisible(false);
+
+            Utilities.isHeadlessMode = true;
+
+            new MultiPlayerServer(Integer.parseInt(serverPortTextField.getText()), "SceneGraph").run();
+        });
+
         input.add(serverAddressPanel);
         input.add(serverPortPanel);
         input.add(start);
         input.add(startSingle);
+        input.add(startServer);
 
         setLayout(new BorderLayout());
 
