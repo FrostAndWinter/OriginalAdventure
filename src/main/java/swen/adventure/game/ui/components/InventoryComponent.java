@@ -206,15 +206,15 @@ public class InventoryComponent extends UIComponent {
 
                             transformNode.setTranslation(new Vector3(dx + w / 2, dy + h / 2 + this.height * scaleY * 3, 0.f));
                             transformNode.setScale(new Vector3(scale, scale, 1.f));
+                            nodesToRender.add(meshNode);
                         } else if (!_selectedItemIsZoomed) {
                             float xScale = (boxSize) * scaleX / meshMaxDimension;
                             float yScale = (boxSize) * scaleY / meshMaxDimension;
 
                             transformNode.setTranslation(new Vector3(dx + (finalCurrentX + boxSize / 2) * scaleX, dy + (height) - (this.y + boxSize / 2) * scaleY, 0.f));
                             transformNode.setScale(new Vector3(xScale, yScale, 1.f));
+                            nodesToRender.add(meshNode);
                         }
-
-                        nodesToRender.add(meshNode);
                     });
                 });
 
