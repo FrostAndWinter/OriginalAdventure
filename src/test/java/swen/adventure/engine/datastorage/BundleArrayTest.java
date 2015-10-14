@@ -52,12 +52,12 @@ public class BundleArrayTest {
         assertEquals(bundleObject, array.getBundleObject(0));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IndexOutOfBoundsException.class)
     public void testInvalidGet1() throws Exception {
         array.getInt(-1);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IndexOutOfBoundsException.class)
     public void testInvalidGet2() throws Exception {
         array.getInt(array.size());
     }
