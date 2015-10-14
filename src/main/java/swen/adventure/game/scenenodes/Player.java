@@ -1,5 +1,6 @@
 package swen.adventure.game.scenenodes;
 
+import javafx.scene.shape.Mesh;
 import swen.adventure.engine.Action;
 import swen.adventure.engine.KeyInput;
 import swen.adventure.engine.rendering.maths.BoundingBox;
@@ -28,7 +29,7 @@ public class Player extends AdventureGameObject {
     private float _playerSpeed = 600.f; //units per second
 
     private final CameraNode _camera;
-    private final TransformNode _meshTransform;
+    private final TransformNode _meshRotationTransform;
 
     private static final Vector3 CameraTranslation = new Vector3(0, 40, 0);
 
@@ -75,15 +76,20 @@ public class Player extends AdventureGameObject {
         _camera = parent.findNodeWithIdOrCreate(cameraID, () -> new CameraNode(id + "Camera", cameraTransform));
 
 
+        final String meshRotationTransformID = id + "MeshRotatationTransform";
+        _meshRotationTransform = parent.findNodeWithIdOrCreate(meshRotationTransformID, () ->
+            new TransformNode(meshRotationTransformID, Vector3.zero, new Quaternion(), Vector3.one)
+        );
+
         final String meshTransformID = id + "MeshTransform";
 
-        _meshTransform = parent.findNodeWithIdOrCreate(meshTransformID, () ->
-                new TransformNode(meshTransformID, parent, false, PlayerMeshOffset, new Quaternion(), new Vector3(PlayerMeshScale, PlayerMeshScale, PlayerMeshScale))
+        TransformNode meshTransform = parent.findNodeWithIdOrCreate(meshTransformID, () ->
+                new TransformNode(meshTransformID, _meshRotationTransform, false, PlayerMeshOffset, new Quaternion(0, 1, 0, 0), new Vector3(PlayerMeshScale, PlayerMeshScale, PlayerMeshScale))
         );
 
         final String meshID = id + "Mesh";
 
-        MeshNode mesh = parent.findNodeWithIdOrCreate(meshID, () -> new MeshNode(meshID, null, PlayerMeshName, _meshTransform));
+        MeshNode mesh = parent.findNodeWithIdOrCreate(meshID, () -> new MeshNode(meshID, null, PlayerMeshName, meshTransform));
         this.setMesh(mesh);
     }
 
@@ -130,7 +136,7 @@ public class Player extends AdventureGameObject {
      */
     public void setLookDirection(float angleX, float angleY) {
         this.parent().get().setRotation(Quaternion.makeWithAngleAndAxis(angleX, 0, -1, 0).multiply(Quaternion.makeWithAngleAndAxis(angleY, -1, 0, 0)));
-        _meshTransform.setRotation(Quaternion.makeWithAngleAndAxis(angleY, -1, 0, 0));
+        _meshRotationTransform.setRotation(Quaternion.makeWithAngleAndAxis(angleY, -1, 0, 0));
     }
 
     public Inventory inventory() {
