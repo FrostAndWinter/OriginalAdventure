@@ -36,7 +36,7 @@ public class LauncherGUI extends JFrame {
     private JButton start;
 
     public LauncherGUI() {
-        super("Origonal Adventure Launcher");
+        super("Original Adventure Launcher");
         JPanel input = new JPanel();
 
         JPanel namePanel = new JPanel();
@@ -86,13 +86,17 @@ public class LauncherGUI extends JFrame {
         setLayout(new BorderLayout());
 
         add(input, BorderLayout.CENTER);
-        //add(start, BorderLayout.SOUTH);
         setMinimumSize(new Dimension(200, 250));
 
         setLocationRelativeTo(null);
         setVisible(true);
     }
 
+    /**
+     * Starts a new game by calling the start game method in
+     * the adventure game class.
+     * @param n true if game should connect to a server
+     */
     public void startGame(boolean n) {
         String[] args;
         if (n) {
