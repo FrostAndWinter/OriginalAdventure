@@ -23,6 +23,7 @@ public class MouseInput implements Input {
         }
     }
 
+
     public void checkHeldButtons(Function<Button, Boolean> isButtonPressedFunc, long elapsedTime) {
         onHeldMappings.entrySet()
                 .stream()
@@ -37,6 +38,11 @@ public class MouseInput implements Input {
     }
 
 
+    /**
+     * Release the given mouse button.
+     *
+     * @param button the button to release
+     */
     public void releaseButton(Button button) {
         Event<MouseInput, MouseInput> event = this.onReleasedMappings.get(button);
         if (event != null) {

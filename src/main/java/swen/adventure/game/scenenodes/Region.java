@@ -26,14 +26,22 @@ public class Region extends SceneNode {
     public final Event<Region, Player> eventRegionExited = new Event<>("RegionExited", this);
 
     private BoundingBox _boundingBox;
+    private BoundingBox _worldSpaceBoundingBox;
 
     public Region(String regionName, BoundingBox boundingBox, TransformNode parent) {
         super(regionName, parent, false);
         this.regionName = regionName;
         _boundingBox = boundingBox;
+        _worldSpaceBoundingBox = boundingBox.axisAlignedBoundingBoxInSpace(this.nodeToWorldSpaceTransform());
 
         Event.EventSet<Player, Player> playerMovedSet = (Event.EventSet<Player, Player>)Event.eventSetForName("PlayerMoved");
         playerMovedSet.addAction(this, Region.actionPlayerMoved);
+    }
+
+    @Override
+    public void transformDidChange() {
+        super.transformDidChange();
+        _worldSpaceBoundingBox = _boundingBox.axisAlignedBoundingBoxInSpace(this.nodeToWorldSpaceTransform());
     }
 
     /**
@@ -45,7 +53,8 @@ public class Region extends SceneNode {
     };
 
     private void playerMovedToLocation(Player player, Vector3 location) {
-        boolean isInRegion = _boundingBox.containsPoint(location);
+
+        boolean isInRegion = _worldSpaceBoundingBox.containsPoint(location);
 
         if (isInRegion && !_playersInRegion.contains(player)) {
             _playersInRegion.add(player);

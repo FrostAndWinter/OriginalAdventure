@@ -156,11 +156,9 @@ public class AdventureGame implements Game {
         if (data.containsKey(EventDataKeys.Networked)) {
             if (data.containsKey(EventDataKeys.Location)) {
                 eventObject.parent().get().setTranslation((Vector3) data.get(EventDataKeys.Location));
-                System.out.println("Forcefully set position of " + eventObject.id);
             }
             if (data.containsKey(EventDataKeys.Quaternion)) {
                 eventObject.parent().get().setRotation((Quaternion) data.get(EventDataKeys.Quaternion));
-                System.out.println("Forcefully set rotation of " + eventObject.id);
             }
         } else {
             listener._client.send(new EventBox("PlayerMoved", triggeringObject, eventObject, listener._player, data));

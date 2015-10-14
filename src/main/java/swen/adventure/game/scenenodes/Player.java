@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
+ *
  * Created by josephbennett on 19/09/15
  * Modified by Thomas Roughton, Student ID 300313924.
  */
@@ -54,19 +55,25 @@ public class Player extends AdventureGameObject {
                 player.move(location);
             };
 
+
     public final Event<Player, Player> eventPlayerMoved = new Event<>("PlayerMoved", this);
 
+    /**
+     * Creates a player in the game world.
+     *
+     * @param id the id of the player
+     * @param parent the transform node parent
+     */
     public Player(String id, TransformNode parent) {
         super(id, parent, id);
 
         final String inventoryId = id + "Inventory";
-
         Inventory inventory = parent.findNodeWithIdOrCreate(inventoryId, () -> new Inventory(inventoryId, parent));
         this.setContainer(inventory);
 
         final String colliderID = id + "Collider";
         CollisionNode collider = parent.findNodeWithIdOrCreate(colliderID, () -> new CollisionNode(colliderID, parent, PlayerBoundingBox, CollisionNode.CollisionFlag.Player));
-        this.setCollisionNode(collider);
+        // this.setCollisionNode(collider);
 
         String cameraTranslationID = id + "CameraTranslation";
 
@@ -149,10 +156,20 @@ public class Player extends AdventureGameObject {
                 Collections.singletonMap(EventDataKeys.Quaternion, rotatedNode.rotation()));
     }
 
+    /**
+     * Returns this player's inventory
+     *
+     * @return this player's inventory
+     */
     public Inventory inventory() {
         return (Inventory)this.container().get();
     }
 
+    /**
+     * Return the camera attached to this player.
+     *
+     * @return the camera attached to this player
+     */
     public CameraNode camera() {
         return _camera;
     }

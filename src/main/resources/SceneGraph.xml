@@ -199,7 +199,7 @@
                 <MeshNode id="corridorsCeilingPlane" fileName="Plane.obj" materialFileName="StoneWall.mtl" materialName="StoneWall" textureRepeat="12, 110.4, 0.2"/>
             </TransformNode>
 
-            <TransformNode id="centreCorridorT" scale="0.4, 1, 1">
+            <TransformNode id="centreCorridorT" scale="0.4, 200, 1">
                 <Region regionName="The Escape" boundingBox="-0.5, 0, -0.5, 0.5, 1, 0.5"/>
             </TransformNode>
         </TransformNode>
@@ -325,6 +325,8 @@
 
             <TransformNode id="corridorEndDoorTransform" scale="2.1, 1.4, 1.4">
                 <Door id="corridorEndDoor"/>
+
+                <Region regionName="Congratulations! That's all that's here right now." boundingBox="-50, 0, 0, 50, 280, 300"/>
             </TransformNode>
         </TransformNode>
 
