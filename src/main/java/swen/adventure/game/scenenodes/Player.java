@@ -75,7 +75,7 @@ public class Player extends AdventureGameObject {
 
         final String colliderID = id + "Collider";
         CollisionNode collider = parent.findNodeWithIdOrCreate(colliderID, () -> new CollisionNode(colliderID, parent, PlayerBoundingBox, CollisionNode.CollisionFlag.Player));
-        // this.setCollisionNode(collider);
+        this.setCollisionNode(collider);
 
         String cameraTranslationID = id + "CameraTranslation";
 
