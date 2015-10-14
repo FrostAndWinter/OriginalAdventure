@@ -66,6 +66,13 @@ public class ParserManager {
                 i -> Integer.toString(i.ordinal()),
                 s -> InteractionType.values()[Integer.parseInt(s)]), parsers);
 
+        addParser(String[].class, new Parser<>(
+                a -> toCsvString(Arrays.asList(a), String.class),
+                s -> {
+                    List<String> strings = fromCsvString(s, String.class);
+                    return strings.toArray(new String[strings.size()]);
+                }), parsers);
+
         PARSERS = Collections.unmodifiableMap(parsers);
     }
 
