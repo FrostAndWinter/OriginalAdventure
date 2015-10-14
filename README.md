@@ -10,3 +10,10 @@ The most original adventure of 2015
 * java 8 or above
 
 * gradle
+
+## Running Game
+Depending on wether you are on an ECS computer or not you have to run the game diffrently
+
+* ECS: run `./gradlew-ecs run`
+
+* Otherwise: run `./gradlew run`
