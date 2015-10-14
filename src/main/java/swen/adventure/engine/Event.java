@@ -32,7 +32,7 @@ import java.util.*;
  */
 public class Event<E, T> {
 
-    private static boolean ShowEventDebugLog = false;
+    private static boolean ShowEventDebugLog = true;
 
     /**
      * ActionData is used to internally store records of registered actions.
@@ -222,6 +222,7 @@ public class Event<E, T> {
 
             if (name.equals("ValueChanged")) return;
             if (name.equals("MeshLookedAt")) return;
+            if (name.equals("PlayerMoved")) return;
 
 
             log += " triggered by " + triggeringObject;

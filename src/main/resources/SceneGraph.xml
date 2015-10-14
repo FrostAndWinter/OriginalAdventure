@@ -245,7 +245,7 @@
             <Lever id="redBlueGateLever"/>
         </TransformNode>
 
-        <TransformNode id="corridors" rotation="0, -0.7071067812, 0, 0.7071067812"> <!-- Roation of 90 degress around y !-->
+        <TransformNode id="corridors" rotation="0, -0.7071067812, 0, 0.7071067812"> <!-- Rotation of 90 degress around y !-->
             <TransformNode id="corridorsLeftColumn" scale="55.2, 1.4, 1" translation="0, 0, 120">
                 <TransformNode id="corridorsLeftColumnMiddle" scale="0.1, 0.3, 1" translation="0, 0, 0">
                     <MeshNode id="corridorsLeftColumnMiddleMesh" directory="MedievalModels" fileName="WallColumnMiddle.obj" textureRepeat="5.52, 0.42  , 1" isCollidable="true"/>
