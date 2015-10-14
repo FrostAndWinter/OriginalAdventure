@@ -123,12 +123,15 @@ public class FlickeringLight extends AdventureGameObject {
      */
     public void setIntensityVariation(float intensityVariation) {
         _intensityVariation = intensityVariation;
-        float lowIntensity = _baseIntensity - intensityVariation/2.f;
-        float highIntensity = _baseIntensity + intensityVariation/2.f;
 
-        _lightIntensity.stopAnimating();
-        _lightIntensity.setValue(lowIntensity);
-        new Animation(_lightIntensity, highIntensity);
+        if (_isOn) {
+            float lowIntensity = _baseIntensity - intensityVariation / 2.f;
+            float highIntensity = _baseIntensity + intensityVariation / 2.f;
+
+            _lightIntensity.stopAnimating();
+            _lightIntensity.setValue(lowIntensity);
+            new Animation(_lightIntensity, highIntensity);
+        }
     }
 
     /**

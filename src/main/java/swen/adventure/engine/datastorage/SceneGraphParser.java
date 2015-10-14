@@ -389,12 +389,11 @@ public class SceneGraphParser {
             return new FlickeringLight(id, parent, fileName, directory, colour, intensity, falloff);
         });
 
+        float intensityVariation = getAttribute("intensityVariation", xmlNode, Float::parseFloat, 0.f);
+        flickeringLight.setIntensityVariation(intensityVariation);
 
         boolean isOn = getAttribute("isOn", xmlNode, Boolean::valueOf, true);
         flickeringLight.setOn(isOn);
-
-        float intensityVariation = getAttribute("intensityVariation", xmlNode, Float::parseFloat, 0.f);
-        flickeringLight.setIntensityVariation(intensityVariation);
 
         flickeringLight.setParent(parent);
 
