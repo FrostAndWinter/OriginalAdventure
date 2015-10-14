@@ -475,7 +475,7 @@ public class SceneGraphSerializer {
         setAttribute("id", sceneNode.id, xmlElement);
         setAttribute("enabled", sceneNode.isEnabled(), Boolean.class, xmlElement);
         setAttribute("isOpen", sceneNode.isOpen(), Boolean.class, xmlElement);
-        setAttribute("canDirectlyInteractWith", Boolean.toString(sceneNode.isEnabled()), xmlElement);
+        setAttribute("canDirectlyInteractWith", sceneNode.canDirectlyInteractWith(), Boolean.class, xmlElement);
 
         String[] allowedAccess = sceneNode.playersThatCanOpenDoor().stream()
                 .map(player -> player.id)

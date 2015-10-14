@@ -143,6 +143,10 @@ public class Door extends AdventureGameObject {
         }
     }
 
+    public boolean canDirectlyInteractWith() {
+        return _canDirectlyInteractWith;
+    }
+
     /**
      * Whether or not a player can directly interact with this door (i.e can interact by using a primary
      * or secondary interaction)
