@@ -6,7 +6,6 @@ import swen.adventure.engine.*;
 import swen.adventure.engine.datastorage.EventConnectionParser;
 import swen.adventure.engine.datastorage.ParserException;
 import swen.adventure.engine.datastorage.SceneGraphParser;
-import swen.adventure.engine.datastorage.SceneGraphSerializer;
 import swen.adventure.engine.network.Client;
 import swen.adventure.engine.network.DumbClient;
 import swen.adventure.engine.network.EventBox;
@@ -15,7 +14,6 @@ import swen.adventure.engine.rendering.GLDeferredRenderer;
 import swen.adventure.engine.rendering.GLForwardRenderer;
 import swen.adventure.engine.rendering.GLRenderer;
 import swen.adventure.engine.rendering.PickerRenderer;
-import swen.adventure.engine.rendering.maths.Quaternion;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
 import swen.adventure.game.input.AdventureGameKeyInput;
@@ -149,11 +147,11 @@ public class AdventureGame implements Game {
         });
 
         this.setupUI((int) virtualUIWidth, (int) virtualUIHeight);
-    } 
+    }
 
 
     private static final Action<Player, Player, AdventureGame> MovePlayer = (eventObject, triggeringObject, listener, data) -> {
-        if (data.containsKey("Networked")) {
+        if (data.containsKey(EventDataKeys.Networked)) {
             eventObject.parent().get().setTranslation((Vector3) data.get(EventDataKeys.Location));
             System.out.println("Forcefully set position of " + eventObject.id);
         } else {
@@ -164,7 +162,7 @@ public class AdventureGame implements Game {
 
     private void sendInteraction(Interaction interaction) {
         Map<String, Object> data = new HashMap<>();
-        data.put("InteractionType", interaction.interactionType);
+        data.put(EventDataKeys.InteractionType, interaction.interactionType);
         _client.send(new EventBox("InteractionPerformed",
                 interaction.gameObject.id,
                 interaction.meshNode.id,
@@ -174,7 +172,7 @@ public class AdventureGame implements Game {
 
     private void sendEndInteraction(Interaction interaction) {
         Map<String, Object> data = new HashMap<>();
-        data.put("InteractionType", interaction.interactionType);
+        data.put(EventDataKeys.InteractionType, interaction.interactionType);
         _client.send(new EventBox("InteractionEnded",
                 interaction.gameObject.id,
                 interaction.meshNode.id,
@@ -301,7 +299,7 @@ public class AdventureGame implements Game {
         Optional<EventBox> box;
         while ((box = _client.poll()).isPresent()) {
             EventBox event = box.get();
-            event.eventData.put("Networked", true);
+            event.eventData.put(EventDataKeys.Networked, true);
             SceneNode source = _sceneGraph.nodeWithID(event.sourceId).get();
 
             if (event.eventName.equals("playerConnected")) {
@@ -314,7 +312,7 @@ public class AdventureGame implements Game {
                 MeshNode meshNode = (MeshNode)_sceneGraph.nodeWithID(event.targetId).get();
                 Player player = (Player)_sceneGraph.nodeWithID(event.from).get();
 
-                Interaction interaction = new Interaction((InteractionType) event.eventData.get("InteractionType"), gameObject, meshNode);
+                Interaction interaction = new Interaction((InteractionType) event.eventData.get(EventDataKeys.InteractionType), gameObject, meshNode);
 
                 interaction.performInteractionWithPlayer(player);
                 continue;
@@ -325,7 +323,7 @@ public class AdventureGame implements Game {
                 MeshNode meshNode = (MeshNode) _sceneGraph.nodeWithID(event.targetId).get();
                 Player player = (Player) _sceneGraph.nodeWithID(event.from).get();
 
-                Interaction interaction = new Interaction((InteractionType) event.eventData.get("InteractionType"), gameObject, meshNode);
+                Interaction interaction = new Interaction((InteractionType) event.eventData.get(EventDataKeys.InteractionType), gameObject, meshNode);
 
                 interaction.interactionEndedByPlayer(player);
                 continue;

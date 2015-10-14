@@ -10,7 +10,6 @@ import swen.adventure.engine.datastorage.SceneGraphSerializer;
 import swen.adventure.engine.network.EventBox;
 import swen.adventure.engine.network.NetworkServer;
 import swen.adventure.engine.network.Server;
-import swen.adventure.engine.rendering.maths.BoundingBox;
 import swen.adventure.engine.rendering.maths.Vector3;
 import swen.adventure.engine.scenegraph.*;
 import swen.adventure.game.scenenodes.AdventureGameObject;
@@ -133,7 +132,7 @@ public class MultiPlayerServer implements Runnable {
         AdventureGameObject gameObject = (AdventureGameObject)root.nodeWithID(event.sourceId).get();
         MeshNode meshNode = (MeshNode)root.nodeWithID(event.targetId).get();
 
-        return new Interaction((InteractionType)event.eventData.get("InteractionType"), gameObject, meshNode);
+        return new Interaction((InteractionType)event.eventData.get(EventDataKeys.InteractionType), gameObject, meshNode);
     }
 
     private void createPlayer(String playerId) {
