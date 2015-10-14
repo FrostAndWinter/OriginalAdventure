@@ -20,7 +20,7 @@ import java.util.function.Supplier;
  * as it encapsulates the behaviour of its children.
  *
  */
-public abstract class SceneNode implements BundleSerializable {
+public abstract class SceneNode {
 
     public interface NodeTraversalFunction {
         void visit(SceneNode node);
@@ -45,20 +45,6 @@ public abstract class SceneNode implements BundleSerializable {
     public Action<SceneNode, SceneNode, SceneNode> actionSetDisabled = (ignored, ignored1, sceneNode, data) -> {
         sceneNode.setEnabled(false);
     };
-
-    @Override
-    public BundleObject toBundle() {
-        BundleObject out = new BundleObject();
-
-        out.put("id", id);
-
-        if(_parent.isPresent()) {
-            out.put("parentId", _parent.get().id);
-            out.put("isDynamic", _isDynamic);
-        }
-
-        return out;
-    }
 
     /**
      * Construct a new root SceneNode.
